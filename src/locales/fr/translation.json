@@ -1,0 +1,34 @@
+{
+  "login": {
+    "title": "Connexion",
+    "email": "Adresse email",
+    "password": "Mot de passe",
+    "remember": "Se souvenir de moi",
+    "forgot_password": "Mot de passe oublié ?",
+    "no_account": "Vous n'avez pas de compte ?",
+    "submit": "Connexion",
+    "submitting": "Connexion...",
+    "success": "Vous êtes connecté"
+  },
+  "validation": {
+    "email_required": "L'email est requis",
+    "email_invalid": "Adresse email invalide",
+    "password_required": "Le mot de passe est requis"
+  },
+  "register": {
+    "welcome_title": "Bienvenue sur Lahza",
+    "welcome_description": "Choisissez comment vous souhaitez poursuivre votre parcours",
+    "client_card_title": "Je suis un client",
+    "client_card_desc": "À la recherche de services ou pour publier de nouveaux projets.",
+    "client_button": "Continuer en tant que client",
+    "worker_card_title": "Je suis un travailleur",
+    "worker_card_desc": "Prêt à accepter de nouveaux emplois, tâches ou projets.",
+    "worker_button": "Continuer en tant que travailleur",
+    "login_text": "Vous avez déjà un compte ?",
+    "login_link": "Se connecter",
+    "back_button": "Retour",
+    "client_form_title": "Inscription Client",
+    "worker_form_title": "Inscription Travailleur",
+    "login_title": "Connexion"
+  }
+}

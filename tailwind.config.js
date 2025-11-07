@@ -1,0 +1,63 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+    theme: {
+        extend: {
+            colors: {
+                primary: "#0F46AA",
+                secondary: "#051630",
+                text: "#393939",
+                accent: "#0057F4",
+                white: "#FFFFFF",
+                grayLight: "#F1F1F1",
+                cyan: "#00FFF7",
+                gray: "#929292",
+                navy: "#001B45",
+                darkBlue: "#0A2042",
+                orange: "#F45600",
+                amber: "#F4AF00",
+                overlay: "#FFFFFF57",
+                purple: "#9B33FF",
+            },
+            fontFamily: {
+                primary: ["Playfair Display", "serif"],
+                secondary: ["Plus Jakarta Sans", "sans-serif"],
+                text: ["Plus Jakarta Sans", "sans-serif"],
+                accent: ["Plus Jakarta Sans", "sans-serif"],
+                poppins: ["Poppins", "sans-serif"],
+            },
+            fontSize: {
+                h1: "110px",
+                h2: "100px",
+                h3: "80px",
+                h4: "60px",
+                h5: "54px",
+                h6: "46px",
+                xl: "42px",
+                lg: "38px",
+                base: "26px",
+                sm: "23px",
+                xs: "15px",
+                tiny: "12px",
+            },
+            lineHeight: {
+                tight: "0.9em",
+                snappy: "1em",
+                relaxed: "1.2em",
+                normal: "1.3em",
+            },
+            letterSpacing: {
+                tighter: "-2px",
+                tight: "-1px",
+                normal: "0px",
+                wide: "0.4px",
+                widest: "3.5px",
+            },
+            textTransform: {
+                uppercase: "uppercase",
+                capitalize: "capitalize",
+            },
+        },
+    },
+    plugins: [],
+};
