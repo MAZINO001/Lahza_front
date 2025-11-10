@@ -41,7 +41,7 @@ export default function Login({ status, canResetPassword }) {
   }
   const onSubmit = async (data) => {
     setSubmitting(true);
-    console.log("data submitted", data);
+    // console.log("data submitted", data);
 
     try {
       await axios.get("http://localhost:8000/sanctum/csrf-cookie", {
@@ -58,6 +58,7 @@ export default function Login({ status, canResetPassword }) {
           },
         }
       );
+      // console.log(res);
       console.log("your are logged in ");
       navigate("/dashboard");
     } catch (error) {

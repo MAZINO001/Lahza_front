@@ -87,6 +87,7 @@ function TimelineHeader({
 }
 
 function TimelineIndicator({
+  // eslint-disable-next-line no-unused-vars
   asChild = false,
   className,
   children,

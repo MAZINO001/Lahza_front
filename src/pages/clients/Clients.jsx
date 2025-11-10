@@ -46,6 +46,7 @@ import { mockUsers } from "@/lib/mockData";
 import axios from "axios";
 import Papa from "papaparse";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 export const columns = [
   // {
   //   id: "select",
@@ -84,7 +85,8 @@ export const columns = [
       const formattedId = `CLIENT-${id.toString().padStart(4, "0")}`;
       return (
         <Link
-          to={`/client/clients/${id}`}
+          // to={`/client/clients/${id}`}
+          to={`/admin/clients/${id}`}
           className="font-medium text-slate-900 hover:underline"
         >
           {formattedId}
