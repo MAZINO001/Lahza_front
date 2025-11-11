@@ -82,6 +82,7 @@ export function TeamClientForm() {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         formData,
+        { withCredentials: true },
         {
           headers: {
             "Content-Type": "multipart/form-data",

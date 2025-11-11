@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-refresh/only-export-components */
-/* eslint-disable no-unused-vars */
 import * as React from "react";
 import { useEffect, useState } from "react";
 import {
@@ -20,19 +20,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StatusBadge } from "@/Components/StatusBadge";
-import { mockQuotes } from "@/lib/mockData";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowUpDown, Download } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Link, Links } from "react-router-dom";
-
-// Mock user
-const mockUser = {
-  id: "client-001-uuid-here",
-  email: "demo@example.com",
-  name: "Demo User",
-};
-
+import { ArrowUpDown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import axios from "axios";
 // Table columns
 export const columns = [
   // {
@@ -70,9 +61,16 @@ export const columns = [
     cell: ({ row }) => {
       const id = row.getValue("id");
       const formattedId = `QUOTE-${id.toString().padStart(4, "0")}`;
+
+      const { role } = useAuth();
+      if (!role) return formattedId;
+
+      const basePath = role === "admin" ? "/admin" : "/client";
+
       return (
         <Link
-          to={`/client/quotes/${id}`}
+          // to={`${basePath}/quotes/${id}`}
+          to={`/admin/quotes/${id}`}
           className="font-medium text-slate-900 hover:underline"
         >
           {formattedId}
@@ -172,9 +170,6 @@ export const columns = [
   // },
 ];
 
-import { useAuth } from "@/hooks/useAuth";
-import axios from "axios";
-
 export default function QuotesTable() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -189,7 +184,13 @@ export default function QuotesTable() {
 
   const loadQuotes = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/quotes`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/quotes`,
+        {
+          withCredentials: true,
+        }
+      );
+
       setQuotes(res.data.quotes);
     } catch (error) {
       console.error("Error loading quotes:", error);

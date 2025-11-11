@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // hooks/useAuth.js
 import { useState, useEffect } from "react";
 import axios from "axios";
@@ -55,12 +56,11 @@ export function useAuth() {
         } finally {
             localStorage.removeItem('isAuthenticated');
             setUser(null);
-            window.location.href = '/login';
+            window.location.href = '/auth/login';
         }
     };
 
     const role = user?.role || null;
     const isAuthenticated = !!user;
-
     return { user, role, isAuthenticated, loading, logout, verifyAuth };
 }

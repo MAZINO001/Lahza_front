@@ -27,7 +27,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "./ui/button";
 export function AppSidebar(props) {
-  const { role, handleLogout } = useAuth();
+  const { role, logout } = useAuth();
   const currentRole = role || "client";
 
   const sidebarData = {
@@ -117,7 +117,7 @@ export function AppSidebar(props) {
 
       <SidebarFooter>
         <Button
-          onClick={() => handleLogout()}
+          onClick={() => logout()}
           className=" cursor-pointer flex items-center justify-center gap-2 text-red text-md"
         >
           <LogOutIcon />

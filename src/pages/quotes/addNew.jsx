@@ -31,7 +31,8 @@ export default function QuoteForm() {
     const fetchQuote = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/quotes/${quoteId}`
+          `${import.meta.env.VITE_BACKEND_URL}/quotes/${quoteId}`,
+          { withCredentials: true }
         );
 
         const data = res.data;
@@ -79,7 +80,8 @@ export default function QuoteForm() {
       setLoading(true);
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/clients`
+          `${import.meta.env.VITE_BACKEND_URL}/clients`,
+          { withCredentials: true }
         );
         setClients(res.data);
       } catch (err) {
@@ -95,7 +97,8 @@ export default function QuoteForm() {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/services`
+          `${import.meta.env.VITE_BACKEND_URL}/services`,
+          { withCredentials: true }
         );
         setServices(res.data);
       } catch (error) {
@@ -226,6 +229,8 @@ export default function QuoteForm() {
     try {
       const req = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/quotes`,
+
+        { withCredentials: true },
         payload,
         {
           headers: {

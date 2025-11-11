@@ -6,7 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 
 const fetchQuotes = () =>
   axios
-    .get(`${import.meta.env.VITE_BACKEND_URL}/quotes`)
+    .get(`${import.meta.env.VITE_BACKEND_URL}/quotes`, {
+      withCredentials: true,
+    })
     .then((res) => res.data.quotes);
 
 export default function QuoteDetails() {

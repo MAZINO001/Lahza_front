@@ -18,12 +18,12 @@ api.interceptors.response.use(
             // Unauthorized - clear auth and redirect to login
             localStorage.removeItem('user');
             localStorage.removeItem('isAuthenticated');
-            window.location.href = '/login';
+            window.location.href = '/auth/login';
         } else if (error.response?.status === 403) {
             // Forbidden - user doesn't have permission
             console.error('Access denied: You do not have permission to access this resource');
-            // Optionally redirect to unauthorized page
-            window.location.href = '/unauthorized';
+            // Redirect to home; app will route appropriately
+            window.location.href = '/';
         }
         return Promise.reject(error);
     }

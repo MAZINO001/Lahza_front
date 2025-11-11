@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function ProtectedRoute({ allowedRoles }) {
   const { user, role, loading } = useAuth();
+  const safeRole = role || "client";
   const location = useLocation();
 
   if (loading) return <div>Loading...</div>;
@@ -14,12 +15,12 @@ export default function ProtectedRoute({ allowedRoles }) {
   const [, segRole] = location.pathname.split("/");
   const knownRoles = ["admin", "team_member", "client"];
   if (knownRoles.includes(segRole) && segRole !== role) {
-    return <Navigate to={`/${role}/dashboard`} replace />;
+    return <Navigate to={`/${safeRole}/dashboard`} replace />;
   }
 
   // Role not allowed for this route group
   if (allowedRoles && !allowedRoles.includes(role)) {
-    return <Navigate to={`/${role}/dashboard`} replace />;
+    return <Navigate to={`/${safeRole}/dashboard`} replace />;
   }
 
   return <Outlet />;

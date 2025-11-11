@@ -16,7 +16,7 @@
 // export default function Login({ status, canResetPassword }) {
 //   const [submitting, setSubmitting] = useState(false);
 //   const navigate = useNavigate();
-//   const { user, role } = useAuth();
+//   const { user, role, verifyAuth } = useAuth();
 
 //   const {
 //     register,
@@ -197,7 +197,6 @@ import { Button } from "@/Components/ui/button";
 import { Card, CardTitle } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import axios from "axios";
 import { t } from "i18next";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -206,7 +205,7 @@ import api from "../../utils/axios";
 export default function Login({ status, canResetPassword }) {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { user, role } = useAuth();
+  const { user, role, verifyAuth } = useAuth();
 
   const {
     register,
@@ -235,7 +234,7 @@ export default function Login({ status, canResetPassword }) {
     setSubmitting(true);
 
     try {
-      await api.get("http://localhost:8000/sanctum/csrf-cookie", {
+      await api.get(`http://localhost:8000/sanctum/csrf-cookie`, {
         withCredentials: true,
       });
 
@@ -260,8 +259,9 @@ export default function Login({ status, canResetPassword }) {
 
       localStorage.setItem("isAuthenticated", "true");
 
-      console.log("You are logged in");
-      navigate("/dashboard");
+      await verifyAuth();
+      const nextRole = userRes?.data?.role || "client";
+      navigate(`/${nextRole}/dashboard`, { replace: true });
     } catch (error) {
       console.log("login error:", error.response?.data || error.message);
     } finally {

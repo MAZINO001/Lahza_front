@@ -45,7 +45,7 @@ export default function Inv_Qt_page({ type, data }) {
         <div className="min-h-screen bg-gray-50 p-8">
           <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
+            <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white p-8">
               <div className="flex justify-between items-start">
                 <div>
                   <h1 className="text-3xl font-bold mb-2">FACTURE</h1>

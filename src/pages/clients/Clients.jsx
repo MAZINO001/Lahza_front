@@ -24,14 +24,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
 import {
   Table,
   TableBody,
@@ -41,12 +34,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ClientForm } from "@/Components/auth/ClientForm";
-import { CloseButton } from "@headlessui/react";
-import { mockUsers } from "@/lib/mockData";
 import axios from "axios";
-import Papa from "papaparse";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 export const columns = [
   // {
   //   id: "select",
@@ -85,7 +74,6 @@ export const columns = [
       const formattedId = `CLIENT-${id.toString().padStart(4, "0")}`;
       return (
         <Link
-          // to={`/client/clients/${id}`}
           to={`/admin/clients/${id}`}
           className="font-medium text-slate-900 hover:underline"
         >
@@ -208,7 +196,9 @@ export default function UsersTable() {
     setLoading(true);
 
     const res = axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/clients`)
+      .get(`${import.meta.env.VITE_BACKEND_URL}/clients`, {
+        withCredentials: true,
+      })
       .then((res) => {
         setLoading(false);
         setClients(res.data);
@@ -225,6 +215,7 @@ export default function UsersTable() {
       setMessage("Preparing download...");
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/export?format=${format}`,
+        { withCredentials: true },
         {
           responseType: "blob",
         }
@@ -258,6 +249,7 @@ export default function UsersTable() {
       setUploadProgress(0);
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/import`,
+        { withCredentials: true },
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

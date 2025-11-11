@@ -65,7 +65,8 @@ export function ClientForm() {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
-        filledData
+        filledData,
+        { withCredentials: true }
       );
       console.log("Registration successful:", response.data);
     } catch (error) {
