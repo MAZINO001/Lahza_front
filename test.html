@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facture INV-000634</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,7 +17,7 @@
         }
 
         body {
-            font-family: "Open Sans", sans-serif;
+            font-family: "Roboto", sans-serif;
             padding: 40px;
             background: #f5f5f5;
         }
@@ -88,7 +92,7 @@
             left: 0;
             width: 100%;
             height: 1px;
-            background-color: #bbb5b5;
+            background-color: #ebe6e6;
             z-index: 0;
         }
 
@@ -108,12 +112,11 @@
             width: 100%;
             margin-bottom: 25px;
 
-
         }
 
         .client-info h3 {
             font-size: 14px;
-            font-weight: bold;
+            font-weight: 900;
             margin-bottom: 8px;
         }
 
@@ -121,7 +124,7 @@
             font-size: 12px;
             line-height: 1.6;
             color: #222;
-            font-weight: bold;
+            font-weight: 900;
         }
 
         .invoice-details {
@@ -141,7 +144,7 @@
 
 
         .invoice-details table.one thead {
-            background-color: rgb(5, 5, 80);
+            background-color: #051630;
             color: white;
         }
 
@@ -149,8 +152,8 @@
             padding: 10px;
             text-align: left;
             font-size: 15px;
-            font-weight: bold;
-            border-bottom: 1px solid #bbb5b5;
+            font-weight: 300;
+            border-bottom: 1px solid #ebe6e6;
         }
 
 
@@ -162,7 +165,7 @@
 
         .invoice-details th,
         .invoice-details td {
-            border: 1px solid #bbb5b5;
+            border: 1px solid #ebe6e6;
             padding: 6px 12px;
         }
 
@@ -180,30 +183,29 @@
         }
 
         .items-table {
+            border: 1px solid #ebe6e6;
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 25px;
-
-
         }
 
         .items-table thead {
-            background-color: rgb(5, 5, 80);
+            background-color: #051630;
             color: white;
         }
 
         .items-table th {
             padding: 10px;
-            text-align: center;
+            text-align: left;
             font-size: 15px;
-            font-weight: bold;
-            border-bottom: 1px solid #bbb5b5;
+            font-weight: 300;
+            border-bottom: 1px solid #ebe6e6;
         }
 
-        .Sous-total {
+        .Sous-total span {
             text-align: right;
             font-size: 12px;
-            font-weight: bolder;
+            font-weight: 700;
         }
 
         .items-table td:first-child:not(.Sous-total) {
@@ -214,14 +216,16 @@
         .items-table td {
             padding: 15px 10px;
             font-size: 11px;
-            border-bottom: 1px solid #bbb5b5;
+            border-bottom: 1px solid #ebe6e6;
             vertical-align: top;
             text-align: right;
+            font-weight: 400;
         }
 
         .item-description {
-            color: #444;
             margin-top: 8px;
+            color: #444;
+            font-weight: 300;
             line-height: 1.6;
         }
 
@@ -243,14 +247,13 @@
             font-weight: bold;
             font-size: 14px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #bbb5b5;
+            border-bottom: 1px solid #ebe6e6;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .payment-info {
-
             margin-bottom: 25px;
         }
 
@@ -258,8 +261,8 @@
             font-size: 11px;
         }
 
-        .payment-info strong {
-            font-weight: bold;
+        .payment-info strong:not(.mode) {
+            font-weight: 400;
         }
 
         .bank-details {
@@ -293,7 +296,7 @@
         }
 
         .mode {
-            font-weight: bolder;
+            font-weight: 800;
             color: #000;
         }
     </style>
@@ -326,7 +329,6 @@
         <div class="client-invoice-info">
             <div class="client-info">
                 <div>
-
                     <h3>NEWERA</h3>
                     <p>
                         7 Angle Rue de Fès & Rue de Uruguay, 5ème Ét. N°21,<br>
@@ -392,7 +394,9 @@
                 </tr>
             </tbody>
             <tr>
-                <td colspan="3" class="Sous-total">Sous-total</td>
+                <td colspan="3" class="Sous-total">
+                    <span>Sous-total</span>
+                </td>
                 <td>1,440.00</td>
             </tr>
         </table>

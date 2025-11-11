@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import ForgotPassword from "../pages/Auth/ForgotPassword";
@@ -27,6 +27,13 @@ import AppLayout from "../pages/layouts/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../hooks/useAuth";
 
+function GuestRoute() {
+  const { user, role, loading } = useAuth();
+  if (loading) return <div>Loading...</div>;
+  if (user) return <Navigate to={`/${role || "client"}/dashboard`} replace />;
+  return <Outlet />;
+}
+
 export default function AppRoutes() {
   const { role, user } = useAuth();
   const basePath = role || "client";
@@ -34,12 +41,14 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/auth" element={<AuthLayout />}>
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-          <Route path="confirmPassword" element={<ConfirmPassword />} />
-          <Route path="forgotPassword" element={<ForgotPassword />} />
-          <Route path="resetPassword" element={<ResetPassword />} />
+        <Route element={<GuestRoute />}>
+          <Route path="/auth" element={<AuthLayout />}>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="confirmPassword" element={<ConfirmPassword />} />
+            <Route path="forgotPassword" element={<ForgotPassword />} />
+            <Route path="resetPassword" element={<ResetPassword />} />
+          </Route>
         </Route>
 
         <Route
@@ -65,14 +74,16 @@ export default function AppRoutes() {
             <Route path="projects" element={<Projects />} />
             <Route path="projects/:id" element={<ProjectDetails />} />
             <Route path="quotes" element={<Quotes />} />
-            <Route path="quotes/:id" element={<QuoteDetails />} />
-            <Route path="quotes/new" element={<AddQuote />} />
             <Route path="tickets" element={<Tickets />} />
             <Route path="invoices" element={<Invoices />} />
             <Route path="payments" element={<Payments />} />
             <Route path="offers" element={<Offers />} />
-            <Route path="clients" element={<Clients />} />
-            <Route path="clients/:id" element={<ClientDetails />} />
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route path="quotes/new" element={<AddQuote />} />
+              <Route path="quotes/:id" element={<QuoteDetails />} />
+              <Route path="clients" element={<Clients />} />
+              <Route path="clients/:id" element={<ClientDetails />} />
+            </Route>
           </Route>
         </Route>
 

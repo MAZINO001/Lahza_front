@@ -9,6 +9,7 @@ import {
   DollarSign,
   FileText,
   HomeIcon,
+  LogOutIcon,
   PercentSquare,
   User,
 } from "lucide-react";
@@ -24,8 +25,9 @@ import {
   SidebarMenuItem,
 } from "../components/ui/sidebar";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "./ui/button";
 export function AppSidebar(props) {
-  const { role } = useAuth();
+  const { role, handleLogout } = useAuth();
   const currentRole = role || "client";
 
   const sidebarData = {
@@ -113,11 +115,15 @@ export function AppSidebar(props) {
         <NavSecondary items={roleData.navSecondary} className="mt-auto" />
       </SidebarContent>
 
-      {/* <SidebarFooter className="border-t">
-        <div className="p-2 text-sm text-muted-foreground">
-          Role: {currentRole}
-        </div>
-      </SidebarFooter> */}
+      <SidebarFooter>
+        <Button
+          onClick={() => handleLogout()}
+          className=" cursor-pointer flex items-center justify-center gap-2 text-red text-md"
+        >
+          <LogOutIcon />
+          LogOut
+        </Button>
+      </SidebarFooter>
     </Sidebar>
   );
 }
