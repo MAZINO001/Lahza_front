@@ -12,7 +12,9 @@ import FileUploader from "../comp-545";
 import TagsField from "../comp-57";
 import axios from "axios";
 import { useRegisterStore } from "@/hooks/registerStore";
+import { useNavigate } from "react-router-dom";
 export function TeamClientForm() {
+  const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
   const registerStore = useRegisterStore();
   const {
@@ -82,8 +84,8 @@ export function TeamClientForm() {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         formData,
-        { withCredentials: true },
         {
+          withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -91,6 +93,7 @@ export function TeamClientForm() {
       );
 
       console.log("Registration successful:", response.data);
+      navigate("/auth/login");
     } catch (error) {
       console.error("Registration failed:", error.response?.data);
     } finally {

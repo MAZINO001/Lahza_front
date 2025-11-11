@@ -26,7 +26,7 @@ export default function Header() {
             <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
           </button>
           <Link
-            to="/client/profile"
+            to={`/${role}/profile`}
             className="flex gap-2 items-center p-1 rounded-full"
           >
             <img

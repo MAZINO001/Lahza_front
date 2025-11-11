@@ -1,4 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import ForgotPassword from "../pages/Auth/ForgotPassword";
@@ -19,7 +25,9 @@ import Payments from "../pages/Payments/Payments";
 import Offers from "../pages/Offers/Offers";
 import Clients from "../pages/clients/Clients";
 import ClientDetails from "../pages/clients/clientDetails";
-import AddQuote from "../pages/quotes/addNew";
+import AddQuote from "../pages/quotes/addNewQuote";
+import InvoiceDetails from "@/pages/invoices/invoiceDetails";
+import AddNewInvoice from "@/pages/invoices/addNewInvoice";
 
 import AuthLayout from "../pages/layouts/AuthLayout";
 import AppLayout from "../pages/layouts/AppLayout";
@@ -81,6 +89,8 @@ export default function AppRoutes() {
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route path="quotes/new" element={<AddQuote />} />
               <Route path="quotes/:id" element={<QuoteDetails />} />
+              <Route path="invoices/new" element={<AddNewInvoice />} />
+              <Route path="invoices/:id" element={<InvoiceDetails />} />
               <Route path="clients" element={<Clients />} />
               <Route path="clients/:id" element={<ClientDetails />} />
             </Route>

@@ -13,38 +13,38 @@ import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { terms } from "../../lib/Terms_Conditions.json";
-export default function QuoteForm() {
+import api from "@/utils/axios";
+export default function InvoiceForm() {
   const [selectedClient, setSelectedClient] = useState("");
   const [loading, setLoading] = useState(true);
   const [clients, setClients] = useState([]);
-  const [quoteData, setQuoteData] = useState({});
+  const [InvoiceData, setInvoiceData] = useState({});
   const [Services, setServices] = useState([]);
   const navigate = useNavigate();
   const { role } = useAuth();
 
   const location = useLocation();
-  const quoteId = location.state?.quoteId;
+  const invoiceId = location.state?.invoiceId;
 
   useEffect(() => {
-    if (!quoteId) return;
+    if (!invoiceId) return;
 
-    const fetchQuote = async () => {
+    const fetchInvoices = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/quotes/${quoteId}`,
-          { withCredentials: true }
+        const res = await api.get(
+          `${import.meta.env.VITE_BACKEND_URL}/invoices/${invoiceId}`
         );
 
         const data = res.data;
-        setQuoteData(data);
+        setInvoiceData(data);
 
         reset({
           customerName: Number(data.client_id),
-          quoteId: data.id,
-          quoteDate: data.quotation_date,
+          invoiceId: data.id,
+          invoiceDate: data.quotation_date,
           notes: data.notes || "",
           terms: terms,
-          items: data.quote_services.map((qs) => ({
+          items: data.invoice_services.map((qs) => ({
             service: "",
             serviceId: Number(qs.service_id),
             description: "",
@@ -60,12 +60,12 @@ export default function QuoteForm() {
 
         setSelectedClient(Number(data.client_id));
       } catch (err) {
-        console.error("Failed to fetch quote:", err);
+        console.error("Failed to fetch invoices:", err);
       }
     };
 
-    fetchQuote();
-  }, [quoteId]);
+    fetchInvoices();
+  }, [invoiceId]);
 
   const clientOptions = clients.map((c) => ({
     name: c.name || c.user?.name,
@@ -79,9 +79,9 @@ export default function QuoteForm() {
     const fetchClients = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/clients`,
-          { withCredentials: true }
+        const res = await api.get(
+          `${import.meta.env.VITE_BACKEND_URL}/clients`
+          // { withCredentials: true }
         );
         setClients(res.data);
       } catch (err) {
@@ -96,9 +96,9 @@ export default function QuoteForm() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/services`,
-          { withCredentials: true }
+        const res = await api.get(
+          `${import.meta.env.VITE_BACKEND_URL}/services`
+          // { withCredentials: true }
         );
         setServices(res.data);
       } catch (error) {
@@ -114,7 +114,7 @@ export default function QuoteForm() {
 
   const cancelFunction = () => {
     reset();
-    navigate(`/${role}/quotes`);
+    navigate(`/${role}/invoices`);
   };
 
   const {
@@ -128,8 +128,8 @@ export default function QuoteForm() {
   } = useForm({
     defaultValues: {
       customerName: "",
-      quoteId: "001",
-      quoteDate: new Date().toISOString().split("T")[0],
+      invoiceId: "001",
+      invoiceDate: new Date().toISOString().split("T")[0],
       notes: "",
       terms: terms,
       items: [
@@ -208,7 +208,7 @@ export default function QuoteForm() {
   const onSubmit = async (data, status) => {
     const payload = {
       client_id: parseInt(data.customerName),
-      quotation_date: data.quoteDate,
+      invoiceDate: data.invoiceDate,
       status: status, // use the status from state
       total_amount: parseFloat(
         data.items
@@ -227,10 +227,8 @@ export default function QuoteForm() {
     };
 
     try {
-      const req = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/quotes`,
-
-        { withCredentials: true },
+      const req = await api.post(
+        `${import.meta.env.VITE_BACKEND_URL}/invoices`,
         payload,
         {
           headers: {
@@ -238,13 +236,13 @@ export default function QuoteForm() {
           },
         }
       );
-      alert("Quote created successfully!");
+      alert("Invoices created successfully!");
       reset();
-      navigate(`/${role}/quotes`);
+      navigate(`/${role}/invoices`);
     } catch (error) {
       console.error("Error details:", error.response?.data || error);
       alert(
-        `Failed to create quote: ${error.response?.data?.message || error.message}`
+        `Failed to create invoices: ${error.response?.data?.message || error.message}`
       );
     }
   };
@@ -261,7 +259,7 @@ export default function QuoteForm() {
     // <form onSubmit={handleSubmit(onSubmit)} className="p-4 md:w-[60%] w-full">
     <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full">
       <h1 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-        {quoteId ? "Edit Quote" : "New Quote"}
+        {invoiceId ? "Edit Invoice" : "New Invoice"}
       </h1>
 
       <div className="space-y-4">
@@ -291,20 +289,19 @@ export default function QuoteForm() {
           </div>
         )}
 
-        {/* Quote Info */}
         <FormField
-          id="quoteId"
-          label="Quote#"
+          id="invoiceId"
+          label="Invoice#"
           readonly
-          value={watch("quoteId")}
+          value={watch("invoiceId")}
           disabled
         />
         <FormField
-          id="quoteDate"
-          label="Quote Date*"
+          id="invoiceDate"
+          label="Invoice Date*"
           type="date"
-          value={watch("quoteDate")}
-          onChange={(e) => setValue("quoteDate", e.target.value)}
+          value={watch("invoiceDate")}
+          onChange={(e) => setValue("invoiceDate", e.target.value)}
         />
 
         {/* Item Table */}

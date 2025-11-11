@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -24,6 +23,8 @@ import { ArrowUpDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import axios from "axios";
+import { Input } from "@headlessui/react";
+import FormField from "@/Components/Form/FormField";
 // Table columns
 export const columns = [
   // {
@@ -60,20 +61,13 @@ export const columns = [
     ),
     cell: ({ row }) => {
       const id = row.getValue("id");
-      const formattedId = `QUOTE-${id.toString().padStart(4, "0")}`;
-
-      const { role } = useAuth();
-      if (!role) return formattedId;
-
-      const basePath = role === "admin" ? "/admin" : "/client";
-
+      const QuoteNumber = row.original?.quote_number;
       return (
         <Link
-          // to={`${basePath}/quotes/${id}`}
           to={`/admin/quotes/${id}`}
           className="font-medium text-slate-900 hover:underline"
         >
-          {formattedId}
+          {QuoteNumber ?? id}
         </Link>
       );
     },
@@ -192,6 +186,7 @@ export default function QuotesTable() {
       );
 
       setQuotes(res.data.quotes);
+      console.log(res.data.quotes);
     } catch (error) {
       console.error("Error loading quotes:", error);
     } finally {
@@ -228,14 +223,14 @@ export default function QuotesTable() {
   return (
     <div className="w-full p-4">
       <div className="flex items-center justify-between  mb-4">
-        {/* <Input
+        <FormField
           placeholder="Filter by status..."
           value={table.getColumn("status")?.getFilterValue() ?? ""}
           onChange={(event) =>
             table.getColumn("status")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
-        /> */}
+        />
 
         {role === "admin" ? (
           <Link to={`/${role}/quotes/new`}>

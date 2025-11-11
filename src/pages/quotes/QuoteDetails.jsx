@@ -1,8 +1,10 @@
+/* eslint-disable no-unused-vars */
 import Inv_Qt_page from "@/Components/Invoice_Quotes/Inv_Qt_page";
 import Inv_Qt_sidebar from "@/Components/Invoice_Quotes/Inv_Qt_sidebar";
 import axios from "axios";
 
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
 
 const fetchQuotes = () =>
   axios
@@ -11,24 +13,44 @@ const fetchQuotes = () =>
     })
     .then((res) => res.data.quotes);
 
+const fetchQuoteById = (id) =>
+  axios
+    .get(`${import.meta.env.VITE_BACKEND_URL}/quotes/${id}`, {
+      withCredentials: true,
+    })
+    .then((res) => res.data);
+
 export default function QuoteDetails() {
+  const { id } = useParams();
+
   const {
     data: quotes = [],
-    isLoading,
-    isError,
+    isLoading: listLoading,
+    isError: listError,
   } = useQuery({
     queryKey: ["quotes"],
     queryFn: fetchQuotes,
+    staleTime: 5 * 60 * 1000,
   });
 
-  if (isLoading) return <div className="p-4">Loading...</div>;
-  if (isError)
-    return <div className="p-4 text-red-600">Failed to load quotes</div>;
+  const {
+    data: quote,
+    isLoading: quoteLoading,
+    isError: quoteError,
+    isFetching: quoteFetching,
+  } = useQuery({
+    queryKey: ["quote", id],
+    queryFn: () => fetchQuoteById(id),
+    enabled: Boolean(id),
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000,
+  });
 
   return (
     <div className="flex h-screen bg-gray-50">
       <Inv_Qt_sidebar type="quotes" data={quotes} />
-      <Inv_Qt_page type="quotes" data={quotes} />
+      {/* You can optionally pass quoteFetching to show a subtle inline loader inside the preview */}
+      <Inv_Qt_page type="quotes" quote={quote} />
     </div>
   );
 }

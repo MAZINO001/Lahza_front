@@ -1,325 +1,5 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-refresh/only-export-components */
-// /* eslint-disable react-hooks/exhaustive-deps */
-// import { useEffect, useState } from "react";
-// import { StatusBadge } from "@/Components/StatusBadge";
-// import { Receipt, Calendar, DollarSign, CreditCard } from "lucide-react";
-// import { mockInvoices } from "@/lib/mockData";
-
-// // Mock user data
-// const mockUser = {
-//   id: "client-001-uuid-here",
-//   email: "demo@example.com",
-//   name: "Demo User",
-// };
-
-// export default function InvoicesPage() {
-//   const user = mockUser;
-//   const [invoices, setInvoices] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [selectedInvoice, setSelectedInvoice] = useState(null);
-//   const [showPaymentModal, setShowPaymentModal] = useState(false);
-//   const [depositPercentage, setDepositPercentage] = useState(30);
-
-//   useEffect(() => {
-//     loadInvoices();
-//   }, []);
-
-//   const loadInvoices = async () => {
-//     if (!user) return;
-
-//     // Simulate API delay
-//     await new Promise((resolve) => setTimeout(resolve, 500));
-
-//     // Load mock data
-//     setInvoices(mockInvoices);
-//     setLoading(false);
-//   };
-
-//   const handlePayInvoice = (invoice) => {
-//     setSelectedInvoice(invoice);
-//     setDepositPercentage(invoice.deposit_percentage);
-//     setShowPaymentModal(true);
-//   };
-
-//   const handleSubmitPayment = async () => {
-//     if (!selectedInvoice) return;
-
-//     // Simulate API delay
-//     await new Promise((resolve) => setTimeout(resolve, 500));
-
-//     const depositAmount = (selectedInvoice.amount * depositPercentage) / 100;
-
-//     // Update invoice in state
-//     setInvoices(
-//       invoices.map((inv) =>
-//         inv.id === selectedInvoice.id
-//           ? {
-//               ...inv,
-//               status: "paid",
-//               paid_at: new Date().toISOString(),
-//               payment_method: "Online Payment",
-//               deposit_percentage: depositPercentage,
-//               deposit_amount: depositAmount,
-//             }
-//           : inv
-//       )
-//     );
-
-//     alert("Payment processed successfully!");
-//     setShowPaymentModal(false);
-//     setSelectedInvoice(null);
-//   };
-
-//   if (loading) {
-//     return (
-//       <div className="flex items-center justify-center h-64">
-//         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900"></div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="space-y-8">
-//       <div>
-//         <h1 className="text-3xl font-bold text-slate-900 mb-2 text-center lg:text-left">
-//           Invoices
-//         </h1>
-//         <p className="text-slate-600 text-center lg:text-left">
-//           Manage and pay your invoices
-//         </p>
-//       </div>
-
-//       {invoices.length === 0 ? (
-//         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-//           <Receipt className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-//           <h3 className="text-lg font-medium text-slate-900 mb-2">
-//             No invoices yet
-//           </h3>
-//           <p className="text-slate-600">Your invoices will appear here</p>
-//         </div>
-//       ) : (
-//         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-//           <div className="overflow-x-auto">
-//             <table className="w-full">
-//               <thead className="bg-slate-50 border-b border-slate-200">
-//                 <tr>
-//                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-//                     Invoice #
-//                   </th>
-//                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-//                     Title
-//                   </th>
-//                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-//                     Amount
-//                   </th>
-//                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-//                     Deposit
-//                   </th>
-//                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-//                     Due Date
-//                   </th>
-//                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-//                     Status
-//                   </th>
-//                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
-//                     Action
-//                   </th>
-//                 </tr>
-//               </thead>
-//               <tbody>
-//                 {invoices.map((invoice) => (
-//                   <tr
-//                     key={invoice.id}
-//                     className="border-b border-slate-100 hover:bg-slate-50"
-//                   >
-//                     <td className="py-3 px-4 text-sm font-medium text-slate-900">
-//                       {invoice.invoice_number}
-//                     </td>
-//                     <td className="py-3 px-4 text-sm text-slate-600">
-//                       {invoice.title}
-//                     </td>
-//                     <td className="py-3 px-4 text-sm font-medium text-slate-900">
-//                       ${invoice.amount.toLocaleString()}
-//                     </td>
-//                     <td className="py-3 px-4 text-sm text-slate-600">
-//                       {invoice.deposit_percentage}% ($
-//                       {invoice.deposit_amount.toLocaleString()})
-//                     </td>
-//                     <td className="py-3 px-4 text-sm text-slate-600">
-//                       {new Date(invoice.due_date).toLocaleDateString()}
-//                     </td>
-//                     <td className="py-3 px-4">
-//                       <StatusBadge status={invoice.status} />
-//                     </td>
-//                     <td className="py-3 px-4 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
-//                       {invoice.status === "pending" && (
-//                         <button
-//                           onClick={() => handlePayInvoice(invoice)}
-//                           className="text-sm bg-slate-900 text-white px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
-//                         >
-//                           Pay Now
-//                         </button>
-//                       )}
-
-//                       {invoice.status === "paid" && (
-//                         <span className="text-sm text-slate-500">
-//                           Paid{" "}
-//                           {invoice.paid_at
-//                             ? new Date(invoice.paid_at).toLocaleDateString()
-//                             : ""}
-//                         </span>
-//                       )}
-
-//                       <button
-//                         // onClick={() => handleDownloadInvoice(invoice)}
-//                         className="text-sm bg-white border border-slate-300 text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
-//                       >
-//                         Download
-//                       </button>
-//                     </td>
-//                   </tr>
-//                 ))}
-//               </tbody>
-//             </table>
-//           </div>
-//         </div>
-//       )}
-
-//       {showPaymentModal && selectedInvoice && (
-//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-//           <div className="bg-white rounded-2xl max-w-lg w-full p-8 relative">
-//             <h2 className="text-2xl font-bold text-slate-900 mb-6">
-//               Payment Details
-//             </h2>
-
-//             <div className="bg-slate-50 rounded-lg p-4 mb-6">
-//               <div className="flex items-center justify-between mb-2">
-//                 <span className="text-sm text-slate-600">Invoice Number</span>
-//                 <span className="font-medium text-slate-900">
-//                   {selectedInvoice.invoice_number}
-//                 </span>
-//               </div>
-//               <div className="flex items-center justify-between mb-2">
-//                 <span className="text-sm text-slate-600">Total Amount</span>
-//                 <span className="font-medium text-slate-900">
-//                   ${selectedInvoice.amount.toLocaleString()}
-//                 </span>
-//               </div>
-//               <div className="flex items-center justify-between">
-//                 <span className="text-sm text-slate-600">Due Date</span>
-//                 <span className="font-medium text-slate-900">
-//                   {new Date(selectedInvoice.due_date).toLocaleDateString()}
-//                 </span>
-//               </div>
-//             </div>
-
-//             <div className="mb-6">
-//               <label className="block text-sm font-medium text-slate-700 mb-3">
-//                 Select Deposit Percentage
-//               </label>
-//               <div className="grid grid-cols-3 gap-3">
-//                 {[30, 40, 50].map((percentage) => {
-//                   const amount = (selectedInvoice.amount * percentage) / 100;
-//                   return (
-//                     <button
-//                       key={percentage}
-//                       onClick={() => setDepositPercentage(percentage)}
-//                       className={`p-4 rounded-lg border-2 transition-all cursor-pointer${
-//                         depositPercentage === percentage
-//                           ? "border-slate-900 bg-slate-50"
-//                           : "border-slate-200 hover:border-slate-300"
-//                       }`}
-//                     >
-//                       <div className="text-2xl font-bold text-slate-900 mb-1">
-//                         {percentage}%
-//                       </div>
-//                       <div className="text-sm text-slate-600">
-//                         ${amount.toLocaleString()}
-//                       </div>
-//                     </button>
-//                   );
-//                 })}
-//               </div>
-//             </div>
-
-//             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-//               <div className="flex items-start">
-//                 <DollarSign className="w-5 h-5 text-blue-600 mr-2 mt-0.5" />
-//                 <div>
-//                   <p className="text-sm font-medium text-blue-900 mb-1">
-//                     Payment Amount
-//                   </p>
-//                   <p className="text-2xl font-bold text-blue-900">
-//                     $
-//                     {(
-//                       (selectedInvoice.amount * depositPercentage) /
-//                       100
-//                     ).toLocaleString()}
-//                   </p>
-//                   <p className="text-xs text-blue-700 mt-1">
-//                     Remaining: $
-//                     {(
-//                       (selectedInvoice.amount * (100 - depositPercentage)) /
-//                       100
-//                     ).toLocaleString()}
-//                   </p>
-//                 </div>
-//               </div>
-//             </div>
-
-//             <div className="mb-6">
-//               <label className="block text-sm font-medium text-slate-700 mb-2">
-//                 Card Information
-//               </label>
-//               <div className="space-y-3">
-//                 <div className="relative">
-//                   <input
-//                     type="text"
-//                     placeholder="Card Number"
-//                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
-//                   />
-//                   <CreditCard className="absolute right-3 top-3 w-5 h-5 text-slate-400" />
-//                 </div>
-//                 <div className="grid grid-cols-2 gap-3">
-//                   <input
-//                     type="text"
-//                     placeholder="MM/YY"
-//                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
-//                   />
-//                   <input
-//                     type="text"
-//                     placeholder="CVC"
-//                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 focus:border-transparent outline-none transition-all"
-//                   />
-//                 </div>
-//               </div>
-//             </div>
-
-//             <div className="flex space-x-3">
-//               <button
-//                 onClick={() => setShowPaymentModal(false)}
-//                 className="flex-1 bg-slate-100 text-slate-700 py-2.5 px-4 rounded-lg font-medium hover:bg-slate-200 transition-colors cursor-pointer"
-//               >
-//                 Cancel
-//               </button>
-//               <button
-//                 onClick={handleSubmitPayment}
-//                 className="flex-1 bg-slate-900 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-slate-800 transition-colors cursor-pointer"
-//               >
-//                 Pay $
-//                 {(
-//                   (selectedInvoice.amount * depositPercentage) /
-//                   100
-//                 ).toLocaleString()}
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
 import * as React from "react";
 import {
   flexRender,
@@ -359,6 +39,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
+import FormField from "@/Components/Form/FormField";
 
 export const columns = [
   // {
@@ -394,33 +75,33 @@ export const columns = [
       </Button>
     ),
     cell: ({ row }) => {
-      const invoice_number = row.getValue("invoice_number");
-      const formattedId = `QUOTE-${invoice_number.toString().padStart(4, "0")}`;
+      const id = row.original?.id;
+      const InvoiceNumber = row.original?.invoice_number;
       return (
         <Link
-          to={`/client/quotes/${invoice_number}`}
+          to={`${id}`}
           className="font-medium text-slate-900 hover:underline"
         >
-          {formattedId}
+          {InvoiceNumber ?? id}
         </Link>
       );
     },
   },
-  {
-    accessorKey: "title",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Title
-          <ArrowUpDown />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div>{row.getValue("title")}</div>,
-  },
+  // {
+  //   accessorKey: "title",
+  //   header: ({ column }) => {
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+  //       >
+  //         Title
+  //         <ArrowUpDown />
+  //       </Button>
+  //     );
+  //   },
+  //   cell: ({ row }) => <div>{row.getValue("title")}</div>,
+  // },
   {
     accessorKey: "amount",
     header: () => <div className="text-right">Amount</div>,
@@ -437,11 +118,11 @@ export const columns = [
     },
   },
   {
-    accessorKey: "deposit_amount",
+    accessorKey: "balance_due",
     header: () => <div className="text-right">Deposit</div>,
     cell: ({ row }) => {
       const invoice = row.original;
-      const depositAmount = invoice.deposit_amount;
+      const depositAmount = invoice.balance_due;
       const depositPercentage = invoice.deposit_percentage;
 
       const formatted = new Intl.NumberFormat("en-US", {
@@ -500,13 +181,11 @@ export const columns = [
       const handlePay = () => {
         if (invoice.status === "pending" || invoice.status === "overdue") {
           alert(`Opening payment for ${invoice.invoice_number}`);
-          // Add your payment logic here
         }
       };
 
       const handleDownload = () => {
         alert(`Downloading invoice ${invoice.invoice_number}`);
-        // Add your download logic here
       };
 
       return (
@@ -534,15 +213,41 @@ export const columns = [
     },
   },
 ];
-
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import axios from "axios";
 export default function Invoices() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
 
+  const [Invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { role } = useAuth();
+  useEffect(() => {
+    loadInvoices();
+  }, []);
+
+  const loadInvoices = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/invoices`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      setInvoices(res.data.invoices);
+      console.log(res.data.invoices);
+    } catch (error) {
+      console.error("Error loading invoices:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   const table = useReactTable({
-    data: mockInvoices,
+    data: Invoices,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -559,45 +264,58 @@ export default function Invoices() {
       rowSelection,
     },
   });
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full p-4">
-      <div className="flex items-center pb-4">
-        <Input
-          placeholder="Filter by title..."
-          value={table.getColumn("title")?.getFilterValue() ?? ""}
+      <div className="flex items-center justify-between mb-4">
+        <FormField
+          placeholder="Filter by status..."
+          value={table.getColumn("status")?.getFilterValue() ?? ""}
           onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
+            table.getColumn("status")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          {/* <DropdownMenuTrigger asChild>
+
+        {role === "admin" ? (
+          <Link to={`/${role}/invoices/new`}>
+            <Button>Add New Invoice</Button>
+          </Link>
+        ) : (
+          ""
+        )}
+      </div>
+      <DropdownMenu>
+        {/* <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Columns <ChevronDown />
             </Button>
           </DropdownMenuTrigger> */}
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+        <DropdownMenuContent align="end">
+          {table
+            .getAllColumns()
+            .filter((column) => column.getCanHide())
+            .map((column) => {
+              return (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
+              );
+            })}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>

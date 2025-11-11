@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, Outlet, useParams } from "react-router-dom";
 
-export default function Inv_Qt_page({ type, data }) {
+export default function Inv_Qt_page({ type, quote }) {
   const title = type === "invoices" ? "All Invoices" : "All Quotes";
   const { id } = useParams();
   const { role } = useAuth();
@@ -52,7 +52,7 @@ export default function Inv_Qt_page({ type, data }) {
                   <p className="text-blue-100">Invoice</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold">INV-000634</div>
+                  <div className="text-2xl font-bold">INV-000{id}</div>
                   <div className="text-sm text-blue-100 mt-1">
                     N° de facture
                   </div>
@@ -235,7 +235,7 @@ export default function Inv_Qt_page({ type, data }) {
             </div>
 
             {/* Footer */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white text-center py-4">
+            <div className="bg-linear-to-r from-blue-600 to-blue-800 text-white text-center py-4">
               <p className="text-sm">Merci de votre confiance.</p>
             </div>
           </div>

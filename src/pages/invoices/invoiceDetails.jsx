@@ -1,59 +1,57 @@
+/* eslint-disable no-unused-vars */
 import Inv_Qt_page from "@/Components/Invoice_Quotes/Inv_Qt_page";
 import Inv_Qt_sidebar from "@/Components/Invoice_Quotes/Inv_Qt_sidebar";
-import { Button } from "@/components/ui/button";
-import {
-  Menu,
-  Edit,
-  Download,
-  Printer,
-  Send,
-  MoreVertical,
-  X,
-} from "lucide-react";
-import React from "react";
+import axios from "axios";
 
-export default function Invoice_Details() {
-  const invoices = [
-    {
-      name: "Govind Kumar Tara",
-      id: "INV-000001",
-      date: "09/02/2018",
-      dueDate: "16/02/2018",
-      total: "₹488.00",
-      status: "PAID",
-    },
-    {
-      name: "Shweta Naruka",
-      id: "INV-000002",
-      date: "10/02/2018",
-      dueDate: "17/02/2018",
-      total: "₹520.00",
-      status: "PAID",
-    },
-    {
-      name: "Arun Chokshi",
-      id: "INV-000003",
-      date: "19/02/2018",
-      dueDate: "26/02/2018",
-      total: "₹1,250.00",
-      status: "DRAFT",
-    },
-    {
-      name: "Pooja J",
-      id: "INV-000004",
-      date: "09/08/2018",
-      dueDate: "16/08/2018",
-      total: "₹240.00",
-      status: "SENT",
-    },
-  ];
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+
+const fetchInvoices = () =>
+  axios
+    .get(`${import.meta.env.VITE_BACKEND_URL}/invoices`, {
+      withCredentials: true,
+    })
+    .then((res) => res.data.invoices);
+
+const fetchInvoicesById = (id) =>
+  axios
+    .get(`${import.meta.env.VITE_BACKEND_URL}/invoices/${id}`, {
+      withCredentials: true,
+    })
+    .then((res) => res.data);
+
+export default function InvoiceDetails() {
+  const { id } = useParams();
+
+  const {
+    data: invoices = [],
+    isLoading: listLoading,
+    isError: listError,
+  } = useQuery({
+    queryKey: ["invoices"],
+    queryFn: fetchInvoices,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const {
+    data: invoice,
+    isLoading: invoiceLoading,
+    isError: invoiceError,
+    isFetching: invoiceFetching,
+  } = useQuery({
+    queryKey: ["invoice", id],
+    queryFn: () => fetchInvoicesById(id),
+    enabled: Boolean(id),
+    keepPreviousData: true,
+    staleTime: 5 * 60 * 1000,
+  });
 
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <Inv_Qt_sidebar type="invoices" data={invoices} />
       {/* Main Content */}
-      <Inv_Qt_page type="invoices" data={invoices} />
+      <Inv_Qt_page type="invoices" data={invoice} />
     </div>
   );
 }

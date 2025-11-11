@@ -12,8 +12,10 @@ import ClientTypeRadio from "@/Components/Form/ClientTypeRadio";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useRegisterStore } from "@/hooks/registerStore";
+import { useNavigate } from "react-router-dom";
 
 export function ClientForm() {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -69,8 +71,9 @@ export function ClientForm() {
         { withCredentials: true }
       );
       console.log("Registration successful:", response.data);
+      navigate("/auth/login");
     } catch (error) {
-      console.error("Registration failed:", error.response.data);
+      console.error("Registration failed:", error.response?.data);
     } finally {
       setSubmitting(false);
     }
