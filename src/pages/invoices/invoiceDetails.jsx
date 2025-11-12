@@ -1,23 +1,19 @@
 /* eslint-disable no-unused-vars */
 import Inv_Qt_page from "@/Components/Invoice_Quotes/Inv_Qt_page";
 import Inv_Qt_sidebar from "@/Components/Invoice_Quotes/Inv_Qt_sidebar";
-import axios from "axios";
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
+import api from "@/utils/axios";
 
 const fetchInvoices = () =>
-  axios
-    .get(`${import.meta.env.VITE_BACKEND_URL}/invoices`, {
-      withCredentials: true,
-    })
+  api
+    .get(`${import.meta.env.VITE_BACKEND_URL}/invoices`)
     .then((res) => res.data.invoices);
 
 const fetchInvoicesById = (id) =>
-  axios
-    .get(`${import.meta.env.VITE_BACKEND_URL}/invoices/${id}`, {
-      withCredentials: true,
-    })
+  api
+    .get(`${import.meta.env.VITE_BACKEND_URL}/invoices/${id}`)
     .then((res) => res.data);
 
 export default function InvoiceDetails() {

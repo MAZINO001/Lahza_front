@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
+import api from "@/utils/axios";
 
 export function ClientForm() {
   const navigate = useNavigate();
@@ -65,10 +66,9 @@ export function ClientForm() {
 
     console.log("Filled data:", filledData);
     try {
-      const response = await axios.post(
+      const response = await api.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         filledData,
-        { withCredentials: true }
       );
       console.log("Registration successful:", response.data);
       navigate("/auth/login");

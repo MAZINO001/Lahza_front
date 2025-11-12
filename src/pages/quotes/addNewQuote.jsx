@@ -33,7 +33,6 @@ export default function QuoteForm() {
       try {
         const res = await api.get(
           `${import.meta.env.VITE_BACKEND_URL}/quotes/${quoteId}`
-          // { withCredentials: true }
         );
 
         const data = res.data;
@@ -46,9 +45,9 @@ export default function QuoteForm() {
           notes: data.notes || "",
           terms: terms,
           items: data.quote_services.map((qs) => ({
-            service: "",
+            service: Number(qs.service_id),
             serviceId: Number(qs.service_id),
-            description: "",
+            description: qs.description || "",
             quantity: qs.quantity,
             rate: parseFloat(qs.individual_total) / qs.quantity,
             tax: parseFloat(qs.tax),
@@ -207,17 +206,18 @@ export default function QuoteForm() {
   const calculateTotal = () => calculateSubTotal() - calculateDiscount();
 
   const onSubmit = async (data, status) => {
+    const statusToSend = status ?? quoteData?.status ?? "draft";
     const payload = {
       client_id: parseInt(data.customerName),
       quotation_date: data.quoteDate,
-      status: status, // use the status from state
+      status: statusToSend,
       total_amount: parseFloat(
         data.items
           .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
           .toFixed(2)
       ),
       services: data.items.map((item) => ({
-        service_id: Number(item.id),
+        service_id: Number(item.serviceId),
         quantity: parseInt(item.quantity),
         rate: parseFloat(item.rate),
         tax: parseFloat(item.tax || 0),
@@ -228,16 +228,29 @@ export default function QuoteForm() {
     };
 
     try {
-      const req = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/quotes`,
-        payload,
-        { withCredentials: true },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      let req;
+
+      if (quoteId) {
+        console.log(payload);
+        req = await api.put(
+          `${import.meta.env.VITE_BACKEND_URL}/quotes/${quoteId}`,
+          payload,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        alert("quote updated successfully!");
+      } else {
+        // CREATE new quote
+        req = await api.post(
+          `${import.meta.env.VITE_BACKEND_URL}/quotes`,
+          payload,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        alert("quote created successfully!");
+      }
       alert("Quote created successfully!");
       reset();
       navigate(`/${role}/quotes`);
@@ -248,7 +261,6 @@ export default function QuoteForm() {
       );
     }
   };
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -290,7 +302,6 @@ export default function QuoteForm() {
             </p>
           </div>
         )}
-
         {/* Quote Info */}
         <FormField
           id="quoteId"
@@ -306,7 +317,6 @@ export default function QuoteForm() {
           value={watch("quoteDate")}
           onChange={(e) => setValue("quoteDate", e.target.value)}
         />
-
         {/* Item Table */}
         <div className="mt-8">
           <h2 className="text-base font-semibold text-gray-800 mb-4">
@@ -351,7 +361,10 @@ export default function QuoteForm() {
                           value={selectedService}
                           onChange={(val) => {
                             val = Number(val); // ensure numeric
+
+                            // Update BOTH service and serviceId fields
                             setValue(`items.${index}.service`, val);
+                            setValue(`items.${index}.serviceId`, val); // ADD THIS LINE
 
                             const service = Services.find(
                               (s) => Number(s.id) === val
@@ -391,13 +404,19 @@ export default function QuoteForm() {
                           }}
                           placeholder="Select a service"
                         />
-
                         {selectedService && (
                           <Textarea
-                            // {...register(`items.${index}.description`)}
+                            {...register(`items.${index}.description`)} // UNCOMMENT THIS
                             placeholder="Enter service description"
                             className="mt-2 w-full border border-gray-300 p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
                             rows={2}
+                            value={watch(`items.${index}.description`) || ""} // ADD controlled value
+                            onChange={(e) =>
+                              setValue(
+                                `items.${index}.description`,
+                                e.target.value
+                              )
+                            }
                           />
                         )}
                       </td>
@@ -481,7 +500,6 @@ export default function QuoteForm() {
             </div>
           </div>
         </div>
-
         {/* Notes & Totals */}
         <div className="flex md:flex-row flex-col gap-4 items-end justify-between">
           <div className="w-full">
@@ -496,7 +514,6 @@ export default function QuoteForm() {
             />
           </div>
         </div>
-
         {/* Terms & Attach File */}
         <div className="flex md:flex-row flex-col gap-4 items-start justify-between">
           <div className="w-full">
@@ -512,7 +529,6 @@ export default function QuoteForm() {
             />
           </div>
         </div>
-
         {/* Buttons */}
         <div className="flex md:flex-row flex-col justify-end gap-3 mt-8">
           <Button
@@ -522,8 +538,9 @@ export default function QuoteForm() {
           >
             Cancel
           </Button>
+
           <Button
-            onClick={() => handleSubmit((data) => onSubmit(data, "draft"))()}
+            onClick={handleSubmit((data) => onSubmit(data, "draft"))}
             type="button"
             className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50 transition-colors"
           >
@@ -531,7 +548,7 @@ export default function QuoteForm() {
           </Button>
 
           <Button
-            onClick={() => handleSubmit((data) => onSubmit(data, "sended"))()}
+            onClick={handleSubmit((data) => onSubmit(data, "sent"))}
             type="button"
           >
             Save and Send

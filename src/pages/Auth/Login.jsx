@@ -239,7 +239,6 @@ export default function Login({ status, canResetPassword }) {
       });
 
       await api.post(`${import.meta.env.VITE_BACKEND_URL}/login`, data, {
-        withCredentials: true,
         headers: {
           Accept: "application/json",
           "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
@@ -249,7 +248,6 @@ export default function Login({ status, canResetPassword }) {
       const userRes = await api.get(
         `${import.meta.env.VITE_BACKEND_URL}/user`,
         {
-          withCredentials: true,
           headers: {
             Accept: "application/json",
             "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),

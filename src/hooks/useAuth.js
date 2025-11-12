@@ -2,6 +2,7 @@
 // hooks/useAuth.js
 import { useState, useEffect } from "react";
 import axios from "axios";
+import api from "@/utils/axios";
 
 export function useAuth() {
     const [user, setUser] = useState(null);
@@ -15,10 +16,9 @@ export function useAuth() {
     const verifyAuth = async () => {
         try {
             // Fetch real user data from backend
-            const response = await axios.get(
+            const response = await api.get(
                 `${import.meta.env.VITE_BACKEND_URL}/user`,
                 {
-                    withCredentials: true,
                     headers: {
                         Accept: "application/json",
                     },
@@ -41,11 +41,9 @@ export function useAuth() {
 
     const logout = async () => {
         try {
-            await axios.post(
+            await api.post(
                 `${import.meta.env.VITE_BACKEND_URL}/logout`,
-                {},
                 {
-                    withCredentials: true,
                     headers: {
                         Accept: "application/json",
                     },

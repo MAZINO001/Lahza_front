@@ -26,8 +26,8 @@ const mockUser = {
 
 const services = ["Hosting", "Logo Design", "Web App Creation"];
 
-export default function Test() {
-  const [selectedDay, setSelectedDay] = useState(null);
+export default function ProjectInfo() {
+  const [selectedDate, setSelectedDate] = useState(null);
   const [projects, setProjects] = useState([]);
   const [quotes, setQuotes] = useState([]);
   const [invoices, setInvoices] = useState([]);
@@ -137,13 +137,13 @@ export default function Test() {
       </Card>
 
       {/* Calendar Side */}
-      <Card className="border shadow-sm flex items-center justify-center mr-4">
+      <Card className="p-4 sticky top-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">Calendar</h2>
         <Calendar
           mode="single"
-          selected={selectedDay ?? undefined}
-          onSelect={setSelectedDay}
-          defaultMonth={new Date()}
-          showWeekNumber
+          selected={selectedDate}
+          onSelect={setSelectedDate}
+          className="w-full [&_button]:h-8 [&_button]:w-8"
         />
       </Card>
     </div>

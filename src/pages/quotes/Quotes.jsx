@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import { useEffect, useState } from "react";
 import {
@@ -25,146 +24,134 @@ import { useAuth } from "@/hooks/useAuth";
 import axios from "axios";
 import { Input } from "@headlessui/react";
 import FormField from "@/Components/Form/FormField";
+import api from "@/utils/axios";
 // Table columns
-export const columns = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
-  {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Quote ID <ArrowUpDown className="ml-1 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const id = row.getValue("id");
-      const QuoteNumber = row.original?.quote_number;
-      return (
-        <Link
-          to={`/admin/quotes/${id}`}
-          className="font-medium text-slate-900 hover:underline"
-        >
-          {QuoteNumber ?? id}
-        </Link>
-      );
-    },
-  },
-  // {
-  //   accessorKey: "title",
-  //   header: ({ column }) => (
-  //     <Button
-  //       variant="ghost"
-  //       onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //     >
-  //       Title
-  //       <ArrowUpDown className="ml-2 h-4 w-4" />
-  //     </Button>
-  //   ),
-  //   cell: ({ row }) => <div>{row.getValue("title")}</div>,
-  // },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
-  },
-  {
-    accessorKey: "quotation_date",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Quotation Date
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const value = row.getValue("quotation_date");
-      if (!value) return "N/A";
-
-      const formatted = new Date(value).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-
-      return <div>{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "total_amount",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        className="justify-end"
-      >
-        Amount
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const total_amount = parseFloat(row.getValue("total_amount"));
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(total_amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  // {
-  //   id: "actions",
-  //   enableHiding: false,
-  //   header: "Actions",
-  //   cell: ({ row }) => {
-  //     const quote = row.original;
-
-  //     const handleView = () => {
-  //       alert(`Viewing ${quote.quote_number}`);
-  //       // You can replace alert with navigation or modal
-  //     };
-
-  //     return (
-  //       <div className="flex items-center gap-2">
-  //         <Button
-  //           size="sm"
-  //           variant="default"
-  //           onClick={handleView}
-  //           className="h-8"
-  //         >
-  //           View Details
-  //         </Button>
-  //       </div>
-  //     );
-  //   },
-  // },
-];
 
 export default function QuotesTable() {
+  const columns = [
+    // {
+    //   id: "select",
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && "indeterminate")
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
+    {
+      accessorKey: "id",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Quote ID <ArrowUpDown className="ml-1 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const id = row.getValue("id");
+        const QuoteNumber = row.original?.quote_number;
+        return (
+          <Link
+            to={`/${role}/quotes/${id}`}
+            className="ml-3 font-medium text-slate-900 hover:underline"
+          >
+            {QuoteNumber ?? id}
+          </Link>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
+    },
+    {
+      accessorKey: "quotation_date",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Quotation Date
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const value = row.getValue("quotation_date");
+        if (!value) return "N/A";
+
+        const formatted = new Date(value).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+
+        return <div className=" ml-3">{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: "total_amount",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="justify-end"
+        >
+          Amount
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const total_amount = parseFloat(row.getValue("total_amount"));
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(total_amount);
+
+        return <div className="ml-3 font-medium">{formatted}</div>;
+      },
+    },
+    // {
+    //   id: "actions",
+    //   enableHiding: false,
+    //   header: "Actions",
+    //   cell: ({ row }) => {
+    //     const quote = row.original;
+
+    //     const handleView = () => {
+    //       alert(`Viewing ${quote.quote_number}`);
+    //       // You can replace alert with navigation or modal
+    //     };
+
+    //     return (
+    //       <div className="flex items-center gap-2">
+    //         <Button
+    //           size="sm"
+    //           variant="default"
+    //           onClick={handleView}
+    //           className="h-8"
+    //         >
+    //           View Details
+    //         </Button>
+    //       </div>
+    //     );
+    //   },
+    // },
+  ];
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [quotes, setQuotes] = useState([]);
@@ -178,11 +165,8 @@ export default function QuotesTable() {
 
   const loadQuotes = async () => {
     try {
-      const res = await axios.get(
+      const res = await api.get(
         `${import.meta.env.VITE_BACKEND_URL}/quotes`,
-        {
-          withCredentials: true,
-        }
       );
 
       setQuotes(res.data.quotes);
@@ -222,7 +206,7 @@ export default function QuotesTable() {
 
   return (
     <div className="w-full p-4">
-      <div className="flex items-center justify-between  mb-4">
+      <div className="flex items-center justify-between mb-4">
         <FormField
           placeholder="Filter by status..."
           value={table.getColumn("status")?.getFilterValue() ?? ""}

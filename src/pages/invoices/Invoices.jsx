@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import {
   flexRender,
@@ -41,182 +40,226 @@ import {
 import { Link } from "react-router-dom";
 import FormField from "@/Components/Form/FormField";
 
-export const columns = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
-  {
-    accessorKey: "invoice_number",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Invoice ID <ArrowUpDown className="ml-1 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const id = row.original?.id;
-      const InvoiceNumber = row.original?.invoice_number;
-      return (
-        <Link
-          to={`${id}`}
-          className="font-medium text-slate-900 hover:underline"
-        >
-          {InvoiceNumber ?? id}
-        </Link>
-      );
-    },
-  },
-  // {
-  //   accessorKey: "title",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //       >
-  //         Title
-  //         <ArrowUpDown />
-  //       </Button>
-  //     );
-  //   },
-  //   cell: ({ row }) => <div>{row.getValue("title")}</div>,
-  // },
-  {
-    accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className="text-right font-medium">{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "balance_due",
-    header: () => <div className="text-right">Deposit</div>,
-    cell: ({ row }) => {
-      const invoice = row.original;
-      const depositAmount = invoice.balance_due;
-      const depositPercentage = invoice.deposit_percentage;
-
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(depositAmount);
-
-      return (
-        <div className="text-right">
-          <div className="font-medium">{formatted}</div>
-          <div className="text-xs text-muted-foreground">
-            ({depositPercentage}%)
-          </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "due_date",
-    header: ({ column }) => {
-      return (
+import { useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import axios from "axios";
+import api from "@/utils/axios";
+export default function Invoices() {
+  const columns = [
+    // {
+    //   id: "select",
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && "indeterminate")
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
+    {
+      accessorKey: "invoice_number",
+      header: ({ column }) => (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Due Date
-          <ArrowUpDown />
+          Invoice ID <ArrowUpDown className="ml-1 h-4 w-4" />
         </Button>
-      );
+      ),
+      cell: ({ row }) => {
+        const id = row.original?.id;
+        const InvoiceNumber = row.original?.invoice_number;
+        return (
+          <Link
+            to={`${id}`}
+            className="font-medium text-slate-900 hover:underline  ml-3"
+          >
+            {InvoiceNumber ?? id}
+          </Link>
+        );
+      },
     },
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("due_date"));
-      const formatted = date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-      return <div>{formatted}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-      return <StatusBadge status={status} />;
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    header: "Actions",
-    cell: ({ row }) => {
-      const invoice = row.original;
+    // {
+    //   accessorKey: "title",
+    //   header: ({ column }) => {
+    //     return (
+    //       <Button
+    //         variant="ghost"
+    //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    //       >
+    //         Title
+    //         <ArrowUpDown />
+    //       </Button>
+    //     );
+    //   },
+    //   cell: ({ row }) => <div>{row.getValue("title")}</div>,
+    // },
+    {
+      accessorKey: "total_amount",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Amount <ArrowUpDown className="ml-1 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("total_amount"));
 
-      const handlePay = () => {
-        if (invoice.status === "pending" || invoice.status === "overdue") {
-          alert(`Opening payment for ${invoice.invoice_number}`);
+        // Format the amount as a dollar amount
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount);
+
+        return <div className=" ml-3 font-medium">{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: "balance_due",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Deposit <ArrowUpDown className="ml-1 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const invoice = row.original;
+        const balanceDue = parseFloat(invoice.balance_due);
+        const totalAmount = parseFloat(invoice.total_amount);
+
+        // Avoid division by zero or NaN
+        const depositPercentage = totalAmount
+          ? ((balanceDue / totalAmount) * 100).toFixed(1)
+          : 0;
+
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(balanceDue);
+
+        return (
+          <div className="ml-3">
+            <div className=" font-medium">{formatted}</div>
+            <div className="text-xs text-muted-foreground">
+              ({depositPercentage}%)
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "due_date",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Due Date
+            <ArrowUpDown />
+          </Button>
+        );
+      },
+      cell: ({ row }) => {
+        const date = new Date(row.getValue("due_date"));
+        const formatted = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        return <div className="ml-3">{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status");
+        const due_date = row.original.due_date;
+
+        if (status === "overdue") {
+          const daysOverdue = Math.max(
+            0,
+            Math.ceil((new Date() - new Date(due_date)) / (1000 * 60 * 60 * 24))
+          );
+
+          return (
+            <div className="flex items-center gap-2">
+              <StatusBadge status={status} />
+              <span className="text-xs text-red-600">
+                {daysOverdue} {daysOverdue === 1 ? "day" : "days"}
+              </span>
+            </div>
+          );
         }
-      };
 
-      const handleDownload = () => {
-        alert(`Downloading invoice ${invoice.invoice_number}`);
-      };
+        return <StatusBadge status={status} />;
+      },
+    },
 
-      return (
-        <div className="flex items-center gap-2">
-          {(invoice.status === "pending" || invoice.status === "overdue") && (
+    {
+      id: "actions",
+      enableHiding: false,
+      header: "Actions",
+      cell: ({ row }) => {
+        const invoice = row.original;
+
+        const handlePay = () => {
+          if (
+            invoice.status === "partially_paid" ||
+            invoice.status === "overdue"
+          ) {
+            alert(`Opening payment for ${invoice.invoice_number}`);
+          }
+        };
+
+        const handleDownload = () => {
+          alert(`Downloading invoice ${invoice.invoice_number}`);
+        };
+        return (
+          <div className="flex items-center gap-2">
+            {role === "client" &&
+              (invoice.status === "partially_paid" ||
+                invoice.status === "overdue") && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handlePay}
+                  className="h-8"
+                >
+                  Pay
+                </Button>
+              )}
+
             <Button
-              variant="default"
+              variant="outline"
               size="sm"
-              onClick={handlePay}
+              onClick={handleDownload}
               className="h-8"
             >
-              Pay
+              <Download className="h-4 w-4" />
             </Button>
-          )}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleDownload}
-            className="h-8"
-          >
-            <Download className="h-4 w-4" />
-          </Button>
-        </div>
-      );
+          </div>
+        );
+      },
     },
-  },
-];
-import { useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import axios from "axios";
-export default function Invoices() {
+  ];
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -231,12 +274,7 @@ export default function Invoices() {
 
   const loadInvoices = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/invoices`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/invoices`);
 
       setInvoices(res.data.invoices);
       console.log(res.data.invoices);

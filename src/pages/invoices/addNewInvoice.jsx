@@ -37,17 +37,21 @@ export default function InvoiceForm() {
 
         const data = res.data;
         setInvoiceData(data);
-
+        console.log(data);
         reset({
           customerName: Number(data.client_id),
           invoiceId: data.id,
-          invoiceDate: data.quotation_date,
+          invoice_date: data.invoice_date,
+          due_date: data.due_date,
+          total_amount: data.total_amount,
+          balance_due: data.balance_due,
+          quote_id: data.quote_id,
           notes: data.notes || "",
           terms: terms,
           items: data.invoice_services.map((qs) => ({
-            service: "",
+            service: Number(qs.service_id),
             serviceId: Number(qs.service_id),
-            description: "",
+            description: qs.description || "",
             quantity: qs.quantity,
             rate: parseFloat(qs.individual_total) / qs.quantity,
             tax: parseFloat(qs.tax),
@@ -81,7 +85,6 @@ export default function InvoiceForm() {
       try {
         const res = await api.get(
           `${import.meta.env.VITE_BACKEND_URL}/clients`
-          // { withCredentials: true }
         );
         setClients(res.data);
       } catch (err) {
@@ -98,7 +101,6 @@ export default function InvoiceForm() {
       try {
         const res = await api.get(
           `${import.meta.env.VITE_BACKEND_URL}/services`
-          // { withCredentials: true }
         );
         setServices(res.data);
       } catch (error) {
@@ -129,8 +131,11 @@ export default function InvoiceForm() {
     defaultValues: {
       customerName: "",
       invoiceId: "001",
-      invoiceDate: new Date().toISOString().split("T")[0],
+      invoice_date: new Date().toISOString().split("T")[0],
+      due_date: new Date().toISOString().split("T")[0],
       notes: "",
+      total_amount: 0,
+      balance_due: 0,
       terms: terms,
       items: [
         {
@@ -205,18 +210,73 @@ export default function InvoiceForm() {
 
   const calculateTotal = () => calculateSubTotal() - calculateDiscount();
 
+  // const onSubmit = async (data, status) => {
+  //   const payload = {
+  //     client_id: parseInt(data.customerName),
+  //     invoice_date: data.invoice_date,
+  //     due_date: data.due_date,
+  //     balance_due: parseFloat(
+  //       data.items
+  //         .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
+  //         .toFixed(2)
+  //     ),
+  //     status: status,
+  //     total_amount: parseFloat(
+  //       data.items
+  //         .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
+  //         .toFixed(2)
+  //     ),
+  //     quote_id: null,
+  //     services: data.items.map((item) => ({
+  //       service_id: Number(item.serviceId),
+  //       quantity: parseInt(item.quantity),
+  //       rate: parseFloat(item.rate),
+  //       tax: parseFloat(item.tax || 0),
+  //       discount: parseFloat(item.discount || 0),
+  //       individual_total: parseFloat(item.amount),
+  //     })),
+  //     notes: data.notes || "",
+  //   };
+
+  //   try {
+  //     const req = await api.post(
+  //       `${import.meta.env.VITE_BACKEND_URL}/invoices`,
+  //       payload,
+  //       {
+  //         headers: { "Content-Type": "application/json" },
+  //       }
+  //     );
+  //     console.log(payload);
+  //     alert("Invoice created successfully!");
+  //     reset();
+  //     navigate(`/${role}/invoices`);
+  //   } catch (error) {
+  //     console.log(payload);
+  //     console.error("Error details:", error.response?.data || error);
+  //     alert(
+  //       `Failed to create invoice: ${
+  //         error.response?.data?.message || error.message
+  //       }`
+  //     );
+  //   }
+  // };
+
   const onSubmit = async (data, status) => {
+    const statusToSend = status ?? InvoiceData?.status ?? "unpaid";
     const payload = {
       client_id: parseInt(data.customerName),
-      invoiceDate: data.invoiceDate,
-      status: status, // use the status from state
+      invoice_date: data.invoice_date,
+      due_date: data.due_date,
+      balance_due:0,
+      status: statusToSend,
       total_amount: parseFloat(
         data.items
           .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
           .toFixed(2)
       ),
+      quote_id: null,
       services: data.items.map((item) => ({
-        service_id: Number(item.id),
+        service_id: Number(item.serviceId),
         quantity: parseInt(item.quantity),
         rate: parseFloat(item.rate),
         tax: parseFloat(item.tax || 0),
@@ -227,22 +287,41 @@ export default function InvoiceForm() {
     };
 
     try {
-      const req = await api.post(
-        `${import.meta.env.VITE_BACKEND_URL}/invoices`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      alert("Invoices created successfully!");
+      let req;
+
+      // Check if we're editing (invoiceId exists) or creating new
+      if (invoiceId) {
+        // UPDATE existing invoice
+        req = await api.put(
+          `${import.meta.env.VITE_BACKEND_URL}/invoices/${invoiceId}`,
+          payload,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        alert("Invoice updated successfully!");
+      } else {
+        // CREATE new invoice
+        req = await api.post(
+          `${import.meta.env.VITE_BACKEND_URL}/invoices`,
+          payload,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        alert("Invoice created successfully!");
+      }
+
+      console.log(payload);
       reset();
       navigate(`/${role}/invoices`);
     } catch (error) {
+      console.log(payload);
       console.error("Error details:", error.response?.data || error);
       alert(
-        `Failed to create invoices: ${error.response?.data?.message || error.message}`
+        `Failed to ${invoiceId ? "update" : "create"} invoice: ${
+          error.response?.data?.message || error.message
+        }`
       );
     }
   };
@@ -297,11 +376,20 @@ export default function InvoiceForm() {
           disabled
         />
         <FormField
-          id="invoiceDate"
+          id="invoice_date"
           label="Invoice Date*"
+          {...register("invoice_date")}
           type="date"
-          value={watch("invoiceDate")}
-          onChange={(e) => setValue("invoiceDate", e.target.value)}
+          value={watch("invoice_date")}
+          onChange={(e) => setValue("invoice_date", e.target.value)}
+        />
+        <FormField
+          id="due_date"
+          label="Due Date*"
+          type="date"
+          {...register("due_date")}
+          value={watch("due_date")}
+          onChange={(e) => setValue("due_date", e.target.value)}
         />
 
         {/* Item Table */}
@@ -349,6 +437,7 @@ export default function InvoiceForm() {
                           onChange={(val) => {
                             val = Number(val); // ensure numeric
                             setValue(`items.${index}.service`, val);
+                            setValue(`items.${index}.serviceId`, val); // ADDED: Set serviceId too
 
                             const service = Services.find(
                               (s) => Number(s.id) === val
@@ -357,7 +446,7 @@ export default function InvoiceForm() {
 
                             const unitPrice = Number(service.base_Price);
 
-                            setValue(`items.${index}.id`, service.id);
+                            // REMOVED: setValue(`items.${index}.id`, service.id);
                             setValue(`items.${index}.rate`, unitPrice);
                             setValue(
                               `items.${index}.description`,
@@ -528,7 +617,7 @@ export default function InvoiceForm() {
           </Button>
 
           <Button
-            onClick={() => handleSubmit((data) => onSubmit(data, "sended"))()}
+            onClick={() => handleSubmit((data) => onSubmit(data, "sent"))()}
             type="button"
           >
             Save and Send

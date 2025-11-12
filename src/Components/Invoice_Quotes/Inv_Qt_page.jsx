@@ -5,17 +5,23 @@ import { Button } from "../ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, Outlet, useParams } from "react-router-dom";
 
-export default function Inv_Qt_page({ type, quote }) {
-  const title = type === "invoices" ? "All Invoices" : "All Quotes";
+export default function Inv_Qt_page({ type, data }) {
+  const isInvoice = type === "invoices";
+  console.log(type);
   const { id } = useParams();
   const { role } = useAuth();
   return (
     <div className="flex-1 flex flex-col">
       <div className="bg-white border-b px-2 py-4 flex items-center justify-between">
-        <div className="text-lg font-semibold">QT-0004</div>
+        <div className="text-lg font-semibold">
+          {isInvoice ? "INV" : "QT"}-000{id}
+        </div>
         <div className="flex items-center gap-2">
           <button className="p-2 hover:bg-gray-100 rounded cursor-pointer">
-            <Link to={`/${role}/${type}/new`} state={{ quoteId: id }}>
+            <Link
+              to={`/${role}/${type}/new`}
+              state={{ [isInvoice ? "invoiceId" : "quoteId"]: id }}
+            >
               <Edit2 size={20} />
             </Link>
           </button>
@@ -28,9 +34,9 @@ export default function Inv_Qt_page({ type, quote }) {
           <button className="p-2 hover:bg-gray-100 rounded cursor-pointer">
             <Send size={20} />
           </button>
-          {type === "quote" ? (
+          <div className="w-px h-6 bg-gray-300 mx-2"></div>
+          {type === "quotes" ? (
             <div>
-              <div className="w-px h-6 bg-gray-300 mx-2"></div>
               <Button variant="outline" className="text-sm">
                 Convert to Invoice
               </Button>
@@ -52,7 +58,9 @@ export default function Inv_Qt_page({ type, quote }) {
                   <p className="text-blue-100">Invoice</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold">INV-000{id}</div>
+                  <div className="text-2xl font-bold">
+                    {isInvoice ? "INV" : "QT"}-000{id}
+                  </div>
                   <div className="text-sm text-blue-100 mt-1">
                     N° de facture
                   </div>

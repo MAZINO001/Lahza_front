@@ -36,6 +36,7 @@ import {
 import { ClientForm } from "@/Components/auth/ClientForm";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import api from "@/utils/axios";
 export const columns = [
   // {
   //   id: "select",
@@ -195,10 +196,8 @@ export default function UsersTable() {
   useEffect(() => {
     setLoading(true);
 
-    const res = axios
-      .get(`${import.meta.env.VITE_BACKEND_URL}/clients`, {
-        withCredentials: true,
-      })
+    const res = api
+      .get(`${import.meta.env.VITE_BACKEND_URL}/clients`)
       .then((res) => {
         setLoading(false);
         setClients(res.data);
@@ -213,9 +212,8 @@ export default function UsersTable() {
   const handleExport = async (format = "csv") => {
     try {
       setMessage("Preparing download...");
-      const res = await axios.get(
+      const res = await api.get(
         `${import.meta.env.VITE_BACKEND_URL}/export?format=${format}`,
-        { withCredentials: true },
         {
           responseType: "blob",
         }
@@ -247,9 +245,8 @@ export default function UsersTable() {
 
     try {
       setUploadProgress(0);
-      const res = await axios.post(
+      const res = await api.post(
         `${import.meta.env.VITE_BACKEND_URL}/import`,
-        { withCredentials: true },
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },

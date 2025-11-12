@@ -13,6 +13,7 @@ import TagsField from "../comp-57";
 import axios from "axios";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
+import api from "@/utils/axios";
 export function TeamClientForm() {
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
@@ -81,11 +82,10 @@ export function TeamClientForm() {
         }
       });
 
-      const response = await axios.post(
+      const response = await api.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         formData,
         {
-          withCredentials: true,
           headers: {
             "Content-Type": "multipart/form-data",
           },

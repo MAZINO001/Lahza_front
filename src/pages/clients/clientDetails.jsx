@@ -1,12 +1,11 @@
 import Client_Page from "@/Components/client_components/Client_Page";
 import Client_Sidebar from "@/Components/client_components/Client_Sidebar";
+import api from "@/utils/axios";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const fetchClients = async () => {
-  const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/clients`, {
-    withCredentials: true,
-  });
+  const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/clients`);
   return res.data;
 };
 
