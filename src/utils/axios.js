@@ -14,16 +14,23 @@ const api = axios.create({
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            // Unauthorized - clear auth and redirect to login
+        const status = error.response?.status;
+        if (status === 401) {
+            // Unauthorized - clear auth and let route guards handle navigation.
             localStorage.removeItem('user');
             localStorage.removeItem('isAuthenticated');
-            window.location.href = '/auth/login';
-        } else if (error.response?.status === 403) {
+            // Avoid redirect loops when already on auth pages
+            const path = window.location.pathname || '';
+            if (!path.startsWith('/auth')) {
+                window.location.href = '/auth/login';
+            }
+        } else if (status === 403) {
             // Forbidden - user doesn't have permission
             console.error('Access denied: You do not have permission to access this resource');
-            // Redirect to home; app will route appropriately
-            window.location.href = '/';
+            const path = window.location.pathname || '';
+            if (!path.startsWith('/auth')) {
+                window.location.href = '/';
+            }
         }
         return Promise.reject(error);
     }

@@ -27,6 +27,9 @@ export default function InvoiceDetails() {
     queryKey: ["invoices"],
     queryFn: fetchInvoices,
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
   });
 
   const {
@@ -40,6 +43,9 @@ export default function InvoiceDetails() {
     enabled: Boolean(id),
     keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
   });
 
   return (

@@ -26,7 +26,7 @@
             max-width: 800px;
             margin: 0 auto;
             background: white;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -72,7 +72,7 @@
         .invoice-title {
             position: relative;
             text-align: center;
-            margin: 25px 0px;
+            margin: 15px 0px;
         }
 
         .invoice-title h2 {
@@ -101,7 +101,7 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
 
         }
 
@@ -110,7 +110,7 @@
             align-items: start;
             justify-content: space-between;
             width: 100%;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
 
         }
 
@@ -186,7 +186,7 @@
             border: 1px solid #ebe6e6;
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .items-table thead {
@@ -195,7 +195,7 @@
         }
 
         .items-table th {
-            padding: 10px;
+            padding: 6px 12px;
             text-align: left;
             font-size: 15px;
             font-weight: 300;
@@ -237,9 +237,10 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             margin-left: auto;
             text-align: right;
+
         }
 
         .total-div {
@@ -254,7 +255,8 @@
         }
 
         .payment-info {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+
         }
 
         .payment-info p {
@@ -266,7 +268,6 @@
         }
 
         .bank-details {
-            padding: 15px 20px;
             margin-top: 10px;
             font-size: 11px;
             line-height: 1.6;
@@ -287,7 +288,7 @@
 
             font-size: 11px;
             line-height: 1.6;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .thank-you {
@@ -298,6 +299,22 @@
         .mode {
             font-weight: 800;
             color: #000;
+        }
+
+        .signatures {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        * .signatures .admin_sign {
+            border: 1px solid #051630;
+            padding: 20px 30px;
+        }
+
+        .signatures .client_sign {
+            border: 1px solid #051630;
+            padding: 20px 30px;
         }
     </style>
 </head>
@@ -434,6 +451,10 @@
                 En signant la facture, le client accepte sans réserves nos conditions. Pour plus d'informations,
                 consultez les politiques de notre entreprise sur : https://lahza.ma/politique-de-confidentialite/
             </div>
+        </div>
+        <div class="signatures">
+            <div class="admin_sign">admin signature</div>
+            <div class="client_sign">client signature </div>
         </div>
     </div>
 </body>

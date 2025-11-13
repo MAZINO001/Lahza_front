@@ -13,6 +13,8 @@ import {
   ChevronDown,
   MoreHorizontal,
   Download,
+  CreditCard,
+  Send,
 } from "lucide-react";
 import { useState } from "react";
 import { StatusBadge } from "@/Components/StatusBadge";
@@ -228,7 +230,9 @@ export default function Invoices() {
             alert(`Opening payment for ${invoice.invoice_number}`);
           }
         };
-
+        const handleSendInvoice = () => {
+          alert(`Converting ${invoice.invoice_number} to quote`);
+        };
         const handleDownload = () => {
           alert(`Downloading invoice ${invoice.invoice_number}`);
         };
@@ -236,16 +240,27 @@ export default function Invoices() {
           <div className="flex items-center gap-2">
             {role === "client" &&
               (invoice.status === "partially_paid" ||
-                invoice.status === "overdue") && (
+                invoice.status === "overdue" ||
+                invoice.status === "unpaid") && (
                 <Button
                   variant="default"
                   size="sm"
                   onClick={handlePay}
-                  className="h-8"
+                  className="h-8 cursor-pointer"
                 >
-                  Pay
+                  <CreditCard />
                 </Button>
               )}
+            {role === "admin" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 cursor-pointer"
+                onClick={handleSendInvoice}
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            )}
 
             <Button
               variant="outline"

@@ -5,7 +5,6 @@ import { Link, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { StatusBadge } from "../StatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import api from "@/utils/axios";
 
 export default function Inv_Qt_sidebar({ type, data }) {
