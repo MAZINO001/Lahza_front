@@ -80,7 +80,7 @@ export default function QuotesTable() {
         const QuoteNumber = row.original?.quote_number;
         return (
           <Link
-            to={`/${role}/quotes/${id}`}
+            to={`/${role}/quote/${id}`}
             className="ml-3 font-medium text-slate-900 hover:underline"
           >
             {QuoteNumber ?? id}
@@ -328,7 +328,7 @@ export default function QuotesTable() {
         />
 
         {role === "admin" ? (
-          <Link to={`/${role}/quotes/new`}>
+          <Link to={`/${role}/quote/new`}>
             <Button>Add New Quote</Button>
           </Link>
         ) : (

@@ -85,7 +85,7 @@ export default function Invoices() {
         const InvoiceNumber = row.original?.invoice_number;
         return (
           <Link
-            to={`${id}`}
+            to={`/${role}/invoice/${id}`}
             className="font-medium text-slate-900 hover:underline  ml-3"
           >
             {InvoiceNumber ?? id}
@@ -338,7 +338,7 @@ export default function Invoices() {
         />
 
         {role === "admin" ? (
-          <Link to={`/${role}/invoices/new`}>
+          <Link to={`/${role}/invoice/new`}>
             <Button>Add New Invoice</Button>
           </Link>
         ) : (

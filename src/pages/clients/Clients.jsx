@@ -75,7 +75,7 @@ export const columns = [
       const formattedId = `CLIENT-${id.toString().padStart(4, "0")}`;
       return (
         <Link
-          to={`/admin/clients/${id}`}
+          to={`/admin/client/${id}`}
           className="font-medium text-slate-900 hover:underline"
         >
           {formattedId}

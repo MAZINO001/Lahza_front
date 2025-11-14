@@ -1,6 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Document, Page, pdfjs } from "react-pdf";
 
@@ -35,7 +34,7 @@ export default function PdfPreview({ src }) {
     return () => {
       if (revoke) revoke();
     };
-  }, []);
+  }, [src]);
 
   const onLoadSuccess = ({ numPages: n }) => setNumPages(n);
 

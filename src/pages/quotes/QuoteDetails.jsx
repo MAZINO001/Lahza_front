@@ -45,9 +45,9 @@ export default function QuoteDetails() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <Inv_Qt_sidebar type="quotes" data={quotes} />
+      <Inv_Qt_sidebar type="quote" data={quotes} />
       {/* You can optionally pass quoteFetching to show a subtle inline loader inside the preview */}
-      <Inv_Qt_page type="quotes" data={quote} />
+      <Inv_Qt_page type="quote" data={quote} />
     </div>
   );
 }

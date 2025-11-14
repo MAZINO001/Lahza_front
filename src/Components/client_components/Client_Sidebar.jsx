@@ -55,7 +55,7 @@ export default function Client_Sidebar({ data }) {
       <div className="cursor-pointer">
         {data?.map((c, index) => (
           <Link
-            to={`/${role}/clients/${c.id}`}
+            to={`/${role}/client/${c.id}`}
             key={index}
             className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${
               c.id == currentId

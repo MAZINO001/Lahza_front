@@ -87,12 +87,12 @@ export default function AppRoutes() {
             <Route path="payments" element={<Payments />} />
             <Route path="offers" element={<Offers />} />
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-              <Route path="quotes/new" element={<AddQuote />} />
-              <Route path="quotes/:id" element={<QuoteDetails />} />
-              <Route path="invoices/new" element={<AddNewInvoice />} />
-              <Route path="invoices/:id" element={<InvoiceDetails />} />
+              <Route path="quote/new" element={<AddQuote />} />
+              <Route path="quote/:id" element={<QuoteDetails />} />
+              <Route path="invoice/new" element={<AddNewInvoice />} />
+              <Route path="invoice/:id" element={<InvoiceDetails />} />
               <Route path="clients" element={<Clients />} />
-              <Route path="clients/:id" element={<ClientDetails />} />
+              <Route path="client/:id" element={<ClientDetails />} />
             </Route>
           </Route>
         </Route>

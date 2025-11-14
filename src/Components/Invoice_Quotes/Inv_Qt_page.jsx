@@ -7,7 +7,7 @@ import { Link, Outlet, useParams } from "react-router-dom";
 import PdfPreview from "./PdfPreview";
 
 export default function Inv_Qt_page({ type, data }) {
-  const isInvoice = type === "invoices";
+  const isInvoice = type === "invoice";
   console.log(type);
   const { id } = useParams();
   const { role } = useAuth();
@@ -48,7 +48,7 @@ export default function Inv_Qt_page({ type, data }) {
         </div>
       </div>
       <div className="flex items-center justify-center">
-        <PdfPreview src="http://127.0.0.1:8000/pdf/invoice/12" />
+        <PdfPreview src={`http://127.0.0.1:8000/pdf/${type}/${id}`} />
       </div>
     </div>
   );
