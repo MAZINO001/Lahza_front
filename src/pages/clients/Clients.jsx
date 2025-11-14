@@ -246,7 +246,7 @@ export default function UsersTable() {
     try {
       setUploadProgress(0);
       const res = await api.post(
-        `${import.meta.env.VITE_BACKEND_URL}/import`,
+        `${import.meta.env.VITE_BACKEND_URL}/uploadClients`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
