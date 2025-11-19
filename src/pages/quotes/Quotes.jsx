@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import * as React from "react";
 import { useEffect, useState } from "react";
 import {
@@ -40,7 +39,6 @@ import { useAuth } from "@/hooks/useAuth";
 import FormField from "@/Components/Form/FormField";
 import api from "@/utils/axios";
 // Table columns
-import SignUploader from "@/Components/Invoice_Quotes/signUploader";
 export default function QuotesTable() {
   const columns = [
     // {
@@ -145,47 +143,6 @@ export default function QuotesTable() {
       header: "Actions",
       cell: ({ row }) => {
         const quote = row.original;
-        const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
-        const [signatureFile, setSignatureFile] = useState(null);
-
-        const handleSignatureUpload = (files) => {
-          // Store the uploaded file
-          if (files && files.length > 0) {
-            setSignatureFile(files[0]);
-          }
-        };
-
-        const handleSubmitSignature = async () => {
-          if (!signatureFile) {
-            alert("Please upload a signature first");
-            return;
-          }
-          try {
-            const formData = new FormData();
-            formData.append("signature", signatureFile.file);
-            formData.append(
-              "type",
-              role === "admin" ? "admin_signature" : "client_signature"
-            );
-            // console.log(formData);
-
-            const url = `${import.meta.env.VITE_BACKEND_URL}/quotes/${quote.id}/signature`;
-
-            const res = await api.post(url, formData, {
-              headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("token")}`, // if using auth
-              },
-            });
-
-            alert(`Signature uploaded! URL: ${res.data.url}`);
-            setIsSignDialogOpen(false);
-            setSignatureFile(null);
-          } catch (error) {
-            console.error("Error uploading signature:", error);
-            alert("Failed to upload signature");
-          }
-        };
 
         const handleDownload = () => {
           alert(`Downloading quote ${quote.quote_number}`);
@@ -207,50 +164,7 @@ export default function QuotesTable() {
                 <Send className="h-4 w-4" />
               </Button>
             )}
-            {quote.is_fully_signed === false && (
-              <Dialog
-                open={isSignDialogOpen}
-                onOpenChange={setIsSignDialogOpen}
-              >
-                <DialogTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-8 cursor-pointer"
-                  >
-                    <FileSignature className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>
-                      Upload Signature for {quote.quote_number}
-                    </DialogTitle>
-                    <DialogDescription>
-                      Upload an image of your signature to sign this invoice.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <SignUploader onFileChange={handleSignatureUpload} />
-                  <DialogFooter>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => setIsSignDialogOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      className={"cursor-pointer"}
-                      onClick={handleSubmitSignature}
-                      disabled={!signatureFile}
-                    >
-                      Submit Signature
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
+            {/* Signature upload removed from quotes; now handled on invoices */}
 
             <Button
               variant="outline"

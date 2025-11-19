@@ -23,48 +23,8 @@ export default function Inv_Qt_page({ type, data }) {
     alert("your pdf id sent");
   };
 
-  // const handleInvoiceConversion = async () => {
-  //   const statusToSend = "draft";
-  //   const quotationDate = new Date(data.quotation_date);
-  //   const dueDate = new Date(quotationDate);
-  //   dueDate.setDate(dueDate.getDate() + 30);
-  //   const formattedDueDate = dueDate.toISOString().slice(0, 10); // "YYYY-MM-DD"
-  //   dueDate.setDate(dueDate.getDate() + 30);
-  //   const payload = {
-  //     client_id: data.client_id,
-  //     invoice_date: data.quotation_date,
-  //     // maybe change this later if needed :)
-  //     due_date: formattedDueDate,
-  //     balance_due: 0,
-  //     status: statusToSend,
-  //     total_amount: data.total_amount,
-  //     quote_id: data.id,
-  //     services: data.quote_services,
-  //     notes: data.notes || "",
-  //   };
-
-  //   try {
-  //     const req = await api.post(
-  //       `${import.meta.env.VITE_BACKEND_URL}/invoices`,
-  //       payload
-  //     );
-  //     alert("quote converted successfully!");
-
-  //     console.log(payload);
-  //     navigate(`/${role}/invoices`);
-  //   } catch (error) {
-  //     console.log(payload);
-  //     console.error("Error details:", error.response?.data || error);
-  //     alert(
-  //       `Failed to convert to invoice: ${
-  //         error.response?.data?.message || error.message
-  //       }`
-  //     );
-  //   }
-  // };
-
   const handleInvoiceConversion = async () => {
-    const statusToSend = "draft";
+    const statusToSend = "draft"; // for the invoice
     const quotationDate = new Date(data.quotation_date);
     const dueDate = new Date(quotationDate);
     dueDate.setDate(dueDate.getDate() + 30);
@@ -82,27 +42,29 @@ export default function Inv_Qt_page({ type, data }) {
       notes: data.notes || "",
     };
 
+    const QuotePayload = {
+      client_id: data.client_id,
+      quotation_date: data.quotation_date,
+      balance_due: 0,
+      status: "confirmed",
+      total_amount: data.total_amount,
+      quote_id: data.id,
+      services: data.quote_services,
+      notes: data.notes || "",
+    };
+
     try {
-      // 1. Check if invoice already exists
-      const res = await api.get(
-        `${import.meta.env.VITE_BACKEND_URL}/invoices?quote_id=${data.id}`
+      // Create the invoice
+      await api.post(`${import.meta.env.VITE_BACKEND_URL}/invoices`, payload);
+
+      // Update the quote status to "accepted"
+      await api.put(
+        `${import.meta.env.VITE_BACKEND_URL}/quotes/${data.id}`,
+        QuotePayload
       );
 
-      if (res.data.invoices.length > 0) {
-        // invoice exists, update the first one
-        const existingInvoice = res.data.invoices[0];
-        await api.put(
-          `${import.meta.env.VITE_BACKEND_URL}/invoices/${existingInvoice.id}`,
-          payload
-        );
-        alert("the invoice of this quote id updated ");
-        navigate(`/${role}/quotes`);
-      } else {
-        // no invoice yet, create new
-        await api.post(`${import.meta.env.VITE_BACKEND_URL}/invoices`, payload);
-        alert("the quote is converted ");
-        navigate(`/${role}/invoices`);
-      }
+      alert("Quote converted and marked as accepted!");
+      navigate(`/${role}/invoices`);
     } catch (error) {
       console.error("Error details:", error.response?.data || error);
       alert(
@@ -141,13 +103,20 @@ export default function Inv_Qt_page({ type, data }) {
           >
             <Printer size={20} />
           </button>
-          <button
-            onClick={handleSendPdf}
-            className="p-2 hover:bg-gray-100 rounded cursor-pointer"
-          >
-            <Send size={20} />
-          </button>
-          {type === "quote" ? (
+          {role === "admin" ? (
+            <button
+              onClick={handleSendPdf}
+              className="p-2 hover:bg-gray-100 rounded cursor-pointer"
+            >
+              <Send size={20} />
+            </button>
+          ) : (
+            ""
+          )}
+
+          {type === "quote" &&
+          role === "admin" &&
+          data?.status !== "confirmed" ? (
             <>
               <div className="w-px h-6 bg-gray-300 mx-2"></div>
               <div>
