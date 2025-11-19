@@ -167,7 +167,7 @@ export default function QuotesTable() {
               "type",
               role === "admin" ? "admin_signature" : "client_signature"
             );
-            console.log(formData);
+            // console.log(formData);
 
             const url = `${import.meta.env.VITE_BACKEND_URL}/quotes/${quote.id}/signature`;
 
@@ -281,7 +281,6 @@ export default function QuotesTable() {
       const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/quotes`);
 
       setQuotes(res.data.quotes);
-      console.log(res.data.quotes);
     } catch (error) {
       console.error("Error loading quotes:", error);
     } finally {

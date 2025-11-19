@@ -14,22 +14,26 @@ export default function Inv_Qt_sidebar({ type, data }) {
   const queryClient = useQueryClient();
 
   const prefetchData = async (id) => {
+    const resource = type === "invoice" ? "invoices" : "quotes";
     await queryClient.prefetchQuery({
-      queryKey: [`${type}`, String(id)],
-      queryFn: async () =>
+      queryKey: [resource.slice(0, -1), id],
+      queryFn: () =>
         api
-          .get(`${import.meta.env.VITE_BACKEND_URL}/${type}/${id}`)
-          .then((res) => res.data),
+          .get(`${import.meta.env.VITE_BACKEND_URL}/${resource}/${id}`)
+          .then((res) => res.data?.quote ?? res.data?.invoice ?? {})
+          .catch((err) => {
+            console.error(err);
+            return {};
+          }),
       staleTime: 5 * 60 * 1000,
     });
   };
-
   return (
     <div className="w-[260px] bg-white border-r flex flex-col">
       <div className="px-2 py-4 border-b flex items-center gap-3">
         <h1 className="text-lg flex-1 font-medium rounded">{title}</h1>
         <Link to={`/${role}/${type}/new`}>
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm">
+          <Button className="px-4 py-2 text-sm cursor-pointer">
             <Plus className="w-4 h-4" />
             New
           </Button>
@@ -62,10 +66,10 @@ export default function Inv_Qt_sidebar({ type, data }) {
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-blue-600">
-                {type == "invoices" ? data.invoice_number : data.quote_number}
+                {type == "invoice" ? data.invoice_number : data.quote_number}
               </span>
               <span className="text-gray-500">
-                {type == "invoices" ? data.invoice_date : data.quotation_date}
+                {type == "invoice" ? data.invoice_date : data.quotation_date}
               </span>
               <span className="px-2 py-0.5 rounded text-xs font-medium ">
                 <StatusBadge status={data.status} />

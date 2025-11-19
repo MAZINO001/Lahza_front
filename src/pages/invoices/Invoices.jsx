@@ -292,7 +292,6 @@ export default function Invoices() {
       const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/invoices`);
 
       setInvoices(res.data.invoices);
-      console.log(res.data.invoices);
     } catch (error) {
       console.error("Error loading invoices:", error);
     } finally {

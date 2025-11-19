@@ -9,12 +9,12 @@ import api from "@/utils/axios";
 const fetchInvoices = () =>
   api
     .get(`${import.meta.env.VITE_BACKEND_URL}/invoices`)
-    .then((res) => res.data.invoices);
+    .then((res) => res.data?.invoices ?? []);
 
 const fetchInvoicesById = (id) =>
   api
     .get(`${import.meta.env.VITE_BACKEND_URL}/invoices/${id}`)
-    .then((res) => res.data);
+    .then((res) => res.data?.invoice ?? res.data ?? null);
 
 export default function InvoiceDetails() {
   const { id } = useParams();
@@ -27,8 +27,6 @@ export default function InvoiceDetails() {
     queryKey: ["invoices"],
     queryFn: fetchInvoices,
     staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     refetchInterval: false,
   });
 
@@ -43,16 +41,14 @@ export default function InvoiceDetails() {
     enabled: Boolean(id),
     keepPreviousData: true,
     staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
     refetchInterval: false,
   });
+  console.log(invoices)
+console.log(invoice)
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar */}
       <Inv_Qt_sidebar type="invoice" data={invoices} />
-      {/* Main Content */}
       <Inv_Qt_page type="invoice" data={invoice} />
     </div>
   );
