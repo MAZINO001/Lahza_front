@@ -2,6 +2,8 @@
 /* eslint-disable react-refresh/only-export-components */
 
 import React, { useEffect, useState } from "react";
+import CSVUploadModal from "@/components/common/CSVUploadModal";
+
 import {
   flexRender,
   getCoreRowModel,
@@ -384,37 +386,19 @@ export default function UsersTable() {
         </div>
       )}
 
-      {showUploadModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg p-4 w-[90%] max-w-md relative">
-            <button
-              onClick={() => setShowUploadModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-800"
-            >
-              <X onClick={() => setMessage("")} />
-            </button>
-            <h2 className="text-lg font-semibold mb-4 text-center">
-              Upload Clients File
-            </h2>
-            <input
-              type="file"
-              accept=".csv"
-              onChange={handleFileUpload}
-              className="mb-4"
-            />
-            {uploadProgress > 0 && (
-              <div className="text-sm text-blue-500">
-                Uploading... {uploadProgress}%
-              </div>
-            )}
-            {message && (
-              <p className="mt-2 px-4 py-2 text-sm text-green-700 bg-green-100 rounded-md border border-green-200 shadow-sm">
-                {message}
-              </p>
-            )}
-          </div>
-        </div>
-      )}
+     <CSVUploadModal
+  open={showUploadModal}
+  onClose={() => setShowUploadModal(false)}
+  uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadClients`}
+  onSuccess={() => {
+    setMessage("Uploaded successfully!");
+    // reload clients after CSV import
+    api.get(`${import.meta.env.VITE_BACKEND_URL}/clients`).then((res) =>
+      setClients(res.data)
+    );
+  }}
+/>
+
 
       {showDownloadModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
