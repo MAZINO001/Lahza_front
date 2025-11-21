@@ -10,6 +10,7 @@ import {
   FileText,
   HomeIcon,
   LogOutIcon,
+  Package,
   PercentSquare,
   User,
 } from "lucide-react";
@@ -90,6 +91,7 @@ export function AppSidebar(props) {
         },
         { title: "Offers", url: `/${currentRole}/offers`, icon: PercentSquare },
         { title: "Clients", url: `/${currentRole}/clients`, icon: User },
+        { title: "Services", url: `/${currentRole}/services`, icon: Package },
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },

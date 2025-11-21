@@ -21,6 +21,7 @@ import Quotes from "../pages/quotes/Quotes";
 import QuoteDetails from "../pages/quotes/QuoteDetails";
 import Tickets from "../pages/Tickets/Tickets";
 import Invoices from "../pages/invoices/Invoices";
+import Services from "../pages/services/services";
 import Payments from "../pages/Payments/Payments";
 import Offers from "../pages/Offers/Offers";
 import Clients from "../pages/clients/Clients";
@@ -86,13 +87,14 @@ export default function AppRoutes() {
             <Route path="invoices" element={<Invoices />} />
             <Route path="payments" element={<Payments />} />
             <Route path="offers" element={<Offers />} />
+            <Route path="quote/:id" element={<QuoteDetails />} />
+            <Route path="invoice/:id" element={<InvoiceDetails />} />
+            <Route path="client/:id" element={<ClientDetails />} />
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route path="services" element={<Services />} />
               <Route path="quote/new" element={<AddQuote />} />
-              <Route path="quote/:id" element={<QuoteDetails />} />
               <Route path="invoice/new" element={<AddNewInvoice />} />
-              <Route path="invoice/:id" element={<InvoiceDetails />} />
               <Route path="clients" element={<Clients />} />
-              <Route path="client/:id" element={<ClientDetails />} />
             </Route>
           </Route>
         </Route>

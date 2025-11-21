@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import * as React from "react";
 import { useEffect, useState } from "react";
 import {
@@ -32,12 +33,14 @@ import {
   Download,
   FileSignature,
   Send,
-  Signature,
+  Trash,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import FormField from "@/Components/Form/FormField";
 import api from "@/utils/axios";
+import SignUploader from "@/Components/Invoice_Quotes/signUploader";
+import { globalFnStore } from "@/hooks/GlobalFnStore";
 // Table columns
 export default function QuotesTable() {
   const columns = [
@@ -143,13 +146,77 @@ export default function QuotesTable() {
       header: "Actions",
       cell: ({ row }) => {
         const quote = row.original;
+        const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
+        const [signatureFile, setSignatureFile] = useState(null);
 
-        const handleDownload = () => {
-          alert(`Downloading quote ${quote.quote_number}`);
+        const handleSignatureUpload = (files) => {
+          // Store the uploaded file
+          if (files && files.length > 0) {
+            setSignatureFile(files[0]);
+          }
         };
 
+        const handleSubmitSignature = async () => {
+          if (!signatureFile) {
+            alert("Please upload a signature first");
+            return;
+          }
+          try {
+            const formData = new FormData();
+            formData.append("signature", signatureFile.file);
+            formData.append(
+              "type",
+              role === "admin" ? "admin_signature" : "client_signature"
+            );
+            // console.log(formData);
+
+            const url = `${import.meta.env.VITE_BACKEND_URL}/quotes/${quote.id}/signature`;
+
+            const res = await api.post(url, formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("token")}`, // if using auth
+              },
+            });
+
+            alert(`Signature uploaded! URL: ${res.data.url}`);
+            setIsSignDialogOpen(false);
+            setSignatureFile(null);
+          } catch (error) {
+            console.error("Error uploading signature:", error);
+            alert("Failed to upload signature");
+          }
+        };
+
+        const handleRemoveSignature = async () => {
+          try {
+            const type =
+              role === "admin" ? "admin_signature" : "client_signature";
+            await api.delete(
+              `${import.meta.env.VITE_BACKEND_URL}/quotes/${quote.id}/signature`,
+              {
+                params: { type },
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            );
+            alert("Signature removed successfully");
+          } catch (error) {
+            const msg = error?.response?.data?.message || error.message;
+            alert(`Failed to remove signature: ${msg}`);
+          }
+        };
+
+        const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =
+          globalFnStore();
+
         const handleSendQuote = () => {
-          alert(`Converting ${quote.quote_number} to quote`);
+          handleSendInvoice_Quote(quote.id, user.email, "quote");
+        };
+
+        const handleDownload = () => {
+          handleDownloadInvoice_Quotes(quote.id, "quote");
         };
 
         return (
@@ -164,7 +231,54 @@ export default function QuotesTable() {
                 <Send className="h-4 w-4" />
               </Button>
             )}
-            {/* Signature upload removed from quotes; now handled on invoices */}
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 cursor-pointer"
+              onClick={handleRemoveSignature}
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+
+            <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 cursor-pointer"
+                >
+                  <FileSignature className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>
+                    Upload Signature for {quote.quote_number}
+                  </DialogTitle>
+                  <DialogDescription>
+                    Upload an image of your signature to sign this quote.
+                  </DialogDescription>
+                </DialogHeader>
+                <SignUploader onFileChange={handleSignatureUpload} />
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsSignDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className={"cursor-pointer"}
+                    onClick={handleSubmitSignature}
+                    disabled={!signatureFile}
+                  >
+                    Submit Signature
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             <Button
               variant="outline"
@@ -185,7 +299,7 @@ export default function QuotesTable() {
   const [loading, setLoading] = useState(true);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   useEffect(() => {
     loadQuotes();
   }, []);

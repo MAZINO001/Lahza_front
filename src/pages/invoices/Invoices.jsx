@@ -11,12 +11,11 @@ import {
 } from "@tanstack/react-table";
 import {
   ArrowUpDown,
-  ChevronDown,
-  MoreHorizontal,
   Download,
   CreditCard,
   Send,
   FileSignature,
+  Trash,
 } from "lucide-react";
 import { useState } from "react";
 import { StatusBadge } from "@/Components/StatusBadge";
@@ -58,6 +57,7 @@ import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import axios from "axios";
 import api from "@/utils/axios";
+import { globalFnStore } from "@/hooks/GlobalFnStore";
 export default function Invoices() {
   const columns = [
     // {
@@ -282,12 +282,37 @@ export default function Invoices() {
             alert(`Opening payment for ${invoice.invoice_number}`);
           }
         };
+        const handleRemoveSignature = async () => {
+          try {
+            const type =
+              role === "admin" ? "admin_signature" : "client_signature";
+            await api.delete(
+              `${import.meta.env.VITE_BACKEND_URL}/invoices/${invoice.id}/signature`,
+              {
+                params: { type },
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            );
+            alert("Signature removed successfully");
+          } catch (error) {
+            const msg = error?.response?.data?.message || error.message;
+            alert(`Failed to remove signature: ${msg}`);
+          }
+        };
+
+        const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =
+          globalFnStore();
+
         const handleSendInvoice = () => {
-          alert(`Converting ${invoice.invoice_number} to quote`);
+          handleSendInvoice_Quote(invoice.id, user.email, "invoice");
         };
+
         const handleDownload = () => {
-          alert(`Downloading invoice ${invoice.invoice_number}`);
+          handleDownloadInvoice_Quotes(invoice.id, "invoice");
         };
+
         return (
           <div className="flex items-center gap-2">
             {role === "client" &&
@@ -313,6 +338,15 @@ export default function Invoices() {
                 <Send className="h-4 w-4" />
               </Button>
             )}
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 cursor-pointer"
+              onClick={handleRemoveSignature}
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
 
             <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
               <DialogTrigger asChild>
@@ -374,7 +408,7 @@ export default function Invoices() {
 
   const [Invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { role } = useAuth();
+  const { role, user } = useAuth();
   useEffect(() => {
     loadInvoices();
   }, []);

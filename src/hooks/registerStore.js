@@ -110,7 +110,7 @@ export const useRegisterStore = create((set) => ({
 
   reset: () =>
     set({
-      role: "team",
+      user_type: "team",
       // name: "",
       // email: "",
       // password: "",
@@ -125,18 +125,20 @@ export const useRegisterStore = create((set) => ({
       end_date: "",
       description: "",
       company: "",
-      // address: "",
-      // zip: "",
-      // phone: "",
-      // city: "",
+      address: "",
+      zip: "",
+      phone: "",
+      city: "",
       country: "",
       client_type: "",
       vat: "",
-      cv: "",
       siren: "",
       ice: "",
       currency: "",
       tags: [],
+      resume: "",
+      poste: "",
     }),
+
 }));
 

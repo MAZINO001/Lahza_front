@@ -110,7 +110,7 @@ export function TeamClientForm() {
         onValueChange={(val) => {
           // add reset data whne the user chnages the tabs
           registerStore.reset();
-          reset(registerStore);
+         reset({ ...useRegisterStore.getState() });
           setValue("user_type", val);
           registerStore.setField("user_type", val);
         }}
