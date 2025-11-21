@@ -2,7 +2,7 @@
 // import { Button } from "../ui/button";
 // import { Menu, Plus } from "lucide-react";
 // import { Link, useParams } from "react-router-dom";
-// import { useAuth } from "@/hooks/useAuth";
+// import { useAuthContext } from "@/hooks/AuthContext";
 // import { StatusBadge } from "../StatusBadge";
 // import { useQueryClient } from "@tanstack/react-query";
 // import api from "@/utils/axios";
@@ -10,7 +10,7 @@
 // export default function Inv_Qt_sidebar({ type, data }) {
 //   const title = type === "invoice" ? "All Invoices" : "All Quotes";
 //   const { id: currentId } = useParams();
-//   const { role } = useAuth();
+//   const { role } = useAuthContext();
 //   const queryClient = useQueryClient();
 
 //   const prefetchData = async (id) => {
@@ -89,7 +89,7 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Menu, Plus, ChevronDown } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 import { StatusBadge } from "../StatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "@/utils/axios";
@@ -104,7 +104,7 @@ import {
 export default function Inv_Qt_sidebar({ type, data }) {
   const title = type === "invoice" ? "Invoices" : "Quotes";
   const { id: currentId } = useParams();
-  const { role } = useAuth();
+  const { role } = useAuthContext();
   const queryClient = useQueryClient();
 
   // Filter statuses

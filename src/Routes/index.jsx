@@ -34,17 +34,17 @@ import AuthLayout from "../pages/layouts/AuthLayout";
 import AppLayout from "../pages/layouts/AppLayout";
 
 import ProtectedRoute from "./ProtectedRoute";
-import { useAuth } from "../hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 
 function GuestRoute() {
-  const { user, role, loading } = useAuth();
+  const { user, role, loading } = useAuthContext();
   if (loading) return <div>Loading...</div>;
   if (user) return <Navigate to={`/${role || "client"}/dashboard`} replace />;
   return <Outlet />;
 }
 
 export default function AppRoutes() {
-  const { role, user } = useAuth();
+  const { role, user } = useAuthContext();
   const basePath = role || "client";
 
   return (

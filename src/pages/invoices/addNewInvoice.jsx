@@ -11,9 +11,9 @@ import { Label } from "@/components/ui/label";
 import ServiceSelect from "@/Components/Invoice_Quotes/ServiceSelector";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { terms } from "../../lib/Terms_Conditions.json";
 import api from "@/utils/axios";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function InvoiceForm() {
   const [selectedClient, setSelectedClient] = useState("");
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export default function InvoiceForm() {
   const [InvoiceData, setInvoiceData] = useState({});
   const [Services, setServices] = useState([]);
   const navigate = useNavigate();
-  const { role } = useAuth();
+  const { role } = useAuthContext();
 
   const location = useLocation();
   const invoiceId = location.state?.invoiceId;

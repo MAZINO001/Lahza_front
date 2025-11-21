@@ -2,7 +2,7 @@
 import { Download, Edit2, Filter, Printer, Send, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import PdfPreview from "./PdfPreview";
 import api from "@/utils/axios";
@@ -12,7 +12,7 @@ import axios from "axios";
 export default function Inv_Qt_page({ type, data }) {
   const isInvoice = type === "invoice";
   const { id } = useParams();
-  const { role, user } = useAuth();
+  const { role, user } = useAuthContext();
   const navigate = useNavigate();
 
   const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =

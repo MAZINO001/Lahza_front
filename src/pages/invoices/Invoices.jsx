@@ -54,10 +54,9 @@ import {
 import SignUploader from "@/Components/Invoice_Quotes/signUploader";
 
 import { useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import axios from "axios";
 import api from "@/utils/axios";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function Invoices() {
   const columns = [
     // {
@@ -408,7 +407,7 @@ export default function Invoices() {
 
   const [Invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { role, user } = useAuth();
+  const { role, user } = useAuthContext();
   useEffect(() => {
     loadInvoices();
   }, []);

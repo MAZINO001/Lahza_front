@@ -9,11 +9,11 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useAuth } from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import SearchBar from "@/Components/comp-25";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function Header() {
-  const { role } = useAuth();
+  const { role } = useAuthContext();
   return (
     <header className="bg-accent-foreground text-primary w-full">
       <div className="w-full flex items-center justify-between px-2 py-2 lg:px-4 ">

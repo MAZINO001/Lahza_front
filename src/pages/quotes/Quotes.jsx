@@ -36,11 +36,11 @@ import {
   Trash,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import FormField from "@/Components/Form/FormField";
 import api from "@/utils/axios";
 import SignUploader from "@/Components/Invoice_Quotes/signUploader";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
+import { useAuthContext } from "@/hooks/AuthContext";
 // Table columns
 export default function QuotesTable() {
   const columns = [
@@ -299,7 +299,7 @@ export default function QuotesTable() {
   const [loading, setLoading] = useState(true);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const { role, user } = useAuth();
+  const { role, user } = useAuthContext();
   useEffect(() => {
     loadQuotes();
   }, []);

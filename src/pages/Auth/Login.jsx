@@ -6,7 +6,7 @@
 // import { Button } from "@/Components/ui/button";
 // import { Card, CardTitle } from "@/Components/ui/card";
 // import { Input } from "@/Components/ui/input";
-// import { useAuth } from "@/hooks/useAuth";
+// import { useAuthContext } from "@/hooks/AuthContext";
 // import axios from "axios";
 // import { t } from "i18next";
 // import { useState } from "react";
@@ -16,7 +16,7 @@
 // export default function Login({ status, canResetPassword }) {
 //   const [submitting, setSubmitting] = useState(false);
 //   const navigate = useNavigate();
-//   const { user, role, verifyAuth } = useAuth();
+//   const { user, role, verifyAuth } = useAuthContext();
 
 //   const {
 //     register,
@@ -196,7 +196,7 @@ import TextInput from "@/Components/TextInput";
 import { Button } from "@/Components/ui/button";
 import { Card, CardTitle } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 import { t } from "i18next";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -205,7 +205,7 @@ import api from "../../utils/axios";
 export default function Login({ status, canResetPassword }) {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { user, role, verifyAuth } = useAuth();
+  const { user, role, verifyAuth } = useAuthContext();
 
   const {
     register,

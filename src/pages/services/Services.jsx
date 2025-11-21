@@ -3,7 +3,7 @@ import api from "@/utils/axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Pencil, Eye, Trash2 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 import FormField from "@/Components/Form/FormField";
 import { Link } from "react-router-dom";
 
@@ -30,7 +30,7 @@ export default function ServicesPage() {
     fetchData();
   }, []);
 
-  const { role } = useAuth();
+  const { role } = useAuthContext();
   const [search, setSearch] = useState("");
   const filteredServices = services.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase())

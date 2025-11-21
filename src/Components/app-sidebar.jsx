@@ -25,10 +25,10 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "../components/ui/sidebar";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 import { Button } from "./ui/button";
 export function AppSidebar(props) {
-  const { role, logout } = useAuth();
+  const { role, logout } = useAuthContext();
   const currentRole = role || "client";
 
   const sidebarData = {
