@@ -10,6 +10,7 @@ import {
   FileText,
   HomeIcon,
   LogOutIcon,
+  Package,
   PercentSquare,
   User,
 } from "lucide-react";
@@ -24,10 +25,10 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "../components/ui/sidebar";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 import { Button } from "./ui/button";
 export function AppSidebar(props) {
-  const { role, logout } = useAuth();
+  const { role, logout } = useAuthContext();
   const currentRole = role || "client";
 
   const sidebarData = {
@@ -90,6 +91,7 @@ export function AppSidebar(props) {
         },
         { title: "Offers", url: `/${currentRole}/offers`, icon: PercentSquare },
         { title: "Clients", url: `/${currentRole}/clients`, icon: User },
+        { title: "Services", url: `/${currentRole}/services`, icon: Package },
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },

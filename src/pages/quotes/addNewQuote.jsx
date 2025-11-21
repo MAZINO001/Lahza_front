@@ -9,11 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import SelectField from "@/Components/comp-192";
 import { Label } from "@/components/ui/label";
 import ServiceSelect from "@/Components/Invoice_Quotes/ServiceSelector";
-import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { terms } from "../../lib/Terms_Conditions.json";
 import api from "@/utils/axios";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function QuoteForm() {
   const [selectedClient, setSelectedClient] = useState("");
   const [loading, setLoading] = useState(true);
@@ -21,7 +20,7 @@ export default function QuoteForm() {
   const [quoteData, setQuoteData] = useState({});
   const [Services, setServices] = useState([]);
   const navigate = useNavigate();
-  const { role } = useAuth();
+  const { role } = useAuthContext();
 
   const location = useLocation();
   const quoteId = location.state?.quoteId;
@@ -81,9 +80,9 @@ export default function QuoteForm() {
       try {
         const res = await api.get(
           `${import.meta.env.VITE_BACKEND_URL}/clients`
-          // { withCredentials: true }
         );
         setClients(res.data);
+        console.log(res.data);
       } catch (err) {
         console.error("Failed to fetch clients:", err);
       } finally {
@@ -209,6 +208,7 @@ export default function QuoteForm() {
     const statusToSend = status ?? quoteData?.status ?? "draft";
     const payload = {
       client_id: parseInt(data.customerName),
+      // client_id: 6,
       quotation_date: data.quoteDate,
       status: statusToSend,
       total_amount: parseFloat(
@@ -219,7 +219,7 @@ export default function QuoteForm() {
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: parseInt(item.quantity),
-        rate: parseFloat(item.rate),
+        rate: parseFloat(item.base_price),
         tax: parseFloat(item.tax || 0),
         discount: parseFloat(item.discount || 0),
         individual_total: parseFloat(item.amount),
@@ -249,6 +249,17 @@ export default function QuoteForm() {
             headers: { "Content-Type": "application/json" },
           }
         );
+        const newQuoteId = req.data.quote_id;
+        console.log(req);
+        await api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, {
+          email: "marnissimounir05@gmail.com",
+          type: "quote",
+          id: newQuoteId,
+          subject: "Your Quote from LAHZA HM",
+          message:
+            "Thanks for your business! Please find the invoice attached.",
+        });
+
         alert("quote created successfully!");
       }
       alert("Quote created successfully!");
@@ -371,7 +382,7 @@ export default function QuoteForm() {
                             );
                             if (!service) return;
 
-                            const unitPrice = Number(service.base_Price);
+                            const unitPrice = Number(service.base_price);
 
                             setValue(`items.${index}.id`, service.id);
                             setValue(`items.${index}.rate`, unitPrice);

@@ -3,13 +3,13 @@ import { ChevronDown, MoreHorizontal, Plus } from "lucide-react";
 import React from "react";
 import { Button } from "../ui/button";
 import { Link, useParams } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 import { useForm } from "react-hook-form";
 import SelectField from "../Form/SelectField";
 
 export default function Client_Sidebar({ data }) {
   const { id: currentId } = useParams();
-  const { role } = useAuth();
+  const { role } = useAuthContext();
   const {
     register,
     handleSubmit,

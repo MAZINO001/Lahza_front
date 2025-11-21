@@ -9,12 +9,12 @@ import {
 import React, { useState } from "react";
 import TimelineComponent from "@/Components/comp-531";
 import { Link, useParams } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "../ui/button";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function Client_Page({ data }) {
   const [activeTab, setActiveTab] = useState("overview");
   const { id } = useParams();
-  const { role } = useAuth();
+  const { role } = useAuthContext();
   const tabs = [
     { id: "overview", label: "Overview" },
     { id: "comments", label: "Comments" },

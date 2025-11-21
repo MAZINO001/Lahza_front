@@ -171,3 +171,14 @@
     background: #d1d5db;
     border-radius: 4px;
 }
+
+/* some test code for sidebar  */
+.sidebar-closed {
+    transform: translateX(260px);
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar-open {
+    transform: translateX(0);
+    transition: transform 0.3s ease-in-out;
+}

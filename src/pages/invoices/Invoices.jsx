@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
 import * as React from "react";
 import CsvUploadModal from "@/components/common/CsvUploadModal";
@@ -12,11 +13,11 @@ import {
 } from "@tanstack/react-table";
 import {
   ArrowUpDown,
-  ChevronDown,
-  MoreHorizontal,
   Download,
   CreditCard,
   Send,
+  FileSignature,
+  Trash,
 } from "lucide-react";
 import { useState } from "react";
 import { StatusBadge } from "@/Components/StatusBadge";
@@ -43,12 +44,21 @@ import {
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
 import FormField from "@/Components/Form/FormField";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import SignUploader from "@/Components/Invoice_Quotes/signUploader";
 
 import { useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth";
-import axios from "axios";
-
 import api from "@/utils/axios";
+import { globalFnStore } from "@/hooks/GlobalFnStore";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function Invoices() {
 
   
@@ -227,7 +237,47 @@ export default function Invoices() {
       header: "Actions",
       cell: ({ row }) => {
         const invoice = row.original;
+        const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
+        const [signatureFile, setSignatureFile] = useState(null);
 
+        const handleSignatureUpload = (files) => {
+          // Store the uploaded file
+          if (files && files.length > 0) {
+            setSignatureFile(files[0]);
+          }
+        };
+
+        const handleSubmitSignature = async () => {
+          if (!signatureFile) {
+            alert("Please upload a signature first");
+            return;
+          }
+          try {
+            const formData = new FormData();
+            formData.append("signature", signatureFile.file);
+            formData.append(
+              "type",
+              role === "admin" ? "admin_signature" : "client_signature"
+            );
+            // console.log(formData);
+
+            const url = `${import.meta.env.VITE_BACKEND_URL}/invoices/${invoice.id}/signature`;
+
+            const res = await api.post(url, formData, {
+              headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${localStorage.getItem("token")}`, // if using auth
+              },
+            });
+
+            alert(`Signature uploaded! URL: ${res.data.url}`);
+            setIsSignDialogOpen(false);
+            setSignatureFile(null);
+          } catch (error) {
+            console.error("Error uploading signature:", error);
+            alert("Failed to upload signature");
+          }
+        };
         const handlePay = () => {
           if (
             invoice.status === "partially_paid" ||
@@ -236,12 +286,37 @@ export default function Invoices() {
             alert(`Opening payment for ${invoice.invoice_number}`);
           }
         };
+        const handleRemoveSignature = async () => {
+          try {
+            const type =
+              role === "admin" ? "admin_signature" : "client_signature";
+            await api.delete(
+              `${import.meta.env.VITE_BACKEND_URL}/invoices/${invoice.id}/signature`,
+              {
+                params: { type },
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              }
+            );
+            alert("Signature removed successfully");
+          } catch (error) {
+            const msg = error?.response?.data?.message || error.message;
+            alert(`Failed to remove signature: ${msg}`);
+          }
+        };
+
+        const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =
+          globalFnStore();
+
         const handleSendInvoice = () => {
-          alert(`Converting ${invoice.invoice_number} to quote`);
+          handleSendInvoice_Quote(invoice.id, user.email, "invoice");
         };
+
         const handleDownload = () => {
-          alert(`Downloading invoice ${invoice.invoice_number}`);
+          handleDownloadInvoice_Quotes(invoice.id, "invoice");
         };
+
         return (
           <div className="flex items-center gap-2">
             {role === "client" &&
@@ -271,6 +346,55 @@ export default function Invoices() {
             <Button
               variant="outline"
               size="sm"
+              className="h-8 cursor-pointer"
+              onClick={handleRemoveSignature}
+            >
+              <Trash className="h-4 w-4" />
+            </Button>
+
+            <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-8 cursor-pointer"
+                >
+                  <FileSignature className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>
+                    Upload Signature for {invoice.invoice_number}
+                  </DialogTitle>
+                  <DialogDescription>
+                    Upload an image of your signature to sign this invoice.
+                  </DialogDescription>
+                </DialogHeader>
+                <SignUploader onFileChange={handleSignatureUpload} />
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsSignDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className={"cursor-pointer"}
+                    onClick={handleSubmitSignature}
+                    disabled={!signatureFile}
+                  >
+                    Submit Signature
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleDownload}
               className="h-8"
             >
@@ -288,7 +412,7 @@ export default function Invoices() {
 
   const [Invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { role } = useAuth();
+  const { role, user } = useAuthContext();
   useEffect(() => {
     loadInvoices();
   }, []);
@@ -298,7 +422,6 @@ export default function Invoices() {
       const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/invoices`);
 
       setInvoices(res.data.invoices);
-      console.log(res.data.invoices);
     } catch (error) {
       console.error("Error loading invoices:", error);
     } finally {

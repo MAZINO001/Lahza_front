@@ -1,8 +1,8 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 
 export default function ProtectedRoute({ allowedRoles }) {
-  const { user, role, loading } = useAuth();
+  const { user, role, loading } = useAuthContext();
   const safeRole = role || "client";
   const location = useLocation();
 

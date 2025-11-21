@@ -34,11 +34,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/hooks/AuthContext";
 import { Link } from "react-router-dom";
 
 export default function Invoices({ data }) {
-  const { role } = useAuth();
+  const { role } = useAuthContext();
   const columns = [
     // {
     //   id: "select",

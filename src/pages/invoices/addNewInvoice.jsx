@@ -11,9 +11,9 @@ import { Label } from "@/components/ui/label";
 import ServiceSelect from "@/Components/Invoice_Quotes/ServiceSelector";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { terms } from "../../lib/Terms_Conditions.json";
 import api from "@/utils/axios";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function InvoiceForm() {
   const [selectedClient, setSelectedClient] = useState("");
   const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export default function InvoiceForm() {
   const [InvoiceData, setInvoiceData] = useState({});
   const [Services, setServices] = useState([]);
   const navigate = useNavigate();
-  const { role } = useAuth();
+  const { role } = useAuthContext();
 
   const location = useLocation();
   const invoiceId = location.state?.invoiceId;
@@ -103,6 +103,7 @@ export default function InvoiceForm() {
           `${import.meta.env.VITE_BACKEND_URL}/services`
         );
         setServices(res.data);
+        console.log(res.data);
       } catch (error) {
         console.error("Error details:", error.response?.data || error);
         alert(
@@ -210,64 +211,13 @@ export default function InvoiceForm() {
 
   const calculateTotal = () => calculateSubTotal() - calculateDiscount();
 
-  // const onSubmit = async (data, status) => {
-  //   const payload = {
-  //     client_id: parseInt(data.customerName),
-  //     invoice_date: data.invoice_date,
-  //     due_date: data.due_date,
-  //     balance_due: parseFloat(
-  //       data.items
-  //         .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
-  //         .toFixed(2)
-  //     ),
-  //     status: status,
-  //     total_amount: parseFloat(
-  //       data.items
-  //         .reduce((sum, item) => sum + (parseFloat(item.amount) || 0), 0)
-  //         .toFixed(2)
-  //     ),
-  //     quote_id: null,
-  //     services: data.items.map((item) => ({
-  //       service_id: Number(item.serviceId),
-  //       quantity: parseInt(item.quantity),
-  //       rate: parseFloat(item.rate),
-  //       tax: parseFloat(item.tax || 0),
-  //       discount: parseFloat(item.discount || 0),
-  //       individual_total: parseFloat(item.amount),
-  //     })),
-  //     notes: data.notes || "",
-  //   };
-
-  //   try {
-  //     const req = await api.post(
-  //       `${import.meta.env.VITE_BACKEND_URL}/invoices`,
-  //       payload,
-  //       {
-  //         headers: { "Content-Type": "application/json" },
-  //       }
-  //     );
-  //     console.log(payload);
-  //     alert("Invoice created successfully!");
-  //     reset();
-  //     navigate(`/${role}/invoices`);
-  //   } catch (error) {
-  //     console.log(payload);
-  //     console.error("Error details:", error.response?.data || error);
-  //     alert(
-  //       `Failed to create invoice: ${
-  //         error.response?.data?.message || error.message
-  //       }`
-  //     );
-  //   }
-  // };
-
   const onSubmit = async (data, status) => {
     const statusToSend = status ?? InvoiceData?.status ?? "unpaid";
     const payload = {
       client_id: parseInt(data.customerName),
       invoice_date: data.invoice_date,
       due_date: data.due_date,
-      balance_due:0,
+      balance_due: 0,
       status: statusToSend,
       total_amount: parseFloat(
         data.items
@@ -309,6 +259,18 @@ export default function InvoiceForm() {
             headers: { "Content-Type": "application/json" },
           }
         );
+
+        // const newInvoiceId = req.data.invoice_id;
+        // console.log(req);
+        // await api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, {
+        //   email: "marnissimounir05@gmail.com",
+        //   type: "invoice",
+        //   id: newInvoiceId,
+        //   subject: "Your Invoice from LAHZA HM",
+        //   message:
+        //     "Thanks for your business! Please find the invoice attached.",
+        // });
+
         alert("Invoice created successfully!");
       }
 
@@ -444,7 +406,7 @@ export default function InvoiceForm() {
                             );
                             if (!service) return;
 
-                            const unitPrice = Number(service.base_Price);
+                            const unitPrice = Number(service.base_price);
 
                             // REMOVED: setValue(`items.${index}.id`, service.id);
                             setValue(`items.${index}.rate`, unitPrice);
