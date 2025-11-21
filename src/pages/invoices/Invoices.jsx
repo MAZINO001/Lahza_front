@@ -1,5 +1,7 @@
 /* eslint-disable no-unused-vars */
 import * as React from "react";
+import CsvUploadModal from "@/components/common/CsvUploadModal";
+
 import {
   flexRender,
   getCoreRowModel,
@@ -45,8 +47,12 @@ import FormField from "@/Components/Form/FormField";
 import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import axios from "axios";
+
 import api from "@/utils/axios";
 export default function Invoices() {
+
+  
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const columns = [
     // {
     //   id: "select",
@@ -337,13 +343,16 @@ export default function Invoices() {
           className="max-w-sm"
         />
 
-        {role === "admin" ? (
-          <Link to={`/${role}/invoice/new`}>
-            <Button>Add New Invoice</Button>
-          </Link>
-        ) : (
-          ""
-        )}
+        {role === "admin" && (
+  <div className="flex gap-2">
+    <Button onClick={() => setShowUploadModal(true)}>Upload CSV</Button>
+
+    <Link to={`/${role}/invoice/new`}>
+      <Button>Add New Invoice</Button>
+    </Link>
+  </div>
+)}
+
       </div>
       <DropdownMenu>
         {/* <DropdownMenuTrigger asChild>
@@ -441,6 +450,14 @@ export default function Invoices() {
           >
             Next
           </Button>
+
+          <CsvUploadModal
+  open={showUploadModal}
+  onClose={() => setShowUploadModal(false)}
+  uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
+  onSuccess={loadInvoices}
+/>
+
         </div>
       </div>
     </div>
