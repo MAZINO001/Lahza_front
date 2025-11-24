@@ -451,6 +451,7 @@ export default function QuotesTable() {
           </TableBody>
         </Table>
       </div>
+       
     </div>
   );
 }
