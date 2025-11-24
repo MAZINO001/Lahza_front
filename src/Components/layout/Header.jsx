@@ -1,19 +1,9 @@
-/* eslint-disable no-unused-vars */
-import React, { useState } from "react";
-import {
-  BellIcon,
-  Minus,
-  Plus,
-  SettingsIcon,
-  ShoppingCart,
-  Trash2,
-  X,
-} from "lucide-react";
+import { BellIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import SearchBar from "@/Components/comp-25";
 import { useAuthContext } from "@/hooks/AuthContext";
 export default function Header() {
-  const { role } = useAuthContext();
+  const { role, user } = useAuthContext();
   return (
     <header className="bg-accent-foreground text-primary w-full">
       <div className="w-full flex items-center justify-between px-2 py-2 lg:px-4 ">
@@ -35,10 +25,8 @@ export default function Header() {
               className="h-10 w-10 rounded-full object-cover "
             />
             <div className="md:flex flex-col gap-1 hidden">
-              <span className="text-sm font-bold">Monir El-Marnysy</span>
-              <span className="text-xs opacity-30">
-                marnissimounir05@gmail.com
-              </span>
+              <span className="text-sm font-bold">{user.name}</span>
+              <span className="text-xs opacity-30">{user.email}</span>
             </div>
           </Link>
         </div>

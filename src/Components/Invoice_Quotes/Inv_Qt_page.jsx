@@ -53,7 +53,7 @@ export default function Inv_Qt_page({ type, data }) {
     }
   };
   const handleInvoiceConversion = async () => {
-    const statusToSend = "draft"; // for the invoice
+    const statusToSend = "draft";
     const quotationDate = new Date(data.quotation_date);
     const dueDate = new Date(quotationDate);
     dueDate.setDate(dueDate.getDate() + 30);

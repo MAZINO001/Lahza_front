@@ -238,10 +238,7 @@ export default function InvoiceForm() {
 
     try {
       let req;
-
-      // Check if we're editing (invoiceId exists) or creating new
       if (invoiceId) {
-        // UPDATE existing invoice
         req = await api.put(
           `${import.meta.env.VITE_BACKEND_URL}/invoices/${invoiceId}`,
           payload,
@@ -251,7 +248,6 @@ export default function InvoiceForm() {
         );
         alert("Invoice updated successfully!");
       } else {
-        // CREATE new invoice
         req = await api.post(
           `${import.meta.env.VITE_BACKEND_URL}/invoices`,
           payload,
@@ -259,17 +255,6 @@ export default function InvoiceForm() {
             headers: { "Content-Type": "application/json" },
           }
         );
-
-        // const newInvoiceId = req.data.invoice_id;
-        // console.log(req);
-        // await api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, {
-        //   email: "marnissimounir05@gmail.com",
-        //   type: "invoice",
-        //   id: newInvoiceId,
-        //   subject: "Your Invoice from LAHZA HM",
-        //   message:
-        //     "Thanks for your business! Please find the invoice attached.",
-        // });
 
         alert("Invoice created successfully!");
       }
@@ -442,7 +427,7 @@ export default function InvoiceForm() {
 
                         {selectedService && (
                           <Textarea
-                            // {...register(`items.${index}.description`)}
+                            {...register(`items.${index}.description`)}
                             placeholder="Enter service description"
                             className="mt-2 w-full border border-gray-300 p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
                             rows={2}

@@ -44,4 +44,22 @@ export const globalFnStore = create((set) => ({
             alert(`Failed to download ${type}`);
         }
     },
+
+    HandleEditService: async (id, navigate, role) => {
+        navigate(`/${role}/service/new`, {
+            state: { editId: id },
+            replace: true
+        });
+    },
+
+    handleDeleteService: async (id, reloadCallback) => {
+        if (!confirm("Are you sure you want to delete this service?")) return;
+        try {
+            await api.delete(`${import.meta.env.VITE_BACKEND_URL}/services/${id}`);
+            if (reloadCallback) reloadCallback();
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
 }))

@@ -134,7 +134,7 @@ export default function QuotesTable() {
         const total_amount = parseFloat(row.getValue("total_amount"));
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+        currency: "MAD",
         }).format(total_amount);
 
         return <div className="ml-3 font-medium">{formatted}</div>;

@@ -1,0 +1,33 @@
+input / textarea / formFiled
+ <div>
+    <InputLabel htmlFor="email" value={"service name"} />
+    <Input
+      id="name"
+      type="name"
+      placeholder="e.g., Premium Web Development"
+      {...register("name", {
+        required: "name is required",
+      })}
+      value={watch("name")}
+      onChange={(e) => setValue("name", e.target.value)}
+      className="mt-1 block w-full"
+    />
+    <InputError message={errors.name?.message} className="mt-2" />
+</div>
+**************************************************************
+FOR ASLECT FIELD WITH FEW DATA 
+import SelectField from "@/Components/Form/SelectField";
+<div className="space-y-2">
+        <InputLabel htmlFor="tax_rate" value="Tax Rate" />
+        <SelectField
+          id="tax_rate"
+          className="mt-1 block w-full"
+          value={watch("tax_rate")}
+          onChange={(value) => setValue("tax_rate", value)}
+          options={[
+            { value: "20", label: "20%" },
+            { value: "0", label: "0% (No Tax)" },
+          ]}
+        />
+        <InputError message={errors.tax_rate?.message} className="mt-2" />
+      </div>

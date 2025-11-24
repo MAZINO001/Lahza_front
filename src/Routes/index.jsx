@@ -22,6 +22,7 @@ import QuoteDetails from "../pages/quotes/QuoteDetails";
 import Tickets from "../pages/Tickets/Tickets";
 import Invoices from "../pages/invoices/Invoices";
 import Services from "../pages/services/services";
+import ServiceDetails from "../pages/services/serviceDetails";
 import Payments from "../pages/Payments/Payments";
 import Offers from "../pages/Offers/Offers";
 import Clients from "../pages/clients/Clients";
@@ -35,6 +36,9 @@ import AppLayout from "../pages/layouts/AppLayout";
 
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuthContext } from "@/hooks/AuthContext";
+import AddNewService from "@/pages/services/addNewService";
+import AddNewOffer from "@/pages/offers/addNewOffer";
+import OfferDetails from "@/pages/offers/offerDetails";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -92,6 +96,10 @@ export default function AppRoutes() {
             <Route path="client/:id" element={<ClientDetails />} />
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route path="services" element={<Services />} />
+              <Route path="service/new" element={<AddNewService />} />
+              <Route path="service/:id" element={<ServiceDetails />} />
+              <Route path="offer/new" element={<AddNewOffer />} />
+              <Route path="offer/:id" element={<OfferDetails />} />
               <Route path="quote/new" element={<AddQuote />} />
               <Route path="invoice/new" element={<AddNewInvoice />} />
               <Route path="clients" element={<Clients />} />

@@ -60,8 +60,6 @@ import api from "@/utils/axios";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { useAuthContext } from "@/hooks/AuthContext";
 export default function Invoices() {
-
-  
   const [showUploadModal, setShowUploadModal] = useState(false);
   const columns = [
     // {
@@ -140,7 +138,7 @@ export default function Invoices() {
         // Format the amount as a dollar amount
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency: "MAD",
         }).format(amount);
 
         return <div className=" ml-3 font-medium">{formatted}</div>;
@@ -467,15 +465,14 @@ export default function Invoices() {
         />
 
         {role === "admin" && (
-  <div className="flex gap-2">
-    <Button onClick={() => setShowUploadModal(true)}>Upload CSV</Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setShowUploadModal(true)}>Upload CSV</Button>
 
-    <Link to={`/${role}/invoice/new`}>
-      <Button>Add New Invoice</Button>
-    </Link>
-  </div>
-)}
-
+            <Link to={`/${role}/invoice/new`}>
+              <Button>Add New Invoice</Button>
+            </Link>
+          </div>
+        )}
       </div>
       <DropdownMenu>
         {/* <DropdownMenuTrigger asChild>
@@ -575,12 +572,11 @@ export default function Invoices() {
           </Button>
 
           <CsvUploadModal
-  open={showUploadModal}
-  onClose={() => setShowUploadModal(false)}
-  uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
-  onSuccess={loadInvoices}
-/>
-
+            open={showUploadModal}
+            onClose={() => setShowUploadModal(false)}
+            uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
+            onSuccess={loadInvoices}
+          />
         </div>
       </div>
     </div>

@@ -131,7 +131,7 @@ export const columns = [
     cell: ({ row }) => {
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "MAD",
       }).format(row.getValue("amount"));
       return <div className="text-right font-medium">{formatted}</div>;
     },
