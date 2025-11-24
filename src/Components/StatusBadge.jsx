@@ -38,8 +38,9 @@ const statusConfig = {
   },
 };
 
-export function StatusBadge({ status, type = "default" }) {
-  const config = statusConfig[status] || {
+export function StatusBadge({ status, type = "default", is_fully_signed }) {
+  const effectiveStatus = is_fully_signed ? 'signed' : status;
+  const config = statusConfig[effectiveStatus] || {
     label: status,
     color: "bg-slate-100 text-slate-800 border-slate-200",
   };

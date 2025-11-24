@@ -41,6 +41,26 @@ import api from "@/utils/axios";
 import SignUploader from "@/Components/Invoice_Quotes/signUploader";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { useAuthContext } from "@/hooks/AuthContext";
+
+// Function to create an invoice from a quote
+const createInvoiceFromQuote = async (quote) => {
+  try {
+    const response = await api.post(
+      `${import.meta.env.VITE_BACKEND_URL}/quotes/${quote.id}/create-invoice`,
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error creating invoice from quote:', error);
+    throw error;
+  }
+};
 // Table columns
 export default function QuotesTable() {
   const columns = [
@@ -92,7 +112,12 @@ export default function QuotesTable() {
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => <StatusBadge status={row.getValue("status")} />,
+      cell: ({ row }) => (
+        <StatusBadge 
+          status={row.getValue("status")} 
+          is_fully_signed={row.original?.is_fully_signed} 
+        />
+      ),
     },
     {
       accessorKey: "quotation_date",
@@ -182,6 +207,27 @@ export default function QuotesTable() {
             alert(`Signature uploaded! URL: ${res.data.url}`);
             setIsSignDialogOpen(false);
             setSignatureFile(null);
+            
+            // First update the local state to reflect the signature
+            setQuotes(prevQuotes => 
+              prevQuotes.map(q => 
+                q.id === quote.id 
+                  ? { ...q, is_fully_signed: true, status: 'signed' } 
+                  : q
+              )
+            );
+
+            // Then create an invoice if the quote is now fully signed
+            try {
+              const invoice = await createInvoiceFromQuote(quote);
+              console.log('Invoice created:', invoice);
+              // Optionally show a success message to the user
+              alert('Quote signed and invoice created successfully!');
+            } catch (error) {
+              console.error('Failed to create invoice:', error);
+              // Optionally show an error message to the user
+              alert('Quote signed, but failed to create invoice. Please try again.');
+            }
           } catch (error) {
             console.error("Error uploading signature:", error);
             alert("Failed to upload signature");
