@@ -580,7 +580,7 @@ export default function Invoices() {
   uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
   onSuccess={loadInvoices}
 />
-
+   
         </div>
       </div>
     </div>
