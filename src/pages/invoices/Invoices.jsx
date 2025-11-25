@@ -59,6 +59,7 @@ import { useEffect } from "react";
 import api from "@/utils/axios";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { useAuthContext } from "@/hooks/AuthContext";
+import SignatureExamples from "@/Components/Invoice_Quotes/signatureExamples";
 export default function Invoices() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const columns = [
@@ -361,89 +362,30 @@ export default function Invoices() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
-                    <DialogTitle>
+                    {/* <DialogTitle>
                       Sign Invoice {invoice.invoice_number}
-                    </DialogTitle>
-                    <DialogDescription className="space-y-6">
-                      <div className="text-center">
-                        <p className="font-medium">
-                          Please upload a{" "}
-                          <strong className="text-green-600">
-                            clear black signature
-                          </strong>{" "}
-                          on a{" "}
-                          <strong className="text-green-600">
-                            pure white background
-                          </strong>
-                          .
-                        </p>
-                      </div>
+                    </DialogTitle> */}
+                    <DialogDescription className="space-y-6 mt-4">
+                      <p className="text-center text-base">
+                        Please upload a{" "}
+                        <strong className="">
+                          clear black signature
+                        </strong>{" "}
+                        on a{" "}
+                        <strong className="">
+                          pure white background
+                        </strong>
+                        .
+                      </p>
 
-                      {/* Good & Bad Examples Side by Side */}
-                      <div className="grid grid-cols-2 gap-8">
-                        {/* GOOD Example */}
-                        <div className="flex flex-col items-center space-y-3">
-                          <div className="relative">
-                            <img
-                              src="../../../public/images/exemple-1.png"
-                              alt="Good signature example"
-                              className="w-56 h-40 object-contain bg-white rounded-lg shadow-md border"
-                            />
-                            <div className="absolute -top-3 -right-3 bg-green-500 text-white rounded-full p-2 shadow-lg">
-                              <svg
-                                className="w-8 h-8"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={4}
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            </div>
-                          </div>
-                          <p className="text-lg font-semibold text-green-700">
-                            Good Example
-                          </p>
-                        </div>
+                      <SignatureExamples />
 
-                        <div className="flex flex-col items-center space-y-3">
-                          <div className="relative">
-                            <img
-                              src="../../../public/images/exemple-2.png"
-                              alt="Bad signature example - avoid this"
-                              className="w-56 h-40 object-contain bg-white rounded-lg shadow-md border"
-                            />
-                            <div className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2 shadow-lg">
-                              <svg
-                                className="w-8 h-8"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={4}
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                            </div>
-                          </div>
-                          <p className="text-lg font-semibold text-red-700">
-                            Avoid This
-                          </p>
-                        </div>
-                      </div>
-                      <p className="text-sm text-center text-muted-foreground">
-                        Accepted: PNG, JPG, JPEG • Max 5MB • Must be black ink
-                        on white background
+                      <p className="text-sm text-center text-muted-foreground pt-4">
+                        Accepted formats: PNG, JPG, JPEG • Max size: 5MB
                       </p>
                     </DialogDescription>
                   </DialogHeader>
+
                   <SignUploader onFileChange={handleSignatureUpload} />
                   <DialogFooter>
                     <Button

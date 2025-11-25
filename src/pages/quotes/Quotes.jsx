@@ -42,6 +42,7 @@ import api from "@/utils/axios";
 import SignUploader from "@/Components/Invoice_Quotes/signUploader";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { useAuthContext } from "@/hooks/AuthContext";
+import SignatureExamples from "@/Components/Invoice_Quotes/signatureExamples";
 
 // Function to create an invoice from a quote
 const createInvoiceFromQuote = async (quote) => {
@@ -301,11 +302,24 @@ export default function QuotesTable() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Sign Quote {quote.quote_number}</DialogTitle>
-                    <DialogDescription>
-                      Upload an image of your signature to accept this quote.
+                    {/* <DialogTitle>
+                                        Sign Invoice {invoice.invoice_number}
+                                      </DialogTitle> */}
+                    <DialogDescription className="space-y-6 mt-4">
+                      <p className="text-center text-base">
+                        Please upload a{" "}
+                        <strong className="">clear black signature</strong> on a{" "}
+                        <strong className="">pure white background</strong>.
+                      </p>
+
+                      <SignatureExamples />
+
+                      <p className="text-sm text-center text-muted-foreground pt-4">
+                        Accepted formats: PNG, JPG, JPEG • Max size: 5MB
+                      </p>
                     </DialogDescription>
                   </DialogHeader>
+
                   <SignUploader onFileChange={handleSignatureUpload} />
                   <DialogFooter>
                     <Button
@@ -460,6 +474,30 @@ export default function QuotesTable() {
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="text-muted-foreground flex-1 text-sm">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

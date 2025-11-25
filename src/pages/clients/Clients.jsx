@@ -36,7 +36,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ClientForm } from "@/Components/auth/ClientForm";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import api from "@/utils/axios";
 export const columns = [
@@ -381,24 +380,24 @@ export default function UsersTable() {
             >
               <X />
             </button>
-            <ClientForm />
+            {/* <ClientForm /> */}
+            <ClientForm onClientCreated={() => setShowAddModal(false)} />
           </div>
         </div>
       )}
 
-     <CSVUploadModal
-  open={showUploadModal}
-  onClose={() => setShowUploadModal(false)}
-  uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadClients`}
-  onSuccess={() => {
-    setMessage("Uploaded successfully!");
-    // reload clients after CSV import
-    api.get(`${import.meta.env.VITE_BACKEND_URL}/clients`).then((res) =>
-      setClients(res.data)
-    );
-  }}
-/>
-
+      <CSVUploadModal
+        open={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadClients`}
+        onSuccess={() => {
+          setMessage("Uploaded successfully!");
+          // reload clients after CSV import
+          api
+            .get(`${import.meta.env.VITE_BACKEND_URL}/clients`)
+            .then((res) => setClients(res.data));
+        }}
+      />
 
       {showDownloadModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

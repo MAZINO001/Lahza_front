@@ -10,17 +10,17 @@ import CountrySelect from "@/Components/Form/CountrySelect";
 import CurrencySelect from "@/Components/Form/CurrencySelect";
 import ClientTypeRadio from "@/Components/Form/ClientTypeRadio";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
 import api from "@/utils/axios";
+import { useAuthContext } from "@/hooks/AuthContext";
 
-export function ClientForm() {
+export function ClientForm({ onClientCreated }) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
+  const { role } = useAuthContext();
   const registerStore = useRegisterStore();
   const {
     register,
@@ -68,10 +68,15 @@ export function ClientForm() {
     try {
       const response = await api.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
-        filledData,
+        filledData
       );
       console.log("Registration successful:", response.data);
-      navigate("/auth/login");
+      if (role === "admin") {
+        console.log("New client created");
+        onClientCreated?.();
+      } else {
+        navigate("/auth/login");
+      }
     } catch (error) {
       console.error("Registration failed:", error.response?.data);
     } finally {
