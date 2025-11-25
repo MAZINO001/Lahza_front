@@ -13,6 +13,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { terms } from "../../lib/Terms_Conditions.json";
 import api from "@/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
+import { useSubmitProtection } from "@/hooks/spamBlocker";
 export default function QuoteForm() {
   const [selectedClient, setSelectedClient] = useState("");
   const [loading, setLoading] = useState(true);
@@ -204,11 +205,15 @@ export default function QuoteForm() {
 
   const calculateTotal = () => calculateSubTotal() - calculateDiscount();
 
+  const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
+
   const onSubmit = async (data, status) => {
+    // Prevent multiple submissions
+    if (!startSubmit()) return;
+
     const statusToSend = status ?? quoteData?.status ?? "draft";
     const payload = {
       client_id: parseInt(data.customerName),
-      // client_id: 6,
       quotation_date: data.quoteDate,
       status: statusToSend,
       total_amount: parseFloat(
@@ -239,7 +244,7 @@ export default function QuoteForm() {
             headers: { "Content-Type": "application/json" },
           }
         );
-        alert("quote updated successfully!");
+        console.log("quote updated successfully!");
       } else {
         // CREATE new quote
         req = await api.post(
@@ -252,17 +257,16 @@ export default function QuoteForm() {
         const newQuoteId = req.data.quote_id;
         console.log(req);
         await api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, {
-          email: "marnissimounir05@gmail.com",
+          email: "marnissimounir0005@gmail.com",
           type: "quote",
           id: newQuoteId,
           subject: "Your Quote from LAHZA HM",
           message:
             "Thanks for your business! Please find the invoice attached.",
         });
-
-        alert("quote created successfully!");
+        console.log("quote created successfully!");
       }
-      alert("Quote created successfully!");
+      console.log("Quote created successfully!");
       reset();
       navigate(`/${role}/quotes`);
     } catch (error) {
@@ -270,6 +274,8 @@ export default function QuoteForm() {
       alert(
         `Failed to create quote: ${error.response?.data?.message || error.message}`
       );
+    } finally {
+      endSubmit();
     }
   };
   if (loading) {

@@ -19,14 +19,14 @@ export default function SelectField({
 }) {
   return (
     <div>
-      <Label htmlFor={id} className="text-[var(--foreground)]">
+      <Label htmlFor={id} className="text-foreground">
         {label}
       </Label>
       <Select value={value || ""} onValueChange={onChange}>
         {/* Trigger */}
         <SelectTrigger
           id={id}
-          className="mt-1 block w-full h-10 px-3 bg-[var(--input)] border border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--primary)] relative flex items-center transition-colors"
+          className="mt-1 block w-full h-10 px-3 bg-input border border-border text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--primary)] relative items-center transition-colors"
         >
           <SelectValue
             placeholder={placeholder || "-- Sélectionnez une option --"}
@@ -39,7 +39,7 @@ export default function SelectField({
             <SelectItem
               key={opt.value}
               value={opt.value}
-              className="cursor-pointer py-2 px-3 rounded-md hover:bg-[var(--accent)] hover:text-[var(--accent-foreground)] focus:bg-[var(--accent)] focus:text-[var(--accent-foreground)] transition-colors"
+              className="cursor-pointer py-2 px-3 rounded-md hover:bg-accent hover:text-[var(--accent-foreground)] focus:bg-[var(--accent)] focus:text-[var(--accent-foreground)] transition-colors"
             >
               {opt.label}
             </SelectItem>
@@ -48,10 +48,7 @@ export default function SelectField({
       </Select>
 
       {error && (
-        <InputError
-          message={error}
-          className="mt-2 text-[var(--destructive)]"
-        />
+        <InputError message={error} className="mt-2 text-destructive" />
       )}
     </div>
   );

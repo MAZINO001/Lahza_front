@@ -57,6 +57,27 @@ export default function ServicesPage() {
   // Table Columns
   const columns = [
     {
+      accessorKey: "image",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Service Image <ArrowUpDown className="ml-1 h-4 w-4 " />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const service = row.original;
+        return (
+          <img
+            src={service.image}
+            alt={service.name}
+            className="h-12 w-20 object-cover rounded-md"
+          />
+        );
+      },
+    },
+    {
       accessorKey: "name",
       header: ({ column }) => (
         <Button

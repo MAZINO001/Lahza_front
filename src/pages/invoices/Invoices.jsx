@@ -239,7 +239,6 @@ export default function Invoices() {
         const [signatureFile, setSignatureFile] = useState(null);
 
         const handleSignatureUpload = (files) => {
-          // Store the uploaded file
           if (files && files.length > 0) {
             setSignatureFile(files[0]);
           }
@@ -257,34 +256,30 @@ export default function Invoices() {
               "type",
               role === "admin" ? "admin_signature" : "client_signature"
             );
-            // console.log(formData);
 
             const url = `${import.meta.env.VITE_BACKEND_URL}/invoices/${invoice.id}/signature`;
 
             const res = await api.post(url, formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("token")}`, // if using auth
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
             });
 
-            alert(`Signature uploaded! URL: ${res.data.url}`);
+            alert(`Signature uploaded!`);
             setIsSignDialogOpen(false);
             setSignatureFile(null);
+            // Optionally refetch table data here
           } catch (error) {
             console.error("Error uploading signature:", error);
             alert("Failed to upload signature");
           }
         };
-        const handlePay = () => {
-          if (
-            invoice.status === "partially_paid" ||
-            invoice.status === "overdue"
-          ) {
-            alert(`Opening payment for ${invoice.invoice_number}`);
-          }
-        };
+
         const handleRemoveSignature = async () => {
+          if (!confirm("Are you sure you want to remove the signature?"))
+            return;
+
           try {
             const type =
               role === "admin" ? "admin_signature" : "client_signature";
@@ -298,6 +293,7 @@ export default function Invoices() {
               }
             );
             alert("Signature removed successfully");
+            // Optionally refetch data
           } catch (error) {
             const msg = error?.response?.data?.message || error.message;
             alert(`Failed to remove signature: ${msg}`);
@@ -315,6 +311,17 @@ export default function Invoices() {
           handleDownloadInvoice_Quotes(invoice.id, "invoice");
         };
 
+        const handlePay = () => {
+          if (
+            invoice.status === "partially_paid" ||
+            invoice.status === "overdue" ||
+            invoice.status === "unpaid"
+          ) {
+            // Your payment logic
+            alert(`Opening payment for ${invoice.invoice_number}`);
+          }
+        };
+
         return (
           <div className="flex items-center gap-2">
             {role === "client" &&
@@ -325,70 +332,147 @@ export default function Invoices() {
                   variant="default"
                   size="sm"
                   onClick={handlePay}
-                  className="h-8 cursor-pointer"
+                  className="h-8"
                 >
-                  <CreditCard />
+                  <CreditCard className="h-4 w-4" />
                 </Button>
               )}
+
             {role === "admin" && (
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 cursor-pointer"
                 onClick={handleSendInvoice}
+                className="h-8"
               >
                 <Send className="h-4 w-4" />
               </Button>
             )}
 
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 cursor-pointer"
-              onClick={handleRemoveSignature}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
+            {role === "client" && (
+              <Dialog
+                open={isSignDialogOpen}
+                onOpenChange={setIsSignDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8">
+                    <FileSignature className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Sign Invoice {invoice.invoice_number}
+                    </DialogTitle>
+                    <DialogDescription className="space-y-6">
+                      <div className="text-center">
+                        <p className="font-medium">
+                          Please upload a{" "}
+                          <strong className="text-green-600">
+                            clear black signature
+                          </strong>{" "}
+                          on a{" "}
+                          <strong className="text-green-600">
+                            pure white background
+                          </strong>
+                          .
+                        </p>
+                      </div>
 
-            <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 cursor-pointer"
-                >
-                  <FileSignature className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>
-                    Upload Signature for {invoice.invoice_number}
-                  </DialogTitle>
-                  <DialogDescription>
-                    Upload an image of your signature to sign this invoice.
-                  </DialogDescription>
-                </DialogHeader>
-                <SignUploader onFileChange={handleSignatureUpload} />
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsSignDialogOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    className={"cursor-pointer"}
-                    onClick={handleSubmitSignature}
-                    disabled={!signatureFile}
-                  >
-                    Submit Signature
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                      {/* Good & Bad Examples Side by Side */}
+                      <div className="grid grid-cols-2 gap-8">
+                        {/* GOOD Example */}
+                        <div className="flex flex-col items-center space-y-3">
+                          <div className="relative">
+                            <img
+                              src="../../../public/images/exemple-1.png"
+                              alt="Good signature example"
+                              className="w-56 h-40 object-contain bg-white rounded-lg shadow-md border"
+                            />
+                            <div className="absolute -top-3 -right-3 bg-green-500 text-white rounded-full p-2 shadow-lg">
+                              <svg
+                                className="w-8 h-8"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={4}
+                                  d="M5 13l4 4L19 7"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                          <p className="text-lg font-semibold text-green-700">
+                            Good Example
+                          </p>
+                        </div>
+
+                        <div className="flex flex-col items-center space-y-3">
+                          <div className="relative">
+                            <img
+                              src="../../../public/images/exemple-2.png"
+                              alt="Bad signature example - avoid this"
+                              className="w-56 h-40 object-contain bg-white rounded-lg shadow-md border"
+                            />
+                            <div className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2 shadow-lg">
+                              <svg
+                                className="w-8 h-8"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={4}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                          <p className="text-lg font-semibold text-red-700">
+                            Avoid This
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-center text-muted-foreground">
+                        Accepted: PNG, JPG, JPEG • Max 5MB • Must be black ink
+                        on white background
+                      </p>
+                    </DialogDescription>
+                  </DialogHeader>
+                  <SignUploader onFileChange={handleSignatureUpload} />
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsSignDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSubmitSignature}
+                      disabled={!signatureFile}
+                    >
+                      Submit Signature
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+
+            {role === "admin" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRemoveSignature}
+                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            )}
 
             <Button
               variant="outline"
@@ -475,11 +559,6 @@ export default function Invoices() {
         )}
       </div>
       <DropdownMenu>
-        {/* <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger> */}
         <DropdownMenuContent align="end">
           {table
             .getAllColumns()

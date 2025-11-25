@@ -11,6 +11,7 @@ import InputError from "@/Components/InputError";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import SelectField from "@/Components/Form/SelectField";
+import { useSubmitProtection } from "@/hooks/spamBlocker";
 export default function AddNewService() {
   const {
     register,
@@ -18,7 +19,7 @@ export default function AddNewService() {
     reset,
     setValue,
     watch,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: { errors, isLoading, isSubmitSuccessful },
   } = useForm({
     defaultValues: {
       name: "",
@@ -60,7 +61,11 @@ export default function AddNewService() {
   }, [editId, reset]);
   const navigate = useNavigate();
   const { role } = useAuthContext();
+  const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const onSubmit = async (data) => {
+    if (isSubmitting) return;
+
+    if (!startSubmit()) return;
     const serviceData = {
       name: data.name,
       description: data.description,
@@ -86,6 +91,8 @@ export default function AddNewService() {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      endSubmit();
     }
 
     reset();
@@ -183,12 +190,8 @@ export default function AddNewService() {
             cancel
           </Button>
         </Link>
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="cursor-pointer"
-        >
-          {isSubmitting ? (
+        <Button type="submit" disabled={isLoading} className="cursor-pointer">
+          {isLoading ? (
             <>{editId ? "Updating Service..." : "Creating Service..."}</>
           ) : editId ? (
             "Update Service"

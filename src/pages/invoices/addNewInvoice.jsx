@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { terms } from "../../lib/Terms_Conditions.json";
 import api from "@/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
+import { useSubmitProtection } from "@/hooks/spamBlocker";
 export default function InvoiceForm() {
   const [selectedClient, setSelectedClient] = useState("");
   const [loading, setLoading] = useState(true);
@@ -210,8 +211,9 @@ export default function InvoiceForm() {
   };
 
   const calculateTotal = () => calculateSubTotal() - calculateDiscount();
-
+  const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const onSubmit = async (data, status) => {
+    if (!startSubmit()) return;
     const statusToSend = status ?? InvoiceData?.status ?? "unpaid";
     const payload = {
       client_id: parseInt(data.customerName),
@@ -270,6 +272,8 @@ export default function InvoiceForm() {
           error.response?.data?.message || error.message
         }`
       );
+    } finally {
+      endSubmit();
     }
   };
 

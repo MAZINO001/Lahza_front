@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-import ServicesSidebar from "@/Components/services/service_sidebar";
-import ServicePage from "@/Components/services/service_page";
+import ServicesSidebar from "@/Components/services_offers/service_sidebar";
+import ServicePage from "@/Components/services_offers/service_offers_page";
 
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
@@ -46,8 +46,8 @@ export default function ServiceDetails() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <ServicesSidebar data={services} />
-      <ServicePage data={service} />
+      <ServicesSidebar type="service" data={services} />
+      <ServicePage type="service" data={service} />
     </div>
   );
 }

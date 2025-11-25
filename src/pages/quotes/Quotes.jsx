@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 import * as React from "react";
 import { useEffect, useState } from "react";
@@ -50,18 +51,17 @@ const createInvoiceFromQuote = async (quote) => {
       {},
       {
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       }
     );
     return response.data;
   } catch (error) {
-    console.error('Error creating invoice from quote:', error);
+    console.error("Error creating invoice from quote:", error);
     throw error;
   }
 };
-// Table columns
 export default function QuotesTable() {
   const columns = [
     // {
@@ -113,9 +113,9 @@ export default function QuotesTable() {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => (
-        <StatusBadge 
-          status={row.getValue("status")} 
-          is_fully_signed={row.original?.is_fully_signed} 
+        <StatusBadge
+          status={row.getValue("status")}
+          is_fully_signed={row.original?.is_fully_signed}
         />
       ),
     },
@@ -159,7 +159,7 @@ export default function QuotesTable() {
         const total_amount = parseFloat(row.getValue("total_amount"));
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-        currency: "MAD",
+          currency: "MAD",
         }).format(total_amount);
 
         return <div className="ml-3 font-medium">{formatted}</div>;
@@ -175,7 +175,6 @@ export default function QuotesTable() {
         const [signatureFile, setSignatureFile] = useState(null);
 
         const handleSignatureUpload = (files) => {
-          // Store the uploaded file
           if (files && files.length > 0) {
             setSignatureFile(files[0]);
           }
@@ -186,6 +185,7 @@ export default function QuotesTable() {
             alert("Please upload a signature first");
             return;
           }
+
           try {
             const formData = new FormData();
             formData.append("signature", signatureFile.file);
@@ -193,41 +193,39 @@ export default function QuotesTable() {
               "type",
               role === "admin" ? "admin_signature" : "client_signature"
             );
-            // console.log(formData);
 
             const url = `${import.meta.env.VITE_BACKEND_URL}/quotes/${quote.id}/signature`;
-
             const res = await api.post(url, formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("token")}`, // if using auth
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
             });
 
-            alert(`Signature uploaded! URL: ${res.data.url}`);
-            setIsSignDialogOpen(false);
-            setSignatureFile(null);
-            
-            // First update the local state to reflect the signature
-            setQuotes(prevQuotes => 
-              prevQuotes.map(q => 
-                q.id === quote.id 
-                  ? { ...q, is_fully_signed: true, status: 'signed' } 
+            alert("Signature uploaded successfully!");
+
+            // Update local quotes state
+            setQuotes((prevQuotes) =>
+              prevQuotes.map((q) =>
+                q.id === quote.id
+                  ? { ...q, is_fully_signed: true, status: "signed" }
                   : q
               )
             );
 
-            // Then create an invoice if the quote is now fully signed
+            // Auto-create invoice after successful client signature
             try {
               const invoice = await createInvoiceFromQuote(quote);
-              console.log('Invoice created:', invoice);
-              // Optionally show a success message to the user
-              alert('Quote signed and invoice created successfully!');
-            } catch (error) {
-              console.error('Failed to create invoice:', error);
-              // Optionally show an error message to the user
-              alert('Quote signed, but failed to create invoice. Please try again.');
+              alert("Quote signed and invoice created successfully!");
+            } catch (err) {
+              console.error("Failed to create invoice:", err);
+              alert(
+                "Quote signed, but invoice creation failed. Please try again."
+              );
             }
+
+            setIsSignDialogOpen(false);
+            setSignatureFile(null);
           } catch (error) {
             console.error("Error uploading signature:", error);
             alert("Failed to upload signature");
@@ -235,6 +233,9 @@ export default function QuotesTable() {
         };
 
         const handleRemoveSignature = async () => {
+          if (!confirm("Are you sure you want to remove this signature?"))
+            return;
+
           try {
             const type =
               role === "admin" ? "admin_signature" : "client_signature";
@@ -247,7 +248,17 @@ export default function QuotesTable() {
                 },
               }
             );
+
             alert("Signature removed successfully");
+
+            // Optional: update local state to reflect removal
+            setQuotes((prev) =>
+              prev.map((q) =>
+                q.id === quote.id
+                  ? { ...q, is_fully_signed: false, status: "pending" }
+                  : q
+              )
+            );
           } catch (error) {
             const msg = error?.response?.data?.message || error.message;
             alert(`Failed to remove signature: ${msg}`);
@@ -272,65 +283,64 @@ export default function QuotesTable() {
                 variant="outline"
                 size="sm"
                 onClick={handleSendQuote}
-                className="h-8 cursor-pointer"
+                className="h-8"
               >
                 <Send className="h-4 w-4" />
               </Button>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 cursor-pointer"
-              onClick={handleRemoveSignature}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
 
-            <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
-              <DialogTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-8 cursor-pointer"
-                >
-                  <FileSignature className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>
-                    Upload Signature for {quote.quote_number}
-                  </DialogTitle>
-                  <DialogDescription>
-                    Upload an image of your signature to sign this quote.
-                  </DialogDescription>
-                </DialogHeader>
-                <SignUploader onFileChange={handleSignatureUpload} />
-                <DialogFooter>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setIsSignDialogOpen(false)}
-                  >
-                    Cancel
+            {role === "client" && (
+              <Dialog
+                open={isSignDialogOpen}
+                onOpenChange={setIsSignDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8">
+                    <FileSignature className="h-4 w-4" />
                   </Button>
-                  <Button
-                    className={"cursor-pointer"}
-                    onClick={handleSubmitSignature}
-                    disabled={!signatureFile}
-                  >
-                    Submit Signature
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Sign Quote {quote.quote_number}</DialogTitle>
+                    <DialogDescription>
+                      Upload an image of your signature to accept this quote.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <SignUploader onFileChange={handleSignatureUpload} />
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsSignDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSubmitSignature}
+                      disabled={!signatureFile}
+                    >
+                      Submit Signature
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+
+            {role === "admin" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleRemoveSignature}
+                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            )}
 
             <Button
               variant="outline"
               size="sm"
               onClick={handleDownload}
-              className="h-8 cursor-pointer"
+              className="h-8"
             >
               <Download className="h-4 w-4" />
             </Button>
@@ -451,7 +461,6 @@ export default function QuotesTable() {
           </TableBody>
         </Table>
       </div>
-       
     </div>
   );
 }
