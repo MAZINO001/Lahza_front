@@ -61,5 +61,21 @@ export const globalFnStore = create((set) => ({
             console.log(error);
         }
     },
+    HandleEditOffer: async (id, navigate, role) => {
+        navigate(`/${role}/offer/new`, {
+            state: { editId: id },
+            replace: true
+        });
+    },
+
+    handleDeleteOffer: async (id, reloadCallback) => {
+        if (!confirm("Are you sure you want to delete this offer?")) return;
+        try {
+            await api.delete(`${import.meta.env.VITE_BACKEND_URL}/offers/${id}`);
+            if (reloadCallback) reloadCallback();
+        } catch (error) {
+            console.log(error);
+        }
+    },
 
 }))

@@ -8,7 +8,6 @@ export default function Header() {
     <header className="bg-accent-foreground text-primary w-full">
       <div className="w-full flex items-center justify-between px-2 py-2 lg:px-4 ">
         <SearchBar />
-        <div> {role}</div>
 
         <div className="flex items-center gap-4 ml-4">
           <button className="relative p-2 rounded-md cursor-pointer">

@@ -31,3 +31,21 @@ import SelectField from "@/Components/Form/SelectField";
         />
         <InputError message={errors.tax_rate?.message} className="mt-2" />
       </div>
+      *************************************************
+      if you cant use rergester on a compoenent , us ethis method , 
+      service_id: ["", { required: "Service is required" }]
+      like this   } = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      discount_type: "",
+      discount_value: 0,
+      start_date: "",
+      end_date: "",
+      service_id: ["", { required: "Service is required" }],
+      status: "active",
+    },
+  }); 
+  **************************************************
+  
+ 

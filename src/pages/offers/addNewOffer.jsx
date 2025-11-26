@@ -28,6 +28,7 @@ export default function AddNewOffer() {
       discount_value: 0,
       start_date: "",
       end_date: "",
+      service_id: null,
       status: "active",
     },
   });
@@ -37,7 +38,32 @@ export default function AddNewOffer() {
   const navigate = useNavigate();
   const { role } = useAuthContext();
   const [loading, setLoading] = useState(false);
+  const [services, setServices] = useState([]);
+  const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
 
+  // Fetch services on mount
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await api.get(
+          `${import.meta.env.VITE_BACKEND_URL}/services`
+        );
+        setServices(res.data);
+      } catch (error) {
+        console.error(
+          "Error fetching services:",
+          error.response?.data || error
+        );
+        alert(
+          `Failed to get services: ${error.response?.data?.message || error.message}`
+        );
+      }
+    };
+
+    fetchServices();
+  }, []);
+
+  // Fetch offer data when editing
   useEffect(() => {
     if (!editId) return;
 
@@ -53,13 +79,15 @@ export default function AddNewOffer() {
           title: offer.title || "",
           description: offer.description || "",
           discount_type: offer.discount_type || "",
-          discount_value: offer.discount_value || 0,
-          start_date: offer.start_date ? offer.start_date.split(" ")[0] : "", // YYYY-MM-DD
+          discount_value: parseFloat(offer.discount_value) || 0,
+          start_date: offer.start_date ? offer.start_date.split(" ")[0] : "",
           end_date: offer.end_date ? offer.end_date.split(" ")[0] : "",
+          service_id: offer.service_id ? parseInt(offer.service_id, 10) : null,
           status: offer.status || "active",
         });
       } catch (err) {
         console.error("Failed to fetch offer:", err);
+        alert("Failed to load offer data. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -67,34 +95,41 @@ export default function AddNewOffer() {
 
     fetchOffer();
   }, [editId, reset]);
-  const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
+
   const onSubmit = async (data) => {
     if (!startSubmit()) return;
+
     try {
       setLoading(true);
-      const payload = { ...data };
 
       if (editId) {
         await api.put(
           `${import.meta.env.VITE_BACKEND_URL}/offers/${editId}`,
-          payload
+          data
         );
         alert("Offer updated successfully");
       } else {
-        await api.post(`${import.meta.env.VITE_BACKEND_URL}/offers`, payload);
+        await api.post(`${import.meta.env.VITE_BACKEND_URL}/offers`, data);
         alert("Offer created successfully");
       }
 
       navigate(`/${role}/offers`);
       reset();
     } catch (err) {
-      console.error(err);
-      alert("Something went wrong, try again!");
+      console.error("Error submitting offer:", err);
+      alert(
+        `Something went wrong: ${err.response?.data?.message || "Please try again!"}`
+      );
     } finally {
       endSubmit();
       setLoading(false);
     }
   };
+
+  const serviceOptions = services.map((service) => ({
+    value: service.id.toString(),
+    label: service.name,
+  }));
 
   return (
     <form
@@ -108,8 +143,6 @@ export default function AddNewOffer() {
           type="text"
           placeholder="e.g., Premium Web Development"
           {...register("title", { required: "Title is required" })}
-          value={watch("title")}
-          onChange={(e) => setValue("title", e.target.value)}
           className="mt-1 block w-full"
         />
         <InputError message={errors.title?.message} />
@@ -121,13 +154,25 @@ export default function AddNewOffer() {
           id="description"
           placeholder="Describe the offer in detail..."
           {...register("description", { required: "Description is required" })}
-          value={watch("description")}
-          onChange={(e) => setValue("description", e.target.value)}
           className="mt-1 block w-full"
         />
         <InputError message={errors.description?.message} />
       </div>
 
+      <div>
+        <InputLabel htmlFor="service_id" value="Service" />
+        <SelectField
+          id="service_id"
+          options={serviceOptions}
+          value={watch("service_id")?.toString() || ""}
+          onChange={(value) => {
+            setValue("service_id", parseInt(value, 10));
+          }}
+          placeholder="Select a service"
+          className="mt-1 block w-full"
+        />
+        <InputError message={errors.service_id?.message} />
+      </div>
       <div>
         <InputLabel htmlFor="discount_type" value="Discount Type" />
         <SelectField
@@ -148,12 +193,15 @@ export default function AddNewOffer() {
         <FormField
           id="discount_value"
           type="number"
+          step="1"
           placeholder="0.00"
-          {...register("discount_value", {
-            required: "Discount value is required",
-          })}
-          value={watch("discount_value")}
-          onChange={(e) => setValue("discount_value", e.target.value)}
+          value={watch("discount_value") || ""}
+          onChange={(e) =>
+            setValue(
+              "discount_value",
+              e.target.value ? parseFloat(e.target.value) : 0
+            )
+          }
           className="mt-1 block w-full"
         />
         <InputError message={errors.discount_value?.message} />
@@ -164,9 +212,9 @@ export default function AddNewOffer() {
         <FormField
           id="start_date"
           type="date"
-          {...register("start_date")}
-          value={watch("start_date")}
-          onChange={(e) => setValue("start_date", e.target.value)}
+          {...register("start_date", {
+            required: "Start date is required",
+          })}
           className="mt-1 block w-full"
         />
         <InputError message={errors.start_date?.message} />
@@ -177,9 +225,16 @@ export default function AddNewOffer() {
         <FormField
           id="end_date"
           type="date"
-          {...register("end_date")}
-          value={watch("end_date")}
-          onChange={(e) => setValue("end_date", e.target.value)}
+          {...register("end_date", {
+            required: "End date is required",
+            validate: (value) => {
+              const startDate = watch("start_date");
+              if (startDate && value < startDate) {
+                return "End date must be after start date";
+              }
+              return true;
+            },
+          })}
           className="mt-1 block w-full"
         />
         <InputError message={errors.end_date?.message} />
