@@ -70,6 +70,7 @@ export default function QuoteForm() {
   const clientOptions = clients.map((c) => ({
     name: c.name || c.user?.name,
     id: c.id,
+    email: c.user?.email,
   }));
   const customerData = clients.find(
     (c) => String(c.id) === String(selectedClient)
@@ -257,7 +258,7 @@ export default function QuoteForm() {
         const newQuoteId = req.data.quote_id;
         console.log(req);
         await api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, {
-          email: "marnissimounir0005@gmail.com",
+          email: customerData.user?.email,
           type: "quote",
           id: newQuoteId,
           subject: "Your Quote from LAHZA HM",
