@@ -27,6 +27,7 @@ import {
 } from "../components/ui/sidebar";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Button } from "./ui/button";
+import { Outline } from "react-pdf";
 export function AppSidebar(props) {
   const { role, logout } = useAuthContext();
   const currentRole = role || "client";
@@ -119,6 +120,7 @@ export function AppSidebar(props) {
 
       <SidebarFooter>
         <Button
+          variant="Outline"
           onClick={() => logout()}
           className=" cursor-pointer flex items-center justify-center gap-2 text-red text-md"
         >

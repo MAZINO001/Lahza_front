@@ -18,6 +18,20 @@ import {
   Send,
   FileSignature,
   Trash,
+  Sparkles,
+  SparklesIcon,
+  ScanLine,
+  Link2,
+  ChevronDown,
+  Upload,
+  Plus,
+  Settings2,
+  Copy,
+  ArrowRight,
+  Globe,
+  Monitor,
+  User,
+  LinkIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { StatusBadge } from "@/Components/StatusBadge";
@@ -52,9 +66,11 @@ import {
   DialogTrigger,
   DialogFooter,
   DialogDescription,
+  DialogClose,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 import SignUploader from "@/Components/Invoice_Quotes/signUploader";
-
+import PaymentPercentage from "@/Components/Invoice_Quotes/paymentPercentage";
 import { useEffect } from "react";
 import api from "@/utils/axios";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
@@ -239,6 +255,9 @@ export default function Invoices() {
         const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
         const [signatureFile, setSignatureFile] = useState(null);
 
+        const handleGeneratePaymentLink = () => {
+          console.log("your payment link is generated");
+        };
         const handleSignatureUpload = (files) => {
           if (files && files.length > 0) {
             setSignatureFile(files[0]);
@@ -368,14 +387,8 @@ export default function Invoices() {
                     <DialogDescription className="space-y-6 mt-4">
                       <p className="text-center text-base">
                         Please upload a{" "}
-                        <strong className="">
-                          clear black signature
-                        </strong>{" "}
-                        on a{" "}
-                        <strong className="">
-                          pure white background
-                        </strong>
-                        .
+                        <strong className="">clear black signature</strong> on a{" "}
+                        <strong className="">pure white background</strong>.
                       </p>
 
                       <SignatureExamples />
@@ -406,14 +419,55 @@ export default function Invoices() {
             )}
 
             {role === "admin" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRemoveSignature}
-                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+              <Dialog
+                open={isSignDialogOpen}
+                onOpenChange={setIsSignDialogOpen}
               >
-                <Trash className="h-4 w-4" />
-              </Button>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <LinkIcon className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent
+                  className="sm:max-w-md"
+                  onPointerDownOutside={(e) => e.preventDefault()}
+                  onEscapeKeyDown={(e) => e.preventDefault()}
+                >
+                  <DialogHeader>
+                    <DialogTitle>Generate Payment Link</DialogTitle>
+                    <DialogDescription className="space-y-6 mt-4">
+                      <PaymentPercentage data={row.getValue("total_amount")} />
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <DialogFooter className=" gap-2 sm:gap-0">
+                    <DialogClose asChild className="mr-4">
+                      <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+
+                    <Button
+                      onClick={handleGeneratePaymentLink}
+                      disabled={!signatureFile}
+                    >
+                      Generate Link
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+
+            {role === "admin" && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRemoveSignature}
+                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
+              </>
             )}
 
             <Button
@@ -542,19 +596,95 @@ export default function Invoices() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <React.Fragment key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className="hover:bg-muted/50 cursor-pointer transition-colors "
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        // onClick={() => row.toggleExpanded()}
+                        onClick={(e) => {
+                          if (
+                            e.target.closest(
+                              "button, a, [role='button'], [data-radix-collection-item]"
+                            )
+                          ) {
+                            return;
+                          }
+                          row.toggleExpanded();
+                        }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+
+                  {row.getIsExpanded() && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="p-0 bg-muted/30"
+                      >
+                        <div className="px-8 py-6">
+                          <h4 className="font-semibold text-sm mb-4 text-foreground">
+                            Activity Details
+                          </h4>
+
+                          <div className="space-y-3 text-sm">
+                            {row.original.changes ? (
+                              Object.entries(row.original.changes).map(
+                                ([key, value]) => {
+                                  const oldVal = value.old ?? "(empty)";
+                                  const newVal = value.new ?? value;
+
+                                  return (
+                                    <div
+                                      key={key}
+                                      className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <span className="font-medium capitalize">
+                                          {key.replace(/_/g, " ")}
+                                        </span>
+                                      </div>
+                                      <div className="flex items-center gap-3 font-mono text-xs">
+                                        {oldVal !== newVal ? (
+                                          <>
+                                            <span className="text-red-600 line-through">
+                                              {oldVal}
+                                            </span>
+                                            <ArrowRight className="h-3 w-3 text-muted-foreground" />
+                                            <span className="text-green-600 font-semibold">
+                                              {newVal}
+                                            </span>
+                                          </>
+                                        ) : (
+                                          <span className="text-muted-foreground">
+                                            {newVal}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                              )
+                            ) : (
+                              <p className="text-muted-foreground italic">
+                                No changes recorded
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <TableRow>
