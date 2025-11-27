@@ -281,16 +281,23 @@ export default function InvoiceForm() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-4 md:w-[60%] w-full">
-      {/* <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full"> */}
+    // <form onSubmit={handleSubmit(onSubmit)} className="p-4 md:w-[60%] w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full">
       <h1 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
         {invoiceId ? "Edit Invoice" : "New Invoice"}
       </h1>
 
       <div className="space-y-4">
         <SelectField
-          id="customerName"
           label="Customer"
           items={clientOptions}
           value={selectedClient}
@@ -299,7 +306,6 @@ export default function InvoiceForm() {
             setValue("customerName", val);
           }}
           placeholder="Select or add a customer"
-          error={errors.customerName?.message}
         />
         {customerData && (
           <div className="p-4 border rounded bg-gray-50 text-sm space-y-1 max-w-[300px]">
@@ -327,20 +333,19 @@ export default function InvoiceForm() {
         <FormField
           id="invoice_date"
           label="Invoice Date*"
-          // {...register("invoice_date")}
+          {...register("invoice_date" , {required:"invoice_date is require"})}
           type="date"
           value={watch("invoice_date")}
           onChange={(e) => setValue("invoice_date", e.target.value)}
-          errors={errors}
+          error={errors.invoice_date?.message}
         />
         <FormField
           id="due_date"
           label="Due Date*"
           type="date"
-          // {...register("due_date")}
+          {...register("due_date")}
           value={watch("due_date")}
           onChange={(e) => setValue("due_date", e.target.value)}
-          errors={errors}
         />
 
         {/* Item Table */}

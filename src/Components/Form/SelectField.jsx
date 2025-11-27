@@ -25,7 +25,7 @@ export default function SelectField({
       <Select value={value || ""} onValueChange={onChange}>
         <SelectTrigger
           id={id}
-          className="mt-1 block w-full h-10 px-3  border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary relative items-center transition-colors"
+          className="mt-1 block w-full h-10 px-3 py-2 border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary flex items-center justify-between [&>span]:truncate"
         >
           <SelectValue
             placeholder={placeholder || "-- Sélectionnez une option --"}

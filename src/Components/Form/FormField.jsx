@@ -1,6 +1,7 @@
 import { Label } from "../../Components/ui/label";
 import { Input } from "../../Components/ui/input";
 import ErrorMessage from "../../Components/Form/ErrorMessage";
+import InputError from "../InputError";
 
 export default function FormField({
   id,
@@ -8,7 +9,7 @@ export default function FormField({
   type = "text",
   value,
   onChange,
-  errors,
+  error,
   placeholder,
 }) {
   return (
@@ -27,7 +28,9 @@ export default function FormField({
         placeholder={placeholder}
         className="mt-1 block w-full border border-border text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring transition-colors"
       />
-      {errors && <ErrorMessage errors={errors} field={id} />}
+      {error && (
+        <InputError message={error} className="mt-2 text-destructive" />
+      )}
     </div>
   );
 }

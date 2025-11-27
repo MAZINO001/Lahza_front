@@ -65,4 +65,6 @@ import SelectField from "@/Components/Form/SelectField";
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Activity Logs
           </Link>
- 
+ ***************************************
+ this is why there error handling don't work 
+ error={errors.portfolio?.message}
