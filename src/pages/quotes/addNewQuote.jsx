@@ -14,6 +14,7 @@ import { terms } from "../../lib/Terms_Conditions.json";
 import api from "@/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
+import { useLoading } from "@/hooks/LoadingContext";
 export default function QuoteForm() {
   const [selectedClient, setSelectedClient] = useState("");
   const [loading, setLoading] = useState(true);
@@ -25,11 +26,13 @@ export default function QuoteForm() {
 
   const location = useLocation();
   const quoteId = location.state?.quoteId;
+  const { show: showLoading, hide: hideLoading } = useLoading();
 
   useEffect(() => {
     if (!quoteId) return;
 
     const fetchQuote = async () => {
+      showLoading();
       try {
         const res = await api.get(
           `${import.meta.env.VITE_BACKEND_URL}/quotes/${quoteId}`
@@ -61,6 +64,8 @@ export default function QuoteForm() {
         setSelectedClient(Number(data.client_id));
       } catch (err) {
         console.error("Failed to fetch quote:", err);
+      } finally {
+        hideLoading();
       }
     };
 
@@ -279,14 +284,6 @@ export default function QuoteForm() {
       endSubmit();
     }
   };
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     // <form onSubmit={handleSubmit(onSubmit)} className="p-4 md:w-[60%] w-full">
     <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full">

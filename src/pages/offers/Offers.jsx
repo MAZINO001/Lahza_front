@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
@@ -28,30 +29,32 @@ import {
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
+import { useLoading } from "@/hooks/LoadingContext";
 
 export default function OffersPage() {
   const [offers, setOffers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
-  // Fetch offers
-  const loadOffers = async () => {
-    try {
-      const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/offers`);
-      setOffers(res.data);
-      console.log(res.data);
-    } catch (error) {
-      console.error("Failed to load offers:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
+  const { show: showLoading, hide: hideLoading } = useLoading();
   useEffect(() => {
+    const loadOffers = async () => {
+      showLoading();
+      try {
+        const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/offers`);
+        setOffers(res.data);
+        console.log(res.data);
+      } catch (error) {
+        console.error("Failed to load offers:", error);
+      } finally {
+        hideLoading();
+      }
+    };
+
     loadOffers();
   }, []);
   const { role } = useAuthContext();
@@ -70,10 +73,7 @@ export default function OffersPage() {
       cell: ({ row }) => {
         const offer = row.original;
         return (
-          <Link
-            to={`/${role}/offer/${offer.id}`}
-            className="ml-3 font-medium"
-          >
+          <Link to={`/${role}/offer/${offer.id}`} className="ml-3 font-medium">
             {offer.title}
           </Link>
         );
@@ -170,8 +170,7 @@ export default function OffersPage() {
         const { HandleEditOffer, handleDeleteOffer } = globalFnStore();
 
         const onEdit = () => HandleEditOffer(offer.id, navigate, role);
-        const onDelete = async () =>
-          await handleDeleteOffer(offer.id, loadOffers);
+        const onDelete = async () => await handleDeleteOffer(offer.id);
 
         return (
           <div className="flex items-center gap-2">
@@ -200,14 +199,6 @@ export default function OffersPage() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full p-4 bg-slate-50 min-h-screen">
@@ -305,7 +296,6 @@ export default function OffersPage() {
               open={showUploadModal}
               onClose={() => setShowUploadModal(false)}
               uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadOffers`}
-              onSuccess={loadOffers}
             />
           </div>
         </div>

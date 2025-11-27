@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import SelectField from "@/Components/Form/SelectField";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
+import { useLoading } from "@/hooks/LoadingContext";
 
 export default function AddNewOffer() {
   const {
@@ -41,9 +43,10 @@ export default function AddNewOffer() {
   const [services, setServices] = useState([]);
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
 
-  // Fetch services on mount
+  const { show: showLoading, hide: hideLoading } = useLoading();
   useEffect(() => {
     const fetchServices = async () => {
+      showLoading();
       try {
         const res = await api.get(
           `${import.meta.env.VITE_BACKEND_URL}/services`
@@ -57,13 +60,14 @@ export default function AddNewOffer() {
         alert(
           `Failed to get services: ${error.response?.data?.message || error.message}`
         );
+      } finally {
+        hideLoading();
       }
     };
 
     fetchServices();
   }, []);
 
-  // Fetch offer data when editing
   useEffect(() => {
     if (!editId) return;
 

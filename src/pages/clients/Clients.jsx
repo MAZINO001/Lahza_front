@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-refresh/only-export-components */
 
@@ -23,7 +24,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
-
+import { formatId } from "@/utils/formatId";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -38,6 +39,7 @@ import {
 import { ClientForm } from "@/Components/auth/ClientForm";
 import { Link } from "react-router-dom";
 import api from "@/utils/axios";
+import { useLoading } from "@/hooks/LoadingContext";
 export const columns = [
   // {
   //   id: "select",
@@ -73,13 +75,12 @@ export const columns = [
     ),
     cell: ({ row }) => {
       const id = row.getValue("id");
-      const formattedId = `CLIENT-${id.toString().padStart(4, "0")}`;
       return (
         <Link
           to={`/admin/client/${id}`}
           className="font-medium text-slate-900 hover:underline"
         >
-          {formattedId}
+          {formatId(id, "QUOTE")}
         </Link>
       );
     },
@@ -166,7 +167,6 @@ export default function UsersTable() {
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const [loading, setLoading] = useState(true);
   const [Clients, setClients] = useState({});
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -194,19 +194,24 @@ export default function UsersTable() {
     },
   });
 
-  useEffect(() => {
-    setLoading(true);
+  const { show: showLoading, hide: hideLoading } = useLoading();
 
-    const res = api
-      .get(`${import.meta.env.VITE_BACKEND_URL}/clients`)
-      .then((res) => {
-        setLoading(false);
+  useEffect(() => {
+    const fetchClients = async () => {
+      showLoading();
+      try {
+        const res = await api.get(
+          `${import.meta.env.VITE_BACKEND_URL}/clients`
+        );
         setClients(res.data);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Failed to fetch clients:", err);
-        setLoading(false);
-      });
+      } finally {
+        hideLoading();
+      }
+    };
+
+    fetchClients();
   }, []);
 
   // Download clients
@@ -270,13 +275,6 @@ export default function UsersTable() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
   return (
     <div className="w-full p-4">
       <div className="flex items-center justify-between pb-4">

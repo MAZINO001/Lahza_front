@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
 import * as React from "react";
@@ -43,8 +44,8 @@ import SignUploader from "@/Components/Invoice_Quotes/signUploader";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { useAuthContext } from "@/hooks/AuthContext";
 import SignatureExamples from "@/Components/Invoice_Quotes/signatureExamples";
-
-// Function to create an invoice from a quote
+import { formatId } from "@/utils/formatId";
+import { useLoading } from "@/hooks/LoadingContext";
 const createInvoiceFromQuote = async (quote) => {
   try {
     const response = await api.post(
@@ -65,28 +66,6 @@ const createInvoiceFromQuote = async (quote) => {
 };
 export default function QuotesTable() {
   const columns = [
-    // {
-    //   id: "select",
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && "indeterminate")
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
     {
       accessorKey: "id",
       header: ({ column }) => (
@@ -99,13 +78,12 @@ export default function QuotesTable() {
       ),
       cell: ({ row }) => {
         const id = row.getValue("id");
-        const QuoteNumber = row.original?.quote_number;
         return (
           <Link
             to={`/${role}/quote/${id}`}
             className="ml-3 font-medium text-slate-900 hover:underline"
           >
-            {QuoteNumber ?? id}
+            {formatId(id, "QUOTE")}
           </Link>
         );
       },
@@ -366,25 +344,25 @@ export default function QuotesTable() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [quotes, setQuotes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const { role, user } = useAuthContext();
+  const { show: showLoading, hide: hideLoading } = useLoading();
   useEffect(() => {
+    const loadQuotes = async () => {
+      showLoading();
+      try {
+        const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/quotes`);
+
+        setQuotes(res.data.quotes);
+      } catch (error) {
+        console.error("Error loading quotes:", error);
+      } finally {
+        hideLoading();
+      }
+    };
     loadQuotes();
   }, []);
-
-  const loadQuotes = async () => {
-    try {
-      const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/quotes`);
-
-      setQuotes(res.data.quotes);
-    } catch (error) {
-      console.error("Error loading quotes:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
   const table = useReactTable({
     data: quotes,
     columns,
@@ -403,14 +381,6 @@ export default function QuotesTable() {
       rowSelection,
     },
   });
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full p-4">

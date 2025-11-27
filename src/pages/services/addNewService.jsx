@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,6 +13,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import SelectField from "@/Components/Form/SelectField";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
+import { useLoading } from "@/hooks/LoadingContext";
 export default function AddNewService() {
   const {
     register,
@@ -34,10 +36,12 @@ export default function AddNewService() {
   const editId = location.state?.editId;
 
   const [service, setService] = useState([]);
+  const { show: showLoading, hide: hideLoading } = useLoading();
   useEffect(() => {
     if (!editId) return;
 
     const fetchData = async () => {
+      showLoading();
       try {
         const req = await api.get(
           `${import.meta.env.VITE_BACKEND_URL}/services/${editId}`
@@ -54,6 +58,8 @@ export default function AddNewService() {
         });
       } catch (error) {
         console.error("Failed to fetch service:", error);
+      } finally {
+        hideLoading();
       }
     };
 

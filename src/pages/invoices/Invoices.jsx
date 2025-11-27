@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
 import * as React from "react";
@@ -76,6 +77,8 @@ import api from "@/utils/axios";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { useAuthContext } from "@/hooks/AuthContext";
 import SignatureExamples from "@/Components/Invoice_Quotes/signatureExamples";
+import { formatId } from "@/utils/formatId";
+import { useLoading } from "@/hooks/LoadingContext";
 export default function Invoices() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const columns = [
@@ -102,7 +105,7 @@ export default function Invoices() {
     //   enableHiding: false,
     // },
     {
-      accessorKey: "invoice_number",
+      accessorKey: "quote_id",
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -113,13 +116,12 @@ export default function Invoices() {
       ),
       cell: ({ row }) => {
         const id = row.original?.id;
-        const InvoiceNumber = row.original?.invoice_number;
         return (
           <Link
             to={`/${role}/invoice/${id}`}
             className="font-medium text-slate-900 hover:underline  ml-3"
           >
-            {InvoiceNumber ?? id}
+            {formatId(id, "INVOICE")}
           </Link>
         );
       },
@@ -438,7 +440,7 @@ export default function Invoices() {
                   <DialogHeader>
                     <DialogTitle>Generate Payment Link</DialogTitle>
                     <DialogDescription className="space-y-6 mt-4">
-                      <PaymentPercentage data={row.getValue("total_amount")} />
+                      <PaymentPercentage data={row.getValue("balance_due")} />
                     </DialogDescription>
                   </DialogHeader>
 
@@ -490,21 +492,21 @@ export default function Invoices() {
   const [rowSelection, setRowSelection] = useState({});
 
   const [Invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { show: showLoading, hide: hideLoading } = useLoading();
   const { role, user } = useAuthContext();
+
   useEffect(() => {
     loadInvoices();
   }, []);
-
   const loadInvoices = async () => {
+    showLoading();
     try {
       const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/invoices`);
-
       setInvoices(res.data.invoices);
     } catch (error) {
       console.error("Error loading invoices:", error);
     } finally {
-      setLoading(false);
+      hideLoading();
     }
   };
   const table = useReactTable({
@@ -525,14 +527,6 @@ export default function Invoices() {
       rowSelection,
     },
   });
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full p-4">
       <div className="flex items-center justify-between mb-4">

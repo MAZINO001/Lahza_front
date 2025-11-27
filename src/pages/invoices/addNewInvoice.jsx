@@ -15,6 +15,7 @@ import { terms } from "../../lib/Terms_Conditions.json";
 import api from "@/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
+import { useLoading } from "@/hooks/LoadingContext";
 export default function InvoiceForm() {
   const [selectedClient, setSelectedClient] = useState("");
   const [loading, setLoading] = useState(true);
@@ -26,11 +27,12 @@ export default function InvoiceForm() {
 
   const location = useLocation();
   const invoiceId = location.state?.invoiceId;
-
+  const { show: showLoading, hide: hideLoading } = useLoading();
   useEffect(() => {
     if (!invoiceId) return;
 
     const fetchInvoices = async () => {
+      showLoading();
       try {
         const res = await api.get(
           `${import.meta.env.VITE_BACKEND_URL}/invoices/${invoiceId}`
@@ -66,6 +68,8 @@ export default function InvoiceForm() {
         setSelectedClient(Number(data.client_id));
       } catch (err) {
         console.error("Failed to fetch invoices:", err);
+      } finally {
+        hideLoading();
       }
     };
 
@@ -277,23 +281,16 @@ export default function InvoiceForm() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
-    // <form onSubmit={handleSubmit(onSubmit)} className="p-4 md:w-[60%] w-full">
-    <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-4 md:w-[60%] w-full">
+      {/* <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full"> */}
       <h1 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
         {invoiceId ? "Edit Invoice" : "New Invoice"}
       </h1>
 
       <div className="space-y-4">
         <SelectField
+          id="customerName"
           label="Customer"
           items={clientOptions}
           value={selectedClient}
@@ -302,6 +299,7 @@ export default function InvoiceForm() {
             setValue("customerName", val);
           }}
           placeholder="Select or add a customer"
+          error={errors.customerName?.message}
         />
         {customerData && (
           <div className="p-4 border rounded bg-gray-50 text-sm space-y-1 max-w-[300px]">
@@ -329,18 +327,20 @@ export default function InvoiceForm() {
         <FormField
           id="invoice_date"
           label="Invoice Date*"
-          {...register("invoice_date")}
+          // {...register("invoice_date")}
           type="date"
           value={watch("invoice_date")}
           onChange={(e) => setValue("invoice_date", e.target.value)}
+          errors={errors}
         />
         <FormField
           id="due_date"
           label="Due Date*"
           type="date"
-          {...register("due_date")}
+          // {...register("due_date")}
           value={watch("due_date")}
           onChange={(e) => setValue("due_date", e.target.value)}
+          errors={errors}
         />
 
         {/* Item Table */}

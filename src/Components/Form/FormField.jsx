@@ -25,7 +25,7 @@ export default function FormField({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="mt-1 block w-full bg-input border border-border text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring transition-colors"
+        className="mt-1 block w-full border border-border text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring transition-colors"
       />
       {errors && <ErrorMessage errors={errors} field={id} />}
     </div>

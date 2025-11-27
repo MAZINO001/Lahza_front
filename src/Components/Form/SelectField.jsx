@@ -23,23 +23,21 @@ export default function SelectField({
         {label}
       </Label>
       <Select value={value || ""} onValueChange={onChange}>
-        {/* Trigger */}
         <SelectTrigger
           id={id}
-          className="mt-1 block w-full h-10 px-3 bg-input border border-border text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:ring-2 focus:ring-[var(--ring)] focus:border-[var(--primary)] relative items-center transition-colors"
+          className="mt-1 block w-full h-10 px-3  border border-border text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary relative items-center transition-colors"
         >
           <SelectValue
             placeholder={placeholder || "-- Sélectionnez une option --"}
           />
         </SelectTrigger>
 
-        {/* Dropdown */}
-        <SelectContent className="z-50 max-h-60 overflow-auto rounded-md shadow-md border border-[var(--border)] bg-[var(--popover)] text-[var(--popover-foreground)]">
+        <SelectContent className="z-50 max-h-60 overflow-auto rounded-md shadow-md border border-border bg-popover text-popover-foreground">
           {options.map((opt) => (
             <SelectItem
               key={opt.value}
               value={opt.value}
-              className="cursor-pointer py-2 px-3 rounded-md hover:bg-accent hover:text-[var(--accent-foreground)] focus:bg-[var(--accent)] focus:text-[var(--accent-foreground)] transition-colors"
+              className="cursor-pointer py-2 px-3 rounded-md hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground transition-colors"
             >
               {opt.label}
             </SelectItem>

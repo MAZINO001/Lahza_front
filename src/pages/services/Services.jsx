@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from "react";
 import { useState, useEffect } from "react";
 import api from "@/utils/axios";
@@ -28,31 +29,36 @@ import {
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
+import { useLoading } from "@/hooks/LoadingContext";
 
 export default function ServicesPage() {
   const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const navigate = useNavigate();
-  // Fetch services
-  const loadServices = async () => {
-    try {
-      const res = await api.get(`${import.meta.env.VITE_BACKEND_URL}/services`);
-      setServices(res.data);
-    } catch (error) {
-      console.error("Failed to load services:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
+  const { show: showLoading, hide: hideLoading } = useLoading();
   useEffect(() => {
+    const loadServices = async () => {
+      showLoading();
+      try {
+        const res = await api.get(
+          `${import.meta.env.VITE_BACKEND_URL}/services`
+        );
+        setServices(res.data);
+      } catch (error) {
+        console.error("Failed to load services:", error);
+      } finally {
+        hideLoading();
+      }
+    };
+
     loadServices();
   }, []);
+
   const { role } = useAuthContext();
   // Table Columns
   const columns = [
@@ -143,7 +149,7 @@ export default function ServicesPage() {
         };
 
         const onDelete = async () => {
-          await handleDeleteService(service.id, loadServices);
+          await handleDeleteService(service.id);
         };
         return (
           <div className="flex items-center gap-2">
@@ -182,14 +188,6 @@ export default function ServicesPage() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full p-4 bg-slate-50 min-h-screen">
@@ -287,7 +285,6 @@ export default function ServicesPage() {
               open={showUploadModal}
               onClose={() => setShowUploadModal(false)}
               uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadServices`}
-              onSuccess={loadServices}
             />
           </div>
         </div>

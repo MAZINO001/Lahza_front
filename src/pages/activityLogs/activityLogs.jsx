@@ -63,9 +63,10 @@ import {
 import { TheActivityLogs } from "@/lib/mockData";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
+import FormField from "@/Components/Form/FormField";
 
 const logs = TheActivityLogs;
-
+import { formatId } from "@/utils/formatId";
 export default function ActivityLogsPage() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [actionFilter, setActionFilter] = useState("all");
@@ -113,14 +114,13 @@ export default function ActivityLogsPage() {
       accessorKey: "log_id",
       header: "Log ID",
       cell: ({ row }) => {
-        const id = row.original.id;
-        const logId = `LOG-${String(id).padStart(5, "0")}`;
+        const id = row.getValue("id");
         return (
           <Link
             to={`/${role}/logs/${id}`}
             className="font-medium hover:underline cursor-pointer"
           >
-            {logId}
+            {formatId(row.getValue("id"), "LOG")}
           </Link>
         );
       },
@@ -132,7 +132,6 @@ export default function ActivityLogsPage() {
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          <Clock className="mr-2 h-4 w-4" />
           Time
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
@@ -142,7 +141,7 @@ export default function ActivityLogsPage() {
         const isToday =
           format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
         return (
-          <div className="flex flex-col">
+          <div className="flex flex-col  ml-3">
             <span className="font-medium">
               {isToday ? "Today" : format(date, "MMM d, yyyy")}
             </span>
@@ -309,9 +308,9 @@ export default function ActivityLogsPage() {
 
   return (
     <div className="w-full p-4 bg-slate-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
-        <Card className="p-4 mb-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="max-w-7xl mx-auto ">
+        <Card className="p-4 mb-4 ">
+          <div className="flex flex-col gap-4 ">
             <div>
               <Label>Search anything</Label>
               <Input
@@ -431,7 +430,7 @@ export default function ActivityLogsPage() {
                   </Select>
                 </div>
                 <div>
-                  <Label>Date Range</Label>
+                  <Label>Date filter</Label>
                   <Select value={dateRange} onValueChange={setDateRange}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
@@ -467,23 +466,52 @@ export default function ActivityLogsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-              </div>
-              <div>
-                <Label>Reset</Label>
-                <Button
-                  variant="outline"
-                  className="mt-1"
-                  value={actionFilter}
-                  onClick={resetFilters}
-                >
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  reset
-                </Button>
+
+                {/* ****************************** */}
+                <div>
+                  <div className="flex gap-4 ">
+                    <div>
+                      <Label>From Date</Label>
+                      <FormField
+                        id="from_date"
+                        type="date"
+                        onChange={(e) => {
+                          e.target.value;
+                        }}
+                        className="mt-1 block w-full"
+                      />
+                    </div>
+                    <div>
+                      <Label>To Date</Label>
+                      <FormField
+                        id="to_date"
+                        type="date"
+                        onChange={(e) => {
+                          e.target.value;
+                        }}
+                        className="mt-1 block w-full"
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* ****************************** */}
+
+                <div>
+                  <Label>Reset</Label>
+                  <Button
+                    variant="outline"
+                    className="mt-1"
+                    value={actionFilter}
+                    onClick={resetFilters}
+                  >
+                    <RotateCcw className="mr-2 h-4 w-4" />
+                    reset
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </Card>
-        {/* Table */}
         <div className="rounded-lg border bg-white overflow-hidden shadow-sm">
           <Table>
             <TableHeader>
