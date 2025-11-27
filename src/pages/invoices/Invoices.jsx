@@ -431,6 +431,7 @@ export default function Invoices() {
 
                 <DialogContent
                   className="sm:max-w-md"
+                  onInteractOutside={(e) => e.preventDefault()}
                   onPointerDownOutside={(e) => e.preventDefault()}
                   onEscapeKeyDown={(e) => e.preventDefault()}
                 >
