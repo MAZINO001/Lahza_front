@@ -30,7 +30,7 @@ import ClientDetails from "../pages/clients/clientDetails";
 import AddQuote from "../pages/quotes/addNewQuote";
 import InvoiceDetails from "@/pages/invoices/invoiceDetails";
 import AddNewInvoice from "@/pages/invoices/addNewInvoice";
-import Logs from "@/pages/logs/activityLogs";
+import Logs from "@/pages/activityLogs/activityLogs";
 
 import AuthLayout from "../pages/layouts/AuthLayout";
 import AppLayout from "../pages/layouts/AppLayout";
@@ -40,7 +40,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import AddNewService from "@/pages/services/addNewService";
 import AddNewOffer from "@/pages/offers/addNewOffer";
 import OfferDetails from "@/pages/offers/offerDetails";
-import ActivityLogsDetails from "@/pages/logs/ActivityLogsDetails";
+import ActivityLogsDetails from "@/pages/activityLogs/ActivityLogsDetails";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
