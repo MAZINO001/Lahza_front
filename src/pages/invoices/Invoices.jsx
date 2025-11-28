@@ -79,6 +79,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import SignatureExamples from "@/Components/Invoice_Quotes/signatureExamples";
 import { formatId } from "@/utils/formatId";
 import { useLoading } from "@/hooks/LoadingContext";
+import PaymentDetails from "@/pages/invoices/component/PaymentDetails";
 export default function Invoices() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const columns = [
@@ -488,6 +489,7 @@ export default function Invoices() {
   const [rowSelection, setRowSelection] = useState({});
 
   const [Invoices, setInvoices] = useState([]);
+  // const [activeTab, setActiveTab] = useState('activity');
   const { show: showLoading, hide: hideLoading } = useLoading();
   const { role, user } = useAuthContext();
 
@@ -623,54 +625,7 @@ export default function Invoices() {
                         className="p-0 bg-muted/30"
                       >
                         <div className="px-8 py-6">
-                          <h4 className="font-semibold text-sm mb-4 text-foreground">
-                            Activity Details
-                          </h4>
-
-                          <div className="space-y-3 text-sm">
-                            {row.original.changes ? (
-                              Object.entries(row.original.changes).map(
-                                ([key, value]) => {
-                                  const oldVal = value.old ?? "(empty)";
-                                  const newVal = value.new ?? value;
-
-                                  return (
-                                    <div
-                                      key={key}
-                                      className="flex items-center justify-between py-2 border-b border-border/50 last:border-0"
-                                    >
-                                      <div className="flex items-center gap-3">
-                                        <span className="font-medium capitalize">
-                                          {key.replace(/_/g, " ")}
-                                        </span>
-                                      </div>
-                                      <div className="flex items-center gap-3 font-mono text-xs">
-                                        {oldVal !== newVal ? (
-                                          <>
-                                            <span className="text-red-600 line-through">
-                                              {oldVal}
-                                            </span>
-                                            <ArrowRight className="h-3 w-3 text-muted-foreground" />
-                                            <span className="text-green-600 font-semibold">
-                                              {newVal}
-                                            </span>
-                                          </>
-                                        ) : (
-                                          <span className="text-muted-foreground">
-                                            {newVal}
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  );
-                                }
-                              )
-                            ) : (
-                              <p className="text-muted-foreground italic">
-                                No changes recorded
-                              </p>
-                            )}
-                          </div>
+                         <PaymentDetails invoiceId={row.original.id} />
                         </div>
                       </TableCell>
                     </TableRow>
