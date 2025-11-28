@@ -16,6 +16,7 @@ export default function ServiceSelect({
   disabled = false,
   error,
   onChange,
+  className = "",
 }) {
   const [search, setSearch] = useState("");
 
@@ -33,7 +34,9 @@ export default function ServiceSelect({
         disabled={disabled}
         onValueChange={(val) => onChange?.(val)}
       >
-        <SelectTrigger className="mt-1 w-full border border-border bg-background text-foreground hover:border-primary focus:ring-2 focus:ring-ring transition-colors">
+        <SelectTrigger 
+          className={`mt-1 w-full border ${error ? 'border-destructive' : 'border-border'} bg-background text-foreground hover:border-primary focus:ring-2 focus:ring-ring transition-colors ${className}`}
+        >
           <SelectValue placeholder="Select a service" />
         </SelectTrigger>
 

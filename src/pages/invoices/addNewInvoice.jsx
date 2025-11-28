@@ -130,6 +130,7 @@ export default function InvoiceForm() {
     control,
     reset,
     formState: { errors },
+    trigger,
   } = useForm({
     defaultValues: {
       customerName: "",
@@ -155,6 +156,8 @@ export default function InvoiceForm() {
       discountValue: 0,
       discountType: "%",
     },
+    mode: "onChange",
+    reValidateMode: "onChange"
   });
 
   console.log(errors);
@@ -400,9 +403,13 @@ export default function InvoiceForm() {
                           value={selectedService}
                           {...register(`items.${index}.serviceId`, {
                             required: "Service is required",
+                            validate: (value) => !!value || "Service is required"
                           })}
                           error={errors.items?.[index]?.serviceId?.message}
+                          className={errors.items?.[index]?.serviceId ? "border-red-500" : ""}
                           onChange={(val) => {
+                            setValue(`items.${index}.serviceId`, val);
+                            trigger(`items.${index}.serviceId`);
                             val = Number(val); // ensure numeric
                             setValue(`items.${index}.service`, val);
                             setValue(`items.${index}.serviceId`, val); // ADDED: Set serviceId too
@@ -461,16 +468,15 @@ export default function InvoiceForm() {
                           value={watch(`items.${index}.quantity`) ?? ""}
                           {...register(`items.${index}.quantity`, {
                             required: "Quantity is required",
-                            valueAsNumber: true, // important for number validation
-                            min: {
-                              value: 1, // any positive number
-                              message: "must be greater than 0",
-                            },
+                            min: { value: 1, message: "Quantity must be at least 1" },
+                            valueAsNumber: true
                           })}
                           error={errors.items?.[index]?.quantity?.message}
-                          onChange={(e) =>
-                            updateItem(index, "quantity", e.target.value)
-                          }
+                          className={errors.items?.[index]?.quantity ? "border-red-500" : ""}
+                          onChange={(e) => {
+                            updateItem(index, "quantity", e.target.value);
+                            trigger(`items.${index}.quantity`);
+                          }}
                         />
                       </td>
 
@@ -480,16 +486,15 @@ export default function InvoiceForm() {
                           value={watch(`items.${index}.rate`) ?? ""}
                           {...register(`items.${index}.rate`, {
                             required: "Rate is required",
-                            valueAsNumber: true,
-                            min: {
-                              value: 1,
-                              message: "must be greater than 0",
-                            },
+                            min: { value: 0, message: "Rate cannot be negative" },
+                            valueAsNumber: true
                           })}
                           error={errors.items?.[index]?.rate?.message}
-                          onChange={(e) =>
-                            updateItem(index, "rate", e.target.value)
-                          }
+                          className={errors.items?.[index]?.rate ? "border-red-500" : ""}
+                          onChange={(e) => {
+                            updateItem(index, "rate", e.target.value);
+                            trigger(`items.${index}.rate`);
+                          }}
                         />
                       </td>
 
@@ -499,16 +504,16 @@ export default function InvoiceForm() {
                           value={watch(`items.${index}.tax`) ?? ""}
                           {...register(`items.${index}.tax`, {
                             required: "Tax is required",
-                            valueAsNumber: true,
-                            min: {
-                              value: 0,
-                              message: "Tax cannot be negative",
-                            },
+                            min: { value: 0, message: "Tax cannot be negative" },
+                            max: { value: 100, message: "Tax cannot exceed 100%" },
+                            valueAsNumber: true
                           })}
                           error={errors.items?.[index]?.tax?.message}
-                          onChange={(e) =>
-                            updateItem(index, "tax", e.target.value)
-                          }
+                          className={errors.items?.[index]?.tax ? "border-red-500" : ""}
+                          onChange={(e) => {
+                            updateItem(index, "tax", e.target.value);
+                            trigger(`items.${index}.tax`);
+                          }}
                         />
                       </td>
 
