@@ -30,7 +30,7 @@ import ClientDetails from "../pages/clients/clientDetails";
 import AddQuote from "../pages/quotes/addNewQuote";
 import InvoiceDetails from "@/pages/invoices/invoiceDetails";
 import AddNewInvoice from "@/pages/invoices/addNewInvoice";
-import Logs from "@/pages/activityLogs/activityLogs";
+import ActivityLogs from "@/pages/activityLogs/activityLogs";
 
 import AuthLayout from "../pages/layouts/AuthLayout";
 import AppLayout from "../pages/layouts/AppLayout";
@@ -98,7 +98,7 @@ export default function AppRoutes() {
             <Route path="client/:id" element={<ClientDetails />} />
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route path="service/new" element={<AddNewService />} />
-              <Route path="logs" element={<Logs />} />
+              <Route path="logs" element={<ActivityLogs />} />
               <Route path="logs/:id" element={<ActivityLogsDetails />} />
               <Route path="services" element={<Services />} />
               <Route path="service/:id" element={<ServiceDetails />} />

@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // src/pages/ActivityLogsPage.tsx
 import * as React from "react";
 import { useMemo, useState } from "react";
-import { format } from "date-fns";
+import { format, isAfter, isBefore, startOfDay, endOfDay } from "date-fns";
 import {
   flexRender,
   getCoreRowModel,
@@ -73,45 +74,74 @@ export default function ActivityLogsPage() {
   const [tableFilter, setTableFilter] = useState("all");
   const [dateRange, setDateRange] = useState("all");
 
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+
   const resetFilters = () => {
     setGlobalFilter("");
     setActionFilter("all");
     setTableFilter("all");
     setDateRange("all");
+    setFromDate("");
+    setToDate("");
   };
-
   const filteredData = useMemo(() => {
     let filtered = [...logs];
 
+    // 1. Action filter
     if (actionFilter !== "all") {
       filtered = filtered.filter((log) => log.action === actionFilter);
     }
 
+    // 2. Table filter
     if (tableFilter !== "all") {
       filtered = filtered.filter((log) => log.table_name === tableFilter);
     }
 
-    const now = new Date();
-    if (dateRange === "today") {
+    // 3. Date filtering – custom range has priority over quick range
+    const logDate = (d) => new Date(d);
+
+    if (fromDate || toDate) {
       filtered = filtered.filter((log) => {
-        const logDate = new Date(log.created_at);
-        return format(logDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
+        const ld = logDate(log.created_at);
+        const from = fromDate ? startOfDay(logDate(fromDate)) : null;
+        const to = toDate ? endOfDay(logDate(toDate)) : null;
+
+        const afterFrom = from
+          ? isAfter(ld, from) || ld.getTime() === from.getTime()
+          : true;
+        const beforeTo = to
+          ? isBefore(ld, to) || ld.getTime() === to.getTime()
+          : true;
+
+        return afterFrom && beforeTo;
       });
-    } else if (dateRange === "7d") {
-      const weekAgo = new Date(now.setDate(now.getDate() - 7));
-      filtered = filtered.filter((log) => new Date(log.created_at) >= weekAgo);
-    } else if (dateRange === "30d") {
-      const monthAgo = new Date(now.setDate(now.getDate() - 30));
-      filtered = filtered.filter((log) => new Date(log.created_at) >= monthAgo);
+    } else {
+      // Quick range when no custom dates are set
+      const now = new Date();
+      if (dateRange === "today") {
+        const today = format(now, "yyyy-MM-dd");
+        filtered = filtered.filter(
+          (log) => format(logDate(log.created_at), "yyyy-MM-dd") === today
+        );
+      } else if (dateRange === "7d") {
+        const weekAgo = new Date(now.setDate(now.getDate() - 7));
+        filtered = filtered.filter((log) => logDate(log.created_at) >= weekAgo);
+      } else if (dateRange === "30d") {
+        const monthAgo = new Date(now.setDate(now.getDate() - 30));
+        filtered = filtered.filter(
+          (log) => logDate(log.created_at) >= monthAgo
+        );
+      }
+      // "all" → no date filtering
     }
 
     return filtered;
-  }, [actionFilter, tableFilter, dateRange]);
-
+  }, [globalFilter, actionFilter, tableFilter, dateRange, fromDate, toDate]);
   const { role } = useAuthContext();
   const columns = [
     {
-      accessorKey: "log_id",
+      accessorKey: "id",
       header: "Log ID",
       cell: ({ row }) => {
         const id = row.getValue("id");
@@ -120,7 +150,7 @@ export default function ActivityLogsPage() {
             to={`/${role}/logs/${id}`}
             className="font-medium hover:underline cursor-pointer"
           >
-            {formatId(row.getValue("id"), "LOG")}
+            {formatId(id, "LOG")}
           </Link>
         );
       },
@@ -309,8 +339,9 @@ export default function ActivityLogsPage() {
   return (
     <div className="w-full p-4 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto ">
-        <Card className="p-4 mb-4 ">
-          <div className="flex flex-col gap-4 ">
+        <Card className="p-4 mb-4">
+          <div className="flex flex-col gap-4">
+            {/* Global search */}
             <div>
               <Label>Search anything</Label>
               <Input
@@ -466,36 +497,36 @@ export default function ActivityLogsPage() {
                     </SelectContent>
                   </Select>
                 </div>
-
                 {/* ****************************** */}
-                <div>
-                  <div className="flex gap-4 ">
-                    <div>
-                      <Label>From Date</Label>
-                      <FormField
-                        id="from_date"
-                        type="date"
-                        onChange={(e) => {
-                          e.target.value;
-                        }}
-                        className="mt-1 block w-full"
-                      />
-                    </div>
-                    <div>
-                      <Label>To Date</Label>
-                      <FormField
-                        id="to_date"
-                        type="date"
-                        onChange={(e) => {
-                          e.target.value;
-                        }}
-                        className="mt-1 block w-full"
-                      />
-                    </div>
+                <div className="flex gap-3">
+                  <div>
+                    <Label>From Date</Label>
+                    <Input
+                      type="date"
+                      value={fromDate}
+                      onChange={(e) => {
+                        setFromDate(e.target.value);
+                        // when user picks a custom date → reset quick range
+                        if (dateRange !== "all") setDateRange("all");
+                      }}
+                      className="mt-1"
+                    />
                   </div>
-                </div>
+                  <div>
+                    <Label>To Date</Label>
+                    <Input
+                      type="date"
+                      value={toDate}
+                      min={fromDate} // optional – prevents invalid range
+                      onChange={(e) => {
+                        setToDate(e.target.value);
+                        if (dateRange !== "all") setDateRange("all");
+                      }}
+                      className="mt-1"
+                    />
+                  </div>
+                </div>{" "}
                 {/* ****************************** */}
-
                 <div>
                   <Label>Reset</Label>
                   <Button

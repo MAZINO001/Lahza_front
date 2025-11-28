@@ -357,12 +357,12 @@ export default function InvoiceForm() {
         />
 
         {/* Item Table */}
-        <div className="mt-8">
+        <div className="mt-4">
           <h2 className="text-base font-semibold text-gray-800 mb-4">
             Item Table
           </h2>
           <div className="overflow-x-auto border rounded-md rounded-br-none">
-            <table className="w-full min-w-[500px] border-collapse border border-gray-300">
+            <table className="w-full min-w-[500px] border-collapse">
               <thead>
                 <tr className="bg-gray-50">
                   <th className="p-2 text-left text-sm font-semibold text-gray-700">
@@ -458,9 +458,14 @@ export default function InvoiceForm() {
                       <td className="p-2">
                         <FormField
                           type="number"
-                          value={watch(`items.${index}.quantity`) ?? 0}
+                          value={watch(`items.${index}.quantity`) ?? ""}
                           {...register(`items.${index}.quantity`, {
-                            required: "quantity is required",
+                            required: "Quantity is required",
+                            valueAsNumber: true, // important for number validation
+                            min: {
+                              value: 1, // any positive number
+                              message: "must be greater than 0",
+                            },
                           })}
                           error={errors.items?.[index]?.quantity?.message}
                           onChange={(e) =>
@@ -472,9 +477,14 @@ export default function InvoiceForm() {
                       <td className="p-2">
                         <FormField
                           type="number"
-                          value={watch(`items.${index}.rate`) ?? 0}
+                          value={watch(`items.${index}.rate`) ?? ""}
                           {...register(`items.${index}.rate`, {
-                            required: "rate is required",
+                            required: "Rate is required",
+                            valueAsNumber: true,
+                            min: {
+                              value: 1,
+                              message: "must be greater than 0",
+                            },
                           })}
                           error={errors.items?.[index]?.rate?.message}
                           onChange={(e) =>
@@ -486,9 +496,14 @@ export default function InvoiceForm() {
                       <td className="p-2">
                         <FormField
                           type="number"
-                          value={watch(`items.${index}.tax`) ?? 0}
+                          value={watch(`items.${index}.tax`) ?? ""}
                           {...register(`items.${index}.tax`, {
-                            required: "tax is required",
+                            required: "Tax is required",
+                            valueAsNumber: true,
+                            min: {
+                              value: 0,
+                              message: "Tax cannot be negative",
+                            },
                           })}
                           error={errors.items?.[index]?.tax?.message}
                           onChange={(e) =>
@@ -500,9 +515,14 @@ export default function InvoiceForm() {
                       <td className="p-2">
                         <FormField
                           type="number"
-                          value={watch(`items.${index}.discount`) ?? 0}
+                          value={watch(`items.${index}.discount`) ?? ""}
                           {...register(`items.${index}.discount`, {
-                            required: "discount is required",
+                            required: "Discount is required",
+                            valueAsNumber: true,
+                            min: {
+                              value: 0,
+                              message: "Discount cannot be negative",
+                            },
                           })}
                           error={errors.items?.[index]?.discount?.message}
                           onChange={(e) =>
