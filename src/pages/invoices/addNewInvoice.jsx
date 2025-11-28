@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import SelectField from "@/Components/comp-192";
 import { Label } from "@/components/ui/label";
 import ServiceSelect from "@/Components/Invoice_Quotes/ServiceSelector";
-import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import { terms } from "../../lib/Terms_Conditions.json";
 import api from "@/utils/axios";
@@ -40,7 +39,6 @@ export default function InvoiceForm() {
 
         const data = res.data;
         setInvoiceData(data);
-        console.log(data);
         reset({
           customerName: Number(data.client_id),
           invoiceId: data.id,
@@ -108,7 +106,6 @@ export default function InvoiceForm() {
           `${import.meta.env.VITE_BACKEND_URL}/services`
         );
         setServices(res.data);
-        console.log(res.data);
       } catch (error) {
         console.error("Error details:", error.response?.data || error);
         alert(
@@ -159,6 +156,8 @@ export default function InvoiceForm() {
       discountType: "%",
     },
   });
+
+  console.log(errors);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -265,11 +264,9 @@ export default function InvoiceForm() {
         alert("Invoice created successfully!");
       }
 
-      console.log(payload);
       reset();
       navigate(`/${role}/invoices`);
     } catch (error) {
-      console.log(payload);
       console.error("Error details:", error.response?.data || error);
       alert(
         `Failed to ${invoiceId ? "update" : "create"} invoice: ${
@@ -301,11 +298,21 @@ export default function InvoiceForm() {
           label="Customer"
           items={clientOptions}
           value={selectedClient}
+          {...register("customerName", {
+            required: "customerName is require",
+          })}
+          error={errors.customerName?.message}
           onChange={(val) => {
             setSelectedClient(val);
             setValue("customerName", val);
           }}
           placeholder="Select or add a customer"
+        />
+        <input
+          type="hidden"
+          {...register("customerName", {
+            required: "Please select a customer",
+          })}
         />
         {customerData && (
           <div className="p-4 border rounded bg-gray-50 text-sm space-y-1 max-w-[300px]">
@@ -333,7 +340,7 @@ export default function InvoiceForm() {
         <FormField
           id="invoice_date"
           label="Invoice Date*"
-          {...register("invoice_date" , {required:"invoice_date is require"})}
+          {...register("invoice_date", { required: "invoice_date is require" })}
           type="date"
           value={watch("invoice_date")}
           onChange={(e) => setValue("invoice_date", e.target.value)}
@@ -342,8 +349,9 @@ export default function InvoiceForm() {
         <FormField
           id="due_date"
           label="Due Date*"
+          {...register("due_date", { required: "due_date is require" })}
+          error={errors.due_date?.message}
           type="date"
-          {...register("due_date")}
           value={watch("due_date")}
           onChange={(e) => setValue("due_date", e.target.value)}
         />
@@ -390,6 +398,10 @@ export default function InvoiceForm() {
                         <ServiceSelect
                           services={Services}
                           value={selectedService}
+                          {...register(`items.${index}.serviceId`, {
+                            required: "Service is required",
+                          })}
+                          error={errors.items?.[index]?.serviceId?.message}
                           onChange={(val) => {
                             val = Number(val); // ensure numeric
                             setValue(`items.${index}.service`, val);
@@ -402,7 +414,6 @@ export default function InvoiceForm() {
 
                             const unitPrice = Number(service.base_price);
 
-                            // REMOVED: setValue(`items.${index}.id`, service.id);
                             setValue(`items.${index}.rate`, unitPrice);
                             setValue(
                               `items.${index}.description`,
@@ -448,6 +459,10 @@ export default function InvoiceForm() {
                         <FormField
                           type="number"
                           value={watch(`items.${index}.quantity`) ?? 0}
+                          {...register(`items.${index}.quantity`, {
+                            required: "quantity is required",
+                          })}
+                          error={errors.items?.[index]?.quantity?.message}
                           onChange={(e) =>
                             updateItem(index, "quantity", e.target.value)
                           }
@@ -458,6 +473,10 @@ export default function InvoiceForm() {
                         <FormField
                           type="number"
                           value={watch(`items.${index}.rate`) ?? 0}
+                          {...register(`items.${index}.rate`, {
+                            required: "rate is required",
+                          })}
+                          error={errors.items?.[index]?.rate?.message}
                           onChange={(e) =>
                             updateItem(index, "rate", e.target.value)
                           }
@@ -468,6 +487,10 @@ export default function InvoiceForm() {
                         <FormField
                           type="number"
                           value={watch(`items.${index}.tax`) ?? 0}
+                          {...register(`items.${index}.tax`, {
+                            required: "tax is required",
+                          })}
+                          error={errors.items?.[index]?.tax?.message}
                           onChange={(e) =>
                             updateItem(index, "tax", e.target.value)
                           }
@@ -478,6 +501,10 @@ export default function InvoiceForm() {
                         <FormField
                           type="number"
                           value={watch(`items.${index}.discount`) ?? 0}
+                          {...register(`items.${index}.discount`, {
+                            required: "discount is required",
+                          })}
+                          error={errors.items?.[index]?.discount?.message}
                           onChange={(e) =>
                             updateItem(index, "discount", e.target.value)
                           }

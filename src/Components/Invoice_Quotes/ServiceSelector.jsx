@@ -8,18 +8,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-
-// ErrorMessage component
-function ErrorMessage({ errors, field }) {
-  if (!errors?.[field]) return null;
-  return <p className="text-sm text-red-500 mt-1">{errors[field]}</p>;
-}
+import InputError from "../InputError";
 
 export default function ServiceSelect({
   services = [],
   value = "",
   disabled = false,
-  errors,
+  error,
   onChange,
 }) {
   const [search, setSearch] = useState("");
@@ -75,7 +70,9 @@ export default function ServiceSelect({
         </SelectContent>
       </Select>
 
-      {errors && <ErrorMessage errors={errors} field="service" />}
+      {error && (
+        <InputError message={error} className="mt-1 text-destructive" />
+      )}
     </div>
   );
 }

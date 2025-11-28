@@ -315,7 +315,6 @@ export default function Invoices() {
               }
             );
             alert("Signature removed successfully");
-            // Optionally refetch data
           } catch (error) {
             const msg = error?.response?.data?.message || error.message;
             alert(`Failed to remove signature: ${msg}`);
@@ -340,7 +339,7 @@ export default function Invoices() {
             invoice.status === "unpaid"
           ) {
             // Your payment logic
-            alert(`Opening payment for ${invoice.invoice_number}`);
+            alert(`Opening payment for ${invoice.id}`);
           }
         };
 
@@ -383,9 +382,6 @@ export default function Invoices() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
-                    {/* <DialogTitle>
-                      Sign Invoice {invoice.invoice_number}
-                    </DialogTitle> */}
                     <DialogDescription className="space-y-6 mt-4">
                       <p className="text-center text-base">
                         Please upload a{" "}

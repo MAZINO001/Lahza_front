@@ -2,6 +2,7 @@ import { useId } from "react";
 import { Label } from "@/components/ui/label";
 import { SelectNative } from "@/components/ui/select-native";
 import { Button } from "@headlessui/react";
+import InputError from "./InputError";
 
 export default function SelectField({
   label,
@@ -9,6 +10,7 @@ export default function SelectField({
   valueKey = "id",
   labelKey = "name",
   value,
+  error,
   onChange,
   required = false,
   placeholder = "Select an option",
@@ -37,6 +39,7 @@ export default function SelectField({
           </option>
         ))}
       </SelectNative>
+      {error && <InputError message={error} className="text-destructive" />}
     </div>
   );
 }
