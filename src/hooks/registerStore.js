@@ -88,23 +88,20 @@ export const useRegisterStore = create((set) => ({
   start_date: "",
   end_date: "",
   description: "",
-  tags: [],
+  tags: ["imprimeur", "commercial", "filmmaker"],
   resume: "",
-
-  // client-specific
   company: "",
   address: "",
   zip: "",
   phone: "",
   city: "",
   country: "",
-  client_type: "", // "individual" | "company"
+  client_type: "",
   vat: "",
   siren: "",
   ice: "",
   currency: "",
 
-  // generic handlers
   setField: (key, value) =>
     set((state) => ({ ...state, [key]: value })),
 
@@ -135,7 +132,6 @@ export const useRegisterStore = create((set) => ({
       siren: "",
       ice: "",
       currency: "",
-      tags: [],
       resume: "",
       poste: "",
     }),

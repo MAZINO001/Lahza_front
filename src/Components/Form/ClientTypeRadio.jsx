@@ -1,8 +1,8 @@
 import { Label } from "../../Components/ui/label";
 import { RadioGroup, RadioGroupItem } from "../../Components/ui/radio-group";
-import ErrorMessage from "../../Components/Form/ErrorMessage";
+import InputError from "../InputError";
 
-export default function ClientTypeRadio({ value, onChange, errors }) {
+export default function ClientTypeRadio({ value, onChange, error }) {
   return (
     <div className="[&_svg]:w-3 [&_svg]:h-3">
       <Label className="text-foreground">Type de client</Label>
@@ -16,7 +16,7 @@ export default function ClientTypeRadio({ value, onChange, errors }) {
           <RadioGroupItem
             value="individual"
             id="type_individuel"
-            className="border-2 border-border data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+            className={`border-2  ${error ? "border-destructive" : "border-border"} data-[state=checked]:border-primary data-[state=checked]:bg-primary`}
           />
           <Label
             htmlFor="type_individuel"
@@ -31,7 +31,7 @@ export default function ClientTypeRadio({ value, onChange, errors }) {
           <RadioGroupItem
             value="company"
             id="type_entreprise"
-            className="border-2 border-border data-[state=checked]:border-primary data-[state=checked]:bg-primary"
+            className={`border-2  ${error ? "border-destructive" : "border-border"} data-[state=checked]:border-primary data-[state=checked]:bg-primary`}
           />
           <Label
             htmlFor="type_entreprise"
@@ -42,7 +42,9 @@ export default function ClientTypeRadio({ value, onChange, errors }) {
         </div>
       </RadioGroup>
 
-      {errors && <ErrorMessage errors={errors} field="type_client" />}
+      {error && (
+        <InputError message={error} className="mt-2 text-destructive" />
+      )}
     </div>
   );
 }

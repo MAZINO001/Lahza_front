@@ -8,8 +8,8 @@ import TextareaField from "../Form/TextareaField";
 import RoleTabs from "../Form/RoleTabs";
 import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
-import FileUploader from "../comp-545";
-import TagsField from "../comp-57";
+import FileUploader from "../Form/FileUploader";
+import TagsField from "../Form/TagsField";
 import api from "@/utils/axios";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
@@ -23,14 +23,13 @@ export function TeamClientForm() {
     register,
     handleSubmit,
     watch,
-    setValue,
     control,
     reset,
     formState: { errors },
   } = useForm({
     defaultValues: registerStore,
   });
-
+  console.log(errors);
   const theRole = watch("user_type");
 
   const onSubmit = async (data) => {
@@ -82,51 +81,85 @@ export function TeamClientForm() {
 
         {/* ==================== ACCOUNT INFO ==================== */}
         <FormSection title="Informations du compte">
-          <FormField
-            id="name"
-            label="Nom complet"
-            {...register("name", { required: "Le nom est requis" })}
-            error={errors.name?.message}
+          <Controller
+            name="name"
+            control={control}
+            rules={{ required: "Le nom est requis" }}
+            render={({ field }) => (
+              <FormField
+                id="name"
+                label="Nom complet"
+                placeholder="Enter your name"
+                error={errors.name?.message}
+                {...field}
+              />
+            )}
           />
-          <FormField
-            id="email"
-            label="Adresse email"
-            type="email"
-            {...register("email", {
+
+          <Controller
+            name="email"
+            control={control}
+            rules={{
               required: "L'email est requis",
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                 message: "Adresse email invalide",
               },
-            })}
-            error={errors.email?.message}
+            }}
+            render={({ field }) => (
+              <FormField
+                id="email"
+                label="Adresse email"
+                type="email"
+                placeholder="Enter your email"
+                error={errors.email?.message}
+                {...field}
+              />
+            )}
           />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              id="password"
-              label="Mot de passe"
-              type="password"
-              {...register("password", {
+            <Controller
+              name="password"
+              control={control}
+              rules={{
                 required: "Le mot de passe est requis",
                 minLength: { value: 6, message: "Minimum 6 caractères" },
-              })}
-              error={errors.password?.message}
+              }}
+              render={({ field }) => (
+                <FormField
+                  id="password"
+                  label="Mot de passe"
+                  type="password"
+                  placeholder="Enter your password"
+                  error={errors.password?.message}
+                  {...field}
+                />
+              )}
             />
-            <FormField
-              id="password_confirmation"
-              label="Confirmer le mot de passe"
-              type="password"
-              {...register("password_confirmation", {
+
+            <Controller
+              name="password_confirmation"
+              control={control}
+              rules={{
                 required: "La confirmation est requise",
                 validate: (val) =>
                   val === watch("password") ||
                   "Les mots de passe ne correspondent pas",
-              })}
-              error={errors.password_confirmation?.message}
+              }}
+              render={({ field }) => (
+                <FormField
+                  id="password_confirmation"
+                  label="Confirmer le mot de passe"
+                  type="password"
+                  placeholder="Confirm your password"
+                  error={errors.password_confirmation?.message}
+                  {...field}
+                />
+              )}
             />
           </div>
         </FormSection>
-
         {/* ==================== TEAM TAB ==================== */}
         <TabsContent value="team">
           <FormSection title="Détails de l'équipe">
@@ -194,21 +227,34 @@ export function TeamClientForm() {
         <TabsContent value="intern">
           <FormSection title="Détails du stage">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                id="start_date"
-                label="Date de début"
-                type="date"
-                {...register("start_date", {
-                  required: "Date de début requise",
-                })}
-                error={errors.start_date?.message}
+              <Controller
+                name="start_date"
+                control={control}
+                rules={{ required: "Date de début requise" }}
+                render={({ field }) => (
+                  <FormField
+                    id="start_date"
+                    label="Date de début"
+                    type="date"
+                    error={errors.start_date?.message}
+                    {...field}
+                  />
+                )}
               />
-              <FormField
-                id="end_date"
-                label="Date de fin"
-                type="date"
-                {...register("end_date", { required: "Date de fin requise" })}
-                error={errors.end_date?.message}
+
+              <Controller
+                name="end_date"
+                control={control}
+                rules={{ required: "Date de fin requise" }}
+                render={({ field }) => (
+                  <FormField
+                    id="end_date"
+                    label="Date de fin"
+                    type="date"
+                    error={errors.end_date?.message}
+                    {...field}
+                  />
+                )}
               />
 
               <Controller
@@ -239,37 +285,75 @@ export function TeamClientForm() {
                 )}
               />
 
-              <FormField
-                id="linkedin"
-                label="LinkedIn"
-                {...register("linkedin")}
-                error={errors.linkedin?.message}
+              <Controller
+                name="linkedin"
+                control={control}
+                rules={{
+                  pattern: {
+                    value:
+                      /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/,
+                    message:
+                      "Format LinkedIn invalide (ex: www.linkedin.com/in/username)",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormField
+                    id="linkedin"
+                    label="LinkedIn"
+                    error={errors.linkedin?.message}
+                    placeholder="Enter your linkedIn profile link"
+                    {...field}
+                  />
+                )}
               />
-              <FormField
-                id="portfolio"
-                label="Portfolio"
-                {...register("portfolio")}
-                error={errors.portfolio?.message}
+
+              <Controller
+                name="portfolio"
+                control={control}
+                render={({ field }) => (
+                  <FormField
+                    id="portfolio"
+                    label="Portfolio"
+                    placeholder="Enter your portfolio profile link"
+                    error={errors.portfolio?.message}
+                    {...field}
+                  />
+                )}
               />
-              <FormField
-                id="github"
-                label="GitHub"
-                {...register("github")}
-                error={errors.github?.message}
+
+              <Controller
+                name="github"
+                control={control}
+                rules={{
+                  pattern: {
+                    value: /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/?$/,
+                    message:
+                      "Format GitHub invalide (ex: https://github.com/username)",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormField
+                    id="github"
+                    label="GitHub"
+                    error={errors.github?.message}
+                    placeholder="Enter your github profile link"
+                    {...field}
+                  />
+                )}
               />
             </div>
 
-            {/* FileUploader – assumed it accepts register-like props or uses Controller internally */}
             <Controller
               name="cv"
               control={control}
               rules={{ required: "CV requis pour un stagiaire" }}
               render={({ field }) => (
                 <FileUploader
-                  onChange={(files) => {
-                    field.onChange(files); // FileList
-                    registerStore.setField("cv", files);
+                  onChange={(file) => {
+                    field.onChange(file); // This updates react-hook-form
+                    registerStore.setField("cv", file);
                   }}
+                  value={field.value} // Pass the value too
                   error={errors.cv?.message}
                 />
               )}
@@ -292,18 +376,24 @@ export function TeamClientForm() {
                     field.onChange(newTags);
                     registerStore.setField("tags", newTags);
                   }}
+                  error={errors.tags?.message}
+                  {...field}
                 />
               )}
             />
-
-            <TextareaField
-              id="description"
-              label="Description"
-              {...register("description", {
-                required: "Une description est requise",
-              })}
-              error={errors.description?.message}
-              placeholder="Veuillez fournir une brève description de votre rôle ou de vos besoins."
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextareaField
+                  id="description"
+                  label="Description"
+                  {...register("description")}
+                  error={errors.description?.message}
+                  placeholder="Veuillez fournir une brève description de votre rôle ou de vos besoins."
+                  {...field}
+                />
+              )}
             />
           </FormSection>
         </TabsContent>

@@ -3,10 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { X, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, Controller } from "react-hook-form";
 import FormField from "@/Components/Form/FormField";
 import { Textarea } from "@/components/ui/textarea";
-import SelectField from "@/Components/comp-192";
+import SelectField from "@/Components/Form/SelectField";
 import { Label } from "@/components/ui/label";
 import ServiceSelect from "@/Components/Invoice_Quotes/ServiceSelector";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -75,9 +75,12 @@ export default function InvoiceForm() {
   }, [invoiceId]);
 
   const clientOptions = clients.map((c) => ({
-    name: c.name || c.user?.name,
-    id: c.id,
+    label: c.name || c.user?.name || "Unknown Client",
+    value: c.id.toString(), // or keep as number if you prefer
+    // optional: keep full client object for later use
+    client: c,
   }));
+  console.log(clientOptions);
   const customerData = clients.find(
     (c) => String(c.id) === String(selectedClient)
   );
@@ -157,7 +160,7 @@ export default function InvoiceForm() {
       discountType: "%",
     },
     mode: "onChange",
-    reValidateMode: "onChange"
+    reValidateMode: "onChange",
   });
 
   console.log(errors);
@@ -297,25 +300,28 @@ export default function InvoiceForm() {
       </h1>
 
       <div className="space-y-4">
-        <SelectField
-          label="Customer"
-          items={clientOptions}
-          value={selectedClient}
-          {...register("customerName", {
-            required: "customerName is require",
-          })}
-          error={errors.customerName?.message}
-          onChange={(val) => {
-            setSelectedClient(val);
-            setValue("customerName", val);
-          }}
-          placeholder="Select or add a customer"
-        />
-        <input
-          type="hidden"
-          {...register("customerName", {
-            required: "Please select a customer",
-          })}
+        <Controller
+          name="customerName"
+          control={control}
+          rules={{ required: "Please select a customer" }}
+          render={({
+            field,
+            fieldState: { error, invalid, isTouched, isDirty },
+          }) => (
+            <SelectField
+              label="Customer"
+              options={clientOptions}
+              value={field.value || ""}
+              onChange={(val) => {
+                field.onChange(val);
+                setSelectedClient(val); // your local UI state (optional)
+              }}
+              onBlur={field.onBlur} // correct touched behavior
+              error={error?.message}
+              // you can even use invalid/isTouched if you want red border only after blur
+              placeholder="Select or add a customer"
+            />
+          )}
         />
         {customerData && (
           <div className="p-4 border rounded bg-gray-50 text-sm space-y-1 max-w-[300px]">
@@ -333,32 +339,49 @@ export default function InvoiceForm() {
           </div>
         )}
 
-        <FormField
-          id="invoiceId"
-          label="Invoice#"
-          readonly
-          value={watch("invoiceId")}
-          disabled
-        />
-        <FormField
-          id="invoice_date"
-          label="Invoice Date*"
-          {...register("invoice_date", { required: "invoice_date is require" })}
-          type="date"
-          value={watch("invoice_date")}
-          onChange={(e) => setValue("invoice_date", e.target.value)}
-          error={errors.invoice_date?.message}
-        />
-        <FormField
-          id="due_date"
-          label="Due Date*"
-          {...register("due_date", { required: "due_date is require" })}
-          error={errors.due_date?.message}
-          type="date"
-          value={watch("due_date")}
-          onChange={(e) => setValue("due_date", e.target.value)}
+        <Controller
+          name="invoiceId"
+          control={control}
+          render={({ field }) => (
+            <FormField
+              id="invoiceId"
+              label="Invoice#"
+              readonly
+              disabled
+              {...field}
+            />
+          )}
         />
 
+        <Controller
+          name="invoice_date"
+          control={control}
+          rules={{ required: "Invoice date is required" }}
+          render={({ field }) => (
+            <FormField
+              id="invoice_date"
+              label="Invoice Date*"
+              type="date"
+              error={errors.invoice_date?.message}
+              {...field}
+            />
+          )}
+        />
+
+        <Controller
+          name="due_date"
+          control={control}
+          rules={{ required: "Due date is required" }}
+          render={({ field }) => (
+            <FormField
+              id="due_date"
+              label="Due Date*"
+              type="date"
+              error={errors.due_date?.message}
+              {...field}
+            />
+          )}
+        />
         {/* Item Table */}
         <div className="mt-4">
           <h2 className="text-base font-semibold text-gray-800 mb-4">
@@ -398,58 +421,67 @@ export default function InvoiceForm() {
                       className="border-b border-gray-200 hover:bg-gray-50"
                     >
                       <td className="p-2">
-                        <ServiceSelect
-                          services={Services}
-                          value={selectedService}
-                          {...register(`items.${index}.serviceId`, {
+                        <Controller
+                          name={`items.${index}.serviceId`}
+                          control={control}
+                          rules={{
                             required: "Service is required",
-                            validate: (value) => !!value || "Service is required"
-                          })}
-                          error={errors.items?.[index]?.serviceId?.message}
-                          className={errors.items?.[index]?.serviceId ? "border-red-500" : ""}
-                          onChange={(val) => {
-                            setValue(`items.${index}.serviceId`, val);
-                            trigger(`items.${index}.serviceId`);
-                            val = Number(val); // ensure numeric
-                            setValue(`items.${index}.service`, val);
-                            setValue(`items.${index}.serviceId`, val); // ADDED: Set serviceId too
-
-                            const service = Services.find(
-                              (s) => Number(s.id) === val
-                            );
-                            if (!service) return;
-
-                            const unitPrice = Number(service.base_price);
-
-                            setValue(`items.${index}.rate`, unitPrice);
-                            setValue(
-                              `items.${index}.description`,
-                              service.description
-                            );
-
-                            const quantity = Number(
-                              watch(`items.${index}.quantity`) ?? 1
-                            );
-                            const tax = Number(
-                              watch(`items.${index}.tax`) ?? 0
-                            );
-                            const discount = Number(
-                              watch(`items.${index}.discount`) ?? 0
-                            );
-
-                            const base = quantity * unitPrice;
-                            const taxAmount = base * (tax / 100);
-                            const totalAfterTax = base + taxAmount;
-                            const discountAmount =
-                              totalAfterTax * (discount / 100);
-                            const finalAmount = totalAfterTax - discountAmount;
-
-                            setValue(
-                              `items.${index}.amount`,
-                              Number(finalAmount.toFixed(2))
-                            );
+                            validate: (value) =>
+                              !!value || "Service is required",
                           }}
-                          placeholder="Select a service"
+                          render={({ field, fieldState: { error } }) => (
+                            <ServiceSelect
+                              services={Services}
+                              value={field.value || ""} // ← always in sync
+                              onChange={(val) => {
+                                const serviceId = Number(val);
+
+                                // 1. Update RHF (this auto-triggers validation!)
+                                field.onChange(serviceId);
+
+                                // 2. Now safely do all your side effects
+                                const service = Services.find(
+                                  (s) => Number(s.id) === serviceId
+                                );
+                                if (!service) return;
+
+                                const unitPrice = Number(service.base_price);
+
+                                setValue(`items.${index}.rate`, unitPrice);
+                                setValue(
+                                  `items.${index}.description`,
+                                  service.description
+                                );
+                                setValue(`items.${index}.service`, serviceId); // if you store both
+
+                                // Recalculate total
+                                const quantity = Number(
+                                  watch(`items.${index}.quantity`) || 1
+                                );
+                                const tax = Number(
+                                  watch(`items.${index}.tax`) || 0
+                                );
+                                const discount = Number(
+                                  watch(`items.${index}.discount`) || 0
+                                );
+
+                                const base = quantity * unitPrice;
+                                const taxAmount = base * (tax / 100);
+                                const totalAfterTax = base + taxAmount;
+                                const discountAmount =
+                                  totalAfterTax * (discount / 100);
+                                const finalAmount =
+                                  totalAfterTax - discountAmount;
+
+                                setValue(
+                                  `items.${index}.amount`,
+                                  Number(finalAmount.toFixed(2))
+                                );
+                              }}
+                              error={error?.message}
+                              placeholder="Select a service"
+                            />
+                          )}
                         />
 
                         {selectedService && (
@@ -468,11 +500,13 @@ export default function InvoiceForm() {
                           value={watch(`items.${index}.quantity`) ?? ""}
                           {...register(`items.${index}.quantity`, {
                             required: "Quantity is required",
-                            min: { value: 1, message: "Quantity must be at least 1" },
-                            valueAsNumber: true
+                            min: {
+                              value: 1,
+                              message: "Quantity must be at least 1",
+                            },
+                            valueAsNumber: true,
                           })}
                           error={errors.items?.[index]?.quantity?.message}
-                          className={errors.items?.[index]?.quantity ? "border-red-500" : ""}
                           onChange={(e) => {
                             updateItem(index, "quantity", e.target.value);
                             trigger(`items.${index}.quantity`);
@@ -486,11 +520,13 @@ export default function InvoiceForm() {
                           value={watch(`items.${index}.rate`) ?? ""}
                           {...register(`items.${index}.rate`, {
                             required: "Rate is required",
-                            min: { value: 0, message: "Rate cannot be negative" },
-                            valueAsNumber: true
+                            min: {
+                              value: 0,
+                              message: "Rate cannot be negative",
+                            },
+                            valueAsNumber: true,
                           })}
                           error={errors.items?.[index]?.rate?.message}
-                          className={errors.items?.[index]?.rate ? "border-red-500" : ""}
                           onChange={(e) => {
                             updateItem(index, "rate", e.target.value);
                             trigger(`items.${index}.rate`);
@@ -504,12 +540,17 @@ export default function InvoiceForm() {
                           value={watch(`items.${index}.tax`) ?? ""}
                           {...register(`items.${index}.tax`, {
                             required: "Tax is required",
-                            min: { value: 0, message: "Tax cannot be negative" },
-                            max: { value: 100, message: "Tax cannot exceed 100%" },
-                            valueAsNumber: true
+                            min: {
+                              value: 0,
+                              message: "Tax cannot be negative",
+                            },
+                            max: {
+                              value: 100,
+                              message: "Tax cannot exceed 100%",
+                            },
+                            valueAsNumber: true,
                           })}
                           error={errors.items?.[index]?.tax?.message}
-                          className={errors.items?.[index]?.tax ? "border-red-500" : ""}
                           onChange={(e) => {
                             updateItem(index, "tax", e.target.value);
                             trigger(`items.${index}.tax`);
@@ -522,17 +563,22 @@ export default function InvoiceForm() {
                           type="number"
                           value={watch(`items.${index}.discount`) ?? ""}
                           {...register(`items.${index}.discount`, {
-                            required: "Discount is required",
-                            valueAsNumber: true,
+                            required: "discount is required",
                             min: {
                               value: 0,
-                              message: "Discount cannot be negative",
+                              message: "discount cannot be negative",
                             },
+                            max: {
+                              value: 100,
+                              message: "discount cannot exceed 100%",
+                            },
+                            valueAsNumber: true,
                           })}
                           error={errors.items?.[index]?.discount?.message}
-                          onChange={(e) =>
-                            updateItem(index, "discount", e.target.value)
-                          }
+                          onChange={(e) => {
+                            updateItem(index, "discount", e.target.value);
+                            trigger(`items.${index}.discount`);
+                          }}
                         />
                       </td>
 

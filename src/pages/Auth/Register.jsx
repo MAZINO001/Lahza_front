@@ -125,24 +125,21 @@ export default function Register({
               </CardContent>
 
               <Separator className="my-6 border-border" />
-
-              {!auth.user && (
-                <p className="text-center text-sm text-muted-foreground pb-6">
-                  Vous avez déjà un compte ?{" "}
-                  {/* <span
-                    onClick={() => setMode("login")}
-                    className="text-[var(--primary)] font-semibold hover:underline hover:text-[color-mix(in oklch, var(--primary) 70%, black)] transition-colors cursor-pointer"
-                  >
-                    Se connecter
-                  </span> */}
-                  <Link
-                    href={"/login"}
-                    className="text-primary font-semibold hover:underline hover:text-[color-mix(in oklch, var(--primary) 70%, black)] transition-colors"
-                  >
-                    Se connecter
-                  </Link>
-                </p>
-              )}
+              <p className="text-center text-sm text-muted-foreground pb-6">
+                Vous avez déjà un compte ?{" "}
+                <span
+                  onClick={() => setMode("login")}
+                  className="text-primary font-semibold hover:underline hover:text-[color-mix(in oklch, var(--primary) 70%, black)] transition-colors cursor-pointer"
+                >
+                  Se connecter
+                </span>
+                <Link
+                  href={"/login"}
+                  className="text-primary font-semibold hover:underline hover:text-[color-mix(in oklch, var(--primary) 70%, black)] transition-colors"
+                >
+                  Se connecter
+                </Link>
+              </p>
             </Card>
           </motion.div>
         )}

@@ -9,7 +9,7 @@ import FormField from "@/Components/Form/FormField";
 import CountrySelect from "@/Components/Form/CountrySelect";
 import CurrencySelect from "@/Components/Form/CurrencySelect";
 import ClientTypeRadio from "@/Components/Form/ClientTypeRadio";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
 import api from "@/utils/axios";
@@ -23,15 +23,16 @@ export function ClientForm({ onClientCreated }) {
   const { role } = useAuthContext();
   const registerStore = useRegisterStore();
   const {
-    register,
     handleSubmit,
     watch,
     setValue,
+    control,
+    trigger,
     formState: { errors },
   } = useForm({
     defaultValues: registerStore,
   });
-
+  console.log(errors);
   const typeClientValue = watch("client_type"); // Access type_client
   const paysValue = watch("country"); // Access country
 
@@ -64,15 +65,12 @@ export function ClientForm({ onClientCreated }) {
       )
     );
 
-    console.log("Filled data:", filledData);
     try {
       const response = await api.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         filledData
       );
-      console.log("Registration successful:", response.data);
       if (role === "admin") {
-        console.log("New client created");
         onClientCreated?.();
       } else {
         navigate("/auth/login");
@@ -84,14 +82,40 @@ export function ClientForm({ onClientCreated }) {
     }
   };
 
+  // const handleNextStep = async () => {
+  //   if (isLoading || currentStep === steps.length) return;
+  //   setIsLoading(true);
+  //   try {
+  //     setCurrentStep((prev) => prev + 1);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleNextStep = async () => {
-    if (isLoading || currentStep === steps.length) return;
-    setIsLoading(true);
-    try {
-      setCurrentStep((prev) => prev + 1);
-    } finally {
-      setIsLoading(false);
+    if (currentStep === steps.length) return;
+
+    // Trigger validation for the fields that belong to the current step
+    const fieldsToValidate =
+      currentStep === 1
+        ? [
+            "client_type",
+            "name",
+            "email",
+            "password",
+            "password_confirmation",
+            "phone",
+            "company",
+          ]
+        : ["address", "zip", "city", "country"];
+
+    const isStepValid = await trigger(fieldsToValidate); // ← this is the key
+
+    if (!isStepValid) {
+      // Optional: show a toast or scroll to first error
+      return;
     }
+
+    setCurrentStep((prev) => prev + 1);
   };
 
   const handlePrevStep = () => {
@@ -120,101 +144,158 @@ export function ClientForm({ onClientCreated }) {
       {currentStep === 1 && (
         <>
           <FormSection title="Informations du client">
-            {/* Type de client */}
-            {/* <ClientTypeRadio
-              value={typeClientValue}
-              onChange={(value) => handleChange("type_client", value)}
-              errors={errors}
-            /> */}
-            <ClientTypeRadio
-              value={typeClientValue}
-              onChange={(value) => {
-                handleChange("client_type", value);
-                registerStore.setField("client_type", value); // Add this line
+            <Controller
+              name="client_type"
+              control={control}
+              rules={{
+                required: "Le type de client est requise",
               }}
-              errors={errors}
+              render={({ field }) => (
+                <ClientTypeRadio
+                  value={field.value}
+                  onChange={(value) => {
+                    field.onChange(value);
+                    registerStore.setField("client_type", value);
+                  }}
+                  error={errors.client_type?.message}
+                />
+              )}
             />
+
             {/* Nom + company */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                id="name"
-                label="Nom complet"
-                // {...register("nom")}
-                value={watch("name")}
-                onChange={(e) => {
-                  setValue("name", e.target.value);
-                  registerStore.setField("name", e.target.value);
-                }}
-                errors={errors.name}
+              <Controller
+                name="name"
+                control={control}
+                rules={{ required: "Le nom est requis" }}
+                render={({ field }) => (
+                  <FormField
+                    id="name"
+                    label="Nom complet"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      registerStore.setField("name", e.target.value);
+                    }}
+                    error={errors.name?.message}
+                  />
+                )}
               />
-              <FormField
-                id="company"
-                label="Nom de l’entreprise"
-                // {...register("company")}
-                value={watch("company")}
-                onChange={(e) => {
-                  setValue("company", e.target.value);
-                  registerStore.setField("company", e.target.value);
-                }}
-                errors={errors.company}
+
+              <Controller
+                name="company"
+                control={control}
+                rules={{ required: "Le nom est requis" }}
+                render={({ field }) => (
+                  <FormField
+                    id="company"
+                    label="Nom de l'entreprise"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      registerStore.setField("company", e.target.value);
+                    }}
+                    error={errors.company?.message}
+                  />
+                )}
               />
             </div>
 
             {/* Email + Téléphone */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                id="email"
-                type="email"
-                label="Adresse email"
-                // {...register("email")}
-                value={watch("email")}
-                onChange={(e) => {
-                  setValue("email", e.target.value);
-                  registerStore.setField("email", e.target.value);
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: "L'email est requis",
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: "Adresse email invalide",
+                  },
                 }}
-                errors={errors}
+                render={({ field }) => (
+                  <FormField
+                    id="email"
+                    type="email"
+                    label="Adresse email"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      registerStore.setField("email", e.target.value);
+                    }}
+                    error={errors.email?.message}
+                  />
+                )}
               />
-              <FormField
-                id="phone"
-                label="Téléphone"
-                // {...register("phone")}
-                value={watch("phone")}
-                onChange={(e) => {
-                  setValue("phone", e.target.value);
-                  registerStore.setField("phone", e.target.value);
-                }}
-                errors={errors.phone}
+
+              <Controller
+                name="phone"
+                control={control}
+                rules={{ required: "Téléphone est requis" }}
+                render={({ field }) => (
+                  <FormField
+                    id="phone"
+                    label="Téléphone"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      registerStore.setField("phone", e.target.value);
+                    }}
+                    error={errors.phone?.message}
+                  />
+                )}
               />
             </div>
 
             {/* Mot de passe + Confirmation */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                id="password"
-                type="password"
-                label="Mot de passe"
-                // {...register("password")}
-                value={watch("password")}
-                onChange={(e) => {
-                  setValue("password", e.target.value);
-                  registerStore.setField("password", e.target.value);
+              <Controller
+                name="password"
+                control={control}
+                rules={{
+                  required: "Le mot de passe est requis",
+                  minLength: { value: 6, message: "Minimum 6 caractères" },
                 }}
-                errors={errors.password}
+                render={({ field }) => (
+                  <FormField
+                    id="password"
+                    type="password"
+                    label="Mot de passe"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      registerStore.setField("password", e.target.value);
+                    }}
+                    error={errors.password?.message}
+                  />
+                )}
               />
-              <FormField
-                id="password_confirmation"
-                type="password"
-                label="Confirmer le mot de passe"
-                // {...register("password_confirmation")}
-                value={watch("password_confirmation")}
-                onChange={(e) => {
-                  setValue("password_confirmation", e.target.value);
-                  registerStore.setField(
-                    "password_confirmation",
-                    e.target.value
-                  );
+
+              <Controller
+                name="password_confirmation"
+                control={control}
+                rules={{
+                  required: "La confirmation est requise",
+                  validate: (val) =>
+                    val === watch("password") ||
+                    "Les mots de passe ne correspondent pas",
                 }}
-                errors={errors.password_confirmation}
+                render={({ field }) => (
+                  <FormField
+                    id="password_confirmation"
+                    type="password"
+                    label="Confirmer le mot de passe"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      registerStore.setField(
+                        "password_confirmation",
+                        e.target.value
+                      );
+                    }}
+                    error={errors.password_confirmation?.message}
+                  />
+                )}
               />
             </div>
           </FormSection>
@@ -237,137 +318,168 @@ export function ClientForm({ onClientCreated }) {
           <FormSection title="Adresse et Informations">
             {/* Adresse + Zip */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                id="address"
-                label="Adresse"
-                // {...register("address")}
-                value={watch("address")}
-                onChange={(e) => {
-                  setValue("address", e.target.value);
-                  registerStore.setField("address", e.target.value);
+              <Controller
+                name="address"
+                control={control}
+                rules={{
+                  required: "La confirmation est requise",
                 }}
-                errors={errors}
+                render={({ field, fieldState: { error } }) => (
+                  <FormField
+                    id="address"
+                    label="Adresse"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      registerStore.setField("address", e.target.value);
+                    }}
+                    error={error?.message}
+                  />
+                )}
               />
-              <FormField
-                id="zip"
-                label="Code postal"
-                // {...register("zip")}
-                value={watch("zip")}
-                onChange={(e) => {
-                  setValue("zip", e.target.value);
-                  registerStore.setField("zip", e.target.value);
+
+              <Controller
+                name="zip"
+                control={control}
+                rules={{
+                  required: "La confirmation est requise",
                 }}
-                errors={errors}
+                render={({ field, fieldState: { error } }) => (
+                  <FormField
+                    id="zip"
+                    label="Code postal"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      registerStore.setField("zip", e.target.value);
+                    }}
+                    error={error?.message}
+                  />
+                )}
               />
             </div>
 
             {/* Ville + Pays */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                id="city"
-                label="Ville"
-                // {...register("city")}
-                value={watch("city")}
-                onChange={(e) => {
-                  setValue("city", e.target.value);
-                  registerStore.setField("city", e.target.value);
+              <Controller
+                name="city"
+                control={control}
+                rules={{
+                  required: "La confirmation est requise",
                 }}
-                errors={errors}
+                render={({ field, fieldState: { error } }) => (
+                  <FormField
+                    id="city"
+                    label="Ville"
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e);
+                      registerStore.setField("city", e.target.value);
+                    }}
+                    error={error?.message}
+                  />
+                )}
               />
-              {/* <CountrySelect
-                value={paysValue}
-                onChange={(value) => handleChange("pays", value)}
-                errors={errors}
-              /> */}
 
-              <CountrySelect
-                id="country"
-                value={paysValue}
-                onChange={(value) => {
-                  handleChange("country", value);
-                  registerStore.setField("country", value); // Add this line
+              <Controller
+                name="country"
+                control={control}
+                rules={{
+                  required: "La confirmation est requise",
                 }}
-                errors={errors}
+                render={({ field, fieldState: { error } }) => (
+                  <CountrySelect
+                    id="country"
+                    {...field}
+                    onChange={(value) => {
+                      field.onChange(value);
+                      registerStore.setField("country", value);
+                    }}
+                    error={errors.country?.message}
+                  />
+                )}
               />
             </div>
 
-            {/* Conditional fields */}
+            {/* Conditional fields for company */}
             {typeClientValue === "company" && (
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {paysValue === "Maroc" ? (
                   <>
-                    {/* <FormField
-                      id="tva"
-                      label="Numéro TVA"
-                      // {...register("tva")}
-                      value={watch("tva")}
-                      onChange={(e) => {
-                        setValue("tva", e.target.value);
-                        registerStore.setField("tva", e.target.value);
+                    <Controller
+                      name="ice"
+                      control={control}
+                      rules={{
+                        required: "La confirmation est requise",
                       }}
-                    /> */}
-                    <FormField
-                      id="ice"
-                      label="ICE"
-                      // {...register("ice")}
-                      value={watch("ice")}
-                      onChange={(e) => {
-                        setValue("ice", e.target.value);
-                        registerStore.setField("ice", e.target.value);
-                      }}
+                      render={({ field, fieldState: { error } }) => (
+                        <FormField
+                          id="ice"
+                          label="ICE"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            registerStore.setField("ice", e.target.value);
+                          }}
+                          error={error?.message}
+                        />
+                      )}
                     />
-                    {/* <FormField
-                      id="devise"
-                      label="Devise"
-                      value="MAD"
-                      disabled
-                    /> */}
 
-                    {/* <FormField id="tax" label="tax" value="20%" disabled /> */}
-                    {/* <FormField
-                      id="siren"
-                      label="siren"
-                      // {...register("siren")}
-                      value={watch("siren")}
-                      onChange={(e) => {
-                        setValue("siren", e.target.value);
-                        registerStore.setField("siren", e.target.value);
-                      }}
-                      errors={errors}
-                    /> */}
+                    {/* VAT - read only */}
                     <FormField
                       id="vat"
                       label="TVA"
                       value={registerStore.vat}
                       disabled
-                      readOnly // <- explicitly mark it as read-only
+                      readOnly
                     />
-                    <CurrencySelect
-                      value="MAD"
-                      disabled
-                      readOnly // <- add this
-                    />
+
+                    {/* Currency - disabled */}
+                    <CurrencySelect value="MAD" disabled readOnly />
                   </>
                 ) : (
                   <>
-                    <FormField
-                      id="siren"
-                      label="siren"
-                      // {...register("siren")}
-                      value={watch("siren")}
-                      onChange={(e) => {
-                        setValue("siren", e.target.value);
-                        registerStore.setField("siren", e.target.value);
+                    <Controller
+                      name="siren"
+                      control={control}
+                      rules={{
+                        required: "La confirmation est requise",
                       }}
-                      errors={errors}
+                      render={({ field, fieldState: { error } }) => (
+                        <FormField
+                          id="siren"
+                          label="SIREN"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            registerStore.setField("siren", e.target.value);
+                          }}
+                          error={error?.message}
+                        />
+                      )}
                     />
-                    <CurrencySelect />
+
+                    <Controller
+                      name="currency"
+                      control={control}
+                      rules={{
+                        required: "La confirmation est requise",
+                      }}
+                      render={({ field }) => (
+                        <CurrencySelect
+                          {...field}
+                          value={field.value}
+                          onChange={field.onChange}
+                          error={errors.currency?.message}
+                        />
+                      )}
+                    />
                   </>
                 )}
               </div>
             )}
           </FormSection>
-
           <div className="flex justify-between mt-8">
             <Button
               type="button"

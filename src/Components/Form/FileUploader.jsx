@@ -7,21 +7,13 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useEffect } from "react";
+import InputError from "../InputError";
 
-export default function Component() {
+export default function Component({ error, onChange }) {
+  // Add onChange prop
   const maxSizeMB = 2;
-  const maxSize = maxSizeMB * 1024 * 1024; // 2MB default
+  const maxSize = maxSizeMB * 1024 * 1024;
   const registerStore = useRegisterStore();
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    reset,
-    formState: { error },
-  } = useForm({
-    defaultValues: registerStore,
-  });
 
   const [
     { files, isDragging, errors },
@@ -38,13 +30,17 @@ export default function Component() {
     accept: ".pdf,.doc,.docx,.txt,.rtf",
     maxSize,
   });
+
   const previewUrl = files[0]?.preview || null;
   const fileName = files[0]?.file.name || null;
+
   useEffect(() => {
     if (files.length > 0) {
       registerStore.setField("cv", files[0].file);
+      onChange?.(files[0].file);
     } else {
       registerStore.setField("cv", null);
+      onChange?.(null);
     }
   }, [files]);
   return (
@@ -57,7 +53,7 @@ export default function Component() {
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           data-dragging={isDragging || undefined}
-          className="relative flex h-30 flex-col items-center justify-center overflow-hidden rounded-xl border bo  rder-dashed border-input p-4 transition-colors has-[input:focus]:border-ring has-[input:focus]:ring-[3px] has-[input:focus]:ring-ring/50 data-[dragging=true]:bg-accent/50"
+          className={`relative flex h-30 flex-col items-center justify-center overflow-hidden rounded-xl border ${error ? "border-destructive" : "border-border"} p-4 transition-colors has-[input:focus]:border-ring has-[input:focus]:ring-[3px] has-[input:focus]:ring-ring/50 data-[dragging=true]:bg-accent/50`}
         >
           <input
             {...getInputProps()}
@@ -117,6 +113,9 @@ export default function Component() {
           <AlertCircleIcon className="size-3 shrink-0" />
           <span>{errors[0]}</span>
         </div>
+      )}
+      {error && (
+        <InputError message={error} className="mt-2 text-destructive" />
       )}
     </div>
   );

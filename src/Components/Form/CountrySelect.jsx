@@ -8,9 +8,9 @@ import {
   SelectValue,
 } from "../../Components/ui/select";
 import { Label } from "../../Components/ui/label";
-import ErrorMessage from "../../Components/Form/ErrorMessage";
+import InputError from "../InputError";
 
-export default function CountrySelect({ value, onChange, errors }) {
+export default function CountrySelect({ value, onChange, error }) {
   const [countries, setCountries] = useState([]);
   const [search, setSearch] = useState("");
   useEffect(() => {
@@ -51,12 +51,14 @@ export default function CountrySelect({ value, onChange, errors }) {
       </Label>
       <Select value={value} onValueChange={onChange}>
         {/* Trigger */}
-        <SelectTrigger className="mt-1 w-full border border-border bg-background text-foreground hover:border-primary focus:ring-2 focus:ring-ring transition-colors">
+        <SelectTrigger
+          className={`mt-1 w-full border ${error ? "border-destructive" : "border-border"} bg-background text-foreground hover:border-primary focus:ring-2 focus:ring-ring transition-colors `}
+        >
           <SelectValue placeholder="Sélectionnez un pays" />
         </SelectTrigger>
 
         {/* Dropdown */}
-        <SelectContent className="z-50 max-h-60 overflow-auto rounded-lg shadow-md border border-border bg-popover text-popover-foreground">
+        <SelectContent className="z-50 max-h-60 overflow-auto rounded-lg shadow-md border border-border bg-popover text-popover-foreground ">
           {/* Search Input */}
           <div className="p-2 border-b border-border">
             <Input
@@ -64,7 +66,7 @@ export default function CountrySelect({ value, onChange, errors }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.stopPropagation()}
-              className="w-full bg-muted text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring"
+              className="w-full bg-muted text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring "
             />
           </div>
 
@@ -75,7 +77,7 @@ export default function CountrySelect({ value, onChange, errors }) {
                 key={`${country}-${index}`} // React list key
                 // value={`${country}-${index}`}
                 value={country}
-                className="cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground "
               >
                 {country}
               </SelectItem>
@@ -88,7 +90,9 @@ export default function CountrySelect({ value, onChange, errors }) {
         </SelectContent>
       </Select>
 
-      {errors && <ErrorMessage errors={errors} field="pays" />}
+      {error && (
+        <InputError message={error} className="mt-2 text-destructive" />
+      )}
     </div>
   );
 }

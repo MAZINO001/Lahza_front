@@ -27,18 +27,10 @@ export default function Settings() {
   return (
     <div className="container mx-2 px-2 py-4">
       <Card className="shadow-lg">
-        {/* <CardHeader>
-          <CardTitle>Settings</CardTitle>
-          <CardDescription>
-            Manage your account, preferences, and security.
-          </CardDescription>
-        </CardHeader> */}
-
         <CardContent>
           <Tabs defaultValue="security" className="w-full">
             <TabsList className="grid grid-cols-2 mb-4">
               <TabsTrigger value="security">Security</TabsTrigger>
-              {/* <TabsTrigger value="notifications">Notifications</TabsTrigger> */}
               <TabsTrigger value="preferences">Preferences</TabsTrigger>
             </TabsList>
 

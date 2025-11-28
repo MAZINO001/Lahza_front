@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,6 +14,7 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import SelectField from "@/Components/Form/SelectField";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
 import { useLoading } from "@/hooks/LoadingContext";
+import TextareaField from "@/Components/Form/TextareaField";
 export default function AddNewService() {
   const {
     register,
@@ -21,6 +22,7 @@ export default function AddNewService() {
     reset,
     setValue,
     watch,
+    control,
     formState: { errors, isLoading, isSubmitSuccessful },
   } = useForm({
     defaultValues: {
@@ -110,84 +112,104 @@ export default function AddNewService() {
       className="p-4  flex flex-col gap-4 w-full"
     >
       <div>
-        <InputLabel htmlFor="email" value={"service name"} />
-        <Input
-          id="name"
-          type="text"
-          placeholder="e.g., Premium Web Development"
-          {...register("name", {
-            required: "name is required",
-          })}
-          value={watch("name")}
-          onChange={(e) => setValue("name", e.target.value)}
-          className="mt-1 block w-full"
+        <Controller
+          name="name"
+          control={control}
+          rules={{ required: "Please select an offer status" }}
+          render={({ field }) => (
+            <FormField
+              label="Service Name"
+              id="name"
+              type="text"
+              placeholder="e.g., Premium Web Development"
+              {...register("name", {
+                required: "name is required",
+              })}
+              error={errors.name?.message}
+              {...field}
+            />
+          )}
         />
-        <InputError message={errors.name?.message} className="mt-2" />
       </div>
 
       <div className="space-y-2">
-        <InputLabel htmlFor="email" value={"service description"} />
-
-        <Textarea
-          id="description"
-          type="text"
-          placeholder="Describe the service in detail..."
-          {...register("description", {
-            required: "description is required",
-          })}
-          value={watch("description")}
-          onChange={(e) => setValue("description", e.target.value)}
-          className="mt-1 block w-full"
+        <Controller
+          name="description"
+          control={control}
+          rules={{ required: "Please enter an offer description" }}
+          render={({ field }) => (
+            <TextareaField
+              label="Service Description"
+              id="description"
+              type="text"
+              placeholder="Describe the service in detail..."
+              {...register("description", {
+                required: "description is required",
+              })}
+              error={errors.description?.message}
+              {...field}
+            />
+          )}
         />
-        <InputError message={errors.description?.message} className="mt-2" />
       </div>
 
       <div className="space-y-2">
-        <InputLabel htmlFor="email" value={"service price"} />
-
-        <FormField
-          id="base_price"
-          type="number"
-          placeholder="0.00"
-          {...register("base_price", {
-            required: "base_price is required",
-          })}
-          value={watch("base_price")}
-          onChange={(e) => setValue("base_price", e.target.value)}
-          className="mt-1 block w-full"
+        <Controller
+          name="base_price"
+          control={control}
+          rules={{ required: "Please enter an offer base_price" }}
+          render={({ field }) => (
+            <FormField
+              label="service price"
+              id="base_price"
+              type="number"
+              placeholder="0.00"
+              {...register("base_price", {
+                required: "base_price is required",
+              })}
+              error={errors.base_price?.message}
+              {...field}
+            />
+          )}
         />
-        <InputError message={errors.base_price?.message} className="mt-2" />
       </div>
-      <div className="space-y-2">
-        <InputLabel htmlFor="tax_rate" value="Tax Rate" />
-        <SelectField
-          id="tax_rate"
-          className="mt-1 block w-full"
-          value={watch("tax_rate")}
-          onChange={(value) => setValue("tax_rate", value)}
-          options={[
-            { value: "20", label: "20%" },
-            { value: "0", label: "0% (No Tax)" },
-          ]}
-        />
-        <InputError message={errors.tax_rate?.message} className="mt-2" />
-      </div>
+      <Controller
+        name="tax_rate"
+        control={control}
+        rules={{ required: "Please select an offer tax_rate" }}
+        render={({ field }) => (
+          <SelectField
+            label="Tax Rate"
+            id="tax_rate"
+            className="mt-1 block w-full"
+            options={[
+              { value: "20", label: "20%" },
+              { value: "0", label: "0% (No Tax)" },
+            ]}
+            error={errors.tax_rate?.message}
+            {...field}
+          />
+        )}
+      />
 
       {editId && (
-        <div className="space-y-2">
-          <InputLabel htmlFor="status" value="Service Status" />
-          <SelectField
-            id="status"
-            className="mt-1 block w-full"
-            value={watch("status")}
-            onChange={(value) => setValue("status", value)}
-            options={[
-              { value: "active", label: "Active" },
-              { value: "inactive", label: "Inactive" },
-            ]}
-          />
-          <InputError message={errors.status?.message} className="mt-2" />
-        </div>
+        <Controller
+          name="status"
+          control={control}
+          rules={{ required: "Please select an offer status" }}
+          render={({ field }) => (
+            <SelectField
+              label="Offer Status"
+              id="status"
+              options={[
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+              ]}
+              error={errors.status?.message}
+              {...field}
+            />
+          )}
+        />
       )}
 
       <div className="flex justify-end gap-3 pt-4">

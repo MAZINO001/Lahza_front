@@ -1,26 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import api from "@/utils/axios";
 import FormField from "@/Components/Form/FormField";
-import InputLabel from "@/Components/InputLabel";
-import InputError from "@/Components/InputError";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import SelectField from "@/Components/Form/SelectField";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
 import { useLoading } from "@/hooks/LoadingContext";
+import TextareaField from "@/Components/Form/TextareaField";
 
 export default function AddNewOffer() {
   const {
-    register,
     handleSubmit,
     reset,
-    setValue,
-    watch,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -130,137 +125,156 @@ export default function AddNewOffer() {
     }
   };
 
-  const serviceOptions = services.map((service) => ({
-    value: service.id.toString(),
-    label: service.name,
+  const serviceOptions = services.map((s) => ({
+    label: s.name,
+    value: String(s.id), // Convert to string
   }));
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="p-4 flex flex-col gap-4 w-full"
     >
-      <div>
-        <InputLabel htmlFor="title" value="Offer Title" />
-        <Input
-          id="title"
-          type="text"
-          placeholder="e.g., Premium Web Development"
-          {...register("title", { required: "Title is required" })}
-          className="mt-1 block w-full"
-        />
-        <InputError message={errors.title?.message} />
-      </div>
+      <Controller
+        name="title"
+        control={control}
+        rules={{ required: "Title is required" }}
+        render={({ field }) => (
+          <FormField
+            label="Offer Title"
+            error={errors.title?.message}
+            id="title"
+            type="text"
+            placeholder="e.g., Premium Web Development"
+            {...field}
+          />
+        )}
+      />
 
-      <div>
-        <InputLabel htmlFor="description" value="Offer Description" />
-        <Textarea
-          id="description"
-          placeholder="Describe the offer in detail..."
-          {...register("description", { required: "Description is required" })}
-          className="mt-1 block w-full"
-        />
-        <InputError message={errors.description?.message} />
-      </div>
+      <Controller
+        name="description"
+        control={control}
+        rules={{ required: "Description is required" }}
+        render={({ field }) => (
+          <TextareaField
+            label="Offer Description"
+            error={errors.description?.message}
+            id="description"
+            placeholder="Describe the offer in detail..."
+            {...field}
+          />
+        )}
+      />
 
-      <div>
-        <InputLabel htmlFor="service_id" value="Service" />
-        <SelectField
-          id="service_id"
-          options={serviceOptions}
-          value={watch("service_id")?.toString() || ""}
-          onChange={(value) => {
-            setValue("service_id", parseInt(value, 10));
-          }}
-          placeholder="Select a service"
-          className="mt-1 block w-full"
-        />
-        <InputError message={errors.service_id?.message} />
-      </div>
-      <div>
-        <InputLabel htmlFor="discount_type" value="Discount Type" />
-        <SelectField
-          id="discount_type"
-          value={watch("discount_type")}
-          onChange={(value) => setValue("discount_type", value)}
-          options={[
-            { value: "fixed", label: "Fixed" },
-            { value: "percent", label: "Percent" },
-          ]}
-          className="mt-1 block w-full"
-        />
-        <InputError message={errors.discount_type?.message} />
-      </div>
+      <Controller
+        name="service_id"
+        control={control}
+        rules={{ required: "Please select a service" }}
+        render={({ field, fieldState: { error } }) => (
+          <SelectField
+            label="Service"
+            options={serviceOptions}
+            value={String(field.value || "")}
+            onChange={(val) => {
+              field.onChange(Number(val));
+            }}
+            onBlur={field.onBlur}
+            error={error?.message}
+            placeholder="Select or add a Service"
+          />
+        )}
+      />
 
-      <div>
-        <InputLabel htmlFor="discount_value" value="Discount Value" />
-        <FormField
-          id="discount_value"
-          type="number"
-          step="1"
-          placeholder="0.00"
-          value={watch("discount_value") || ""}
-          onChange={(e) =>
-            setValue(
-              "discount_value",
-              e.target.value ? parseFloat(e.target.value) : 0
-            )
-          }
-          className="mt-1 block w-full"
-        />
-        <InputError message={errors.discount_value?.message} />
-      </div>
+      <Controller
+        name="discount_type"
+        control={control}
+        rules={{ required: "Please select a discount type" }}
+        render={({ field, fieldState: { error } }) => (
+          <SelectField
+            label="Discount Type"
+            id="discount_type"
+            options={[
+              { value: "fixed", label: "Fixed" },
+              { value: "percent", label: "Percent" },
+            ]}
+            placeholder="Select discount type"
+            value={field.value || ""}
+            onChange={field.onChange}
+            onBlur={field.onBlur}
+            error={error?.message}
+          />
+        )}
+      />
 
-      <div>
-        <InputLabel htmlFor="start_date" value="Start Date" />
-        <FormField
-          id="start_date"
-          type="date"
-          {...register("start_date", {
-            required: "Start date is required",
-          })}
-          className="mt-1 block w-full"
-        />
-        <InputError message={errors.start_date?.message} />
-      </div>
+      <Controller
+        name="discount_value"
+        control={control}
+        rules={{
+          required: "Discount value is required",
+          min: { value: 0, message: "Discount value cannot be negative" },
+        }}
+        render={({ field: { onChange, ...field } }) => (
+          <FormField
+            label="Discount Value"
+            error={errors.discount_value?.message}
+            id="discount_value"
+            type="number"
+            step="1"
+            placeholder="0.00"
+            {...field}
+            onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+          />
+        )}
+      />
 
-      <div>
-        <InputLabel htmlFor="end_date" value="End Date" />
-        <FormField
-          id="end_date"
-          type="date"
-          {...register("end_date", {
-            required: "End date is required",
-            validate: (value) => {
-              const startDate = watch("start_date");
-              if (startDate && value < startDate) {
-                return "End date must be after start date";
-              }
-              return true;
-            },
-          })}
-          className="mt-1 block w-full"
-        />
-        <InputError message={errors.end_date?.message} />
-      </div>
+      <Controller
+        name="start_date"
+        control={control}
+        rules={{ required: "Start date is required" }}
+        render={({ field }) => (
+          <FormField
+            id="start_date"
+            label="Start Date*"
+            error={errors.start_date?.message}
+            type="date"
+            {...field}
+          />
+        )}
+      />
+
+      <Controller
+        name="end_date"
+        control={control}
+        rules={{ required: "End date is required" }}
+        render={({ field }) => (
+          <FormField
+            label="End Date"
+            error={errors.end_date?.message}
+            id="end_date"
+            type="date"
+            {...field}
+          />
+        )}
+      />
 
       {editId && (
-        <div>
-          <InputLabel htmlFor="status" value="Offer Status" />
-          <SelectField
-            id="status"
-            value={watch("status")}
-            onChange={(value) => setValue("status", value)}
-            options={[
-              { value: "active", label: "Active" },
-              { value: "inactive", label: "Inactive" },
-            ]}
-            className="mt-1 block w-full"
-          />
-          <InputError message={errors.status?.message} />
-        </div>
+        <Controller
+          name="status"
+          control={control}
+          rules={{ required: "Please select an offer status" }}
+          render={({ field }) => (
+            <SelectField
+              label="Offer Status"
+              id="status"
+              options={[
+                { value: "active", label: "Active" },
+                { value: "inactive", label: "Inactive" },
+              ]}
+              error={errors.status?.message}
+              {...field}
+            />
+          )}
+        />
       )}
-
       <div className="flex justify-end gap-3 pt-4">
         <Link to={`/${role}/offers`}>
           <Button type="button" variant="outline">
