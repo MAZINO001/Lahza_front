@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import PdfPreview from "./PdfPreview";
-import api from "@/utils/axios";
+import api from "@/lib/utils/axios";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import axios from "axios";
 
@@ -46,7 +46,6 @@ export default function Inv_Qt_page({ type, data }) {
         alert("Please allow popups to print the document.");
       }
 
-      console.log(`${type} opened for printing`);
     } catch (error) {
       console.error("Print error:", error);
       alert(`Failed to print ${type}`);
@@ -94,8 +93,7 @@ export default function Inv_Qt_page({ type, data }) {
     } catch (error) {
       console.error("Error details:", error.response?.data || error);
       alert(
-        `Failed to convert to invoice: ${
-          error.response?.data?.message || error.message
+        `Failed to convert to invoice: ${error.response?.data?.message || error.message
         }`
       );
     }
@@ -107,14 +105,14 @@ export default function Inv_Qt_page({ type, data }) {
           {isInvoice ? "INV" : "QT"}-000{id}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="h-8 w-8 cursor-pointer">
-            <Link
-              to={`/${role}/${type}/new`}
-              state={{ [isInvoice ? "invoiceId" : "quoteId"]: id }}
-            >
+          <Link
+            to={`/${role}/${type}/${id}/edit`}
+            state={{ [isInvoice ? "invoiceId" : "quoteId"]: id }}
+          >
+            <Button variant="outline" className="h-8 w-8 cursor-pointer">
               <Edit2 size={20} />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
           <Button
             onClick={handleDownloadPdf}
             variant="outline"
@@ -142,8 +140,8 @@ export default function Inv_Qt_page({ type, data }) {
           )}
 
           {type === "quote" &&
-          role === "admin" &&
-          data?.status !== "confirmed" ? (
+            role === "admin" &&
+            data?.status !== "confirmed" ? (
             <>
               <div className="w-px h-6 bg-gray-300 mx-2"></div>
               <div>

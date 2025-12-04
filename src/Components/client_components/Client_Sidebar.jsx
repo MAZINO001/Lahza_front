@@ -78,14 +78,13 @@ export default function Client_Sidebar({ data }) {
             <Link
               to={`/${role}/client/${c.id}`}
               key={index}
-              className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${
-                c.id == currentId
-                  ? "bg-blue-50 border-l-blue-500"
-                  : "border-l-transparent hover:bg-gray-100"
-              }`}
+              className={`flex items-center justify-between rounded-tr-lg rounded-br-lg  px-2 py-4 cursor-pointer border-l-2 transition ${c.id == currentId
+                ? "bg-blue-50 border-l-blue-500"
+                : "border-l-transparent hover:bg-gray-100"
+                }`}
             >
-              <div className="font-medium text-gray-900">{c.user?.name}</div>
-              <div className="text-sm text-gray-500">MAD 0.00</div>
+              <div className="font-medium text-gray-900 max-w-[70%]">{c.user?.name}</div>
+              <div className="text-md text-gray-500">MAD 0.00</div>
             </Link>
           ))
         )}

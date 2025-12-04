@@ -36,6 +36,14 @@ const statusConfig = {
     label: "Overdue",
     color: "bg-red-100 text-red-800 border-red-200",
   },
+  active: {
+    label: "Active",
+    color: "bg-green-100 text-green-800 border-green-200",
+  },
+  inactive: {
+    label: "Inactive",
+    color: "bg-gray-100 text-gray-700 border-gray-300",
+  },
 };
 
 export function StatusBadge({ status, type = "default", is_fully_signed }) {

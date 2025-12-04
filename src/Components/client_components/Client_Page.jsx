@@ -23,37 +23,33 @@ export default function Client_Page({ data }) {
     { id: "statement", label: "Statement" },
   ];
 
-  console.log("id:", id);
-  console.log("clients:", data);
-  const filteredData = data.filter((item) => item.user_id === Number(id));
-  console.log("filteredData:", filteredData);
 
   return (
     <div className=" w-[75%] flex flex-col">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-2">
+      <div className="bg-white px-2 py-4 border-b border-gray-200 p-2">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold text-gray-900 ">
-            Cora Lebsack III
+            {data.client_type == "company" ? data.company : data.user.name}
           </h1>
           <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-gray-100 rounded cursor-pointer">
-              <Link to={`/${role}/client/edit`} state={{ clientId: id }}>
+            <Button variant="outline" className="p-2 rounded cursor-pointer">
+              <Link to={`/${role}/client/${id}/edit`} state={{ clientId: id }}>
                 <Edit2 size={20} />
               </Link>
-            </button>
-            <button className="p-2 hover:bg-gray-100 rounded cursor-pointer">
+            </Button>
+            {/* <button className="p-2 rounded cursor-pointer">
               <MessageSquare className="w-5 h-5" />
-            </button>
-            <Button className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600">
+            </button> */}
+            {/* <Button className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded hover:bg-blue-600">
               New Transaction
-            </Button>
-            <Button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50">
+            </Button> */}
+            {/* <Button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50">
               More
-            </Button>
-            <button className="p-2 hover:bg-gray-100 rounded cursor-pointer">
+            </Button> */}
+            <div className="w-px h-6 bg-gray-300 mx-2"></div>
+            <Button variant="outline" className="p-2 rounded cursor-pointer">
               <X className="w-5 h-5" />
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -65,11 +61,10 @@ export default function Client_Page({ data }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
-              }`}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
+                }`}
             >
               {tab.label}
             </button>
@@ -81,72 +76,65 @@ export default function Client_Page({ data }) {
       <div className="flex-1 overflow-y-auto p-4">
         {activeTab === "overview" && (
           <div className="grid grid-cols-2 gap-4">
-            {/* Left Column */}
-            {data &&
-              filteredData.map((c, index) => {
-                return (
-                  <div key={index} className="space-y-4">
-                    {/* Contact Info */}
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
-                      <h3 className="text-sm font-semibold text-gray-900 mb-4">
-                        {c.client_type == "company" ? c.company : c.user.name}
-                      </h3>
+            <div className="space-y-4">
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <h3 className="text-sm font-semibold text-gray-900 mb-4">
+                  {data.client_type == "company" ? data.company : data.user.name}
+                </h3>
 
-                      <div className="flex items-start gap-4 mb-4">
-                        <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                          <span className="text-gray-500 text-sm">CL</span>
-                        </div>
-                        <div className="flex-1">
-                          <div className="text-sm font-medium text-gray-900 mb-1">
-                            {c.user.name}
-                          </div>
-                          <div className="text-sm text-gray-600 mb-2">
-                            {c.user.email}
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                            <Phone className="w-4 h-4" />
-                            {c.phone}
-                          </div>
-                        </div>
-                      </div>
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span className="text-gray-500 text-sm">CL</span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900 mb-1">
+                      {data.user.name}
                     </div>
-
-                    {/* Address Section */}
-                    <div className="bg-white rounded-lg border border-gray-200 p-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-semibold text-gray-900">
-                          ADDRESS
-                        </h3>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div>
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-sm font-medium text-gray-900">
-                              Billing Address
-                            </h4>
-                            <button className="text-gray-400 hover:text-gray-600">
-                              <Edit className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <div className="text-sm text-gray-600 font-medium mb-1">
-                            {c.city}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {c.address}
-                          </div>
-                          <div className="text-sm text-gray-600 mt-2">
-                            {c.address}
-                          </div>
-                          <div className="text-sm text-gray-600">
-                            {c.country}
-                          </div>
-                        </div>
-                      </div>
+                    <div className="text-sm text-gray-600 mb-2">
+                      {data.user.email}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                      <Phone className="w-4 h-4" />
+                      {data.phone}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+              </div>
+
+              {/* Address Section */}
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    ADDRESS
+                  </h3>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-sm font-medium text-gray-900">
+                        Billing Address
+                      </h4>
+                      <button className="text-gray-400 hover:text-gray-600">
+                        <Edit className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="text-sm text-gray-600 font-medium mb-1">
+                      {data.city}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {data.address}
+                    </div>
+                    <div className="text-sm text-gray-600 mt-2">
+                      {data.address}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {data.country}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             {/* Right Column */}
             <div className="space-y-6">
               {/* Payment Info */}

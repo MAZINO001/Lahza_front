@@ -4,7 +4,7 @@ import { Plus, ChevronDown } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
-import api from "@/utils/axios";
+import api from "@/lib/utils/axios";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +12,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { StatusBadge } from "../StatusBadge";
 
 export default function ServicesSidebar({ data = [], type }) {
   const title = type === "service" ? "Services" : "Offers";
@@ -94,11 +95,10 @@ export default function ServicesSidebar({ data = [], type }) {
               to={`/${role}/${type}/${item.id}`}
               onMouseEnter={() => prefetchItem(item.id)}
               onFocus={() => prefetchItem(item.id)}
-              className={`block mb-1 rounded-tr-lg rounded-br-lg p-3 cursor-pointer border-l-2 transition-all ${
-                item.id == currentId
+              className={`block mb-1 rounded-tr-lg rounded-br-lg p-3 cursor-pointer border-l-2 transition-all ${item.id == currentId
                   ? "bg-blue-50 border-l-blue-500"
                   : "border-l-transparent hover:bg-gray-50"
-              }`}
+                }`}
             >
               <div className="flex flex-col gap-2">
                 {/* Title */}
@@ -113,17 +113,7 @@ export default function ServicesSidebar({ data = [], type }) {
                       ${Number(item.base_price).toFixed(2)}
                     </span>
                   )}
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      item.status === "active"
-                        ? "bg-green-100 text-green-800"
-                        : item.status === "inactive"
-                          ? "bg-red-100 text-red-800"
-                          : "bg-gray-100 text-gray-800"
-                    }`}
-                  >
-                    {item.status === "active" ? "Active" : "Inactive"}
-                  </span>
+                  <StatusBadge status={item.status} />
                 </div>
               </div>
             </Link>

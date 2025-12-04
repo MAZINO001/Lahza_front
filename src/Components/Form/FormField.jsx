@@ -1,5 +1,5 @@
-import { Label } from "../../Components/ui/label";
-import { Input } from "../../Components/ui/input";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import InputError from "../InputError";
 
 export default function FormField({

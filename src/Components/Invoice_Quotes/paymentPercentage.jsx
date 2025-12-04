@@ -1,15 +1,35 @@
+// PaymentPercentage.tsx
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import InputLabel from "../InputLabel";
-import InputError from "../InputError";
 import FormField from "../Form/FormField";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { LinkIcon } from "lucide-react";
 
-export default function PaymentPercentage({ data }) {
-  const totalAmount = parseFloat(data) || 0;
+
+export default function PaymentPercentage({
+  totalAmount: initialTotalAmount,
+  onGenerateLink,
+  isOpen: controlledOpen,
+  onOpenChange,
+}) {
+  const totalAmount = parseFloat(initialTotalAmount) || 0;
 
   const {
+    register,
     watch,
     setValue,
+    handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -18,12 +38,13 @@ export default function PaymentPercentage({ data }) {
     },
   });
 
-  const amountToPayInput = watch("amount_to_pay");
+  const amountToPay = watch("amount_to_pay");
 
+  // Recalculate remaining when percentage changes
   useEffect(() => {
-    const percentage = parseFloat(amountToPayInput);
+    const percentage = parseFloat(amountToPay) || 0;
 
-    if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+    if (percentage < 0 || percentage > 100) {
       setValue("amount_rest", "");
       return;
     }
@@ -32,52 +53,114 @@ export default function PaymentPercentage({ data }) {
     const remaining = totalAmount - paidAmount;
 
     setValue("amount_rest", remaining > 0 ? remaining.toFixed(2) : "0.00");
-  }, [amountToPayInput, totalAmount, setValue]);
+  }, [amountToPay, totalAmount, setValue]);
+
+  // Reset form when dialog opens
+  useEffect(() => {
+    if (controlledOpen) {
+      reset({
+        amount_to_pay: "50",
+        amount_rest: "",
+      });
+    }
+  }, [controlledOpen, reset]);
+
+  const onSubmit = (data) => {
+    const percentage = parseFloat(data.amount_to_pay) || 0;
+    if (percentage >= 1 && percentage <= 100) {
+      onGenerateLink(percentage);
+
+      if (onOpenChange) {
+        onOpenChange(false);
+      }
+    }
+  };
+
+  const isControlled = controlledOpen !== undefined;
 
   return (
-    <div
-      className="flex items-center justify-between gap-6"
-      onMouseDown={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-      onPointerDown={(e) => e.stopPropagation()}
-    >
-      <div className="w-[47%]">
-        <InputLabel htmlFor="amount_to_pay" value="Amount to Pay (%)" />
+    <Dialog open={isControlled ? controlledOpen : undefined} onOpenChange={onOpenChange}>
+      <DialogTrigger asChild>
+        <Button variant="outline" size="icon" title="Generate Partial Payment Link">
+          <LinkIcon className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
 
-        <FormField
-          type="number"
-          min="0"
-          max="100"
-          step="1"
-          placeholder="50"
-          className="mt-1"
-          value={watch("amount_to_pay") || ""}
-          onChange={(e) => {
-            const val = e.target.value;
-            if (val === "" || (!isNaN(val) && val >= 0 && val <= 100)) {
-              setValue("amount_to_pay", val);
-            }
-          }}
-        />
-        <InputError message={errors.amount_to_pay?.message} />
-      </div>
+      <DialogContent
+        className="sm:max-w-md"
+        onInteractOutside={(e) => e.preventDefault()}
+        onPointerDownOutside={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle>Generate Partial Payment Link</DialogTitle>
+        </DialogHeader>
 
-      <div className="w-[47%]">
-        <InputLabel htmlFor="amount_rest" value="Remaining Amount" />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <DialogDescription className="space-y-6">
+            <div className="flex items-center justify-between gap-6">
+              <div className="w-[47%]">
+                <FormField
+                  label="Amount to Pay (%)"
+                  type="number"
+                  min="1"
+                  max="100"
+                  step="1"
+                  placeholder="50"
+                  error={errors.amount_to_pay?.message}
+                  {...register("amount_to_pay", {
+                    required: "Percentage is required",
+                    min: { value: 1, message: "Min 1%" },
+                    max: { value: 100, message: "Max 100%" },
+                  })}
+                />
+              </div>
 
-        <FormField
-          type="text"
-          placeholder="0.00"
-          value={
-            watch("amount_rest") !== undefined && watch("amount_rest") !== ""
-              ? `${watch("amount_rest")} DH`
-              : ""
-          }
-          readOnly
-          disabled
-          className="mt-1 block w-full bg-gray-100 font-medium text-gray-700"
-        />
-      </div>
-    </div>
+              <div className="w-[47%]">
+                <FormField
+                  label="Remaining Amount"
+                  type="text"
+                  value={
+                    watch("amount_rest")
+                      ? `${watch("amount_rest")} DH`
+                      : "—"
+                  }
+                  readOnly
+                  disabled
+                  className="bg-gray-50 font-medium text-gray-700"
+                />
+              </div>
+            </div>
+
+            <div className="text-sm text-gray-600">
+              <strong>Total Due:</strong> {totalAmount.toFixed(2)} DH
+              <br />
+              <strong>Customer will pay:</strong>{" "}
+              {amountToPay && !isNaN(parseFloat(amountToPay))
+                ? ((totalAmount * parseFloat(amountToPay)) / 100).toFixed(2)
+                : "0.00"}{" "}
+              DH
+            </div>
+          </DialogDescription>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <DialogClose asChild>
+              <Button type="button" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
+
+            <DialogClose asChild>
+              <Button
+                type="submit"
+                className={"ml-4"}
+                disabled={!amountToPay || parseFloat(amountToPay) < 1 || parseFloat(amountToPay) > 100}
+              >
+                Generate Link
+              </Button>
+            </DialogClose>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

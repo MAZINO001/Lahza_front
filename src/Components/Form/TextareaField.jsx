@@ -1,6 +1,6 @@
-import { Label } from "../../Components/ui/label";
-import { Textarea } from "../../Components/ui/textarea";
-import InputError from "../../Components/InputError";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import InputError from "../InputError";
 
 export default function TextareaField({
   id,

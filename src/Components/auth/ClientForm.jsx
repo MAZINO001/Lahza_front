@@ -12,7 +12,7 @@ import ClientTypeRadio from "@/Components/Form/ClientTypeRadio";
 import { Controller, useForm } from "react-hook-form";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
-import api from "@/utils/axios";
+import api from "@/lib/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
 
 export function ClientForm({ onClientCreated }) {
@@ -32,7 +32,6 @@ export function ClientForm({ onClientCreated }) {
   } = useForm({
     defaultValues: registerStore,
   });
-  console.log(errors);
   const typeClientValue = watch("client_type"); // Access type_client
   const paysValue = watch("country"); // Access country
 

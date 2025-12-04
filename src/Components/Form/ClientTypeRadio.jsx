@@ -1,5 +1,5 @@
-import { Label } from "../../Components/ui/label";
-import { RadioGroup, RadioGroupItem } from "../../Components/ui/radio-group";
+import { Label } from "../ui/label";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import InputError from "../InputError";
 
 export default function ClientTypeRadio({ value, onChange, error }) {

@@ -36,224 +36,17 @@ import {
 } from "@/components/ui/table";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link } from "react-router-dom";
+import { DataTable } from "../table/DataTable";
+import { dashBoardTableColumns } from "@/features/dashboard/dashboardTableColumn";
 
-export default function Invoices({ data }) {
+export default function Invoices({ data, isLoading }) {
   const { role } = useAuthContext();
-  const columns = [
-    // {
-    //   id: "select",
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && "indeterminate")
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
-    {
-      accessorKey: "invoice_number",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Invoice ID <ArrowUpDown className="ml-1 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const id = row.original?.id;
-        const InvoiceNumber = row.original?.invoice_number;
-        return (
-          <Link
-            to={`${id}`}
-            className="font-medium text-slate-900 hover:underline  ml-3"
-          >
-            {InvoiceNumber ?? id}
-          </Link>
-        );
-      },
-    },
-    // {
-    //   accessorKey: "title",
-    //   header: ({ column }) => {
-    //     return (
-    //       <Button
-    //         variant="ghost"
-    //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    //       >
-    //         Title
-    //         <ArrowUpDown />
-    //       </Button>
-    //     );
-    //   },
-    //   cell: ({ row }) => <div>{row.getValue("title")}</div>,
-    // },
-    {
-      accessorKey: "total_amount",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Amount <ArrowUpDown className="ml-1 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("total_amount"));
 
-        // Format the amount as a dollar amount
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
+  const columns = React.useMemo(
+    () => dashBoardTableColumns(role),
+    [role]
+  );
 
-        return <div className=" ml-3 font-medium">{formatted}</div>;
-      },
-    },
-    {
-      accessorKey: "balance_due",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Deposit <ArrowUpDown className="ml-1 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const invoice = row.original;
-        const balanceDue = parseFloat(invoice.balance_due);
-        const totalAmount = parseFloat(invoice.total_amount);
-
-        // Avoid division by zero or NaN
-        const depositPercentage = totalAmount
-          ? ((balanceDue / totalAmount) * 100).toFixed(1)
-          : 0;
-
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(balanceDue);
-
-        return (
-          <div className="ml-3">
-            <div className=" font-medium">{formatted}</div>
-            <div className="text-xs text-muted-foreground">
-              ({depositPercentage}%)
-            </div>
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "due_date",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Due Date
-            <ArrowUpDown />
-          </Button>
-        );
-      },
-      cell: ({ row }) => {
-        const date = new Date(row.getValue("due_date"));
-        const formatted = date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-        });
-        return <div className="ml-3">{formatted}</div>;
-      },
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const status = row.getValue("status");
-        const due_date = row.original.due_date;
-
-        if (status === "overdue") {
-          const daysOverdue = Math.max(
-            0,
-            Math.ceil((new Date() - new Date(due_date)) / (1000 * 60 * 60 * 24))
-          );
-
-          return (
-            <div className="flex items-center gap-2">
-              <StatusBadge status={status} />
-              <span className="text-xs text-red-600">
-                {daysOverdue} {daysOverdue === 1 ? "day" : "days"}
-              </span>
-            </div>
-          );
-        }
-
-        return <StatusBadge status={status} />;
-      },
-    },
-
-    {
-      id: "actions",
-      enableHiding: false,
-      header: "Actions",
-      cell: ({ row }) => {
-        const invoice = row.original;
-
-        const handlePay = () => {
-          if (
-            invoice.status === "partially_paid" ||
-            invoice.status === "overdue"
-          ) {
-            alert(`Opening payment for ${invoice.invoice_number}`);
-          }
-        };
-
-        const handleDownload = () => {
-          alert(`Downloading invoice ${invoice.invoice_number}`);
-        };
-        return (
-          <div className="flex items-center gap-2">
-            {role === "client" &&
-              (invoice.status === "partially_paid" ||
-                invoice.status === "overdue") && (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={handlePay}
-                  className="h-8"
-                >
-                  Pay
-                </Button>
-              )}
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleDownload}
-              className="h-8"
-            >
-              <Download className="h-4 w-4" />
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -262,7 +55,7 @@ export default function Invoices({ data }) {
 
   const table = useReactTable({
     data,
-    columns,
+    columns: columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -280,117 +73,13 @@ export default function Invoices({ data }) {
   });
 
   return (
-    <div className="w-full ">
-      <div className="flex items-center">
-        {/* <Input
-          placeholder="Filter by title..."
-          value={table.getColumn("title")?.getFilterValue() ?? ""}
-          onChange={(event) =>
-            table.getColumn("title")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        /> */}
-        <DropdownMenu>
-          {/* <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger> */}
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="overflow-hidden rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-2">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+    <div className="w-full">
+      <DataTable
+        table={table}
+        columns={columns}
+
+        isLoading={isLoading}
+      />
     </div>
   );
 }

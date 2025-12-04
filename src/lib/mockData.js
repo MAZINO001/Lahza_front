@@ -1202,3 +1202,66 @@ export const TheActivityLogs = [
         device: "Server",
     },
 ];
+
+export const TheProjects = [
+    {
+        id: 1,
+        client_id: 3,
+        name: "E-commerce Website",
+        description:
+            "A complete online store with payments, admin dashboard, and inventory tracking.",
+        status: "in_progress",
+        start_date: "2025-01-05",
+        estimated_end_date: "2025-02-10",
+        created_at: "2025-01-05T10:21:00",
+        updated_at: "2025-01-15T15:42:00",
+    },
+    {
+        id: 2,
+        client_id: 1,
+        name: "Brand Identity + Landing Page",
+        description:
+            "Logo revamp, brand colors, typography, and a high-conversion landing page.",
+        status: "pending",
+        start_date: "2025-02-01",
+        estimated_end_date: "2025-02-20",
+        created_at: "2025-01-30T09:00:00",
+        updated_at: "2025-01-30T09:00:00",
+    },
+    {
+        id: 3,
+        client_id: 5,
+        name: "Restaurant Management System",
+        description:
+            "Custom dashboard, reservations module, POS sync, and menu manager.",
+        status: "in_progress",
+        start_date: "2024-12-10",
+        estimated_end_date: "2025-01-25",
+        created_at: "2024-12-08T11:15:00",
+        updated_at: "2025-01-12T17:30:00",
+    },
+    {
+        id: 4,
+        client_id: 2,
+        name: "Delivery Service Mobile App",
+        description:
+            "Courier assignment, real-time map tracking, notifications, and admin tools.",
+        status: "completed",
+        start_date: "2024-10-15",
+        estimated_end_date: "2024-11-30",
+        created_at: "2024-10-10T14:00:00",
+        updated_at: "2024-12-01T13:00:00",
+    },
+    {
+        id: 5,
+        client_id: 4,
+        name: "Portfolio Website",
+        description:
+            "Clean portfolio with CMS editing and dark/light mode support.",
+        status: "cancelled",
+        start_date: "2024-11-01",
+        estimated_end_date: "2024-12-05",
+        created_at: "2024-11-01T08:00:00",
+        updated_at: "2024-11-20T10:00:00",
+    },
+];
