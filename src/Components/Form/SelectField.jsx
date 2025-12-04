@@ -1,12 +1,12 @@
-import { Label } from "../../Components/ui/label";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "../../Components/ui/select";
-import InputError from "../../Components/InputError";
+} from "../ui/select";
+import InputError from "../InputError";
 
 export default function SelectField({
   id,

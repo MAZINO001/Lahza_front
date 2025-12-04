@@ -286,18 +286,39 @@ export const useFileUpload = (options = {}) => {
     }
   }, [])
 
+  // const getInputProps = useCallback((props = {}) => {
+  //   return {
+  //     ...props,
+  //     type: "file",
+  //     onChange: handleFileChange,
+  //     accept: props.accept || accept,
+  //     multiple: props.multiple !== undefined ? props.multiple : multiple,
+  //     ref: inputRef,
+  //   };
+  // }, [accept, multiple, handleFileChange])
+
   const getInputProps = useCallback((props = {}) => {
+    const { ref: externalRef, ...restProps } = props;
+
     return {
-      ...props,
+      ...restProps,
       type: "file",
       onChange: handleFileChange,
       accept: props.accept || accept,
       multiple: props.multiple !== undefined ? props.multiple : multiple,
-      // Cast to `any` to prevent mismatched React ref type errors across workspaces
-      ref: inputRef,
+      ref: (node) => {
+        inputRef.current = node;
+
+        if (externalRef) {
+          if (typeof externalRef === 'function') {
+            externalRef(node);
+          } else if (externalRef) {
+            externalRef.current = node;
+          }
+        }
+      },
     };
   }, [accept, multiple, handleFileChange])
-
   return [
     state,
     {

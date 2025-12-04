@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { Input } from "../../Components/ui/input";
+import { Input } from "../ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../Components/ui/select";
-import { Label } from "../../Components/ui/label";
+} from "../ui/select";
+import { Label } from "../ui/label";
 import InputError from "../InputError";
 
 export default function CountrySelect({ value, onChange, error }) {

@@ -6,6 +6,7 @@ import {
 } from "@tabler/icons-react";
 import {
   BriefcaseIcon,
+  Calendar1,
   DollarSign,
   FileText,
   HomeIcon,
@@ -15,8 +16,8 @@ import {
   User,
 } from "lucide-react";
 
-import { NavMain } from "../components/nav-main";
-import { NavSecondary } from "../components/nav-secondary";
+import { NavMain } from "./nav-main";
+import { NavSecondary } from "./nav-secondary";
 import {
   Sidebar,
   SidebarContent,
@@ -24,7 +25,7 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
-} from "../components/ui/sidebar";
+} from "./ui/sidebar";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Button } from "./ui/button";
 import { Outline } from "react-pdf";
@@ -73,6 +74,11 @@ export function AppSidebar(props) {
           title: "Dashboard",
           url: `/${currentRole}/dashboard`,
           icon: HomeIcon,
+        },
+        {
+          title: "Calendar",
+          url: `/${currentRole}/calendar`,
+          icon: Calendar1
         },
         {
           title: "Projects",

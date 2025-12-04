@@ -10,7 +10,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
 import FileUploader from "../Form/FileUploader";
 import TagsField from "../Form/TagsField";
-import api from "@/utils/axios";
+import api from "@/lib/utils/axios";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
 
@@ -29,7 +29,6 @@ export function TeamClientForm() {
   } = useForm({
     defaultValues: registerStore,
   });
-  console.log(errors);
   const theRole = watch("user_type");
 
   const onSubmit = async (data) => {

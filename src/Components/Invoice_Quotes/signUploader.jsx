@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 export default function SignUploader({ onFileChange }) {
   const maxSizeMB = 5;
-  const maxSize = maxSizeMB * 1024 * 1024; // 5MB default
+  const maxSize = maxSizeMB * 1024 * 1024;
 
   const [
     { files, isDragging, errors },
@@ -25,15 +25,16 @@ export default function SignUploader({ onFileChange }) {
     accept: "image/*",
     maxSize,
   });
+  const inputRef = useRef(null);
   useEffect(() => {
     onFileChange(files);
   }, [files]);
   const previewUrl = files[0]?.preview || null;
 
+  const inputProps = getInputProps();
   return (
     <div className="flex flex-col gap-2">
       <div className="relative">
-        {/* Drop area */}
         <div
           role="button"
           onClick={openFileDialog}
@@ -45,7 +46,8 @@ export default function SignUploader({ onFileChange }) {
           className="relative flex min-h-52 flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed border-input p-4 transition-colors hover:bg-accent/50 has-disabled:pointer-events-none has-disabled:opacity-50 has-[img]:border-none has-[input:focus]:border-ring has-[input:focus]:ring-[3px] has-[input:focus]:ring-ring/50 data-[dragging=true]:bg-accent/50"
         >
           <input
-            {...getInputProps()}
+            {...inputProps}
+            ref={inputRef}
             className="sr-only"
             aria-label="Upload file"
           />

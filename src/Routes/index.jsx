@@ -7,40 +7,60 @@ import {
 } from "react-router-dom";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
-import ForgotPassword from "../pages/Auth/ForgotPassword";
-import ConfirmPassword from "../pages/Auth/ConfirmPassword";
-import ResetPassword from "../pages/Auth/ResetPassword";
 
-import NotFound from "../pages/extras/NotFound ";
-import Dashboard from "../pages/dashboard/Dashboard";
-import Profile from "../pages/Profile/Profile";
-import Settings from "../pages/settings/Settings";
-import Projects from "../pages/projects/Projects";
-import ProjectDetails from "../pages/projects/ProjectDetails";
-import Quotes from "../pages/quotes/Quotes";
-import QuoteDetails from "../pages/quotes/QuoteDetails";
-import Tickets from "../pages/Tickets/Tickets";
-import Invoices from "../pages/invoices/Invoices";
-import Services from "../pages/services/services";
-import ServiceDetails from "../pages/services/serviceDetails";
-import Payments from "../pages/Payments/Payments";
-import Offers from "../pages/Offers/Offers";
-import Clients from "../pages/clients/Clients";
-import ClientDetails from "../pages/clients/clientDetails";
-import AddQuote from "../pages/quotes/addNewQuote";
-import InvoiceDetails from "@/pages/invoices/invoiceDetails";
-import AddNewInvoice from "@/pages/invoices/addNewInvoice";
-import ActivityLogs from "@/pages/activityLogs/activityLogs";
+import DashboardPage from "../pages/dashboard/DashboardPage";
 
-import AuthLayout from "../pages/layouts/AuthLayout";
-import AppLayout from "../pages/layouts/AppLayout";
+import ProjectsPage from "../pages/projects/ProjectsPage";
+import ProjectViewPage from "../pages/projects/ProjectViewPage";
+import ProjectEditPage from "../pages/projects/ProjectEditPage";
+import ProjectCreatePage from "../pages/projects/ProjectCreatePage";
 
+import QuotesPage from "../pages/quotes/QuotesPage";
+import QuoteViewPage from "../pages/quotes/QuoteViewPage";
+import QuoteCreatePage from "../pages/quotes/QuoteCreatePage";
+import QuoteEditPage from "../pages/quotes/QuoteEditPage";
+
+import TicketsPage from "../pages/tickets/TicketsPage";
+import TicketViewPage from "../pages/tickets/TicketViewPage";
+import TicketCreatePage from "../pages/tickets/TicketCreatePage";
+import TicketEditPage from "../pages/tickets/TicketEditPage";
+
+import InvoicesPage from "../pages/invoices/InvoicesPage";
+import InvoiceViewPage from "../pages/invoices/InvoiceViewPage";
+import InvoiceCreatePage from "../pages/invoices/InvoiceCreatePage";
+import InvoiceEditPage from "../pages/invoices/InvoiceEditPage";
+
+import ServicesPage from "../pages/services/ServicesPage";
+import ServiceViewPage from "../pages/services/ServiceViewPage";
+import ServiceCreatePage from "../pages/services/ServiceCreatePage";
+import ServiceEditPage from "../pages/services/ServiceEditPage";
+
+import ClientsPage from "../pages/clients/ClientsPage";
+import ClientCreatePage from "../pages/clients/ClientCreatePage";
+import ClientEditPage from "../pages/clients/ClientEditPage";
+import ClientViewPage from "../pages/clients/ClientViewPage";
+
+import PaymentsPage from "../pages/payments/PaymentsPage";
+import PaymentViewPage from "../pages/payments/PaymentViewPage";
+import PaymentCreatePage from "../pages/payments/PaymentCreatePage";
+import PaymentEditPage from "../pages/payments/PaymentEditPage";
+
+import OffersPage from "../pages/offers/OffersPage";
+import OfferViewPage from "../pages/offers/OfferViewPage";
+import OfferCreatePage from "../pages/offers/OfferCreatePage";
+import OfferEditPage from "../pages/offers/OfferEditPage";
+
+import ActivityLogsPage from "@/pages/activityLogs/ActivityLogsPage";
+import ActivityLogViewPage from "@/pages/activityLogs/ActivityLogViewPage";
+
+
+import SettingsPage from "@/pages/settings/settingsPage";
+import CalendarPage from "@/pages/calendar/CalendarPage";
+
+import AuthLayout from "@/app/layout/AuthLayout";
+import AppLayout from "@/app/layout/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuthContext } from "@/hooks/AuthContext";
-import AddNewService from "@/pages/services/addNewService";
-import AddNewOffer from "@/pages/offers/addNewOffer";
-import OfferDetails from "@/pages/offers/offerDetails";
-import ActivityLogsDetails from "@/pages/activityLogs/ActivityLogsDetails";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -60,9 +80,6 @@ export default function AppRoutes() {
           <Route path="/auth" element={<AuthLayout />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
-            <Route path="confirmPassword" element={<ConfirmPassword />} />
-            <Route path="forgotPassword" element={<ForgotPassword />} />
-            <Route path="resetPassword" element={<ResetPassword />} />
           </Route>
         </Route>
 
@@ -83,35 +100,87 @@ export default function AppRoutes() {
           }
         >
           <Route path="/:role" element={<AppLayout />}>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<Settings />} />
-            <Route path="projects" element={<Projects />} />
-            <Route path="projects/:id" element={<ProjectDetails />} />
-            <Route path="quotes" element={<Quotes />} />
-            <Route path="tickets" element={<Tickets />} />
-            <Route path="invoices" element={<Invoices />} />
-            <Route path="payments" element={<Payments />} />
-            <Route path="offers" element={<Offers />} />
-            <Route path="quote/:id" element={<QuoteDetails />} />
-            <Route path="invoice/:id" element={<InvoiceDetails />} />
-            <Route path="client/:id" element={<ClientDetails />} />
+            {/* Dashboard */}
+            <Route path="dashboard" element={<DashboardPage />} />
+
+            {/* Projects */}
+            <Route path="projects" element={<ProjectsPage />} />
+            <Route path="project/:id" element={<ProjectViewPage />} />
+
+            {/* Quotes */}
+            <Route path="quotes" element={<QuotesPage />} />
+            <Route path="quote/:id" element={<QuoteViewPage />} />
+
+            {/* Tickets */}
+            <Route path="tickets" element={<TicketsPage />} />
+            <Route path="ticket/:id" element={<TicketViewPage />} />
+
+            {/* Invoices */}
+            <Route path="invoices" element={<InvoicesPage />} />
+            <Route path="invoice/:id" element={<InvoiceViewPage />} />
+
+            {/* Clients */}
+            <Route path="clients" element={<ClientsPage />} />
+            <Route path="client/:id" element={<ClientViewPage />} />
+
+            {/* Payments */}
+            <Route path="payments" element={<PaymentsPage />} />
+            <Route path="payment/:id" element={<PaymentViewPage />} />
+
+            {/* Offers */}
+            <Route path="offers" element={<OffersPage />} />
+            <Route path="offer/:id" element={<OfferViewPage />} />
+
+            {/* Services */}
+            <Route path="services" element={<ServicesPage />} />
+            <Route path="service/:id" element={<ServiceViewPage />} />
+
+            {/* logs */}
+            <Route path="logs" element={<ActivityLogsPage />} />
+            <Route path="log/:id" element={<ActivityLogViewPage />} />
+
+            {/* logs */}
+            <Route path="settings" element={<SettingsPage />} />
+            {/* calendar */}
+            <Route path="calendar" element={<CalendarPage />} />
+
+
+
+            {/* Admin-only create/edit routes */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-              <Route path="service/new" element={<AddNewService />} />
-              <Route path="logs" element={<ActivityLogs />} />
-              <Route path="logs/:id" element={<ActivityLogsDetails />} />
-              <Route path="services" element={<Services />} />
-              <Route path="service/:id" element={<ServiceDetails />} />
-              <Route path="offer/new" element={<AddNewOffer />} />
-              <Route path="offer/:id" element={<OfferDetails />} />
-              <Route path="quote/new" element={<AddQuote />} />
-              <Route path="invoice/new" element={<AddNewInvoice />} />
-              <Route path="clients" element={<Clients />} />
+              {/* Projects */}
+              <Route path="project/new" element={<ProjectCreatePage />} />
+              <Route path="project/:id/edit" element={<ProjectEditPage />} />
+
+              {/* Quotes */}
+              <Route path="quote/new" element={<QuoteCreatePage />} />
+              <Route path="quote/:id/edit" element={<QuoteEditPage />} />
+
+              {/* Tickets */}
+              <Route path="ticket/new" element={<TicketCreatePage />} />
+              <Route path="ticket/:id/edit" element={<TicketEditPage />} />
+
+              {/* Invoices */}
+              <Route path="invoice/new" element={<InvoiceCreatePage />} />
+              <Route path="invoice/:id/edit" element={<InvoiceEditPage />} />
+
+              {/* Payments */}
+              <Route path="payment/new" element={<PaymentCreatePage />} />
+              <Route path="payment/:id/edit" element={<PaymentEditPage />} />
+
+              {/* Offers */}
+              <Route path="offer/new" element={<OfferCreatePage />} />
+              <Route path="offer/:id/edit" element={<OfferEditPage />} />
+
+              {/* Services */}
+              <Route path="service/new" element={<ServiceCreatePage />} />
+              <Route path="service/:id/edit" element={<ServiceEditPage />} />
+              {/* Clients */}
+              <Route path="client/new" element={<ClientCreatePage />} />
+              <Route path="client/:id/edit" element={<ClientEditPage />} />
             </Route>
           </Route>
         </Route>
-
-        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

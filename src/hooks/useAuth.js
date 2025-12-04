@@ -1,18 +1,21 @@
 /* eslint-disable no-unused-vars */
-// hooks/useAuth.js
 import { useState, useEffect } from "react";
-import api from "@/utils/axios";
+import api from "@/lib/utils/axios";
 
 export function useAuth() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [initialized, setInitialized] = useState(false);
 
     useEffect(() => {
-        // Verify authentication on app load
-        verifyAuth();
-    }, []);
+        if (!initialized) {
+            verifyAuth();
+            setInitialized(true);
+        }
+    }, [initialized]);
 
     const verifyAuth = async () => {
+        let isMounted = true;
         try {
             // Fetch real user data from backend
             const response = await api.get(
@@ -23,14 +26,21 @@ export function useAuth() {
                     },
                 }
             );
-            setUser(response.data);
+            if (isMounted) {
+                setUser(response.data);
+            }
         } catch (error) {
             // Not authenticated or token expired
-            setUser(null);
-            localStorage.removeItem('isAuthenticated'); // Just a flag, not role
+            if (isMounted) {
+                setUser(null);
+                localStorage.removeItem('isAuthenticated'); // Just a flag, not role
+            }
         } finally {
-            setLoading(false);
+            if (isMounted) {
+                setLoading(false);
+            }
         }
+        return () => { isMounted = false; };
     };
 
     const login = (userData) => {
@@ -49,7 +59,7 @@ export function useAuth() {
                 }
             );
         } catch (error) {
-            console.log("Logout error:", error);
+            alert("Logout error:", error);
         } finally {
             localStorage.removeItem('isAuthenticated');
             setUser(null);

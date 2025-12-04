@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import api from "@/utils/axios";
+import api from "@/lib/utils/axios";
 
 export default function CSVUploadModal({
   open,

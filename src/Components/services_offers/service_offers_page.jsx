@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Edit2, Trash2, X } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
-import api from "@/utils/axios";
+import api from "@/lib/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -58,7 +58,7 @@ export default function ServicePage({ data, type }) {
 
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
-            <Link to={`/${role}/${type}/new`} state={{ editId: id }}>
+            <Link to={`/${role}/${type}/${id}/edit`} state={{ editId: id }}>
               <Edit2 className="w-4 h-4 mr-2" /> Edit
             </Link>
           </Button>

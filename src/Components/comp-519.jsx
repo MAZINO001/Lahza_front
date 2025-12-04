@@ -4,7 +4,7 @@ import {
   StepperItem,
   StepperTitle,
   StepperTrigger,
-} from "../Components/ui/stepper";
+} from "./ui/stepper";
 
 const steps = [
   {

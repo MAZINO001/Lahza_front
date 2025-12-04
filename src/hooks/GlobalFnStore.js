@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import api from "@/utils/axios";
+import api from "@/lib/utils/axios";
 import axios from "axios";
 import { create } from "zustand";
 
@@ -15,15 +15,14 @@ export const globalFnStore = create((set) => ({
 
         try {
             const req = api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, payload)
-            console.log(type + " is sent to " + email)
+            alert(type + " is sent to " + email)
         } catch (error) {
-            console.log(error)
+            alert(error)
         }
     },
     handleDownloadInvoice_Quotes: async (id, type) => {
         try {
             const response = await axios.get(`http://127.0.0.1:8000/pdf/${type}/${id}`, { responseType: 'blob', withCredentials: true });
-            console.log(response)
 
             const blob = response.data;
 
@@ -38,7 +37,7 @@ export const globalFnStore = create((set) => ({
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            console.log(`${type} downloaded successfully`);
+            alert(`${type} downloaded successfully`);
         } catch (error) {
             console.error('Download error:', error);
             alert(`Failed to download ${type}`);
@@ -46,7 +45,7 @@ export const globalFnStore = create((set) => ({
     },
 
     HandleEditService: async (id, navigate, role) => {
-        navigate(`/${role}/service/new`, {
+        navigate(`/${role}/service/${id}/edit`, {
             state: { editId: id },
             replace: true
         });
@@ -58,11 +57,17 @@ export const globalFnStore = create((set) => ({
             await api.delete(`${import.meta.env.VITE_BACKEND_URL}/services/${id}`);
             if (reloadCallback) reloadCallback();
         } catch (error) {
-            console.log(error);
+            alert(error);
         }
     },
     HandleEditOffer: async (id, navigate, role) => {
-        navigate(`/${role}/offer/new`, {
+        navigate(`/${role}/offer/${id}/edit`, {
+            state: { editId: id },
+            replace: true
+        });
+    },
+    HandleEditProject: async (id, navigate, role) => {
+        navigate(`/${role}/project/${id}/edit`, {
             state: { editId: id },
             replace: true
         });
@@ -74,7 +79,7 @@ export const globalFnStore = create((set) => ({
             await api.delete(`${import.meta.env.VITE_BACKEND_URL}/offers/${id}`);
             if (reloadCallback) reloadCallback();
         } catch (error) {
-            console.log(error);
+            alert(error);
         }
     },
 
