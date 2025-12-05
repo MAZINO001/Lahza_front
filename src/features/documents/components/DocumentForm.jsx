@@ -65,9 +65,9 @@ export function DocumentForm({ document, onSuccess }) {
             quoteDate: new Date().toISOString().split("T")[0],
           }),
       notes: "",
-      paid_amount: "0",
-      payment_status: "",
-      payment_type: "",
+      percentage_amount: "0",
+      payment_status: "pending",
+      payment_method: "",
       terms: terms,
       items: [
         {
@@ -207,7 +207,7 @@ export function DocumentForm({ document, onSuccess }) {
     });
   };
 
-  const isMoroccan = selectedClient?.country === "Maroc" ? true : false;
+  const isMoroccan = selectedClient?.country === "maroc" ? true : false;
 
   if (clientsLoading || servicesLoading) {
     return (
@@ -576,12 +576,12 @@ export function DocumentForm({ document, onSuccess }) {
             <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-gray-300 p-4 rounded-lg">
               <div className="w-full flex felx-col gap-4 items-center">
                 <Controller
-                  name="payment_type"
+                  name="payment_method"
                   control={control}
                   rules={{ required: "Payment type is required" }}
                   render={({ field, fieldState: { error } }) => (
                     <SelectField
-                      id="payment_type"
+                      id="payment_method"
                       label="Payment Type"
                       type="select"
                       value={field.value || ""}
@@ -589,6 +589,7 @@ export function DocumentForm({ document, onSuccess }) {
                         { value: "bank", label: "Bank" },
                         { value: "cash", label: "Cash" },
                         { value: "espace", label: "Espace" },
+                        { value: "Stripe", label: "Stripe" },
                       ]}
                       onChange={(e) => field.onChange(e)}
                       onBlur={field.onBlur}
@@ -598,39 +599,18 @@ export function DocumentForm({ document, onSuccess }) {
                 />
 
                 <Controller
-                  name="paid_amount"
+                  name="percentage_amount"
                   control={control}
                   rules={{ required: "Amount is required" }}
                   render={({ field, fieldState: { error } }) => (
                     <FormField
-                      id="paid_amount"
-                      label="Amount Paid"
+                      id="percentage_amount"
+                      label="Percentage Paid"
+                      min="1"
+                      max="100"
                       type="number"
                       value={field.value || ""}
                       onChange={(e) => field.onChange(e.target.value)}
-                      onBlur={field.onBlur}
-                      error={error?.message}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="payment_status"
-                  control={control}
-                  rules={{ required: "Status is required" }}
-                  render={({ field, fieldState: { error } }) => (
-                    <SelectField
-                      id="payment_status"
-                      label="Payment Status"
-                      type="select"
-                      value={field.value || ""}
-                      options={[
-                        { value: "pending", label: "Pending" },
-                        { value: "paid", label: "Paid" },
-                        { value: "failed", label: "Failed" },
-                        { value: "refunded", label: "Refunded" },
-                      ]}
-                      onChange={(e) => field.onChange(e)}
                       onBlur={field.onBlur}
                       error={error?.message}
                     />
