@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // src/features/invoices/components/InvoiceTable.jsx
 import * as React from "react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-    flexRender,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
