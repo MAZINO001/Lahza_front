@@ -7,11 +7,17 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Pure API functions
 const apiPayments = {
-    getAll: () => api.get(`${API_URL}/payments`).then((res) => res.data ?? []),
+    getAll: () => api.get(`${API_URL}/payments`).then((res) => {
+        console.log("API Response from getAll payments:", res.data);
+        return res.data ?? [];
+    }),
     getById: (id) =>
         api.get(`${API_URL}/payments/${id}`).then((res) => res.data?.payment ?? res.data ?? null),
     create: (data) => api.post(`${API_URL}/payments`, data),
-    update: (id, data) => api.put(`${API_URL}/payments/${id}`, data),
+    update: (id, data) => {
+        console.log("API update call - ID:", id, "Data:", data);
+        return api.put(`${API_URL}/payments/${id}`, data);
+    },
     delete: (id) => api.delete(`${API_URL}/payments/${id}`),
 };
 
@@ -46,10 +52,19 @@ export function useCreatePayment() {
 export function useUpdatePayment() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, data }) => apiPayments.update(id, data),
-        onSuccess: () => {
+        mutationFn: ({ id, data }) => {
+            console.log("Mutation called with ID:", id, "Data:", data);
+            return apiPayments.update(id, data);
+        },
+        onSuccess: (response) => {
+            console.log("Update successful - Response:", response);
             toast.success("Payment updated!");
             queryClient.invalidateQueries({ queryKey: ["payments"] });
+        },
+        onError: (error) => {
+            console.error("Update failed - Error:", error);
+            console.error("Error response:", error.response?.data);
+            toast.error("Failed to update payment");
         },
     });
 }
@@ -60,6 +75,17 @@ export function useDeletePayment() {
         mutationFn: apiPayments.delete,
         onSuccess: () => {
             toast.success("Payment deleted");
+            queryClient.invalidateQueries({ queryKey: ["payments"] });
+        },
+    });
+}
+
+export function CreateAdditionalPayment() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: apiPayments.additional,
+        onSuccess: () => {
+            toast.success("additional Payment created");
             queryClient.invalidateQueries({ queryKey: ["payments"] });
         },
     });

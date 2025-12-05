@@ -1,10 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-"use client";
+import { useEffect } from "react";
 
 import { AlertCircleIcon, ImageUpIcon, XIcon } from "lucide-react";
 
 import { useFileUpload } from "@/hooks/use-file-upload";
-import { useEffect } from "react";
 
 export default function SignUploader({ onFileChange }) {
   const maxSizeMB = 5;
@@ -25,7 +24,6 @@ export default function SignUploader({ onFileChange }) {
     accept: "image/*",
     maxSize,
   });
-  const inputRef = useRef(null);
   useEffect(() => {
     onFileChange(files);
   }, [files]);
@@ -47,7 +45,6 @@ export default function SignUploader({ onFileChange }) {
         >
           <input
             {...inputProps}
-            ref={inputRef}
             className="sr-only"
             aria-label="Upload file"
           />

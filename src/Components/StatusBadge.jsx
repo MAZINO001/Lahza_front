@@ -19,7 +19,6 @@ const statusConfig = {
     label: "Rejected",
     color: "bg-red-100 text-red-800 border-red-200",
   },
-
   unpaid: {
     label: "Unpaid",
     color: "bg-orange-100 text-orange-800 border-orange-200",
@@ -44,10 +43,27 @@ const statusConfig = {
     label: "Inactive",
     color: "bg-gray-100 text-gray-700 border-gray-300",
   },
+
+  pending: {
+    label: "Pending",
+    color: "bg-purple-100 text-purple-800 border-purple-200",
+  },
+  in_progress: {
+    label: "In Progress",
+    color: "bg-indigo-100 text-indigo-800 border-indigo-200",
+  },
+  completed: {
+    label: "Completed",
+    color: "bg-green-100 text-green-800 border-green-200",
+  },
+  cancelled: {
+    label: "Cancelled",
+    color: "bg-red-100 text-red-800 border-red-200",
+  },
 };
 
 export function StatusBadge({ status, type = "default", is_fully_signed }) {
-  const effectiveStatus = is_fully_signed ? 'signed' : status;
+  const effectiveStatus = is_fully_signed ? "signed" : status;
   const config = statusConfig[effectiveStatus] || {
     label: status,
     color: "bg-slate-100 text-slate-800 border-slate-200",
