@@ -1,4 +1,4 @@
-import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { formatId } from "@/lib/utils/formatId";
@@ -43,7 +43,10 @@ export const ProjectColumns = (role, navigate) => {
       header: "Client",
       cell: ({ row }) => {
         const id = row.getValue("client_id");
-        return <span>{formatId(id, "CLIENT")}</span>;
+
+        return (
+          <Link to={`/${role}/client/${id}`}>{formatId(id, "CLIENT")}</Link>
+        );
       },
     },
     {
@@ -66,20 +69,21 @@ export const ProjectColumns = (role, navigate) => {
     },
 
     {
-      accessorKey: "end_date",
+      accessorKey: "estimated_end_date",
       header: "Est. End",
       cell: ({ row }) => (
         <span className="text-slate-700">
-          {new Date(row.getValue("end_date")).toLocaleDateString()}
+          {new Date(row.getValue("estimated_end_date")).toLocaleDateString()}
         </span>
       ),
     },
 
     {
       id: "actions",
-      header: "Actions",
+      header: "Actions", 
       cell: ({ row }) => {
         const { HandleEditProject } = globalFnStore();
+        console.log(row.getValue("estimated_end_date"));
         return (
           <div className="flex gap-2">
             <Button

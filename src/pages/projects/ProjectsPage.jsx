@@ -1,10 +1,6 @@
 import { ProjectsTable } from "@/features/projects/components/ProjectTable";
-import { TheProjects } from "@/lib/mockData";
-const project = TheProjects
+import { useProjects } from "@/features/projects/hooks/useProjects";
 export default function ProjectPage() {
-  // const { data: documnets = [], isLoading } = useDocuments("invoice");
-  const isLoading = false
-  return <ProjectsTable projects={project} isLoading={isLoading} />;
-};
-
-
+  const { data: Projects = [], isLoading } = useProjects();
+  return <ProjectsTable projects={Projects} isLoading={isLoading} />;
+}
