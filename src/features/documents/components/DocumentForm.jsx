@@ -65,7 +65,7 @@ export function DocumentForm({ document, onSuccess }) {
             quoteDate: new Date().toISOString().split("T")[0],
           }),
       notes: "",
-      percentage_amount: "0",
+      percentage_amount: "50",
       payment_status: "pending",
       payment_method: "",
       terms: terms,
@@ -126,6 +126,15 @@ export function DocumentForm({ document, onSuccess }) {
 
   const selectedClientId = watch("customerName");
   const selectedClient = clients.find((c) => c.id === Number(selectedClientId));
+
+  // Update payment method based on client nationality
+  useEffect(() => {
+    if (selectedClient) {
+      const isMoroccan = selectedClient.country === "maroc";
+      const defaultPaymentMethod = isMoroccan ? "bank" : "Stripe";
+      setValue("payment_method", defaultPaymentMethod);
+    }
+  }, [selectedClient, setValue]);
 
   const addNewRow = () => {
     append({
@@ -206,8 +215,6 @@ export function DocumentForm({ document, onSuccess }) {
       onSettled: () => endSubmit(),
     });
   };
-
-  const isMoroccan = selectedClient?.country === "maroc" ? true : false;
 
   if (clientsLoading || servicesLoading) {
     return (
@@ -317,9 +324,9 @@ export function DocumentForm({ document, onSuccess }) {
         )}
 
         <div className="mt-4">
-          <h2 className="text-base font-semibold text-gray-800 mb-4">
+          <span className="text-sm font-medium  text-gray-800 mb-4">
             Item Table
-          </h2>
+          </span>
           <div className="overflow-x-auto border rounded-md rounded-br-none">
             <table className="w-full min-w-[500px] border-collapse">
               <thead>
@@ -554,27 +561,28 @@ export function DocumentForm({ document, onSuccess }) {
             </div>
           </div>
         </div>
-
-        <div className="flex md:flex-row flex-col gap-4 items-end justify-between">
-          <div className="w-full">
-            <Label htmlFor="notes" className="mb-1">
-              Customer Notes
-            </Label>
-            <Textarea
-              id="notes"
-              placeholder="Enter notes"
-              value={watch("notes")}
-              onChange={(e) => setValue("notes", e.target.value)}
-            />
+        <div className="flex gap-4 w-full items-center space-between">
+          <div className="flex md:flex-row flex-col gap-4 items-end justify-between w-[60%]">
+            <div className="w-full">
+              <Label htmlFor="notes" className="mb-1">
+                Customer Notes
+              </Label>
+              <Textarea
+                className=" min-h-22"
+                id="notes"
+                placeholder="Enter notes"
+                value={watch("notes")}
+                onChange={(e) => setValue("notes", e.target.value)}
+              />
+            </div>
           </div>
-        </div>
-        {isMoroccan && (
-          <>
+
+          <div className="w-[40%]">
             <Label htmlFor="payment" className="mb-1">
               Payment
             </Label>
             <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-gray-300 p-4 rounded-lg">
-              <div className="w-full flex felx-col gap-4 items-center">
+              <div className="w-full flex gap-4 items-center justify-between">
                 <Controller
                   name="payment_method"
                   control={control}
@@ -616,10 +624,30 @@ export function DocumentForm({ document, onSuccess }) {
                     />
                   )}
                 />
+                <Controller
+                  name="payment_status"
+                  control={control}
+                  rules={{ required: "Status is required" }}
+                  render={({ field, fieldState: { error } }) => (
+                    <SelectField
+                      id="payment_status"
+                      label="Payment Status"
+                      type="select"
+                      value={field.value || ""}
+                      options={[
+                        { value: "pending", label: "Pending" },
+                        { value: "paid", label: "Paid" },
+                      ]}
+                      onChange={(e) => field.onChange(e)}
+                      onBlur={field.onBlur}
+                      error={error?.message}
+                    />
+                  )}
+                />
               </div>
             </div>
-          </>
-        )}
+          </div>
+        </div>
 
         <div className="flex md:flex-row flex-col gap-4 items-start justify-between">
           <div className="w-full">
@@ -628,8 +656,10 @@ export function DocumentForm({ document, onSuccess }) {
             </Label>
             <Textarea
               id="terms"
+              className=" min-h-20 resize-none"
               placeholder="Enter terms"
               rows={4}
+              readonly
               value={watch("terms")}
               onChange={(e) => setValue("terms", e.target.value)}
             />
