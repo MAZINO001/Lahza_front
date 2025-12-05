@@ -65,12 +65,18 @@ export function DocumentForm({ document, onSuccess }) {
             quoteDate: new Date().toISOString().split("T")[0],
           }),
       notes: "",
+<<<<<<< HEAD
       // form moroccans only
       // ***********
       percentage_paid: "0",
       payment_status: "pending",
       payment_Method: "",
       // ***********
+=======
+      percentage_amount: "0",
+      payment_status: "pending",
+      payment_method: "",
+>>>>>>> monir
       terms: terms,
       items: [
         {
@@ -579,7 +585,7 @@ export function DocumentForm({ document, onSuccess }) {
             <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-gray-300 p-4 rounded-lg">
               <div className="w-full flex felx-col gap-4 items-center">
                 <Controller
-                  name="payment_Method"
+                name="payment_method"
                   control={control}
                   rules={{ required: "Payment type is required" }}
                   render={({ field, fieldState: { error } }) => (
@@ -602,13 +608,22 @@ export function DocumentForm({ document, onSuccess }) {
                 />
 
                 <Controller
+<<<<<<< HEAD
                   name="percentage_paid"
+=======
+                  name="percentage_amount"
+>>>>>>> monir
                   control={control}
                   rules={{ required: "Amount is required" }}
                   render={({ field, fieldState: { error } }) => (
                     <FormField
+<<<<<<< HEAD
                       id="percentage_paid"
                       label="percentage Paid"
+=======
+                      id="percentage_amount"
+                      label="Percentage Paid"
+>>>>>>> monir
                       min="1"
                       max="100"
                       type="number"
