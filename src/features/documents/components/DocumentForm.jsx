@@ -552,6 +552,7 @@ export function DocumentForm({ document, onSuccess }) {
             </div>
           </div>
         </div>
+        
         <div className="flex gap-4 w-full items-center space-between">
           <div className="flex md:flex-row flex-col gap-4 items-end justify-between w-[60%]">
             <div className="w-full">

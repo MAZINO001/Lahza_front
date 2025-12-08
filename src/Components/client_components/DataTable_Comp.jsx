@@ -1,46 +1,20 @@
 import * as React from "react";
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  MoreHorizontal,
-  Download,
-} from "lucide-react";
-import { useState } from "react";
-import { StatusBadge } from "../StatusBadge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { Link } from "react-router-dom";
 import { DataTable } from "../table/DataTable";
 import { dashBoardTableColumns } from "@/features/dashboard/dashboardTableColumn";
-
-export default function Invoices({ data, isLoading }) {
+import { useDocuments } from "@/features/documents/hooks/useDocumentsQuery";
+import { useState } from "react"
+export default function Invoices() {
   const { role } = useAuthContext();
+
+  const { data: documnets = [], isLoading } = useDocuments("invoice");
 
   const columns = React.useMemo(
     () => dashBoardTableColumns(role),
@@ -54,7 +28,7 @@ export default function Invoices({ data, isLoading }) {
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data,
+    data: documnets,
     columns: columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -77,7 +51,6 @@ export default function Invoices({ data, isLoading }) {
       <DataTable
         table={table}
         columns={columns}
-
         isLoading={isLoading}
       />
     </div>

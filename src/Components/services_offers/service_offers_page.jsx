@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Edit2, Trash2, X } from "lucide-react";
+import { Edit2, Trash2, X, AlertCircle, Loader2 } from "lucide-react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import api from "@/lib/utils/axios";
@@ -12,12 +12,14 @@ import { useOffer } from "@/features/offers/hooks/useOffersQuery";
 
 export default function ServicePage({ currentId, type }) {
 
+  console.log(type, currentId)
   const servicesQuery = useService(currentId);
   const offersQuery = useOffer(currentId);
 
-  const data = type === "service" ? servicesQuery.data || [] : offersQuery.data || [];
+  const data = type === "service" ? servicesQuery.data : offersQuery.data;
   const isLoading = type === "service" ? servicesQuery.isLoading : offersQuery.isLoading;
   const isError = type === "service" ? servicesQuery.isError : offersQuery.isError;
+  const error = type === "service" ? servicesQuery.error : offersQuery.error;
 
   const { role } = useAuthContext();
   const navigate = useNavigate();
@@ -43,11 +45,12 @@ export default function ServicePage({ currentId, type }) {
       day: "numeric",
     });
 
+
   return (
     <div className="flex-1 overflow-y-auto">
       <div className="bg-white border-b px-4 py-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">
-          {type === "service" ? data.name : data.title}
+          {type === "service" ? (data?.name || "Unnamed Service") : (data?.title || "Untitled Offer")}
         </h1>
 
         <div className="flex items-center gap-2">
@@ -88,7 +91,7 @@ export default function ServicePage({ currentId, type }) {
                 {type === "service" ? "Name" : "Title"}
               </p>
               <p className="text-lg font-semibold">
-                {type === "service" ? data.name : data.title}
+                {type === "service" ? (data?.name || "N/A") : (data?.title || "N/A")}
               </p>
             </div>
 
@@ -98,7 +101,7 @@ export default function ServicePage({ currentId, type }) {
                 Description
               </p>
               <p className="text-md text-gray-800 whitespace-pre-wrap">
-                {data.description || (
+                {data?.description || (
                   <span className="text-gray-400 italic">
                     No description provided
                   </span>
@@ -112,7 +115,7 @@ export default function ServicePage({ currentId, type }) {
                   Base Price
                 </p>
                 <p className="text-3xl font-bold text-blue-600">
-                  ${Number(data.base_price).toFixed(2)}
+                  ${data?.base_price ? Number(data.base_price).toFixed(2) : "0.00"}
                 </p>
               </div>
             ) : (
@@ -122,13 +125,13 @@ export default function ServicePage({ currentId, type }) {
                     <p className="text-sm font-medium text-gray-600 mb-1">
                       Start Date
                     </p>
-                    <p className="text-md">{formatDate(data.start_date)}</p>
+                    <p className="text-md">{data?.start_date ? formatDate(data.start_date) : "N/A"}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600 mb-1">
                       End Date
                     </p>
-                    <p className="text-md">{formatDate(data.end_date)}</p>
+                    <p className="text-md">{data?.end_date ? formatDate(data.end_date) : "N/A"}</p>
                   </div>
                 </div>
                 <div className="flex gap-8 mt-4">
@@ -136,16 +139,16 @@ export default function ServicePage({ currentId, type }) {
                     <p className="text-sm font-medium text-gray-600 mb-1">
                       Discount Type
                     </p>
-                    <p className="text-md capitalize">{data.discount_type}</p>
+                    <p className="text-md capitalize">{data?.discount_type || "N/A"}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600 mb-1">
                       Discount Value
                     </p>
                     <p className="text-md">
-                      {data.discount_type === "percent"
-                        ? `${data.discount_value} %`
-                        : `MAD ${data.discount_value}`}
+                      {data?.discount_type === "percent"
+                        ? `${data.discount_value || 0} %`
+                        : `MAD ${data.discount_value || 0}`}
                     </p>
                   </div>
                 </div>

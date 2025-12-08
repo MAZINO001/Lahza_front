@@ -7,9 +7,16 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import OverView from "./Client_page/overview";
 import Comments from "./Client_page/Comments";
 import Mails from "./Client_page/Mails";
-export default function Client_Page({ data }) {
+import { useClient } from "@/features/clients/hooks/useClientsQuery";
+export default function Client_Page({ currentId }) {
   const [activeTab, setActiveTab] = useState("overview");
-  const { id } = useParams();
+
+  const {
+    data: client,
+    isLoading: clientLoading,
+    isError: clientError,
+  } = useClient(currentId);
+  console.log(client)
   const { role } = useAuthContext();
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -23,11 +30,11 @@ export default function Client_Page({ data }) {
       <div className="bg-white px-2 py-4 border-b border-gray-200 p-2">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold text-gray-900 ">
-            {data.client_type == "company" ? data.company : data.user.name}
+            {client?.client_type === "company" ? client?.company : client?.user?.name}
           </h1>
           <div className="flex items-center gap-2">
             <Button variant="outline" className="p-2 rounded cursor-pointer">
-              <Link to={`/${role}/client/${id}/edit`} state={{ clientId: id }}>
+              <Link to={`/${role}/client/${currentId}/edit`} state={{ clientId: currentId }}>
                 <Edit2 size={20} />
               </Link>
             </Button>
@@ -45,11 +52,10 @@ export default function Client_Page({ data }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
-              }`}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
+                }`}
             >
               {tab.label}
             </button>
@@ -58,10 +64,10 @@ export default function Client_Page({ data }) {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        {activeTab === "overview" && <OverView data={data} />}
-        {activeTab === "comments" && <Comments data={data} />}
-        {activeTab === "transactions" && <Transactions data={data} />}
-        {activeTab === "mails" && <Mails data={data} />}
+        {activeTab === "overview" && <OverView data={client} />}
+        {activeTab === "comments" && <Comments data={client} />}
+        {activeTab === "transactions" && <Transactions data={client} />}
+        {activeTab === "mails" && <Mails data={client} />}
       </div>
     </div>
   );
