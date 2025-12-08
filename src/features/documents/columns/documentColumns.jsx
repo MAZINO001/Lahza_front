@@ -31,9 +31,8 @@ import { globalFnStore } from "@/hooks/GlobalFnStore";
 import SignatureExamples from "@/Components/Invoice_Quotes/signatureExamples";
 import { formatId } from "@/lib/utils/formatId";
 import {
-  useCreateDocument,
-  useUpdateDocument,
   useDeleteDocument,
+  useCreateInvoiceFromQuote,
 } from "@/features/documents/hooks/useDocumentsQuery";
 export const DocumentsColumns = (role, navigate, currentSection) => {
   const isInvoice =
@@ -215,8 +214,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
         const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
         const [signatureFile, setSignatureFile] = useState(null);
 
-        const createInvoice = useCreateDocument("invoice");
-        const updateQuote = useUpdateDocument("quote");
+        const createInvoice = useCreateInvoiceFromQuote();
         const deleteInvoice = useDeleteDocument("invoice");
 
         const handleSignatureUpload = (files) => {
@@ -234,10 +232,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
           try {
             const formData = new FormData();
             formData.append("signature", signatureFile.file);
-            formData.append(
-              "type",
-              role === "admin" ? "admin_signature" : "client_signature"
-            );
+            formData.append("type", "client_signature");
 
             const endpoint = isInvoice ? "invoices" : "quotes";
             const url = `${import.meta.env.VITE_BACKEND_URL}/${endpoint}/${document.id}/signature`;
@@ -251,44 +246,13 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
 
             toast.success("Signature uploaded successfully!");
 
-            // Auto-create invoice after successful client signature for quotes
             if (!isInvoice && role === "client") {
               try {
-                const statusToSend = "sent";
                 const quotationDate = new Date(document.quotation_date);
                 const dueDate = new Date(quotationDate);
                 dueDate.setDate(dueDate.getDate() + 30);
-                const formattedDueDate = dueDate.toISOString().slice(0, 10);
 
-                const invoicePayload = {
-                  client_id: document.client_id,
-                  invoice_date: document.quotation_date,
-                  due_date: formattedDueDate,
-                  balance_due: 0,
-                  status: statusToSend,
-                  total_amount: document.total_amount,
-                  quote_id: document.id,
-                  services: document.quote_services,
-                  notes: document.notes || "",
-                };
-
-                const quotePayload = {
-                  client_id: document.client_id,
-                  quotation_date: document.quotation_date,
-                  balance_due: 0,
-                  status: "signed",
-                  total_amount: document.total_amount,
-                  quote_id: document.id,
-                  services: document.quote_services,
-                  notes: document.notes || "",
-                  is_fully_signed: true,
-                };
-
-                await createInvoice.mutateAsync(invoicePayload);
-                await updateQuote.mutateAsync({
-                  id: document.id,
-                  data: quotePayload,
-                });
+                await createInvoice.mutateAsync(document.id);
 
                 toast.success("Quote signed and invoice created successfully!");
               } catch (err) {
@@ -312,8 +276,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
             return;
 
           try {
-            const type =
-              role === "admin" ? "admin_signature" : "client_signature";
+            const type = "client_signature";
             const endpoint = isInvoice ? "invoices" : "quotes";
             await api.delete(
               `${import.meta.env.VITE_BACKEND_URL}/${endpoint}/${document.id}/signature`,
@@ -360,22 +323,6 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
                 );
               }
             }
-
-            const quotePayload = {
-              client_id: document.client_id,
-              quotation_date: document.quotation_date,
-              balance_due: 0,
-              status: "sent",
-              total_amount: document.total_amount,
-              quote_id: document.id,
-              services: document.quote_services,
-              notes: document.notes || "",
-              is_fully_signed: false,
-            };
-            await updateQuote.mutateAsync({
-              id: document.id,
-              data: quotePayload,
-            });
 
             toast.success("Signature removed successfully");
           } catch (error) {
@@ -434,7 +381,8 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
               </Button>
             )}
 
-            {!isInvoice && role === "client" && (
+            {/* {!isInvoice && role === "client" && ( */}
+            {isInvoice && (
               <Dialog
                 open={isSignDialogOpen}
                 onOpenChange={setIsSignDialogOpen}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { Menu, Plus, ChevronDown } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
@@ -56,10 +56,11 @@ export default function Inv_Qt_sidebar({ type }) {
     setSelectedStatus(status);
   };
 
-  const filteredData =
-    selectedStatus === "all"
+  const filteredData = useMemo(() => {
+    return selectedStatus === "all"
       ? documents
       : documents.filter((item) => item.status === selectedStatus);
+  }, [documents, selectedStatus]);
 
   const prefetchData = async (id) => {
     const resource = type === "invoice" ? "invoices" : "quotes";

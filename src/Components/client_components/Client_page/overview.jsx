@@ -7,7 +7,7 @@ export default function overview({ data }) {
       <div className="space-y-4">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-sm font-semibold text-gray-900 mb-4">
-            {data.client_type == "company" ? data.company : data.user.name}
+            {data?.client_type === "company" ? data?.company : data?.user.name}
           </h3>
 
           <div className="flex items-start gap-4 mb-4">
@@ -16,14 +16,14 @@ export default function overview({ data }) {
             </div>
             <div className="flex-1">
               <div className="text-sm font-medium text-gray-900 mb-1">
-                {data.user.name}
+                {data?.user.name}
               </div>
               <div className="text-sm text-gray-600 mb-2">
-                {data.user.email}
+                {data?.user.email}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
                 <Phone className="w-4 h-4" />
-                {data.phone}
+                {data?.phone}
               </div>
             </div>
           </div>
@@ -45,11 +45,11 @@ export default function overview({ data }) {
                 </button>
               </div>
               <div className="text-sm text-gray-600 font-medium mb-1">
-                {data.city}
+                {data?.city}
               </div>
-              <div className="text-sm text-gray-600">{data.address}</div>
-              <div className="text-sm text-gray-600 mt-2">{data.address}</div>
-              <div className="text-sm text-gray-600">{data.country}</div>
+              <div className="text-sm text-gray-600">{data?.address}</div>
+              <div className="text-sm text-gray-600 mt-2">{data?.address}</div>
+              <div className="text-sm text-gray-600">{data?.country}</div>
             </div>
           </div>
         </div>

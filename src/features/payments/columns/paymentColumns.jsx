@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/rules-of-hooks */
-import { LinkIcon, ArrowUpDown, Download, Pencil } from "lucide-react";
+import { LinkIcon, ArrowUpDown, Download, Pencil, Eye } from "lucide-react";
 import { formatId } from "@/lib/utils/formatId";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -170,46 +170,41 @@ export const paymentColumns = (role) => [
 
       return (
         <div className="flex gap-2">
-          {payment.stripe_session_id && (
+          {payment.stripe_session_id && row.getValue("status") === "paid" && (
             <Button variant="outline" size="sm" onClick={handleViewSession}>
-              View
+              <Eye />
             </Button>
           )}
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4" />
           </Button>
 
-          {role === "admin" &&
-            // row.getValue("payment_method") === "stripe" &&
-            row.getValue("status") === "pending" && (
-              <Dialog
-                open={isSignDialogOpen}
-                onOpenChange={setIsSignDialogOpen}
-              >
-                <DialogTrigger asChild>
-                  <Button size="sm" variant="outline">
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                </DialogTrigger>
+          {role === "admin" && row.getValue("status") === "pending" && (
+            <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" variant="outline">
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
 
-                <DialogContent
-                  className="sm:max-w-md"
-                  onInteractOutside={(e) => e.preventDefault()}
-                  onPointerDownOutside={(e) => e.preventDefault()}
-                  onEscapeKeyDown={(e) => e.preventDefault()}
-                >
-                  <DialogHeader>
-                    <DialogDescription className="space-y-6 mt-4">
-                      <EditPayment
-                        payment={payment}
-                        //   onSubmit={handleUpdatePayment}
-                        onClose={() => setIsSignDialogOpen(false)}
-                      />
-                    </DialogDescription>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
-            )}
+              <DialogContent
+                className="sm:max-w-md"
+                onInteractOutside={(e) => e.preventDefault()}
+                onPointerDownOutside={(e) => e.preventDefault()}
+                onEscapeKeyDown={(e) => e.preventDefault()}
+              >
+                <DialogHeader>
+                  <DialogDescription className="space-y-6 mt-4">
+                    <EditPayment
+                      payment={payment}
+                      //   onSubmit={handleUpdatePayment}
+                      onClose={() => setIsSignDialogOpen(false)}
+                    />
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       );
     },
