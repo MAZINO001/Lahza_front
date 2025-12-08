@@ -481,6 +481,13 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
               </Dialog>
             )}
 
+            {/* ann this to fix re-renders  
+            
+               const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
+                check cloud saved tab for more 
+
+            */}
+
             {isInvoice && role === "admin" && (
               <PaymentPercentage
                 InvoiceId={row.getValue("id")}

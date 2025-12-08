@@ -3,29 +3,19 @@ import * as React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, Pencil, Trash2, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
 import FormField from "@/Components/Form/FormField";
 import CsvUploadModal from "@/components/common/CsvUploadModal";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { globalFnStore } from "@/hooks/GlobalFnStore";
-import { useLoading } from "@/hooks/LoadingContext";
 import { getServiceColumns } from "../columns/serviceColumns"; // ← your columns
 import { DataTable } from "@/components/table/DataTable";
 
@@ -37,8 +27,6 @@ export function ServiceTable({ services = [], isLoading }) {
 
   const { role } = useAuthContext();
   const navigate = useNavigate();
-  const { show: showLoading, hide: hideLoading } = useLoading();
-  const { HandleEditService, handleDeleteService } = globalFnStore();
 
   const columns = React.useMemo(
     () => getServiceColumns(role, navigate),
@@ -65,7 +53,9 @@ export function ServiceTable({ services = [], isLoading }) {
           <FormField
             placeholder="Filter by name..."
             value={table.getColumn("name")?.getFilterValue() ?? ""}
-            onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
+            onChange={(e) =>
+              table.getColumn("name")?.setFilterValue(e.target.value)
+            }
             className="max-w-sm"
           />
           <div className="flex gap-2">
@@ -77,7 +67,6 @@ export function ServiceTable({ services = [], isLoading }) {
             </Link>
           </div>
         </div>
-
 
         <DataTable
           table={table}
