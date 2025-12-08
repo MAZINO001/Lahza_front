@@ -7,16 +7,25 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import api from "@/lib/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useService } from "@/features/services/hooks/useServiceQuery";
+import { useOffer } from "@/features/offers/hooks/useOffersQuery";
 
-export default function ServicePage({ data, type }) {
+export default function ServicePage({ currentId, type }) {
+
+  const servicesQuery = useService(currentId);
+  const offersQuery = useOffer(currentId);
+
+  const data = type === "service" ? servicesQuery.data || [] : offersQuery.data || [];
+  const isLoading = type === "service" ? servicesQuery.isLoading : offersQuery.isLoading;
+  const isError = type === "service" ? servicesQuery.isError : offersQuery.isError;
+
   const { role } = useAuthContext();
-  const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
     mutationFn: () =>
-      api.delete(`${import.meta.env.VITE_BACKEND_URL}/${type}s/${id}`),
+      api.delete(`${import.meta.env.VITE_BACKEND_URL}/${type}s/${currentId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`${type}s`] });
       toast.success(
@@ -26,21 +35,6 @@ export default function ServicePage({ data, type }) {
     },
     onError: () => toast.error(`Failed to delete ${type}`),
   });
-
-  if (!data) {
-    return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <p className="text-xl font-medium text-gray-700 mb-2">
-            No {type} selected
-          </p>
-          <p className="text-sm text-gray-500">
-            Choose a {type} from the sidebar or create a new one
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-US", {
@@ -58,7 +52,7 @@ export default function ServicePage({ data, type }) {
 
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
-            <Link to={`/${role}/${type}/${id}/edit`} state={{ editId: id }}>
+            <Link to={`/${role}/${type}/${currentId}/edit`} state={{ editId: currentId }}>
               <Edit2 className="w-4 h-4 mr-2" /> Edit
             </Link>
           </Button>
@@ -88,7 +82,7 @@ export default function ServicePage({ data, type }) {
       <div className="p-4 w-full">
         <Card>
           <CardContent className="space-y-6 py-4 px-4">
-            {/* Name / Title */}
+
             <div>
               <p className="text-sm font-medium text-gray-600 mb-1">
                 {type === "service" ? "Name" : "Title"}
@@ -98,7 +92,7 @@ export default function ServicePage({ data, type }) {
               </p>
             </div>
 
-            {/* Description */}
+
             <div>
               <p className="text-sm font-medium text-gray-600 mb-2">
                 Description
@@ -112,7 +106,6 @@ export default function ServicePage({ data, type }) {
               </p>
             </div>
 
-            {/* Service vs Offer Details */}
             {type === "service" ? (
               <div>
                 <p className="text-sm font-medium text-gray-600 mb-1">

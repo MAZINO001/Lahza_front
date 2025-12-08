@@ -1,7 +1,7 @@
 // src/features/services/components/ServiceTable.jsx
 import * as React from "react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -10,19 +10,20 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { DataTable } from "@/components/table/DataTable";
 import { ProjectColumns } from "../columns/projectColumns";
+import { useProjects } from "../hooks/useProjects";
 
-export function ProjectsTable({ projects, isLoading }) {
+export function ProjectsTable() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [rowSelection, setRowSelection] = useState({});
 
   const { role } = useAuthContext();
   const navigate = useNavigate();
+  const { data: projects, isLoading } = useProjects();
 
   const columns = React.useMemo(
     () => ProjectColumns(role, navigate),
