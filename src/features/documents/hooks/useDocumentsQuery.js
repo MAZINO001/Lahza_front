@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // src/features/documents/hooks/useDocuments.ts
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
@@ -22,6 +23,9 @@ const apiDocuments = {
   create: (data, type) =>
     api.post(`${API_URL}/${getRoute(type)}`, data),
 
+  createFromQuote: (id) =>
+    api.post(`${API_URL}/quotes/${id}/create-invoice`),
+
   update: (id, data, type) =>
     api.put(`${API_URL}/${getRoute(type)}/${id}`, data),
 
@@ -29,7 +33,6 @@ const apiDocuments = {
     api.delete(`${API_URL}/${getRoute(type)}/${id}`),
 };
 
-// List: useDocuments("invoice") or useDocuments("quote")
 export function useDocuments(type) {
   if (!type) throw new Error("useDocuments requires a type: 'invoice' or 'quote'");
 
@@ -40,7 +43,6 @@ export function useDocuments(type) {
   });
 }
 
-// Single document: useDocument(id, type)
 export function useDocument(id, type) {
   if (!type) throw new Error("useDocument requires a type: 'invoice' or 'quote'");
 
@@ -52,7 +54,6 @@ export function useDocument(id, type) {
   });
 }
 
-// Create
 export function useCreateDocument(type) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -66,7 +67,24 @@ export function useCreateDocument(type) {
   });
 }
 
-// Update
+export function useCreateInvoiceFromQuote() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id) =>
+      apiDocuments.createFromQuote(id),
+    onSuccess: (data) => {
+      toast.success('Invoice created from quote successfully');
+      queryClient.invalidateQueries({ queryKey: ["documents", "invoice"] });
+      queryClient.invalidateQueries({ queryKey: ["documents", "quote"] });
+      queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["quotes"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to create invoice from quote');
+    }
+  });
+}
+
 export function useUpdateDocument(type) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -81,7 +99,6 @@ export function useUpdateDocument(type) {
   });
 }
 
-// Delete
 export function useDeleteDocument(type) {
   const queryClient = useQueryClient();
   return useMutation({

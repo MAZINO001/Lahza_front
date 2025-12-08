@@ -58,12 +58,12 @@ export function DocumentForm({ document, onSuccess }) {
       customerName: "",
       ...(isInvoice
         ? {
-            invoice_date: new Date().toISOString().split("T")[0],
-            due_date: new Date().toISOString().split("T")[0],
-          }
+          invoice_date: new Date().toISOString().split("T")[0],
+          due_date: new Date().toISOString().split("T")[0],
+        }
         : {
-            quoteDate: new Date().toISOString().split("T")[0],
-          }),
+          quoteDate: new Date().toISOString().split("T")[0],
+        }),
       notes: "",
       percentage_amount: "50",
       payment_status: "pending",
@@ -97,12 +97,12 @@ export function DocumentForm({ document, onSuccess }) {
         customerName: doc.client_id,
         ...(isInvoice
           ? {
-              invoice_date: doc.invoice_date,
-              due_date: doc.due_date,
-            }
+            invoice_date: doc.invoice_date,
+            due_date: doc.due_date,
+          }
           : {
-              quoteDate: doc.quotation_date,
-            }),
+            quoteDate: doc.quotation_date,
+          }),
         notes: doc.notes || "",
         terms: doc.terms || terms,
         items:
@@ -127,7 +127,6 @@ export function DocumentForm({ document, onSuccess }) {
   const selectedClientId = watch("customerName");
   const selectedClient = clients.find((c) => c.id === Number(selectedClientId));
 
-  // Update payment method based on client nationality
   useEffect(() => {
     if (selectedClient) {
       const isMoroccan = selectedClient.country === "maroc";
@@ -186,15 +185,15 @@ export function DocumentForm({ document, onSuccess }) {
       client_id: Number(data.customerName),
       ...(isInvoice
         ? {
-            invoice_date: data.invoice_date,
-            due_date: data.due_date,
-            status: status || "unpaid",
-            balance_due: Number(calculateTotal().toFixed(2)),
-          }
+          invoice_date: data.invoice_date,
+          due_date: data.due_date,
+          status: status || "unpaid",
+          balance_due: Number(calculateTotal().toFixed(2)),
+        }
         : {
-            quotation_date: data.quoteDate,
-            status: status || "draft",
-          }),
+          quotation_date: data.quoteDate,
+          status: status || "draft",
+        }),
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
       terms: data.terms || terms,
@@ -259,14 +258,6 @@ export function DocumentForm({ document, onSuccess }) {
             </p>
           </div>
         )}
-
-        <FormField
-          id={isInvoice ? "invoiceId" : "quoteId"}
-          label={isInvoice ? "Invoice#" : "Quote#"}
-          readonly
-          value={watch(isInvoice ? "invoiceId" : "quoteId")}
-          disabled
-        />
 
         {isInvoice ? (
           <>
@@ -561,6 +552,7 @@ export function DocumentForm({ document, onSuccess }) {
             </div>
           </div>
         </div>
+        
         <div className="flex gap-4 w-full items-center space-between">
           <div className="flex md:flex-row flex-col gap-4 items-end justify-between w-[60%]">
             <div className="w-full">

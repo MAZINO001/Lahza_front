@@ -19,6 +19,8 @@ import { useOffers } from "@/features/offers/hooks/useOffersQuery";
 export default function ServicesSidebar({ type, currentId }) {
   const title = type === "service" ? "Services" : "Offers";
 
+  console.log(type, currentId)
+
   const servicesQuery = useServices();
   const offersQuery = useOffers();
 

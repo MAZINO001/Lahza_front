@@ -12,8 +12,14 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-export default function Client_Sidebar({ data }) {
-  const { id: currentId } = useParams();
+import { useClients } from "@/features/clients/hooks/useClientsQuery";
+export default function Client_Sidebar({ currentId }) {
+  const {
+    data: clients = [],
+    isLoading: clientsLoading,
+    isError: clientsError,
+  } = useClients();
+
   const { role } = useAuthContext();
   const {
     register,
@@ -27,10 +33,12 @@ export default function Client_Sidebar({ data }) {
   const clientStatuses = ["all", "active", "inactive", "unpaid", "overdue"];
   const [selectedStatus, setSelectedStatus] = useState("all");
 
-  const filteredData =
-    selectedStatus === "all"
-      ? data
-      : data.filter((item) => item.status === selectedStatus);
+  const filteredData = useMemo(() => {
+    return selectedStatus === "all"
+      ? clients
+      : clients.filter((item) => item.status === selectedStatus);
+  }, [clients, selectedStatus]);
+
 
   const selectStatus = (status) => {
     setSelectedStatus(status);
@@ -78,7 +86,7 @@ export default function Client_Sidebar({ data }) {
             <Link
               to={`/${role}/client/${c.id}`}
               key={index}
-              className={`flex items-center justify-between rounded-tr-lg rounded-br-lg  px-2 py-4 cursor-pointer border-l-2 transition ${c.id == currentId
+              className={`flex items-center justify-between rounded-tr-lg rounded-br-lg  px-2 py-4 cursor-pointer border-l-2 transition ${c.id === currentId
                 ? "bg-blue-50 border-l-blue-500"
                 : "border-l-transparent hover:bg-gray-100"
                 }`}

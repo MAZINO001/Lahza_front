@@ -1,7 +1,6 @@
 export default function SignatureExamples() {
   return (
     <div className="grid grid-cols-2 gap-8 mt-6">
-      {/* GOOD Example */}
       <div className="flex flex-col items-center">
         <div className="relative">
           <img
@@ -27,12 +26,8 @@ export default function SignatureExamples() {
             </svg>
           </div>
         </div>
-        {/* <p className="mt-4 text-lg font-semibold text-green-700">
-          Good Example
-        </p> */}
       </div>
 
-      {/* BAD Example */}
       <div className="flex flex-col items-center">
         <div className="relative">
           <img
@@ -58,7 +53,6 @@ export default function SignatureExamples() {
             </svg>
           </div>
         </div>
-        {/* <p className="mt-4 text-lg font-semibold text-red-700">Avoid This</p> */}
       </div>
     </div>
   );
