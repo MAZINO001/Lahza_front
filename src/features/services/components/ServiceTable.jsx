@@ -18,8 +18,9 @@ import CsvUploadModal from "@/components/common/CsvUploadModal";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { getServiceColumns } from "../columns/serviceColumns"; // ← your columns
 import { DataTable } from "@/components/table/DataTable";
+import { useServices } from "../hooks/useServiceQuery";
 
-export function ServiceTable({ services = [], isLoading }) {
+export function ServiceTable() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -27,7 +28,7 @@ export function ServiceTable({ services = [], isLoading }) {
 
   const { role } = useAuthContext();
   const navigate = useNavigate();
-
+  const { data: services, isLoading } = useServices();
   const columns = React.useMemo(
     () => getServiceColumns(role, navigate),
     [role, navigate]

@@ -6,6 +6,8 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { StatusBadge } from "../StatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,14 +15,20 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useDocuments } from "@/features/documents/hooks/useDocumentsQuery";
 
-export default function Inv_Qt_sidebar({ type, data }) {
+export default function Inv_Qt_sidebar({ type }) {
+  const {
+    data: documents = [],
+    isLoading: documentsLoading,
+    isError: documentsError,
+  } = useDocuments(type);
+
   const title = type === "invoice" ? "Invoices" : "Quotes";
   const { id: currentId } = useParams();
   const { role } = useAuthContext();
   const queryClient = useQueryClient();
 
-  // Filter statuses
   const quoteStatuses = [
     "all",
     "draft",
@@ -42,18 +50,16 @@ export default function Inv_Qt_sidebar({ type, data }) {
   const availableStatuses =
     type === "invoice" ? invoiceStatuses : quoteStatuses;
 
-  // FIX: Default to "All"
   const [selectedStatus, setSelectedStatus] = useState("all");
 
   const selectStatus = (status) => {
     setSelectedStatus(status);
   };
 
-  // FIX: Only filter when not "All"
   const filteredData =
     selectedStatus === "all"
-      ? data
-      : data.filter((item) => item.status === selectedStatus);
+      ? documents
+      : documents.filter((item) => item.status === selectedStatus);
 
   const prefetchData = async (id) => {
     const resource = type === "invoice" ? "invoices" : "quotes";
@@ -67,6 +73,7 @@ export default function Inv_Qt_sidebar({ type, data }) {
       staleTime: 5 * 60 * 1000,
     });
   };
+
 
   return (
     <div className=" w-[260px] bg-white border-r flex flex-col ">
@@ -103,7 +110,7 @@ export default function Inv_Qt_sidebar({ type, data }) {
       <div className="flex-1 overflow-y-auto">
         {filteredData.length === 0 ? (
           <div className="p-4 text-center text-gray-500 text-sm">
-            No {type === "invoice" ? "invoices" : "quotes"} found
+            No {type === "invoice" ? "documents" : "quotes"} found
           </div>
         ) : (
           filteredData.map((item) => (
