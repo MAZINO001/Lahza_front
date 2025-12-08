@@ -1,6 +1,6 @@
 import { Edit, Edit2, Phone, X } from "lucide-react";
 import React, { useState } from "react";
-import TimelineComponent from "@/Components/comp-531";
+import Transactions from "./Client_page/transactions";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useAuthContext } from "@/hooks/AuthContext";
@@ -58,13 +58,10 @@ export default function Client_Page({ data }) {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        {/* {activeTab === "overview" && <OverView data={data} />} */}
-
-        {/* {activeTab === "comments" && <Comments data={data} />} */}
-
-        {/* {activeTab === "transactions" && <Transactions data={data} />} */}
-
-        {/* {activeTab === "mails" && <Mails data={data} />} */}
+        {activeTab === "overview" && <OverView data={data} />}
+        {activeTab === "comments" && <Comments data={data} />}
+        {activeTab === "transactions" && <Transactions data={data} />}
+        {activeTab === "mails" && <Mails data={data} />}
       </div>
     </div>
   );

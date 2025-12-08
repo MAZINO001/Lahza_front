@@ -180,7 +180,7 @@ export const paymentColumns = (role) => [
           </Button>
 
           {role === "admin" &&
-            row.getValue("payment_method") === "stripe" &&
+            // row.getValue("payment_method") === "stripe" &&
             row.getValue("status") === "pending" && (
               <Dialog
                 open={isSignDialogOpen}

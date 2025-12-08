@@ -1,4 +1,5 @@
 import { Edit, Phone } from "lucide-react";
+import TimelineComponent from "@/Components/comp-531";
 import React from "react";
 export default function overview({ data }) {
   return (
