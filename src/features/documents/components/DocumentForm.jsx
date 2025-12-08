@@ -65,7 +65,7 @@ export function DocumentForm({ document, onSuccess }) {
             quoteDate: new Date().toISOString().split("T")[0],
           }),
       notes: "",
-      paid_amount: "0",
+      paid_percentage: "0",
       payment_status: "",
       payment_type: "",
       terms: terms,
@@ -189,6 +189,9 @@ export function DocumentForm({ document, onSuccess }) {
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
       terms: data.terms || terms,
+      payment_percentage: data.paid_percentage || "0",
+      payment_status: data.payment_status || "",
+      payment_type: data.payment_type || "",
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
@@ -205,9 +208,10 @@ export function DocumentForm({ document, onSuccess }) {
       },
       onSettled: () => endSubmit(),
     });
+    console.log(data);
   };
 
-  const isMoroccan = selectedClient?.country === "Maroc" ? true : false;
+  const isMoroccan = selectedClient?.country === "maroc" ? true : false;
 
   if (clientsLoading || servicesLoading) {
     return (
@@ -586,9 +590,10 @@ export function DocumentForm({ document, onSuccess }) {
                       type="select"
                       value={field.value || ""}
                       options={[
-                        { value: "bank", label: "Bank" },
+                        { value: "banc", label: "Banc" },
                         { value: "cash", label: "Cash" },
                         { value: "espace", label: "Espace" },
+                        { value: "stripe", label: "Stripe" },
                       ]}
                       onChange={(e) => field.onChange(e)}
                       onBlur={field.onBlur}
@@ -598,12 +603,12 @@ export function DocumentForm({ document, onSuccess }) {
                 />
 
                 <Controller
-                  name="paid_amount"
+                  name="paid_percentage"
                   control={control}
                   rules={{ required: "Amount is required" }}
                   render={({ field, fieldState: { error } }) => (
                     <FormField
-                      id="paid_amount"
+                      id="paid_percentage"
                       label="Amount Paid"
                       type="number"
                       value={field.value || ""}
@@ -627,8 +632,6 @@ export function DocumentForm({ document, onSuccess }) {
                       options={[
                         { value: "pending", label: "Pending" },
                         { value: "paid", label: "Paid" },
-                        { value: "failed", label: "Failed" },
-                        { value: "refunded", label: "Refunded" },
                       ]}
                       onChange={(e) => field.onChange(e)}
                       onBlur={field.onBlur}
