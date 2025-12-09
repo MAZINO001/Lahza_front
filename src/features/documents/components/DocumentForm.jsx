@@ -58,12 +58,12 @@ export function DocumentForm({ document, onSuccess }) {
       customerName: "",
       ...(isInvoice
         ? {
-          invoice_date: new Date().toISOString().split("T")[0],
-          due_date: new Date().toISOString().split("T")[0],
-        }
+            invoice_date: new Date().toISOString().split("T")[0],
+            due_date: new Date().toISOString().split("T")[0],
+          }
         : {
-          quoteDate: new Date().toISOString().split("T")[0],
-        }),
+            quoteDate: new Date().toISOString().split("T")[0],
+          }),
       notes: "",
       percentage_amount: "50",
       payment_status: "pending",
@@ -97,12 +97,12 @@ export function DocumentForm({ document, onSuccess }) {
         customerName: doc.client_id,
         ...(isInvoice
           ? {
-            invoice_date: doc.invoice_date,
-            due_date: doc.due_date,
-          }
+              invoice_date: doc.invoice_date,
+              due_date: doc.due_date,
+            }
           : {
-            quoteDate: doc.quotation_date,
-          }),
+              quoteDate: doc.quotation_date,
+            }),
         notes: doc.notes || "",
         terms: doc.terms || terms,
         items:
@@ -185,18 +185,21 @@ export function DocumentForm({ document, onSuccess }) {
       client_id: Number(data.customerName),
       ...(isInvoice
         ? {
-          invoice_date: data.invoice_date,
-          due_date: data.due_date,
-          status: status || "unpaid",
-          balance_due: Number(calculateTotal().toFixed(2)),
-        }
+            invoice_date: data.invoice_date,
+            due_date: data.due_date,
+            status: status || "unpaid",
+            balance_due: Number(calculateTotal().toFixed(2)),
+          }
         : {
-          quotation_date: data.quoteDate,
-          status: status || "draft",
-        }),
+            quotation_date: data.quoteDate,
+            status: status || "draft",
+          }),
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
       terms: data.terms || terms,
+      percentage_amount: Number(data.percentage_amount),
+      payment_status: data.payment_status,
+      payment_method: data.payment_method,
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
@@ -206,6 +209,7 @@ export function DocumentForm({ document, onSuccess }) {
         individual_total: Number(item.amount),
       })),
     };
+    console.log(payload);
     mutation.mutate(isEditMode ? { id: document.id, data: payload } : payload, {
       onSuccess: () => {
         onSuccess?.();
@@ -552,9 +556,11 @@ export function DocumentForm({ document, onSuccess }) {
             </div>
           </div>
         </div>
-        
+
         <div className="flex gap-4 w-full items-center space-between">
-          <div className="flex md:flex-row flex-col gap-4 items-end justify-between w-[60%]">
+          <div
+            className={`flex md:flex-row flex-col gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[60%]"}`}
+          >
             <div className="w-full">
               <Label htmlFor="notes" className="mb-1">
                 Customer Notes

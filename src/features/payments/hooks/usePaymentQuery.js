@@ -19,6 +19,8 @@ const apiPayments = {
         return api.put(`${API_URL}/payments/${id}`, data);
     },
     delete: (id) => api.delete(`${API_URL}/payments/${id}`),
+
+    confirm: (id) => api.put(`${API_URL}/validatePayments/${id}`),
 };
 
 export function usePayments() {
@@ -26,6 +28,7 @@ export function usePayments() {
         queryKey: ["payments"],
         queryFn: apiPayments.getAll,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
     });
 }
 
@@ -87,6 +90,20 @@ export function CreateAdditionalPayment() {
         onSuccess: () => {
             toast.success("additional Payment created");
             queryClient.invalidateQueries({ queryKey: ["payments"] });
+        },
+    });
+}
+export function useConfirmPayment() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => apiPayments.confirm(id), // make sure id is passed
+        onSuccess: () => {
+            toast.success("Payment Confirmed");
+            queryClient.invalidateQueries({ queryKey: ["payments"] });
+        },
+        onError: (err) => {
+            console.error("Confirm payment failed:", err);
+            toast.error("Failed to confirm payment");
         },
     });
 }
