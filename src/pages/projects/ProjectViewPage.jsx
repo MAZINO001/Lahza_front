@@ -2,141 +2,159 @@
 // ProjectViewPage.jsx
 import { format } from "date-fns";
 import { ArrowLeft, Edit3, CheckCircle, Clock, Calendar } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useProject } from "@/features/projects/hooks/useProjects";
 import { StatusBadge } from "@/components/StatusBadge";
-
+import { useState } from "react";
+import { Database, ImageIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Mail,
+  ExternalLink,
+  Briefcase,
+  ListTodo,
+  FileText,
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function ProjectViewPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const { role } = useAuthContext();
   const { data: project, isLoading } = useProject(id);
   console.log(project);
 
-  if (isLoading || !project) {
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-gray-600">Loading project...</div>
+        <p>Loading project...</p>
       </div>
     );
   }
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="flex items-center text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back
-            </button>
+      <div className="w-full bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                <div className="w-17 h-17 rounded-xl overflow-hidden shadow-md ring-2 ring-gray-100 transition-all duration-200">
+                  <img
+                    src={project.logo}
+                    alt={`${project.name} logo`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-            <div className="flex gap-3">
-              <button
-                onClick={() => navigate(`/projects/${id}/tasks`)}
-                className="px-5 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"
-              >
-                <CheckCircle className="w-4 h-4" />
-                View Tasks
-              </button>
+                <div className="absolute inset-0 bg-black bg-opacity-0  rounded-xl transition-all duration-200 flex items-center justify-center opacity-0  cursor-pointer">
+                  <Edit3 className="w-5 h-5 text-white" />
+                </div>
+              </div>
 
-              <button
-                onClick={() => navigate(`/projects/${id}/edit`)}
-                className="px-5 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition flex items-center gap-2"
-              >
-                <Edit3 className="w-4 h-4" />
-                Edit Project
-              </button>
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+                    {project.name}
+                  </h1>
+                </div>
+                <StatusBadge status={project.statu} />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link to={`/${role}/project/${id}/tasks`}>
+                <Button variant="outline" className="flex items-center gap-2">
+                  <Edit3 className="w-4 h-4" />
+                  Edit Tasks
+                </Button>
+              </Link>
+              <Link>
+                <Button className="flex items-center gap-2">
+                  <Database className="w-4 h-4" />
+                  Additional Data
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          {project.name}
-        </h1>
+      <div className="max-w-7xl p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Client Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Client Name</p>
+                <p className="text-gray-900 font-medium">Admin User</p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500 mb-1">Email</p>
+                <a
+                  // href={`mailto:${project.client.email}`}
+                  className="inline-flex items-center gap-2"
+                >
+                  <Mail className="w-4 h-4" />
+                  admin@lahza.com
+                </a>
+              </div>
+            </CardContent>
+          </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="flex items-center gap-3 mb-2">
-              <Clock className="w-5 h-5 text-gray-500" />
-              <p className="text-sm font-medium text-gray-600">Status</p>
-            </div>
-            <StatusBadge status={project.status}>{project.status}</StatusBadge>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <p className="text-sm font-medium text-gray-600 mb-2">Client</p>
-            <p className="text-lg font-semibold text-gray-900">
-              {project.client?.name || "No client assigned"}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="flex items-center gap-3 mb-2">
-              <Calendar className="w-5 h-5 text-gray-500" />
-              <p className="text-sm font-medium text-gray-600">Start Date</p>
-            </div>
-            <p className="text-lg font-semibold">
-              {project.start_date
-                ? format(new Date(project.start_date), "MMM dd, yyyy")
-                : "—"}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <div className="flex items-center gap-3 mb-2">
-              <Calendar className="w-5 h-5 text-gray-500" />
-              <p className="text-sm font-medium text-gray-600">Estimated End</p>
-            </div>
-            <p className="text-lg font-semibold">
-              {project.estimated_end_date
-                ? format(new Date(project.estimated_end_date), "MMM dd, yyyy")
-                : "—"}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <p className="text-sm font-medium text-gray-600 mb-2">Invoice</p>
-            <p className="text-lg font-semibold text-indigo-600">
-              {project.invoice_id ? `#INV-${project.invoice_id}` : "No invoice"}
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <p className="text-sm font-medium text-gray-600 mb-2">Created</p>
-            <p className="text-lg font-semibold">
-              {format(new Date(project.created_at), "MMM dd, yyyy")}
-            </p>
-          </div>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Project Description</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 leading-relaxed">
+                {project.description ||
+                  "No description available for this project."}
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 mb-8">
-            Description
-          </h2>
-          <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
-            {project.description || "No description provided."}
-          </p>
-        </div>
-
-        <div className="mt-10 bg-white rounded-xl shadow-sm p-8 border border-gray-200">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Tasks</h2>
-            <button
-              onClick={() => navigate(`/projects/${id}/tasks`)}
-              className="text-indigo-600 hover:text-indigo-700 font-medium"
-            >
-              View all tasks →
-            </button>
-          </div>
-          <p className="text-gray-600">
-            Click the button above or the "View Tasks" button at the top to
-            manage tasks for this project.
-          </p>
-        </div>
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle>Additional Data</CardTitle>
+          </CardHeader>
+          <CardContent>addition data wil be here</CardContent>
+        </Card>
+        <Card className="mb-4">
+          <CardHeader>
+            <CardTitle>progress bar</CardTitle>
+          </CardHeader>
+          <CardContent>addition data wil be here</CardContent>
+        </Card>
+        <Card className="mt-4" style={{ height: "30vh" }}>
+          <CardHeader>
+            <CardTitle>Project Timeline</CardTitle>
+          </CardHeader>
+          <CardContent className="h-full">
+            <div className="w-full h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+              <p className="text-gray-400 text-sm">
+                Gantt Chart Component will be placed here
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

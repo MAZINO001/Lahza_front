@@ -7,6 +7,7 @@ import {
   Pencil,
   Eye,
   Copy,
+  Check,
 } from "lucide-react";
 import { formatId } from "@/lib/utils/formatId";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -218,13 +219,15 @@ export function paymentColumns(role) {
                   </Button>
                 </div>
               )}
-            <Button
-              onClick={() => confirmPayment.mutate(row.getValue("id"))}
-              variant="outline"
-              className="cursor-pointer"
-            >
-              confirm
-            </Button>
+            {row.getValue("payment_method") === "banc" && (
+              <Button
+                onClick={() => confirmPayment.mutate(row.getValue("id"))}
+                variant="outline"
+                className="cursor-pointer"
+              >
+                <Check />
+              </Button>
+            )}
             {role === "admin" && row.getValue("status") === "pending" && (
               <Dialog
                 open={isSignDialogOpen}

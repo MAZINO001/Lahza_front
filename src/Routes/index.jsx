@@ -53,9 +53,9 @@ import OfferEditPage from "../pages/offers/OfferEditPage";
 import ActivityLogsPage from "@/pages/activityLogs/ActivityLogsPage";
 import ActivityLogViewPage from "@/pages/activityLogs/ActivityLogViewPage";
 
-
 import SettingsPage from "@/pages/settings/settingsPage";
 import CalendarPage from "@/pages/calendar/CalendarPage";
+import TasksPage from "@/pages/tasks/tasksPage";
 
 import AuthLayout from "@/app/layout/AuthLayout";
 import AppLayout from "@/app/layout/AppLayout";
@@ -143,14 +143,14 @@ export default function AppRoutes() {
             <Route path="settings" element={<SettingsPage />} />
             {/* calendar */}
             <Route path="calendar" element={<CalendarPage />} />
-
-
+            {/* tasks */}
 
             {/* Admin-only create/edit routes */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               {/* Projects */}
               <Route path="project/new" element={<ProjectCreatePage />} />
               <Route path="project/:id/edit" element={<ProjectEditPage />} />
+              <Route path="project/:id/tasks" element={<TasksPage />} />
 
               {/* Quotes */}
               <Route path="quote/new" element={<QuoteCreatePage />} />

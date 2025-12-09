@@ -65,6 +65,7 @@ export function useCreateDocument(type) {
       queryClient.invalidateQueries({ queryKey: ["documents", type] });
       queryClient.setQueryData(["documents", type, newDoc.id], newDoc);
     },
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -80,6 +81,7 @@ export function useCreateInvoiceFromQuote() {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.invalidateQueries({ queryKey: ["quotes"] });
     },
+    refetchOnWindowFocus: true,
     onError: (error) => {
       toast.error(error.message || 'Failed to create invoice from quote');
     }
@@ -97,6 +99,7 @@ export function useUpdateDocument(type) {
       queryClient.invalidateQueries({ queryKey: ["documents", type] });
       queryClient.setQueryData(["documents", type, updatedDoc.id], updatedDoc);
     },
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -108,5 +111,6 @@ export function useDeleteDocument(type) {
       toast.success("Document deleted");
       queryClient.invalidateQueries({ queryKey: ["documents", type] });
     },
+    refetchOnWindowFocus: true,
   });
 }

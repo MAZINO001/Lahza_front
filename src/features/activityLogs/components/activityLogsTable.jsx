@@ -51,11 +51,10 @@ import { useAuthContext } from "@/hooks/AuthContext";
 
 import { ActivityLogsColumns } from "../columns/activityLogsColumn";
 import { DataTable } from "@/components/table/DataTable";
-import { TheActivityLogs } from "@/lib/mockData";
+import { useLogs } from "../hooks/useLogsQuery";
 
-// export function ActivityLogsTable({ logs, isLoading }) {
 export function ActivityLogsTable() {
-  const logs = TheActivityLogs;
+  const { data: logs = [] } = useLogs();
   const { role } = useAuthContext();
 
   const [globalFilter, setGlobalFilter] = useState("");
@@ -75,7 +74,7 @@ export function ActivityLogsTable() {
   };
 
   const filteredData = useMemo(() => {
-    let filtered = [...logs];
+    let filtered = [...(logs || [])];
 
     if (actionFilter !== "all") {
       filtered = filtered.filter((log) => log.action === actionFilter);
@@ -124,9 +123,8 @@ export function ActivityLogsTable() {
   }, [logs, actionFilter, tableFilter, dateRange, fromDate, toDate]);
 
   const columns = React.useMemo(() => ActivityLogsColumns(role), [role]);
-
   const table = useReactTable({
-    logs: filteredData,
+    data: filteredData,
     columns: columns,
     state: { globalFilter },
     onGlobalFilterChange: setGlobalFilter,

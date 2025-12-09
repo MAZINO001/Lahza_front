@@ -38,6 +38,7 @@ export function usePayment(id) {
         queryFn: () => apiPayments.getById(id),
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
     });
 }
 
@@ -49,7 +50,9 @@ export function useCreatePayment() {
             toast.success("Payment created!");
             queryClient.invalidateQueries({ queryKey: ["payments"] });
         },
+        refetchOnWindowFocus: true,
     });
+
 }
 
 export function useUpdatePayment() {
@@ -59,6 +62,7 @@ export function useUpdatePayment() {
             console.log("Mutation called with ID:", id, "Data:", data);
             return apiPayments.update(id, data);
         },
+        refetchOnWindowFocus: true,
         onSuccess: (response) => {
             console.log("Update successful - Response:", response);
             toast.success("Payment updated!");
