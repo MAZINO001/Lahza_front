@@ -83,4 +83,32 @@ export const globalFnStore = create((set) => ({
         }
     },
 
+    HandleEditTask: async (id, navigate, role) => {
+        // Get the current path to extract project ID
+        const currentPath = window.location.pathname;
+        const pathMatch = currentPath.match(/\/project\/(\d+)/);
+        const projectId = pathMatch ? pathMatch[1] : null;
+
+        if (projectId) {
+            navigate(`/${role}/project/${projectId}/task/${id}/edit`, {
+                replace: true
+            });
+        } else {
+            // Fallback to relative navigation
+            navigate(`../task/${id}/edit`, {
+                replace: true
+            });
+        }
+    },
+
+    handleDeleteTask: async (projectId, id, reloadCallback) => {
+        if (!confirm("Are you sure you want to delete this task?")) return;
+        try {
+            await api.delete(`${import.meta.env.VITE_BACKEND_URL}/projects/tasks/${projectId}/${id}`);
+            if (reloadCallback) reloadCallback();
+        } catch (error) {
+            alert(error);
+        }
+    },
+
 }))

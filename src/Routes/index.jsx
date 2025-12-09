@@ -61,6 +61,8 @@ import AuthLayout from "@/app/layout/AuthLayout";
 import AppLayout from "@/app/layout/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuthContext } from "@/hooks/AuthContext";
+import TaskCreatePage from "@/pages/tasks/TaskCreatePage";
+import TaskEditPage from "@/pages/tasks/TaskEditPage";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -151,6 +153,14 @@ export default function AppRoutes() {
               <Route path="project/new" element={<ProjectCreatePage />} />
               <Route path="project/:id/edit" element={<ProjectEditPage />} />
               <Route path="project/:id/tasks" element={<TasksPage />} />
+              <Route
+                path="project/:id/task/new"
+                element={<TaskCreatePage />}
+              />
+              <Route
+                path="project/:id/task/:id/edit"
+                element={<TaskEditPage />}
+              />
 
               {/* Quotes */}
               <Route path="quote/new" element={<QuoteCreatePage />} />

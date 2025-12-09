@@ -6,37 +6,39 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 const apiTask = {
-    getAll: () => api.get(`${API_URL}/tasks`).then((res) => res.data ?? []),
+    getAll: (projectId) => api.get(`${API_URL}/projects/tasks/${projectId}`).then((res) => res.data ?? []),
 
-    getById: (id) =>
-        api.get(`${API_URL}/tasks/${id}`)
-            .then((res) => res.data?.task ?? res.data ?? null),
+    create: (projectId, data) =>
+        api.post(`${API_URL}/projects/tasks/${projectId}`, data).then((res) => res.data),
 
-    create: (data) =>
-        api.post(`${API_URL}/tasks`, data).then((res) => res.data),
+    update: (projectId, taskId, data) =>
+        api.put(`${API_URL}/projects/tasks/${projectId}/${taskId}`, data).then((res) => res.data),
 
-    update: (id, data) =>
-        api.put(`${API_URL}/tasks/${id}`, data).then((res) => res.data),
-
-    delete: (id) =>
-        api.delete(`${API_URL}/tasks/${id}`).then((res) => res.data),
+    delete: (projectId, taskId) =>
+        api.delete(`${API_URL}/projects/tasks/${projectId}/${taskId}`).then((res) => res.data),
 };
 
 
 
-export function useTasks() {
+export function useTasks(projectId) {
     return useQuery({
-        queryKey: ["tasks"],
-        queryFn: apiTask.getAll,
+        queryKey: ["tasks", projectId],
+        queryFn: () => apiTask.getAll(projectId),
+        enabled: !!projectId,
         staleTime: 5 * 60 * 1000,
     });
 }
 
-export function useTask(id) {
+export function useTask(projectId, taskId) {
     return useQuery({
-        queryKey: ["tasks", id],
-        queryFn: () => apiTask.getById(id),
-        enabled: !!id,
+        queryKey: ["tasks", projectId, taskId],
+        queryFn: async () => {
+            // Get all tasks for the project and find the specific task
+            const response = await api.get(`${API_URL}/projects/tasks/${projectId}`);
+            const tasks = response.data ?? [];
+            return tasks.find(task => task.id === parseInt(taskId)) || null;
+        },
+        enabled: !!(projectId && taskId),
         staleTime: 5 * 60 * 1000,
     });
 }
@@ -45,10 +47,10 @@ export function useTask(id) {
 export function useCreateTask() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: apiTask.create,
-        onSuccess: () => {
+        mutationFn: ({ projectId, data }) => apiTask.create(projectId, data),
+        onSuccess: (_, { projectId }) => {
             toast.success("Task created!");
-            queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
         },
     });
 }
@@ -56,10 +58,10 @@ export function useCreateTask() {
 export function useUpdateTask() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, data }) => apiTask.update(id, data),
-        onSuccess: () => {
+        mutationFn: ({ projectId, taskId, data }) => apiTask.update(projectId, taskId, data),
+        onSuccess: (_, { projectId }) => {
             toast.success("Task updated!");
-            queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
         },
     });
 }
@@ -67,10 +69,10 @@ export function useUpdateTask() {
 export function useDeleteTask() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: apiTask.delete,
-        onSuccess: () => {
+        mutationFn: ({ projectId, taskId }) => apiTask.delete(projectId, taskId),
+        onSuccess: (_, { projectId }) => {
             toast.success("Task deleted");
-            queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
         },
     });
 }

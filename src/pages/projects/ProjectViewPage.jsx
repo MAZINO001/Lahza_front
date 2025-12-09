@@ -46,6 +46,28 @@ export default function ProjectViewPage() {
       </div>
     );
   }
+
+  const mockTasks = [
+    { id: 1, title: "Design Homepage", status: "completed", percentage: 100 },
+    { id: 2, title: "Setup Database", status: "completed", percentage: 100 },
+    { id: 3, title: "API Integration", status: "in_progress", percentage: 60 },
+    { id: 4, title: "Testing Phase", status: "pending", percentage: 0 },
+    { id: 5, title: "Deployment", status: "pending", percentage: 0 },
+  ];
+  const totalTasks = mockTasks.length;
+  const completedTasks = mockTasks.filter(
+    (task) => task.status === "completed"
+  ).length;
+
+  const completionPercentage =
+    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  const totalPercentage = mockTasks.reduce(
+    (sum, task) => sum + (task.percentage || 0),
+    0
+  );
+  const avgPercentage =
+    totalTasks > 0 ? Math.round(totalPercentage / totalTasks) : 0;
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="w-full bg-white border-b shadow-sm">
@@ -139,10 +161,25 @@ export default function ProjectViewPage() {
         </Card>
         <Card className="mb-4">
           <CardHeader>
-            <CardTitle>progress bar</CardTitle>
+            <CardTitle>Progress</CardTitle>
           </CardHeader>
-          <CardContent>addition data wil be here</CardContent>
+
+          <CardContent>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-2xl font-bold text-blue-600">
+                {completionPercentage}%
+              </span>
+            </div>
+
+            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+              <div
+                className="bg-blue-600 h-full transition-all duration-500"
+                style={{ width: `${completionPercentage}%` }}
+              />
+            </div>
+          </CardContent>
         </Card>
+
         <Card className="mt-4" style={{ height: "30vh" }}>
           <CardHeader>
             <CardTitle>Project Timeline</CardTitle>
