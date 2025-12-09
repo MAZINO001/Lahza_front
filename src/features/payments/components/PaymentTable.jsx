@@ -51,11 +51,6 @@ export default function PaymentTable() {
                         onChange={(e) => table.getColumn("invoice_id")?.setFilterValue(e.target.value)}
                         className="max-w-sm"
                     />
-                    {/* <div className="flex gap-2">
-                        <Button>
-                            add new
-                        </Button>
-                    </div> */}
                 </div>
 
                 <DataTable

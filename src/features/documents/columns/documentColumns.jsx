@@ -37,7 +37,6 @@ import {
 export const DocumentsColumns = (role, navigate, currentSection) => {
   const isInvoice =
     currentSection === "invoices" || currentSection === "invoice";
-
   return [
     {
       accessorKey: "id",
@@ -53,6 +52,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
       cell: ({ row }) => {
         const id = row.original?.id;
         const prefix = isInvoice ? "INVOICE" : "QUOTE";
+
         return (
           <Link
             to={`/${role}/${isInvoice ? "invoice" : "quote"}/${id}`}
@@ -381,55 +381,52 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
               </Button>
             )}
 
-            {/* {!isInvoice && role === "client" && ( */}
-            <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="h-8">
-                  <FileSignature className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogTitle>add you signature</DialogTitle>
-                <DialogHeader>
-                  <DialogDescription className="space-y-6 mt-4">
-                    <p className="text-center text-base">
-                      Please upload a{" "}
-                      <strong className="">clear black signature</strong> on a{" "}
-                      <strong className="">pure white background</strong>.
-                    </p>
-
-                    <SignatureExamples />
-
-                    <p className="text-sm text-center text-muted-foreground pt-4">
-                      Accepted formats: PNG, JPG, JPEG • Max size: 5MB
-                    </p>
-                  </DialogDescription>
-                </DialogHeader>
-
-                <SignUploader onFileChange={handleSignatureUpload} />
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsSignDialogOpen(false)}
-                  >
-                    Cancel
+            {!isInvoice && role === "client" && (
+              <Dialog
+                open={isSignDialogOpen}
+                onOpenChange={setIsSignDialogOpen}
+              >
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8">
+                    <FileSignature className="h-4 w-4" />
                   </Button>
-                  <Button
-                    onClick={handleSubmitSignature}
-                    disabled={!signatureFile}
-                  >
-                    Submit Signature
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogTitle>add you signature</DialogTitle>
+                  <DialogHeader>
+                    <DialogDescription className="space-y-6 mt-4">
+                      <p className="text-center text-base">
+                        Please upload a{" "}
+                        <strong className="">clear black signature</strong> on a{" "}
+                        <strong className="">pure white background</strong>.
+                      </p>
 
-            {/* ann this to fix re-renders  
-            
-               const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
-                check cloud saved tab for more 
+                      <SignatureExamples />
 
-            */}
+                      <p className="text-sm text-center text-muted-foreground pt-4">
+                        Accepted formats: PNG, JPG, JPEG • Max size: 5MB
+                      </p>
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <SignUploader onFileChange={handleSignatureUpload} />
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsSignDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSubmitSignature}
+                      disabled={!signatureFile}
+                    >
+                      Submit Signature
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
 
             {isInvoice && role === "admin" && (
               <PaymentPercentage
@@ -440,7 +437,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
                 onOpenChange={setIsSignDialogOpen}
               />
             )}
-            {!isInvoice && role === "admin" && (
+            {role === "admin" && (
               <Button
                 variant="outline"
                 size="sm"
