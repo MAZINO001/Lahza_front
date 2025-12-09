@@ -2,14 +2,29 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { useDocumentPayments } from "../hooks/useDocumentPayments";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { Copy } from "lucide-react";
+import { StatusBadge } from "@/components/StatusBadge";
 
 export default function PaymentDetails({ invoiceId }) {
   const [error, setError] = useState(null);
 
+  const copyToClipboard = (text, label) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied!`, {
+      duration: 3000,
+    });
+  };
+
   const { data: payments = [], isLoading } = useDocumentPayments(invoiceId);
-  console.log(payments)
+  console.log(payments);
   if (isLoading) {
-    return <div className="p-4 text-center text-muted-foreground">Loading payment details...</div>;
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        Loading payment details...
+      </div>
+    );
   }
 
   if (error) {
@@ -17,7 +32,11 @@ export default function PaymentDetails({ invoiceId }) {
   }
 
   if (!payments || payments.length === 0) {
-    return <div className="p-4 text-center text-muted-foreground">No payment records found</div>;
+    return (
+      <div className="p-4 text-center text-muted-foreground">
+        No payment records found
+      </div>
+    );
   }
 
   return (
@@ -32,41 +51,56 @@ export default function PaymentDetails({ invoiceId }) {
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-medium">
-                  {new Intl.NumberFormat("en-US", {
+                  {new Intl.NumberFormat("fr-MA", {
                     style: "currency",
-                    currency: payment.currency || "USD",
+                    currency: "MAD",
                   }).format(payment.amount)}
                 </p>
-                {payment.payment_date && (
+
+                {payment.updated_at && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    {format(new Date(payment.payment_date), "MMM dd, yyyy HH:mm")}
+                    {format(new Date(payment.updated_at), "MMM dd, yyyy HH:mm")}
                   </p>
                 )}
               </div>
-              <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                {payment.status || "Completed"}
-              </span>
+              <div className="flex flex-col gap-2">
+                <span>
+                  <StatusBadge status={payment.status} />
+                </span>
+                {payment.status === "pending" &&
+                  (payment.payment_method === "stripe" ||
+                    payment.payment_method === "banc") && (
+                    <div className="mt-1 text-sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (payment.payment_method === "stripe") {
+                            copyToClipboard(payment.payment_url, "Payment Url");
+                          }
+
+                          if (payment.payment_method === "banc") {
+                            copyToClipboard(
+                              "007 640 0014332000000260 29",
+                              "Payment Url"
+                            );
+                          }
+                        }}
+                      >
+                        <Copy className="mr-1 h-4 w-4" />
+                        Copy Url
+                      </Button>
+                    </div>
+                  )}
+              </div>
             </div>
             {payment.payment_method && (
               <div className="mt-2 text-sm">
                 <span className="text-muted-foreground">Method: </span>
                 <span className="font-medium">
-                  {payment.payment_method.charAt(0).toUpperCase() + payment.payment_method.slice(1)}
+                  {payment.payment_method.charAt(0).toUpperCase() +
+                    payment.payment_method.slice(1)}
                 </span>
-              </div>
-            )}
-            {payment.transaction_id && (
-              <div className="mt-1 text-sm">
-                <span className="text-muted-foreground">Transaction ID: </span>
-                <span className="font-mono text-xs bg-muted px-2 py-0.5 rounded">
-                  {payment.transaction_id}
-                </span>
-              </div>
-            )}
-            {payment.notes && (
-              <div className="mt-2 text-sm">
-                <p className="text-muted-foreground">Notes:</p>
-                <p className="text-sm">{payment.notes}</p>
               </div>
             )}
           </div>

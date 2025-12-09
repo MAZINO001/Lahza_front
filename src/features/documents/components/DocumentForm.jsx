@@ -58,12 +58,12 @@ export function DocumentForm({ document, onSuccess }) {
       customerName: "",
       ...(isInvoice
         ? {
-          invoice_date: new Date().toISOString().split("T")[0],
-          due_date: new Date().toISOString().split("T")[0],
-        }
+            invoice_date: new Date().toISOString().split("T")[0],
+            due_date: new Date().toISOString().split("T")[0],
+          }
         : {
-          quoteDate: new Date().toISOString().split("T")[0],
-        }),
+            quoteDate: new Date().toISOString().split("T")[0],
+          }),
       notes: "",
       percentage_amount: "50",
       payment_status: "pending",
@@ -97,12 +97,12 @@ export function DocumentForm({ document, onSuccess }) {
         customerName: doc.client_id,
         ...(isInvoice
           ? {
-            invoice_date: doc.invoice_date,
-            due_date: doc.due_date,
-          }
+              invoice_date: doc.invoice_date,
+              due_date: doc.due_date,
+            }
           : {
-            quoteDate: doc.quotation_date,
-          }),
+              quoteDate: doc.quotation_date,
+            }),
         notes: doc.notes || "",
         terms: doc.terms || terms,
         items:
@@ -185,18 +185,21 @@ export function DocumentForm({ document, onSuccess }) {
       client_id: Number(data.customerName),
       ...(isInvoice
         ? {
-          invoice_date: data.invoice_date,
-          due_date: data.due_date,
-          status: status || "unpaid",
-          balance_due: Number(calculateTotal().toFixed(2)),
-        }
+            invoice_date: data.invoice_date,
+            due_date: data.due_date,
+            status: status || "unpaid",
+            balance_due: Number(calculateTotal().toFixed(2)),
+          }
         : {
-          quotation_date: data.quoteDate,
-          status: status || "draft",
-        }),
+            quotation_date: data.quoteDate,
+            status: status || "draft",
+          }),
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
       terms: data.terms || terms,
+      percentage_amount: Number(data.percentage_amount),
+      payment_status: data.payment_status,
+      payment_method: data.payment_method,
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
@@ -206,6 +209,7 @@ export function DocumentForm({ document, onSuccess }) {
         individual_total: Number(item.amount),
       })),
     };
+    console.log(payload);
     mutation.mutate(isEditMode ? { id: document.id, data: payload } : payload, {
       onSuccess: () => {
         onSuccess?.();
@@ -552,9 +556,11 @@ export function DocumentForm({ document, onSuccess }) {
             </div>
           </div>
         </div>
-        
+
         <div className="flex gap-4 w-full items-center space-between">
-          <div className="flex md:flex-row flex-col gap-4 items-end justify-between w-[60%]">
+          <div
+            className={`flex md:flex-row flex-col gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[60%]"}`}
+          >
             <div className="w-full">
               <Label htmlFor="notes" className="mb-1">
                 Customer Notes
@@ -568,77 +574,78 @@ export function DocumentForm({ document, onSuccess }) {
               />
             </div>
           </div>
+          {isInvoice && (
+            <div className="w-[40%]">
+              <Label htmlFor="payment" className="mb-1">
+                Payment
+              </Label>
+              <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-gray-300 p-4 rounded-lg">
+                <div className="w-full flex gap-4 items-center justify-between">
+                  <Controller
+                    name="payment_method"
+                    control={control}
+                    rules={{ required: "Payment type is required" }}
+                    render={({ field, fieldState: { error } }) => (
+                      <SelectField
+                        id="payment_method"
+                        label="Payment Type"
+                        type="select"
+                        value={field.value || ""}
+                        options={[
+                          { value: "bank", label: "Bank" },
+                          { value: "cash", label: "Cash" },
+                          { value: "espace", label: "Espace" },
+                          { value: "Stripe", label: "Stripe" },
+                        ]}
+                        onChange={(e) => field.onChange(e)}
+                        onBlur={field.onBlur}
+                        error={error?.message}
+                      />
+                    )}
+                  />
 
-          <div className="w-[40%]">
-            <Label htmlFor="payment" className="mb-1">
-              Payment
-            </Label>
-            <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-gray-300 p-4 rounded-lg">
-              <div className="w-full flex gap-4 items-center justify-between">
-                <Controller
-                  name="payment_method"
-                  control={control}
-                  rules={{ required: "Payment type is required" }}
-                  render={({ field, fieldState: { error } }) => (
-                    <SelectField
-                      id="payment_method"
-                      label="Payment Type"
-                      type="select"
-                      value={field.value || ""}
-                      options={[
-                        { value: "bank", label: "Bank" },
-                        { value: "cash", label: "Cash" },
-                        { value: "espace", label: "Espace" },
-                        { value: "Stripe", label: "Stripe" },
-                      ]}
-                      onChange={(e) => field.onChange(e)}
-                      onBlur={field.onBlur}
-                      error={error?.message}
-                    />
-                  )}
-                />
-
-                <Controller
-                  name="percentage_amount"
-                  control={control}
-                  rules={{ required: "Amount is required" }}
-                  render={({ field, fieldState: { error } }) => (
-                    <FormField
-                      id="percentage_amount"
-                      label="Percentage Paid"
-                      min="1"
-                      max="100"
-                      type="number"
-                      value={field.value || ""}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      onBlur={field.onBlur}
-                      error={error?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name="payment_status"
-                  control={control}
-                  rules={{ required: "Status is required" }}
-                  render={({ field, fieldState: { error } }) => (
-                    <SelectField
-                      id="payment_status"
-                      label="Payment Status"
-                      type="select"
-                      value={field.value || ""}
-                      options={[
-                        { value: "pending", label: "Pending" },
-                        { value: "paid", label: "Paid" },
-                      ]}
-                      onChange={(e) => field.onChange(e)}
-                      onBlur={field.onBlur}
-                      error={error?.message}
-                    />
-                  )}
-                />
+                  <Controller
+                    name="percentage_amount"
+                    control={control}
+                    rules={{ required: "Amount is required" }}
+                    render={({ field, fieldState: { error } }) => (
+                      <FormField
+                        id="percentage_amount"
+                        label="Percentage Paid"
+                        min="1"
+                        max="100"
+                        type="number"
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.onBlur}
+                        error={error?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="payment_status"
+                    control={control}
+                    rules={{ required: "Status is required" }}
+                    render={({ field, fieldState: { error } }) => (
+                      <SelectField
+                        id="payment_status"
+                        label="Payment Status"
+                        type="select"
+                        value={field.value || ""}
+                        options={[
+                          { value: "pending", label: "Pending" },
+                          { value: "paid", label: "Paid" },
+                        ]}
+                        onChange={(e) => field.onChange(e)}
+                        onBlur={field.onBlur}
+                        error={error?.message}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="flex md:flex-row flex-col gap-4 items-start justify-between">

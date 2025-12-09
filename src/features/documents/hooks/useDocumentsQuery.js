@@ -51,6 +51,7 @@ export function useDocument(id, type) {
     queryFn: () => apiDocuments.getById(id, type),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 }
 
