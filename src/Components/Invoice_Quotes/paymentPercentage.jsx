@@ -27,7 +27,7 @@ export default function PaymentPercentage({
   InvoiceId,
 }) {
   const { data: payments = [] } = useDocumentPayments(InvoiceId);
-  const lastPayment = payments.at(-1)?.payment_method || "stripe";
+  const lastPayment = payments.at(-1)?.payment_type || "stripe";
 
   const totalPercentageAmount = (balanceDue / totalAmount) * 100;
 
@@ -40,12 +40,12 @@ export default function PaymentPercentage({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      amount_to_pay: "0",
+      payment_percentage: "0",
       amount_rest: Number(balanceDue).toFixed(2),
-      payment_method: lastPayment,
+      payment_type: lastPayment,
     },
   });
-  const amountToPay = watch("amount_to_pay");
+  const amountToPay = watch("payment_percentage");
   const addPaymentMutation = useAddAdditionalPayment();
 
   const onGenerateLink = (percentage) => {
@@ -76,15 +76,15 @@ export default function PaymentPercentage({
   useEffect(() => {
     if (controlledOpen) {
       reset({
-        amount_to_pay: "0",
+        payment_percentage: "0",
         amount_rest: Number(balanceDue).toFixed(2),
-        payment_method: lastPayment,
+        payment_type: lastPayment,
       });
     }
   }, [controlledOpen, reset, balanceDue, lastPayment]);
 
   const onSubmit = (data) => {
-    const percentage = parseFloat(data.amount_to_pay) || 0;
+    const percentage = parseFloat(data.payment_percentage) || 0;
     if (percentage >= 0 && percentage <= totalPercentageAmount) {
       onGenerateLink(percentage);
     }
@@ -111,7 +111,7 @@ export default function PaymentPercentage({
             <div className="flex items-center justify-between gap-4">
               <div className="w-[33%]">
                 <Controller
-                  name="amount_to_pay"
+                  name="payment_percentage"
                   control={control}
                   rules={{
                     min: { value: 0, message: "Min is 0%" },
@@ -129,7 +129,7 @@ export default function PaymentPercentage({
                       max={totalPercentageAmount}
                       step="1"
                       placeholder="0"
-                      error={errors.amount_to_pay?.message}
+                      error={errors.payment_percentage?.message}
                     />
                   )}
                 />
@@ -155,12 +155,12 @@ export default function PaymentPercentage({
 
               <div className="w-[33%]">
                 <Controller
-                  name="payment_method"
+                  name="payment_type"
                   control={control}
                   rules={{ required: "Payment method is required" }}
                   render={({ field, fieldState: { error } }) => (
                     <SelectField
-                      id="payment_method"
+                      id="payment_type"
                       label="Payment Method"
                       type="select"
                       value={field.value || lastPayment}

@@ -53,14 +53,19 @@ import OfferEditPage from "../pages/offers/OfferEditPage";
 import ActivityLogsPage from "@/pages/activityLogs/ActivityLogsPage";
 import ActivityLogViewPage from "@/pages/activityLogs/ActivityLogViewPage";
 
-
 import SettingsPage from "@/pages/settings/settingsPage";
 import CalendarPage from "@/pages/calendar/CalendarPage";
+import TasksPage from "@/pages/tasks/tasksPage";
 
 import AuthLayout from "@/app/layout/AuthLayout";
 import AppLayout from "@/app/layout/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuthContext } from "@/hooks/AuthContext";
+import TaskCreatePage from "@/pages/tasks/TaskCreatePage";
+import TaskEditPage from "@/pages/tasks/TaskEditPage";
+import AdditionalDataViewPage from "@/pages/additional_data/AdditionalDataViewPage";
+import AdditionalDataCreatePage from "@/pages/additional_data/AdditionalDataCreatePage";
+import AdditionalDataEditPage from "@/pages/additional_data/AdditionalDataEditPage";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -143,14 +148,42 @@ export default function AppRoutes() {
             <Route path="settings" element={<SettingsPage />} />
             {/* calendar */}
             <Route path="calendar" element={<CalendarPage />} />
+            {/* tasks */}
+            <Route path="project/:id/tasks" element={<TasksPage />} />
+            <Route
+              path="project/:id/task/new"
+              element={<TaskCreatePage />}
+            />
+            <Route
+              path="project/:id/task/:id/edit"
+              element={<TaskEditPage />}
+            />
 
-
+            {/* additional data */}
+            <Route path="project/:id/additional-data" element={<AdditionalDataViewPage />} />
+            <Route
+              path="project/:id/additional-data/new"
+              element={<AdditionalDataCreatePage />}
+            />
+            <Route
+              path="project/:id/additional-data/edit"
+              element={<AdditionalDataEditPage />}
+            />
 
             {/* Admin-only create/edit routes */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               {/* Projects */}
               <Route path="project/new" element={<ProjectCreatePage />} />
               <Route path="project/:id/edit" element={<ProjectEditPage />} />
+              <Route path="project/:id/tasks" element={<TasksPage />} />
+              <Route
+                path="project/:id/task/new"
+                element={<TaskCreatePage />}
+              />
+              <Route
+                path="project/:id/task/:id/edit"
+                element={<TaskEditPage />}
+              />
 
               {/* Quotes */}
               <Route path="quote/new" element={<QuoteCreatePage />} />
@@ -178,6 +211,10 @@ export default function AppRoutes() {
               {/* Clients */}
               <Route path="client/new" element={<ClientCreatePage />} />
               <Route path="client/:id/edit" element={<ClientEditPage />} />
+
+              {/* Additional Data */}
+              <Route path="project/:id/additional-data/new" element={<AdditionalDataCreatePage />} />
+              <Route path="project/:id/additional-data/edit" element={<AdditionalDataEditPage />} />
             </Route>
           </Route>
         </Route>
