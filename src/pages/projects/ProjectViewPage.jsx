@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable no-unused-vars */
 // ProjectViewPage.jsx
 import { format } from "date-fns";
@@ -29,6 +30,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 export default function ProjectViewPage() {
@@ -43,8 +45,6 @@ export default function ProjectViewPage() {
   } else {
     destination = "additional-data";
   }
-
-  console.log(additionalData);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -64,6 +64,8 @@ export default function ProjectViewPage() {
     );
   }
 
+  // *******************************************************
+  // TESTING ZONE
   const mockTasks = [
     { id: 1, title: "Design Homepage", status: "completed", percentage: 100 },
     { id: 2, title: "Setup Database", status: "completed", percentage: 100 },
@@ -71,6 +73,55 @@ export default function ProjectViewPage() {
     { id: 4, title: "Testing Phase", status: "pending", percentage: 0 },
     { id: 5, title: "Deployment", status: "pending", percentage: 0 },
   ];
+  const [comments, setComments] = useState([
+    {
+      id: 1,
+      user: "Alice",
+      date: "2025-12-10",
+      text: "Initial project setup done.",
+    },
+    {
+      id: 2,
+      user: "Bob",
+      date: "2025-12-11",
+      text: "Added main Gantt chart component.",
+    },
+  ]);
+
+  const [newComment, setNewComment] = useState("");
+
+  const handleAddComment = () => {
+    if (!newComment.trim()) return;
+    setComments([
+      ...comments,
+      {
+        id: comments.length + 1,
+        user: "You",
+        date: new Date().toLocaleDateString(),
+        text: newComment,
+      },
+    ]);
+    setNewComment("");
+  };
+
+  const [history, setHistory] = useState([
+    { id: 1, date: "2025-12-09", user: "Alice", action: "Created the project" },
+    {
+      id: 2,
+      date: "2025-12-10",
+      user: "Bob",
+      action: "Added Gantt chart",
+    },
+    {
+      id: 3,
+      date: "2025-12-11",
+      user: "Alice",
+      action: "Updated timeline",
+    },
+  ]);
+
+  // *******************************************************
+
   const totalTasks = mockTasks.length;
   const completedTasks = mockTasks.filter(
     (task) => task.status === "completed"
@@ -191,16 +242,90 @@ export default function ProjectViewPage() {
           </CardContent>
         </Card>
 
-        <Card className="mt-4" style={{ height: "30vh" }}>
-          <CardHeader>
-            <CardTitle>Project Timeline</CardTitle>
-          </CardHeader>
-          <CardContent className="h-full">
-            <div className="w-full h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-              <p className="text-gray-400 text-sm">
-                Gantt Chart Component will be placed here
-              </p>
-            </div>
+        <Card className="mt-4 h-70 p-0">
+          <CardContent className="h-full p-4">
+            <Tabs defaultValue="gantt" className="h-full flex flex-col">
+              <TabsList className="mb-2">
+                <TabsTrigger value="gantt">Gantt</TabsTrigger>
+                <TabsTrigger value="comments">Comments</TabsTrigger>
+                <TabsTrigger value="history">History</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="gantt" className="h-full">
+                <div className="w-full h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
+                  <p className="text-gray-400 text-sm">
+                    Gantt Chart Component will be placed here
+                  </p>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="comments" className="h-full overflow-auto">
+                <div className="flex flex-col h-full">
+                  <div className="flex-1 overflow-auto p-2 space-y-2">
+                    {comments.map((comment) => (
+                      <div
+                        key={comment.id}
+                        className="bg-gray-100 p-2 rounded-md"
+                      >
+                        <div className="flex justify-between text-xs text-gray-500 mb-1">
+                          <span>{comment.user}</span>
+                          <span>{comment.date}</span>
+                        </div>
+                        <p className="text-gray-700 text-sm">{comment.text}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-2 flex gap-2">
+                    <textarea
+                      className="flex-1 p-2 border rounded-md resize-none text-sm"
+                      rows={2}
+                      placeholder="Add a comment..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                    />
+                    <button
+                      onClick={handleAddComment}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                    >
+                      Add
+                    </button>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="history" className="h-full overflow-auto">
+                <div className="w-full overflow-x-auto py-6">
+                  <div className="relative flex items-center min-w-max">
+                    <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-300 -translate-y-1/2"></div>
+
+                    {history.map((item, idx) => {
+                      const isAbove = idx % 2 === 0;
+                      return (
+                        <div
+                          key={item.id}
+                          className="flex flex-col items-center px-8 relative"
+                        >
+                          <div
+                            className={`text-center w-32 ${
+                              isAbove ? "mb-5 order-1" : "mt-4 order-2"
+                            }`}
+                          >
+                            <p className="text-sm font-medium text-gray-800">
+                              {item.action}
+                            </p>
+                            <p className="text-xs text-gray-500">{item.user}</p>
+                            <p className="text-xs text-gray-400">{item.date}</p>
+                          </div>
+
+                          <div className="w-4 h-4 mb-18 bg-blue-500 rounded-full z-10 order-2"></div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
