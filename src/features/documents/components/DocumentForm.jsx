@@ -65,9 +65,9 @@ export function DocumentForm({ document, onSuccess }) {
             quoteDate: new Date().toISOString().split("T")[0],
           }),
       notes: "",
-      percentage_amount: "50",
+      payment_percentage: "50",
       payment_status: "pending",
-      payment_method: "",
+      payment_type: "",
       terms: terms,
       items: [
         {
@@ -131,7 +131,7 @@ export function DocumentForm({ document, onSuccess }) {
     if (selectedClient) {
       const isMoroccan = selectedClient.country === "maroc";
       const defaultPaymentMethod = isMoroccan ? "bank" : "Stripe";
-      setValue("payment_method", defaultPaymentMethod);
+      setValue("payment_type", defaultPaymentMethod);
     }
   }, [selectedClient, setValue]);
 
@@ -197,9 +197,9 @@ export function DocumentForm({ document, onSuccess }) {
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
       terms: data.terms || terms,
-      percentage_amount: Number(data.percentage_amount),
+      payment_percentage: Number(data.payment_percentage),
       payment_status: data.payment_status,
-      payment_method: data.payment_method,
+      payment_type: data.payment_type,
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
@@ -582,12 +582,12 @@ export function DocumentForm({ document, onSuccess }) {
             <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-gray-300 p-4 rounded-lg">
               <div className="w-full flex gap-4 items-center justify-between">
                 <Controller
-                  name="payment_method"
+                  name="payment_type"
                   control={control}
                   rules={{ required: "Payment type is required" }}
                   render={({ field, fieldState: { error } }) => (
                     <SelectField
-                      id="payment_method"
+                      id="payment_type"
                       label="Payment Type"
                       type="select"
                       value={field.value || ""}
@@ -605,12 +605,12 @@ export function DocumentForm({ document, onSuccess }) {
                 />
 
                 <Controller
-                  name="percentage_amount"
+                  name="payment_percentage"
                   control={control}
                   rules={{ required: "Amount is required" }}
                   render={({ field, fieldState: { error } }) => (
                     <FormField
-                      id="percentage_amount"
+                      id="payment_percentage"
                       label="Percentage Paid"
                       min="1"
                       max="100"
