@@ -20,6 +20,7 @@ export function useProjects() {
         queryKey: ["projects"],
         queryFn: apiProject.getAll,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
     });
 }
 
@@ -29,6 +30,7 @@ export function useProject(id) {
         queryFn: () => apiProject.getById(id),
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
     });
 }
 
@@ -40,6 +42,7 @@ export function useCreateProject() {
             toast.success("Project created!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
+        refetchOnWindowFocus: true,
     });
 }
 
@@ -51,6 +54,7 @@ export function useUpdateProject() {
             toast.success("Project updated!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
+        refetchOnWindowFocus: true,
     });
 }
 
@@ -62,5 +66,6 @@ export function useDeleteProject() {
             toast.success("Project deleted");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
+        refetchOnWindowFocus: true,
     });
 }

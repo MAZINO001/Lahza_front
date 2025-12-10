@@ -63,6 +63,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import { useAuthContext } from "@/hooks/AuthContext";
 import TaskCreatePage from "@/pages/tasks/TaskCreatePage";
 import TaskEditPage from "@/pages/tasks/TaskEditPage";
+import AdditionalDataViewPage from "@/pages/additional_data/AdditionalDataViewPage";
+import AdditionalDataCreatePage from "@/pages/additional_data/AdditionalDataCreatePage";
+import AdditionalDataEditPage from "@/pages/additional_data/AdditionalDataEditPage";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -146,6 +149,26 @@ export default function AppRoutes() {
             {/* calendar */}
             <Route path="calendar" element={<CalendarPage />} />
             {/* tasks */}
+            <Route path="project/:id/tasks" element={<TasksPage />} />
+            <Route
+              path="project/:id/task/new"
+              element={<TaskCreatePage />}
+            />
+            <Route
+              path="project/:id/task/:id/edit"
+              element={<TaskEditPage />}
+            />
+
+            {/* additional data */}
+            <Route path="project/:id/additional-data" element={<AdditionalDataViewPage />} />
+            <Route
+              path="project/:id/additional-data/new"
+              element={<AdditionalDataCreatePage />}
+            />
+            <Route
+              path="project/:id/additional-data/edit"
+              element={<AdditionalDataEditPage />}
+            />
 
             {/* Admin-only create/edit routes */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
@@ -188,6 +211,10 @@ export default function AppRoutes() {
               {/* Clients */}
               <Route path="client/new" element={<ClientCreatePage />} />
               <Route path="client/:id/edit" element={<ClientEditPage />} />
+
+              {/* Additional Data */}
+              <Route path="project/:id/additional-data/new" element={<AdditionalDataCreatePage />} />
+              <Route path="project/:id/additional-data/edit" element={<AdditionalDataEditPage />} />
             </Route>
           </Route>
         </Route>

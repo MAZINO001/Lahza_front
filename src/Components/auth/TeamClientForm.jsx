@@ -8,7 +8,7 @@ import TextareaField from "../Form/TextareaField";
 import RoleTabs from "../Form/RoleTabs";
 import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
-import FileUploader from "../Form/FileUploader";
+import CVUploader from "../Form/CVUploader";
 import TagsField from "../Form/TagsField";
 import api from "@/lib/utils/axios";
 import { useRegisterStore } from "@/hooks/registerStore";
@@ -347,7 +347,7 @@ export function TeamClientForm() {
               control={control}
               rules={{ required: "CV requis pour un stagiaire" }}
               render={({ field }) => (
-                <FileUploader
+                <CVUploader
                   onChange={(file) => {
                     field.onChange(file); // This updates react-hook-form
                     registerStore.setField("cv", file);

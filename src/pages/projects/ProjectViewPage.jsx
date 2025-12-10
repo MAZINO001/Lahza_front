@@ -1,7 +1,14 @@
 /* eslint-disable no-unused-vars */
 // ProjectViewPage.jsx
 import { format } from "date-fns";
-import { ArrowLeft, Edit3, CheckCircle, Clock, Calendar } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit3,
+  CheckCircle,
+  Clock,
+  Calendar,
+  CheckSquare,
+} from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useProject } from "@/features/projects/hooks/useProjects";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -23,11 +30,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuthContext } from "@/hooks/AuthContext";
+import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 export default function ProjectViewPage() {
   const { id } = useParams();
   const { role } = useAuthContext();
   const { data: project, isLoading } = useProject(id);
-  console.log(project);
+  const { data: additionalData } = useAdditionalData(id);
+
+  let destination = "";
+  if (!additionalData) {
+    destination = "additional-data/new";
+  } else {
+    destination = "additional-data";
+  }
+
+  console.log(additionalData);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -62,12 +79,6 @@ export default function ProjectViewPage() {
   const completionPercentage =
     totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-  const totalPercentage = mockTasks.reduce(
-    (sum, task) => sum + (task.percentage || 0),
-    0
-  );
-  const avgPercentage =
-    totalTasks > 0 ? Math.round(totalPercentage / totalTasks) : 0;
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="w-full bg-white border-b shadow-sm">
@@ -77,7 +88,7 @@ export default function ProjectViewPage() {
               <div className="relative group">
                 <div className="w-17 h-17 rounded-xl overflow-hidden shadow-md ring-2 ring-gray-100 transition-all duration-200">
                   <img
-                    src={project.logo}
+                    src={project.logo || "https://picsum.photos/600/400"}
                     alt={`${project.name} logo`}
                     className="w-full h-full object-cover"
                   />
@@ -101,11 +112,11 @@ export default function ProjectViewPage() {
             <div className="flex items-center gap-3">
               <Link to={`/${role}/project/${id}/tasks`}>
                 <Button variant="outline" className="flex items-center gap-2">
-                  <Edit3 className="w-4 h-4" />
-                  Edit Tasks
+                  <CheckSquare className="w-4 h-4" />
+                  Tasks
                 </Button>
               </Link>
-              <Link>
+              <Link to={`/${role}/project/${id}/${destination}`}>
                 <Button className="flex items-center gap-2">
                   <Database className="w-4 h-4" />
                   Additional Data
