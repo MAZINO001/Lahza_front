@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Edit, Edit2, Phone, X } from "lucide-react";
 import React, { useState } from "react";
 import Transactions from "./Client_page/transactions";

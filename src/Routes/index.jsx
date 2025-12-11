@@ -42,8 +42,6 @@ import ClientViewPage from "../pages/clients/ClientViewPage";
 
 import PaymentsPage from "../pages/payments/PaymentsPage";
 import PaymentViewPage from "../pages/payments/PaymentViewPage";
-import PaymentCreatePage from "../pages/payments/PaymentCreatePage";
-import PaymentEditPage from "../pages/payments/PaymentEditPage";
 
 import OffersPage from "../pages/offers/OffersPage";
 import OfferViewPage from "../pages/offers/OfferViewPage";
@@ -150,17 +148,17 @@ export default function AppRoutes() {
             <Route path="calendar" element={<CalendarPage />} />
             {/* tasks */}
             <Route path="project/:id/tasks" element={<TasksPage />} />
-            <Route
-              path="project/:id/task/new"
-              element={<TaskCreatePage />}
-            />
+            <Route path="project/:id/task/new" element={<TaskCreatePage />} />
             <Route
               path="project/:id/task/:id/edit"
               element={<TaskEditPage />}
             />
 
             {/* additional data */}
-            <Route path="project/:id/additional-data" element={<AdditionalDataViewPage />} />
+            <Route
+              path="project/:id/additional-data"
+              element={<AdditionalDataViewPage />}
+            />
             <Route
               path="project/:id/additional-data/new"
               element={<AdditionalDataCreatePage />}
@@ -176,10 +174,7 @@ export default function AppRoutes() {
               <Route path="project/new" element={<ProjectCreatePage />} />
               <Route path="project/:id/edit" element={<ProjectEditPage />} />
               <Route path="project/:id/tasks" element={<TasksPage />} />
-              <Route
-                path="project/:id/task/new"
-                element={<TaskCreatePage />}
-              />
+              <Route path="project/:id/task/new" element={<TaskCreatePage />} />
               <Route
                 path="project/:id/task/:id/edit"
                 element={<TaskEditPage />}
@@ -197,10 +192,6 @@ export default function AppRoutes() {
               <Route path="invoice/new" element={<InvoiceCreatePage />} />
               <Route path="invoice/:id/edit" element={<InvoiceEditPage />} />
 
-              {/* Payments */}
-              <Route path="payment/new" element={<PaymentCreatePage />} />
-              <Route path="payment/:id/edit" element={<PaymentEditPage />} />
-
               {/* Offers */}
               <Route path="offer/new" element={<OfferCreatePage />} />
               <Route path="offer/:id/edit" element={<OfferEditPage />} />
@@ -213,8 +204,14 @@ export default function AppRoutes() {
               <Route path="client/:id/edit" element={<ClientEditPage />} />
 
               {/* Additional Data */}
-              <Route path="project/:id/additional-data/new" element={<AdditionalDataCreatePage />} />
-              <Route path="project/:id/additional-data/edit" element={<AdditionalDataEditPage />} />
+              <Route
+                path="project/:id/additional-data/new"
+                element={<AdditionalDataCreatePage />}
+              />
+              <Route
+                path="project/:id/additional-data/edit"
+                element={<AdditionalDataEditPage />}
+              />
             </Route>
           </Route>
         </Route>

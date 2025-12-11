@@ -55,8 +55,8 @@ export default function ProjectViewPage() {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
+      // year: "numeric",
+      month: "numeric",
       day: "numeric",
     });
   };
@@ -119,12 +119,6 @@ export default function ProjectViewPage() {
                 <CheckCircle className="w-4 h-4" />
                 Done
               </Button>
-              {/* <Link to={`/${role}/project/${id}/tasks`}>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <CheckSquare className="w-4 h-4" />
-                  Tasks
-                </Button>
-              </Link> */}
               <Link to={`/${role}/project/${id}/${destination}`}>
                 <Button className="flex items-center gap-2">
                   <Database className="w-4 h-4" />
@@ -182,7 +176,7 @@ export default function ProjectViewPage() {
                   className="bg-gray-70 border border-border p-2 rounded-md flex items-center justify-between"
                 >
                   <div>
-                    <span className="inline-block text-xs px-2 py-1 rounded-full">
+                    <span className="inline-block text-xs px-2 py-1 rounded-full min-w-70">
                       {task.title}
                     </span>
                   </div>
@@ -192,11 +186,9 @@ export default function ProjectViewPage() {
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">
-                      {task.estimated_time
-                        ? `${task.estimated_time} Days`
-                        : "—"}
-                    </p>
+                    <span className="inline-block text-xs px-2 py-1 rounded-full">
+                      {formatDate(task.start_date)}-{formatDate(task.end_date)}
+                    </span>
                   </div>
                 </div>
               ))}

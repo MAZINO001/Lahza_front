@@ -68,3 +68,18 @@ import SelectField from "@/Components/Form/SelectField";
  ***************************************
  this is why there error handling don't work 
  error={errors.portfolio?.message}
+ ****************************************
+ the right way to mke a rightclick meny , 
+
+  <ContextMenuContent>
+                          <ContextMenuItem
+                            onClick={() => handleTaskEdit(laneId)}
+                          >
+                            Edit
+                          </ContextMenuItem>
+                          <ContextMenuItem
+                            onClick={() => handleTaskDelete(laneId)}
+                          >
+                            Delete
+                          </ContextMenuItem>
+                        </ContextMenuContent>

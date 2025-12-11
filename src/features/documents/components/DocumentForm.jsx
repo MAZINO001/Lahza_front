@@ -19,6 +19,8 @@ import {
 } from "../hooks/useDocumentsQuery";
 import { useClients } from "@/features/clients/hooks/useClientsQuery";
 import { useServices } from "@/features/services/hooks/useServiceQuery";
+import AddClientModel from "@/components/common/AddClientModel";
+import TextareaField from "@/components/Form/TextareaField";
 
 export function DocumentForm({ document, onSuccess }) {
   const navigate = useNavigate();
@@ -230,22 +232,27 @@ export function DocumentForm({ document, onSuccess }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full">
       <div className="space-y-4">
-        <Controller
-          name="customerName"
-          control={control}
-          rules={{ required: "Please select a customer" }}
-          render={({ field, fieldState: { error } }) => (
-            <SelectField
-              label="Customer"
-              options={clientOptions}
-              value={field.value || ""}
-              onChange={(val) => field.onChange(val)}
-              onBlur={field.onBlur}
-              error={error?.message}
-              placeholder="Select or add a customer"
+        <div className="flex items-end justify-between gap-4">
+          <div className="w-full">
+            <Controller
+              name="customerName"
+              control={control}
+              rules={{ required: "Please select a customer" }}
+              render={({ field, fieldState: { error } }) => (
+                <SelectField
+                  label="Customer"
+                  options={clientOptions}
+                  value={field.value || ""}
+                  onChange={(val) => field.onChange(val)}
+                  onBlur={field.onBlur}
+                  error={error?.message}
+                  placeholder="Select or add a customer"
+                />
+              )}
             />
-          )}
-        />
+          </div>
+          <AddClientModel />
+        </div>
 
         {selectedClient && (
           <div className="p-4 border rounded bg-gray-50 text-sm space-y-1 max-w-[300px]">
@@ -559,23 +566,12 @@ export function DocumentForm({ document, onSuccess }) {
 
         <div className="flex gap-4 w-full items-center space-between">
           <div
-            className={`flex md:flex-row flex-col gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[60%]"}`}
+            className={`flex md:flex-row flex-col gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"}`}
           >
-            <div className="w-full">
-              <Label htmlFor="notes" className="mb-1">
-                Customer Notes
-              </Label>
-              <Textarea
-                className=" min-h-22"
-                id="notes"
-                placeholder="Enter notes"
-                value={watch("notes")}
-                onChange={(e) => setValue("notes", e.target.value)}
-              />
-            </div>
+            here wil be the project selection(0/1/more)
           </div>
           {isInvoice && (
-            <div className="w-[40%]">
+            <div className="w-[50%]">
               <Label htmlFor="payment" className="mb-1">
                 Payment
               </Label>
@@ -648,13 +644,24 @@ export function DocumentForm({ document, onSuccess }) {
           )}
         </div>
 
-        <div className="flex md:flex-row flex-col gap-4 items-start justify-between">
-          <div className="w-full">
-            <Label htmlFor="terms" className="mb-1">
-              Terms & Conditions
-            </Label>
-            <Textarea
+        <div className="flex md:flex-row flex-col gap-4 items-start justify-between h-full">
+          <div className="w-[50%]">
+            <div className="w-full">
+              <TextareaField
+                className=" min-h-22"
+                id="notes"
+                label="Customer Notes"
+                placeholder="Enter notes"
+                value={watch("notes")}
+                onChange={(e) => setValue("notes", e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="w-[50%]">
+            
+            <TextareaField
               id="terms"
+              label="Terms & Conditions"
               className=" min-h-20 resize-none"
               placeholder="Enter terms"
               rows={4}

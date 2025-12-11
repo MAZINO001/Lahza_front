@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useMemo, useState } from "react";
 import { Button } from "../ui/button";
 import { Menu, Plus, ChevronDown } from "lucide-react";
@@ -6,8 +7,6 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { StatusBadge } from "../StatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,7 +74,6 @@ export default function Inv_Qt_sidebar({ type }) {
     });
   };
 
-
   return (
     <div className=" w-[260px] bg-white border-r flex flex-col ">
       <div className="px-2 py-4 border-b flex items-center gap-3">
@@ -120,17 +118,18 @@ export default function Inv_Qt_sidebar({ type }) {
               key={item.id}
               onMouseEnter={() => prefetchData(item.id)}
               onFocus={() => prefetchData(item.id)}
-              className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${item.id == currentId
-                ? "bg-blue-50 border-l-blue-500"
-                : "border-l-transparent hover:bg-gray-100"
-                }`}
+              className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${
+                item.id == currentId
+                  ? "bg-blue-50 border-l-blue-500"
+                  : "border-l-transparent hover:bg-gray-100"
+              }`}
             >
               <div className="flex items-start justify-between mb-2">
                 <span className="font-medium text-gray-900">
                   {item?.client?.user?.name}
                 </span>
                 <span className="font-semibold text-gray-900">
-                  {item.total_amount}
+                  {item.total_amount} MAD
                 </span>
               </div>
 

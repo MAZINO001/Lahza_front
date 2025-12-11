@@ -16,6 +16,7 @@ import { getClientColumns } from "../columns/clientColumns";
 import CSVUploadModal from "@/components/common/CSVUploadModal";
 import { Upload } from "lucide-react";
 import { DataTable } from "@/components/table/DataTable";
+import AddClientModel from "@/components/common/AddClientModel";
 
 export function ClientTable() {
   const { data: clients = [], isLoading } = useClients();
@@ -58,9 +59,7 @@ export function ClientTable() {
             <Button onClick={() => setShowUploadModal(true)} variant="outline">
               <Upload className="mr-2 h-4 w-4" /> Upload CSV
             </Button>
-            <Button onClick={() => navigate(`/${role}/client/new`)}>
-              Add New Client
-            </Button>
+            <AddClientModel />
           </div>
         </div>
 

@@ -34,46 +34,53 @@ import {
 import { Button } from "@/components/ui/button";
 import TaskCreatePage from "@/pages/tasks/TaskCreatePage";
 import TaskEditPage from "@/pages/tasks/TaskEditPage";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { useDeleteTask } from "@/features/tasks/hooks/useTasksQuery";
 
 export default function GanttComponent({ tasks, projectId }) {
   const [editingTask, setEditingTask] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const deleteTaskMutation = useDeleteTask();
 
   const transformedTasks =
-    tasks?.length > 0 ? (
-      tasks.map((task) => {
-        const startDate = task.start_date
-          ? new Date(task.start_date)
-          : task.startAt || new Date();
-        const endDate = task.end_date
-          ? new Date(task.end_date)
-          : task.endAt ||
-            new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+    tasks?.length > 0
+      ? tasks.map((task) => {
+          const startDate = task.start_date
+            ? new Date(task.start_date)
+            : task.startAt || new Date();
+          const endDate = task.end_date
+            ? new Date(task.end_date)
+            : task.endAt ||
+              new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-        return {
-          id: task.id,
-          name: task.title || task.name || `Task ${task.id}`,
-          startAt: startDate,
-          endAt: endDate,
-          status: {
-            color:
-              task.status === "completed"
-                ? "#10b981"
-                : task.status === "in_progress"
-                  ? "#3b82f6"
-                  : task.status === "pending"
-                    ? "#f59e0b"
-                    : task.status?.color || "#6b7280",
-          },
-          lane: task.lane || task.id,
-          metadata: {
-            group: { name: task.group || "Tasks" },
-          },
-        };
-      })
-    ) : (
-      <div>no tasks found </div>
-    );
+          return {
+            id: task.id,
+            name: task.title || task.name || `Task ${task.id}`,
+            startAt: startDate,
+            endAt: endDate,
+            status: {
+              color:
+                task.status === "completed"
+                  ? "#10b981"
+                  : task.status === "in_progress"
+                    ? "#3b82f6"
+                    : task.status === "pending"
+                      ? "#f59e0b"
+                      : task.status?.color || "#6b7280",
+            },
+            lane: task.lane || task.id,
+            metadata: {
+              group: { name: task.group || "Tasks" },
+            },
+          };
+        })
+      : [];
   const groupedTasks = groupBy(transformedTasks, "metadata.group.name");
   const laneGroupedTasks = Object.fromEntries(
     Object.entries(groupedTasks).map(([groupName, groupTasks]) => [
@@ -86,22 +93,25 @@ export default function GanttComponent({ tasks, projectId }) {
     if (!endAt) return;
     console.log(`Move task: ${id} from ${startAt} to ${endAt}`);
   };
-  const handleTaskEdit = (taskId) => {
-    console.log("task " + taskId + " is Edited");
+
+  const handleTaskDelete = (taskId) => {
+    deleteTaskMutation.mutate(
+      { projectId, taskId },
+      {
+        onError: (err) => console.error("Delete failed:", err),
+      }
+    );
+  };
+
+  const handleTaskEdit = (task) => {
+    setEditingTask(task);
+    setIsEditDialogOpen(true);
   };
 
   const handleTaskAdd = () => {
     setIsAddDialogOpen(true);
   };
 
-  const handleTaskDelete = (taskId) => {
-    console.log("task " + taskId + " is deleted");
-  };
-
-  const testClick = (id) => {
-    console.log("test for " + id);
-    setIsClicked(!isClicked);
-  };
   return (
     <div className=" w-full h-full">
       <div className="flex justify-between mb-4">
@@ -138,7 +148,6 @@ export default function GanttComponent({ tasks, projectId }) {
                   const validTasks = laneTaskList.filter(
                     (t) => t.startAt && t.endAt
                   );
-
                   if (validTasks.length === 0) return null;
 
                   const representativeTask = {
@@ -154,15 +163,34 @@ export default function GanttComponent({ tasks, projectId }) {
                   };
 
                   return (
-                    <GanttSidebarItem
-                      key={laneId}
-                      feature={representativeTask}
-                    />
+                    <div key={laneId} className="relative">
+                      <ContextMenu>
+                        <ContextMenuTrigger asChild>
+                          <div>
+                            <GanttSidebarItem feature={representativeTask} />
+                          </div>
+                        </ContextMenuTrigger>
+
+                        <ContextMenuContent>
+                          <ContextMenuItem
+                            onClick={() => handleTaskEdit(representativeTask)}
+                          >
+                            Edit
+                          </ContextMenuItem>
+                          <ContextMenuItem
+                            onClick={() => handleTaskDelete(laneId)}
+                          >
+                            Delete
+                          </ContextMenuItem>
+                        </ContextMenuContent>
+                      </ContextMenu>
+                    </div>
                   );
                 })}
               </GanttSidebarGroup>
             ))}
           </GanttSidebar>
+
           <GanttTimeline>
             <GanttHeader />
             <GanttFeatureList>
@@ -170,7 +198,7 @@ export default function GanttComponent({ tasks, projectId }) {
                 ([groupName, laneTasks]) => (
                   <GanttFeatureListGroup key={groupName}>
                     {Object.entries(laneTasks).map(([laneId, laneTaskList]) => (
-                      <div key={laneId} onClick={() => testClick(laneId)}>
+                      <div key={laneId}>
                         <GanttFeatureRow
                           features={laneTaskList}
                           onMove={handleMoveTask}
@@ -194,15 +222,18 @@ export default function GanttComponent({ tasks, projectId }) {
         </GanttProvider>
       </div>
 
-      {editingTask && (
-        <Dialog open={!!editingTask} onOpenChange={() => setEditingTask(null)}>
+      {isEditDialogOpen && (
+        <Dialog
+          open={!!isEditDialogOpen}
+          onOpenChange={() => setEditingTask(null)}
+        >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Task: {editingTask.title}</DialogTitle>
+              <DialogTitle>Edit Task: {editingTask?.title}</DialogTitle>
               <TaskEditPage
                 task={editingTask}
                 projectId={projectId}
-                onCancel={() => setIsAddDialogOpen(false)}
+                onCancel={() => setIsEditDialogOpen(false)}
               />
             </DialogHeader>
           </DialogContent>
