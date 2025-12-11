@@ -60,7 +60,7 @@ export default function AdditionalDataViewPage() {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="space-y-4 p-4">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <Link
@@ -81,7 +81,7 @@ export default function AdditionalDataViewPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4">
+      <div className="gap-4">
         <Card>
           <CardHeader>
             <CardTitle>Account Information</CardTitle>
@@ -99,36 +99,32 @@ export default function AdditionalDataViewPage() {
                         additionalData.host_acc || "{}"
                       );
                       return (
-                        <div className="flex items-center justify-between gap-4 w-full">
-                          <div className="p-2 bg-gray-40 rounded-md border w-1/2 flex items-center justify-between">
-                            <div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
+                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
+                            <div className="truncate">
                               <strong>Email:</strong> {hostAcc.email || "N/A"}
                             </div>
-                            <div>
-                              <Copy
-                                className="w-4 h-4 cursor-pointer"
-                                onClick={() =>
-                                  copyToClipboard(hostAcc.email, "host email")
-                                }
-                              />
-                            </div>
+                            <Copy
+                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
+                              onClick={() =>
+                                copyToClipboard(hostAcc.email, "host email")
+                              }
+                            />
                           </div>
-                          <div className="p-2 bg-gray-40 rounded-md border w-1/2 flex items-center justify-between">
-                            <div>
+                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
+                            <div className="truncate">
                               <strong>Password:</strong>{" "}
                               {hostAcc.password || "N/A"}
                             </div>
-                            <div>
-                              <Copy
-                                className="w-4 h-4 cursor-pointer"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    hostAcc.password,
-                                    "host password"
-                                  )
-                                }
-                              />
-                            </div>
+                            <Copy
+                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
+                              onClick={() =>
+                                copyToClipboard(
+                                  hostAcc.password,
+                                  "host password"
+                                )
+                              }
+                            />
                           </div>
                         </div>
                       );
@@ -154,41 +150,36 @@ export default function AdditionalDataViewPage() {
                         additionalData.website_acc || "{}"
                       );
                       return (
-                        <div className="flex items-center justify-between gap-4 w-full">
-                          <div className="p-2 bg-gray-40 rounded-md border w-1/2 flex items-center justify-between">
-                            <div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
+                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
+                            <div className="truncate">
                               <strong>Email:</strong>{" "}
                               {websiteAcc.email || "N/A"}
                             </div>
-                            <div>
-                              <Copy
-                                className="w-4 h-4 cursor-pointer"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    websiteAcc.email,
-                                    "website email"
-                                  )
-                                }
-                              />
-                            </div>
+                            <Copy
+                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
+                              onClick={() =>
+                                copyToClipboard(
+                                  websiteAcc.email,
+                                  "website email"
+                                )
+                              }
+                            />
                           </div>
-
-                          <div className="p-2 bg-gray-40 rounded-md border w-1/2 flex items-center justify-between">
-                            <div>
-                              <strong>Password:</strong>
+                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
+                            <div className="truncate">
+                              <strong>Password:</strong>{" "}
                               {websiteAcc.password || "N/A"}
                             </div>
-                            <div>
-                              <Copy
-                                className="w-4 h-4 cursor-pointer"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    websiteAcc.password,
-                                    "website password"
-                                  )
-                                }
-                              />
-                            </div>
+                            <Copy
+                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
+                              onClick={() =>
+                                copyToClipboard(
+                                  websiteAcc.password,
+                                  "website password"
+                                )
+                              }
+                            />
                           </div>
                         </div>
                       );
@@ -226,52 +217,43 @@ export default function AdditionalDataViewPage() {
                       return socialMedia.map((acc, idx) => (
                         <div
                           key={idx}
-                          className="flex items-center justify-between gap-4 w-full"
+                          className="flex flex-col lg:flex-row items-start gap-4 w-full"
                         >
-                          <div className="p-2 bg-gray-40 rounded-md border w-1/3 flex items-center justify-between">
-                            <div>
+                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
+                            <div className="truncate">
                               <strong>Link:</strong> {acc.link || "N/A"}
                             </div>
-                            <div>
-                              <Copy
-                                className="w-4 h-4 cursor-pointer"
-                                onClick={() =>
-                                  copyToClipboard(acc.link, "social media link")
-                                }
-                              />
-                            </div>
+                            <Copy
+                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
+                              onClick={() =>
+                                copyToClipboard(acc.link, "social media link")
+                              }
+                            />
                           </div>
-                          <div className="p-2 bg-gray-40 rounded-md border w-1/3 flex items-center justify-between">
-                            <div>
+                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
+                            <div className="truncate">
                               <strong>Email:</strong> {acc.email || "N/A"}
-                            </div>{" "}
-                            <div>
-                              <Copy
-                                className="w-4 h-4 cursor-pointer"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    acc.email,
-                                    "social media email"
-                                  )
-                                }
-                              />
                             </div>
+                            <Copy
+                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
+                              onClick={() =>
+                                copyToClipboard(acc.email, "social media email")
+                              }
+                            />
                           </div>
-                          <div className="p-2 bg-gray-40 rounded-md border w-1/3 flex items-center justify-between">
-                            <div>
+                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
+                            <div className="truncate">
                               <strong>Password:</strong> {acc.password || "N/A"}
                             </div>
-                            <div>
-                              <Copy
-                                className="w-4 h-4 cursor-pointer"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    acc.password,
-                                    "social media password"
-                                  )
-                                }
-                              />
-                            </div>
+                            <Copy
+                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
+                              onClick={() =>
+                                copyToClipboard(
+                                  acc.password,
+                                  "social media password"
+                                )
+                              }
+                            />
                           </div>
                         </div>
                       ));
@@ -289,12 +271,12 @@ export default function AdditionalDataViewPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={"mt-4"}>
           <CardHeader>
             <CardTitle>Files & Resources</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between gap-4">
               <div>
                 <label className="text-sm font-medium text-gray-600">
                   Media Files
@@ -322,22 +304,17 @@ export default function AdditionalDataViewPage() {
                   {renderFileField("Logo", additionalData.logo)}
                 </div>
               </div>
+              <div>
+                <label className="text-sm font-medium text-gray-600">
+                  Other files
+                </label>
+                <div className="mt-1">
+                  {renderFileField("Other", additionalData.other)}
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
-
-        {additionalData.other && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Other Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="p-3 bg-gray-50 rounded border whitespace-pre-wrap">
-                {additionalData.other}
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );

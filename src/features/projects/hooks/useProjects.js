@@ -13,12 +13,23 @@ const apiProject = {
     create: (data) => api.post(`${API_URL}/projects`, data),
     update: (id, data) => api.put(`${API_URL}/projects/${id}`, data),
     delete: (id) => api.delete(`${API_URL}/projects/${id}`),
+    getProgress: (id) => api.get(`${API_URL}/getProgress/${id}`),
 };
 
 export function useProjects() {
     return useQuery({
         queryKey: ["projects"],
         queryFn: apiProject.getAll,
+        staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+    });
+}
+
+export function useProjectProgress(id) {
+    return useQuery({
+        queryKey: ["projectProgress", id],
+        queryFn: () => apiProject.getProgress(id),
+        enabled: !!id,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
     });
@@ -66,6 +77,7 @@ export function useDeleteProject() {
             toast.success("Project deleted");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
+
         refetchOnWindowFocus: true,
     });
 }

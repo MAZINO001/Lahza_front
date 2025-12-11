@@ -83,7 +83,8 @@ export function useCreateInvoiceFromQuote() {
     },
     refetchOnWindowFocus: true,
     onError: (error) => {
-      toast.error(error.message || 'Failed to create invoice from quote');
+      toast.error(error.message);
+      console.log(error)
     }
   });
 }
