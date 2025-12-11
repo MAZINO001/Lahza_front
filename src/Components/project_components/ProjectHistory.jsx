@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
+import TimelineComponent from "../comp-531";
 
 export default function ProjectHistory() {
   const [history, setHistory] = useState([
@@ -20,33 +21,7 @@ export default function ProjectHistory() {
 
   return (
     <div className="w-full overflow-x-auto py-6">
-      <div className="relative flex items-center min-w-max">
-        <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-300 -translate-y-1/2"></div>
-
-        {history.map((item, idx) => {
-          const isAbove = idx % 2 === 0;
-          return (
-            <div
-              key={item.id}
-              className="flex flex-col items-center px-8 relative"
-            >
-              <div
-                className={`text-center w-32 ${
-                  isAbove ? "mb-5 order-1" : "mt-4 order-2"
-                }`}
-              >
-                <p className="text-sm font-medium text-gray-800">
-                  {item.action}
-                </p>
-                <p className="text-xs text-gray-500">{item.user}</p>
-                <p className="text-xs text-gray-400">{item.date}</p>
-              </div>
-
-              <div className="w-4 h-4 mb-18 bg-blue-500 rounded-full z-10 order-2"></div>
-            </div>
-          );
-        })}
-      </div>
+      <TimelineComponent />
     </div>
   );
 }

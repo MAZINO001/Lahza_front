@@ -28,6 +28,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Outline } from "react-pdf";
 import { useConfirmPayment } from "../hooks/usePaymentQuery";
+import { Link } from "react-router-dom";
 export function paymentColumns(role) {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -61,7 +62,9 @@ export function paymentColumns(role) {
       header: "Invoice ID",
       cell: ({ row }) => {
         const id = row.getValue("invoice_id");
-        return <div>{formatId(id, "INVOICE")}</div>;
+        return (
+          <Link to={`/${role}/invoice/${id}`}>{formatId(id, "INVOICE")}</Link>
+        );
       },
     },
     {
@@ -220,7 +223,8 @@ export function paymentColumns(role) {
                 </div>
               )}
             {row.getValue("payment_method") === "bank" &&
-              row.getValue("status") === "pending" && (
+              row.getValue("status") === "pending" &&
+              role === "admin" && (
                 <Button
                   onClick={() => confirmPayment.mutate(row.getValue("id"))}
                   variant="outline"

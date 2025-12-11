@@ -21,6 +21,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { useDocuments } from "../hooks/useDocumentsQuery";
 import { DocumentsColumns } from "../columns/documentColumns";
 import { DataTable } from "@/components/table/DataTable";
+import AddClientModel from "@/components/common/AddClientModel";
 
 export function DocumentTable() {
   const [sorting, setSorting] = useState([]);
