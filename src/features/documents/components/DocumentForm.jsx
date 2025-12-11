@@ -66,7 +66,9 @@ export function DocumentForm({ document, onSuccess }) {
           }),
       notes: "",
       payment_percentage: "50",
+      payment_percentage: "50",
       payment_status: "pending",
+      payment_type: "",
       payment_type: "",
       terms: terms,
       items: [
@@ -131,6 +133,7 @@ export function DocumentForm({ document, onSuccess }) {
     if (selectedClient) {
       const isMoroccan = selectedClient.country === "maroc";
       const defaultPaymentMethod = isMoroccan ? "bank" : "Stripe";
+      setValue("payment_type", defaultPaymentMethod);
       setValue("payment_type", defaultPaymentMethod);
     }
   }, [selectedClient, setValue]);
@@ -198,7 +201,9 @@ export function DocumentForm({ document, onSuccess }) {
       notes: data.notes || "",
       terms: data.terms || terms,
       payment_percentage: Number(data.payment_percentage),
+      payment_percentage: Number(data.payment_percentage),
       payment_status: data.payment_status,
+      payment_type: data.payment_type,
       payment_type: data.payment_type,
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),

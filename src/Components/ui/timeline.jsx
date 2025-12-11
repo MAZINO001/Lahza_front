@@ -1,18 +1,18 @@
-import * as React from "react"
-import { Slot } from "radix-ui"
+import * as React from "react";
+import { Slot } from "radix-ui";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 // Context
-const TimelineContext = React.createContext(undefined)
+const TimelineContext = React.createContext(undefined);
 
 const useTimeline = () => {
-  const context = React.useContext(TimelineContext)
+  const context = React.useContext(TimelineContext);
   if (!context) {
-    throw new Error("useTimeline must be used within a Timeline")
+    throw new Error("useTimeline must be used within a Timeline");
   }
-  return context
-}
+  return context;
+};
 
 function Timeline({
   defaultValue = 1,
@@ -22,19 +22,24 @@ function Timeline({
   className,
   ...props
 }) {
-  const [activeStep, setInternalStep] = React.useState(defaultValue)
+  const [activeStep, setInternalStep] = React.useState(defaultValue);
 
-  const setActiveStep = React.useCallback((step) => {
-    if (value === undefined) {
-      setInternalStep(step)
-    }
-    onValueChange?.(step)
-  }, [value, onValueChange])
+  const setActiveStep = React.useCallback(
+    (step) => {
+      if (value === undefined) {
+        setInternalStep(step);
+      }
+      onValueChange?.(step);
+    },
+    [value, onValueChange]
+  );
 
-  const currentStep = value ?? activeStep
+  const currentStep = value ?? activeStep;
 
   return (
-    <TimelineContext.Provider value={{ activeStep: currentStep, setActiveStep }}>
+    <TimelineContext.Provider
+      value={{ activeStep: currentStep, setActiveStep }}
+    >
       <div
         data-slot="timeline"
         className={cn(
@@ -42,30 +47,25 @@ function Timeline({
           className
         )}
         data-orientation={orientation}
-        {...props} />
+        {...props}
+      />
     </TimelineContext.Provider>
   );
 }
 
 // TimelineContent
-function TimelineContent({
-  className,
-  ...props
-}) {
+function TimelineContent({ className, ...props }) {
   return (
     <div
       data-slot="timeline-content"
       className={cn("text-sm text-muted-foreground", className)}
-      {...props} />
+      {...props}
+    />
   );
 }
 
-function TimelineDate({
-  asChild = false,
-  className,
-  ...props
-}) {
-  const Comp = asChild ? Slot.Root : "time"
+function TimelineDate({ asChild = false, className, ...props }) {
+  const Comp = asChild ? Slot.Root : "time";
 
   return (
     <Comp
@@ -74,16 +74,16 @@ function TimelineDate({
         "mb-1 block text-xs font-medium text-muted-foreground group-data-[orientation=vertical]/timeline:max-sm:h-4",
         className
       )}
-      {...props} />
+      {...props}
+    />
   );
 }
 
 // TimelineHeader
-function TimelineHeader({
-  className,
-  ...props
-}) {
-  return (<div data-slot="timeline-header" className={cn(className)} {...props} />);
+function TimelineHeader({ className, ...props }) {
+  return (
+    <div data-slot="timeline-header" className={cn(className)} {...props} />
+  );
 }
 
 function TimelineIndicator({
@@ -101,36 +101,31 @@ function TimelineIndicator({
         className
       )}
       aria-hidden="true"
-      {...props}>
+      {...props}
+    >
       {children}
     </div>
   );
 }
 
-function TimelineItem({
-  step,
-  className,
-  ...props
-}) {
-  const { activeStep } = useTimeline()
+function TimelineItem({ step, className, ...props }) {
+  const { activeStep } = useTimeline();
 
   return (
     <div
       data-slot="timeline-item"
       className={cn(
-        "group/timeline-item relative flex flex-1 flex-col gap-0.5 group-data-[orientation=horizontal]/timeline:mt-8 group-data-[orientation=horizontal]/timeline:not-last:pe-8 group-data-[orientation=vertical]/timeline:ms-8 group-data-[orientation=vertical]/timeline:not-last:pb-12 has-[+[data-completed]]:[&_[data-slot=timeline-separator]]:bg-primary",
+        "group/timeline-item relative flex flex-1 flex-col gap-0.5 group-data-[orientation=horizontal]/timeline:mt-8 group-data-[orientation=horizontal]/timeline:not-last:pe-8 group-data-[orientation=vertical]/timeline:ms-8 group-data-[orientation=vertical]/timeline:not-last:pb-12 has-[+[data-completed]]:**:data-[slot=timeline-separator]:bg-primary",
         className
       )}
       data-completed={step <= activeStep || undefined}
-      {...props} />
+      {...props}
+    />
   );
 }
 
 // TimelineSeparator
-function TimelineSeparator({
-  className,
-  ...props
-}) {
+function TimelineSeparator({ className, ...props }) {
   return (
     <div
       data-slot="timeline-separator"
@@ -139,20 +134,19 @@ function TimelineSeparator({
         className
       )}
       aria-hidden="true"
-      {...props} />
+      {...props}
+    />
   );
 }
 
 // TimelineTitle
-function TimelineTitle({
-  className,
-  ...props
-}) {
+function TimelineTitle({ className, ...props }) {
   return (
     <h3
       data-slot="timeline-title"
       className={cn("text-sm font-medium", className)}
-      {...props} />
+      {...props}
+    />
   );
 }
 
@@ -165,4 +159,4 @@ export {
   TimelineItem,
   TimelineSeparator,
   TimelineTitle,
-}
+};

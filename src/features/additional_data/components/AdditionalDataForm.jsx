@@ -26,7 +26,6 @@ export function AdditionalDataForm({
   const mutation = additionalData?.id ? updateMutation : createMutation;
   const isEditMode = !!additionalData?.id;
   console.log(additionalData);
-  // Helper function to parse JSON safely
   const parseJSON = (str, fallback) => {
     try {
       return str ? JSON.parse(str) : fallback;

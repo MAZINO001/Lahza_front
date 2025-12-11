@@ -381,7 +381,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
               </Button>
             )}
 
-            {!isInvoice && role === "client" && (
+            {role === "client" && (
               <Dialog
                 open={isSignDialogOpen}
                 onOpenChange={setIsSignDialogOpen}

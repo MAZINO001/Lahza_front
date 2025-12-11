@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 // ProjectViewPage.jsx
+
 import { format } from "date-fns";
 import {
   ArrowLeft,
@@ -10,9 +11,12 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useProject } from "@/features/projects/hooks/useProjects";
+import {
+  useProject,
+  useProjectProgress,
+} from "@/features/projects/hooks/useProjects";
 import { StatusBadge } from "@/components/StatusBadge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Database, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,22 +33,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
+import { useTasks } from "@/features/tasks/hooks/useTasksQuery";
+import GanttComponent from "@/features/projects/components/GanttComponent";
+import Comments from "@/components/project_components/Comments";
+import ProjectHistory from "@/components/project_components/ProjectHistory";
 export default function ProjectViewPage() {
   const { id } = useParams();
   const { role } = useAuthContext();
   const { data: project, isLoading } = useProject(id);
   const { data: additionalData } = useAdditionalData(id);
+  const { data: tasks } = useTasks(id);
 
-  let destination = "";
-  if (!additionalData) {
-    destination = "additional-data/new";
-  } else {
-    destination = "additional-data";
-  }
+  // *******************************************************
 
-  console.log(additionalData);
+  // *******************************************************
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -56,6 +61,21 @@ export default function ProjectViewPage() {
     });
   };
 
+  let destination = "";
+  if (!additionalData) {
+    destination = "additional-data/new";
+  } else {
+    destination = "additional-data";
+  }
+
+  const { data: progress, isLoading: progressLoading } = useProjectProgress(id);
+
+  const [completionPercentage, setCompletionPercentage] = useState(0);
+  useEffect(() => {
+    const percentage = progress?.accumlated_percentage || 0;
+    setCompletionPercentage(percentage);
+  }, [progress]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -63,21 +83,6 @@ export default function ProjectViewPage() {
       </div>
     );
   }
-
-  const mockTasks = [
-    { id: 1, title: "Design Homepage", status: "completed", percentage: 100 },
-    { id: 2, title: "Setup Database", status: "completed", percentage: 100 },
-    { id: 3, title: "API Integration", status: "in_progress", percentage: 60 },
-    { id: 4, title: "Testing Phase", status: "pending", percentage: 0 },
-    { id: 5, title: "Deployment", status: "pending", percentage: 0 },
-  ];
-  const totalTasks = mockTasks.length;
-  const completedTasks = mockTasks.filter(
-    (task) => task.status === "completed"
-  ).length;
-
-  const completionPercentage =
-    totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -93,7 +98,6 @@ export default function ProjectViewPage() {
                     className="w-full h-full object-cover"
                   />
                 </div>
-
                 <div className="absolute inset-0 bg-black bg-opacity-0  rounded-xl transition-all duration-200 flex items-center justify-center opacity-0  cursor-pointer">
                   <Edit3 className="w-5 h-5 text-white" />
                 </div>
@@ -110,12 +114,17 @@ export default function ProjectViewPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Link to={`/${role}/project/${id}/tasks`}>
+              {" "}
+              <Button variant="outline" className="flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                Done
+              </Button>
+              {/* <Link to={`/${role}/project/${id}/tasks`}>
                 <Button variant="outline" className="flex items-center gap-2">
                   <CheckSquare className="w-4 h-4" />
                   Tasks
                 </Button>
-              </Link>
+              </Link> */}
               <Link to={`/${role}/project/${id}/${destination}`}>
                 <Button className="flex items-center gap-2">
                   <Database className="w-4 h-4" />
@@ -164,43 +173,111 @@ export default function ProjectViewPage() {
           </Card>
         </div>
 
-        <Card className="mb-4">
-          <CardHeader>
-            <CardTitle>Additional Data</CardTitle>
-          </CardHeader>
-          <CardContent>addition data wil be here</CardContent>
-        </Card>
-        <Card className="mb-4">
-          <CardHeader>
-            <CardTitle>Progress</CardTitle>
-          </CardHeader>
+        <div className="flex w-full gap-4">
+          <Card className="border rounded-xl shadow-sm w-1/2 h-57 overflow-auto">
+            <CardContent className="space-y-4">
+              {tasks?.map((task) => (
+                <div
+                  key={task.id}
+                  className="bg-gray-70 border border-border p-2 rounded-md flex items-center justify-between"
+                >
+                  <div>
+                    <span className="inline-block text-xs px-2 py-1 rounded-full">
+                      {task.title}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="inline-block text-xs px-2 py-1 rounded-full">
+                      <StatusBadge status={task.status} />
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">
+                      {task.estimated_time
+                        ? `${task.estimated_time} Days`
+                        : "—"}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
 
-          <CardContent>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-2xl font-bold text-blue-600">
-                {completionPercentage}%
-              </span>
-            </div>
+          <Card className="mb-4 p-2 w-1/2">
+            <CardHeader>
+              <CardTitle>Progress</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {progressLoading ? (
+                <p className="text-gray-500">Loading progress...</p>
+              ) : progress?.message === "Project progress not avaible" ? (
+                <p className="text-gray-500">No tasks available yet</p>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-2xl font-bold text-blue-600">
+                      {completionPercentage}%
+                    </span>
+                    <span className="text-sm text-gray-600">
+                      {progress?.done_tasks_count || 0} of{" "}
+                      {progress?.tasks_count || 0} tasks completed
+                    </span>
+                  </div>
 
-            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-              <div
-                className="bg-blue-600 h-full transition-all duration-500"
-                style={{ width: `${completionPercentage}%` }}
-              />
-            </div>
-          </CardContent>
-        </Card>
+                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                    <div
+                      className="bg-blue-600 h-full transition-all duration-500"
+                      style={{ width: `${completionPercentage}%` }}
+                    />
+                  </div>
+                  <div className="mt-4 space-y-1 text-sm text-gray-600">
+                    <p>
+                      Total Tasks:{" "}
+                      <span className="font-medium text-gray-900">
+                        {progress?.tasks_count}
+                      </span>
+                    </p>
+                    <p>
+                      Completed:{" "}
+                      <span className="font-medium text-green-600">
+                        {progress?.done_tasks_count}
+                      </span>
+                    </p>
+                    <p>
+                      Pending:{" "}
+                      <span className="font-medium text-red-600">
+                        {progress?.tasks_count - progress?.done_tasks_count ||
+                          0}
+                      </span>
+                    </p>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-        <Card className="mt-4" style={{ height: "30vh" }}>
-          <CardHeader>
-            <CardTitle>Project Timeline</CardTitle>
-          </CardHeader>
-          <CardContent className="h-full">
-            <div className="w-full h-full bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-              <p className="text-gray-400 text-sm">
-                Gantt Chart Component will be placed here
-              </p>
-            </div>
+        <Card className="mt-4 h-130 p-0">
+          <CardContent className="h-full p-4">
+            <Tabs defaultValue="gantt" className="h-full flex flex-col">
+              <TabsList className="mb-2">
+                <TabsTrigger value="gantt">Gantt</TabsTrigger>
+                <TabsTrigger value="comments">Comments</TabsTrigger>
+                <TabsTrigger value="history">History</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="gantt" className="h-full">
+                <GanttComponent tasks={tasks} projectId={id} />
+              </TabsContent>
+
+              <TabsContent value="comments" className="h-full overflow-auto">
+                <Comments />
+              </TabsContent>
+
+              <TabsContent value="history" className="h-full overflow-auto">
+                <ProjectHistory />
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>

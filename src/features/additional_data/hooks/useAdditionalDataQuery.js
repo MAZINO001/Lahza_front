@@ -5,18 +5,86 @@ import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
+// const apiAdditionalData = {
+//     getByProject: (projectId) => api.get(`${API_URL}/additional-data/project/${projectId}`).then((res) => res.data ?? null),
+
+//     create: (data) =>
+//         api.post(`${API_URL}/additional-data`, data).then((res) => res.data),
+
+//     update: (id, data) =>
+//         api.put(`${API_URL}/additional-data/${id}`, data).then((res) => res.data),
+
+//     delete: (id) =>
+//         api.delete(`${API_URL}/additional-data/${id}`).then((res) => res.data),
+// };
+
+
 const apiAdditionalData = {
-    getByProject: (projectId) => api.get(`${API_URL}/additional-data/${projectId}`).then((res) => res.data ?? null),
+    getByProject: (projectId) =>
+        api.get(`${API_URL}/additional-data/project/${projectId}`).then((res) => res.data ?? null),
 
-    create: (data) =>
-        api.post(`${API_URL}/additional-data`, data).then((res) => res.data),
+    create: (data) => {
+        const formData = new FormData();
+        Object.keys(data).forEach(key => {
+            if (data[key] !== null && data[key] !== undefined) {
 
-    update: (id, data) =>
-        api.put(`${API_URL}/additional-data/${id}`, data).then((res) => res.data),
+                if (Array.isArray(data[key]) && data[key][0] instanceof File) {
+                    data[key].forEach(file => {
+                        formData.append(`${key}[]`, file);
+                    });
+                }
+
+                else if (data[key] instanceof File) {
+                    formData.append(key, data[key]);
+                }
+
+                else {
+                    formData.append(key, data[key]);
+                }
+            }
+        });
+
+        return api.post(`${API_URL}/additional-data`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((res) => res.data);
+    },
+
+    update: (id, data) => {
+        const formData = new FormData();
+
+
+        formData.append('_method', 'PUT');
+
+        Object.keys(data).forEach(key => {
+            if (data[key] !== null && data[key] !== undefined) {
+                if (Array.isArray(data[key]) && data[key][0] instanceof File) {
+                    if (key === 'logo') {
+                        formData.append('logo', data[key][0]);
+                    } else {
+                        data[key].forEach(file => {
+                            formData.append(`${key}[]`, file);
+                        });
+                    }
+                }
+                else if (data[key] instanceof File) {
+                    formData.append(key, data[key]);
+                }
+                else {
+                    formData.append(key, data[key]);
+                }
+            }
+        });
+
+        return api.post(`${API_URL}/additional-data/${id}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((res) => res.data);
+    },
 
     delete: (id) =>
         api.delete(`${API_URL}/additional-data/${id}`).then((res) => res.data),
 };
+
+
 
 export function useAdditionalData(projectId) {
     return useQuery({
