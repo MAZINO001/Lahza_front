@@ -2,7 +2,6 @@
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
 import FormField from "@/components/Form/FormField";
 import TextareaField from "@/components/Form/TextareaField";
@@ -12,8 +11,7 @@ import {
   useUpdateTask,
 } from "@/features/tasks/hooks/useTasksQuery";
 
-export function TasksForm({ task, projectId }) {
-  const navigate = useNavigate();
+export function TasksForm({ task, projectId, onCancel }) {
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const createMutation = useCreateTask();
   const updateMutation = useUpdateTask();
@@ -56,6 +54,7 @@ export function TasksForm({ task, projectId }) {
         onSettled: () => endSubmit(),
       }
     );
+    onCancel();
   };
 
   return (
@@ -77,6 +76,7 @@ export function TasksForm({ task, projectId }) {
       <Controller
         name="description"
         control={control}
+        rules={{ required: "Description is required" }}
         render={({ field }) => (
           <TextareaField
             label="Description"
@@ -86,9 +86,43 @@ export function TasksForm({ task, projectId }) {
           />
         )}
       />
+      <div className="flex gap-4 w-full">
+        <div className="w-1/2">
+          <Controller
+            name="start_date"
+            control={control}
+            rules={{ required: "Start Date is required" }}
+            render={({ field }) => (
+              <FormField
+                label="Start Date"
+                type="date"
+                placeholder="e.g. Complete frontend development"
+                error={errors.start_date?.message}
+                {...field}
+              />
+            )}
+          />
+        </div>
+        <div className="w-1/2">
+          <Controller
+            name="end_date"
+            control={control}
+            rules={{ required: "End Date is required" }}
+            render={({ field }) => (
+              <FormField
+                label="End Date"
+                type="date"
+                placeholder="e.g. Complete frontend development"
+                error={errors.end_date?.message}
+                {...field}
+              />
+            )}
+          />
+        </div>
+      </div>
 
       <div className="flex justify-end gap-3 pt-6">
-        <Button type="button" variant="outline" onClick={() => navigate(-1)}>
+        <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting || mutation.isPending}>

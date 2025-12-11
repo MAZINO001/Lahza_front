@@ -1,7 +1,5 @@
-import React from 'react'
+import React from "react";
 
 export default function ProjectCreatePage() {
-  return (
-    <div>ProjectCreatePage</div>
-  )
+  return <div>ProjectCreatePage</div>;
 }

@@ -29,6 +29,7 @@ export function useProjectProgress(id) {
     return useQuery({
         queryKey: ["projectProgress", id],
         queryFn: () => apiProject.getProgress(id),
+        retry: false,
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,

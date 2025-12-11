@@ -197,7 +197,7 @@ export function paymentColumns(role) {
             )}
             {row.getValue("status") === "pending" &&
               (row.getValue("payment_method") === "stripe" ||
-                row.getValue("payment_method") === "banc") && (
+                row.getValue("payment_method") === "bank") && (
                 <div className="text-sm">
                   <Button
                     variant="outline"
@@ -207,7 +207,7 @@ export function paymentColumns(role) {
                         copyToClipboard(payment.payment_url, "Payment Url");
                       }
 
-                      if (payment.payment_method === "banc") {
+                      if (payment.payment_method === "bank") {
                         copyToClipboard(
                           "007 640 0014332000000260 29",
                           "Payment Url"
@@ -219,15 +219,16 @@ export function paymentColumns(role) {
                   </Button>
                 </div>
               )}
-            {row.getValue("payment_method") === "banc" && (
-              <Button
-                onClick={() => confirmPayment.mutate(row.getValue("id"))}
-                variant="outline"
-                className="cursor-pointer"
-              >
-                <Check />
-              </Button>
-            )}
+            {row.getValue("payment_method") === "bank" &&
+              row.getValue("status") === "pending" && (
+                <Button
+                  onClick={() => confirmPayment.mutate(row.getValue("id"))}
+                  variant="outline"
+                  className="cursor-pointer"
+                >
+                  <Check />
+                </Button>
+              )}
             {role === "admin" && row.getValue("status") === "pending" && (
               <Dialog
                 open={isSignDialogOpen}
