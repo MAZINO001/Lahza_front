@@ -1,7 +1,7 @@
 // src/features/services/components/ServiceTable.jsx
 import * as React from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -15,6 +15,8 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { DataTable } from "@/components/table/DataTable";
 import { ProjectColumns } from "../columns/projectColumns";
 import { useProjects } from "../hooks/useProjects";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function ProjectsTable() {
   const [sorting, setSorting] = useState([]);
@@ -55,6 +57,13 @@ export function ProjectsTable() {
             }
             className="max-w-sm"
           />
+          <div className="flex gap-2">
+            <Link to={`../project/new`} relative="path">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Add New Task
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <DataTable

@@ -35,8 +35,7 @@ import {
   useCreateInvoiceFromQuote,
 } from "@/features/documents/hooks/useDocumentsQuery";
 export const DocumentsColumns = (role, navigate, currentSection) => {
-  const isInvoice =
-    currentSection === "invoices" || currentSection === "invoice";
+  const isInvoice = currentSection === "invoice";
   return [
     {
       accessorKey: "id",
@@ -215,7 +214,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
         const [signatureFile, setSignatureFile] = useState(null);
 
         const createInvoice = useCreateInvoiceFromQuote();
-        const deleteInvoice = useDeleteDocument("invoice");
+        const deleteInvoice = useDeleteDocument("invoices");
 
         const handleSignatureUpload = (files) => {
           if (files && files.length > 0) {
@@ -247,19 +246,25 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
             toast.success("Signature uploaded successfully!");
 
             if (!isInvoice && role === "client") {
-              try {
-                const quotationDate = new Date(document.quotation_date);
-                const dueDate = new Date(quotationDate);
-                dueDate.setDate(dueDate.getDate() + 30);
+              // Only create invoice if user confirms
+              const shouldCreateInvoice = confirm(
+                "Would you like to create an invoice from this signed quote?"
+              );
 
-                await createInvoice.mutateAsync(document.id);
-
-                toast.success("Quote signed and invoice created successfully!");
-              } catch (err) {
-                console.error("Failed to create invoice:", err);
-                toast.error(
-                  "Quote signed, but invoice creation failed. Please try again."
-                );
+              if (shouldCreateInvoice) {
+                try {
+                  await createInvoice.mutateAsync(document.id);
+                  toast.success(
+                    "Quote signed and invoice created successfully!"
+                  );
+                } catch (err) {
+                  console.error("Failed to create invoice:", err);
+                  toast.error(
+                    "Quote signed, but invoice creation failed. Please try again."
+                  );
+                }
+              } else {
+                toast.success("Quote signature uploaded successfully!");
               }
             }
 
@@ -335,12 +340,12 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
           globalFnStore();
 
         const handleSend = () => {
-          const type = isInvoice ? "invoice" : "quote";
+          const type = isInvoice ? "invoices" : "quotes";
           handleSendInvoice_Quote(document.id, user.email, type);
         };
 
         const handleDownload = () => {
-          const type = isInvoice ? "invoice" : "quote";
+          const type = isInvoice ? "invoices" : "quotes";
           handleDownloadInvoice_Quotes(document.id, type);
         };
 

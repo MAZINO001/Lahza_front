@@ -2,7 +2,7 @@
 // src/features/invoices/components/InvoiceTable.jsx
 import * as React from "react";
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -21,9 +21,8 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { useDocuments } from "../hooks/useDocumentsQuery";
 import { DocumentsColumns } from "../columns/documentColumns";
 import { DataTable } from "@/components/table/DataTable";
-import AddClientModel from "@/components/common/AddClientModel";
 
-export function DocumentTable() {
+export function DocumentTable({ type }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -32,12 +31,9 @@ export function DocumentTable() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
 
-  const location = useLocation();
-  const segmentAfterAdmin =
-    location.pathname.split(`/${role}/`)[1]?.split("/")[0] || "";
-  const currentSection = segmentAfterAdmin === "invoices" ? "invoice" : "quote";
+  const currentSection = type === "invoices" ? "invoice" : "quote";
 
-  const { data: documents = [], isLoading } = useDocuments(currentSection);
+  const { data: documents = [], isLoading } = useDocuments(type);
   const columns = React.useMemo(
     () => DocumentsColumns(role, navigate, currentSection),
     [role, navigate]
@@ -64,7 +60,7 @@ export function DocumentTable() {
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <FormField
-            placeholder={`Search ${segmentAfterAdmin}...`}
+            placeholder={`Search ${type}...`}
             value={table.getColumn("status")?.getFilterValue() ?? ""}
             onChange={(e) =>
               table.getColumn("status")?.setFilterValue(e.target.value)
@@ -89,7 +85,7 @@ export function DocumentTable() {
         <DataTable
           table={table}
           columns={columns}
-          isInvoiceTable={currentSection === "invoice" ? true : false}
+          isInvoiceTable={type === "invoices"}
           isLoading={isLoading}
         />
         <CsvUploadModal

@@ -14,7 +14,7 @@ import { useState } from "react"
 export default function Invoices() {
   const { role } = useAuthContext();
 
-  const { data: documnets = [], isLoading } = useDocuments("invoice");
+  const { data: documents = [], isLoading } = useDocuments("invoices");
 
   const columns = React.useMemo(
     () => dashBoardTableColumns(role),
@@ -28,7 +28,7 @@ export default function Invoices() {
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data: documnets,
+    data: documents,
     columns: columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
