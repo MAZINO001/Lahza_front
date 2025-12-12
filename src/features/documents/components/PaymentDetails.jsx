@@ -69,7 +69,7 @@ export default function PaymentDetails({ invoiceId }) {
                 </span>
                 {payment.status === "pending" &&
                   (payment.payment_method === "stripe" ||
-                    payment.payment_method === "banc") && (
+                    payment.payment_method === "bank") && (
                     <div className="mt-1 text-sm">
                       <Button
                         variant="outline"

@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Minus, Plus, X } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
 import FormField from "@/Components/Form/FormField";
@@ -22,37 +23,35 @@ import { useServices } from "@/features/services/hooks/useServiceQuery";
 import AddClientModel from "@/components/common/AddClientModel";
 import TextareaField from "@/components/Form/TextareaField";
 
-export function DocumentForm({ document, onSuccess }) {
+export function DocumentForm({ type, onSuccess }) {
   const navigate = useNavigate();
   const { role } = useAuthContext();
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
-
-  const location = useLocation();
-
   const { id } = useParams();
-  const segment = location.pathname.split("/")[2];
-  const isInvoicePath = segment?.includes("invoice");
-  const apiType = isInvoicePath ? "invoice" : "quote";
+
   const isEditMode = !!id;
-  const { data: existingDocument } = useDocument(
-    isEditMode ? id : null,
-    apiType
-  );
-  const isInvoice = segment === "invoice" || segment === "invoices";
+  const { data: document } = useDocument(id, type);
+  const isInvoice = type === "invoices";
   const { data: clients = [], isLoading: clientsLoading } = useClients();
   const { data: services = [], isLoading: servicesLoading } = useServices();
-  const createMutation = useCreateDocument(apiType);
-  const updateMutation = useUpdateDocument(apiType);
+  const createMutation = useCreateDocument(type);
+  const updateMutation = useUpdateDocument(type);
+
+  console.log(document);
 
   const mutation = document?.id ? updateMutation : createMutation;
+
+  const projects = document?.has_projects
+    ? JSON.parse(document.has_projects)
+    : [];
 
   const {
     register,
     handleSubmit,
     control,
-    watch,
     setValue,
     reset,
+    watch,
     trigger,
     formState: { errors },
   } = useForm({
@@ -68,11 +67,10 @@ export function DocumentForm({ document, onSuccess }) {
           }),
       notes: "",
       payment_percentage: "50",
-      payment_percentage: "50",
       payment_status: "pending",
       payment_type: "",
-      payment_type: "",
-      terms: terms,
+      terms,
+      has_projects: { title: [""] },
       items: [
         {
           serviceId: null,
@@ -87,18 +85,41 @@ export function DocumentForm({ document, onSuccess }) {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: itemFields,
+    append: appendItem,
+    remove: removeItem,
+  } = useFieldArray({
     control,
     name: "items",
   });
 
-  const items = watch("items");
+  const {
+    fields: has_projectFields,
+    append: appendHas_project,
+    remove: removeHas_project,
+  } = useFieldArray({
+    control,
+    name: "has_projects.title",
+  });
 
+  console.log("🔍 has_projectFields:", has_projectFields);
+  console.log("🔍 has_projects watch:", watch("has_projects"));
+
+  const items = watch("items");
   useEffect(() => {
-    if (existingDocument && isEditMode) {
-      const doc = existingDocument;
+    if (document && isEditMode) {
+      const doc = document;
+
+      let projectTitles = [""];
+      if (projects && projects.title && Array.isArray(projects.title)) {
+        projectTitles = projects.title.length > 0 ? projects.title : [""];
+      } else if (Array.isArray(projects) && projects.length > 0) {
+        projectTitles = projects.map((p) => p.title || "");
+      }
+
       reset({
-        customerName: doc.client_id,
+        customerName: doc.client?.id,
         ...(isInvoice
           ? {
               invoice_date: doc.invoice_date,
@@ -109,6 +130,12 @@ export function DocumentForm({ document, onSuccess }) {
             }),
         notes: doc.notes || "",
         terms: doc.terms || terms,
+        payment_percentage: "50",
+        payment_status: "pending",
+        payment_type: doc.payment_type,
+        has_projects: {
+          title: projectTitles,
+        },
         items:
           (isInvoice ? doc.invoice_services : doc.quote_services)?.map((s) => ({
             serviceId: Number(s.service_id),
@@ -121,8 +148,7 @@ export function DocumentForm({ document, onSuccess }) {
           })) || [],
       });
     }
-  }, [existingDocument, isEditMode, isInvoice, reset]);
-
+  }, [document, isEditMode, isInvoice, reset]);
   const clientOptions = clients.map((c) => ({
     label: c.user?.name || c.name || "Unknown Client",
     value: String(c.id),
@@ -134,14 +160,19 @@ export function DocumentForm({ document, onSuccess }) {
   useEffect(() => {
     if (selectedClient) {
       const isMoroccan = selectedClient.country === "maroc";
-      const defaultPaymentMethod = isMoroccan ? "bank" : "Stripe";
-      setValue("payment_type", defaultPaymentMethod);
+      const defaultPaymentMethod = isMoroccan ? "bank" : "stripe";
       setValue("payment_type", defaultPaymentMethod);
     }
   }, [selectedClient, setValue]);
 
+  useEffect(() => {
+    const currentProjects = watch("has_projects");
+    if (!currentProjects?.title || currentProjects.title.length === 0) {
+      setValue("has_projects", { title: [""] });
+    }
+  }, []);
   const addNewRow = () => {
-    append({
+    appendItem({
       service: "",
       serviceId: null,
       description: "",
@@ -154,8 +185,8 @@ export function DocumentForm({ document, onSuccess }) {
   };
 
   const deleteRow = (index) => {
-    if (fields.length > 1) {
-      remove(index);
+    if (itemFields.length > 1) {
+      removeItem(index);
     }
   };
 
@@ -183,9 +214,9 @@ export function DocumentForm({ document, onSuccess }) {
 
   const calculateTotal = () =>
     items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
-
   const onSubmit = async (data, status) => {
     if (isSubmitting || !startSubmit()) return;
+
     const payload = {
       client_id: Number(data.customerName),
       ...(isInvoice
@@ -199,14 +230,18 @@ export function DocumentForm({ document, onSuccess }) {
             quotation_date: data.quoteDate,
             status: status || "draft",
           }),
+
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
       terms: data.terms || terms,
-      payment_percentage: Number(data.payment_percentage),
+      has_projects: JSON.stringify({
+        title: data.has_projects?.title || [],
+      }),
+
       payment_percentage: Number(data.payment_percentage),
       payment_status: data.payment_status,
       payment_type: data.payment_type,
-      payment_type: data.payment_type,
+
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
@@ -216,7 +251,9 @@ export function DocumentForm({ document, onSuccess }) {
         individual_total: Number(item.amount),
       })),
     };
-    console.log(payload);
+
+    console.log("the payload:", payload);
+
     mutation.mutate(isEditMode ? { id: document.id, data: payload } : payload, {
       onSuccess: () => {
         onSuccess?.();
@@ -360,7 +397,7 @@ export function DocumentForm({ document, onSuccess }) {
                 </tr>
               </thead>
               <tbody>
-                {fields.map((field, index) => {
+                {itemFields.map((field, index) => {
                   const selectedService = watch(`items.${index}.serviceId`);
                   return (
                     <tr
@@ -538,7 +575,7 @@ export function DocumentForm({ document, onSuccess }) {
                           type="button"
                           onClick={() => deleteRow(index)}
                           className="text-gray-600 hover:text-red-600 transition-colors p-1"
-                          disabled={fields.length === 1}
+                          disabled={itemFields.length === 1}
                         >
                           <X size={20} />
                         </button>
@@ -569,42 +606,61 @@ export function DocumentForm({ document, onSuccess }) {
           </div>
         </div>
 
-        <div className="flex gap-4 w-full items-center space-between">
+        <div className="flex gap-4 w-full items-start space-between">
           <div
-            className={`flex md:flex-row flex-col gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"}`}
+            className={`flex flex-col gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"}`}
           >
-            here wil be the project selection(0/1/more)
-          </div>
+            {has_projectFields.map((field, index) => (
+              <div
+                key={field.id}
+                className="flex gap-4 items-end justify-between w-full"
+              >
+                <div className="w-full">
+                  <Controller
+                    name={`has_projects.title.${index}`}
+                    control={control}
+                    render={({ field }) => (
+                      <FormField
+                        label={index === 0 ? "Project Title" : ""}
+                        placeholder="Enter Title..."
+                        className="w-full"
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+                <Button
+                  type="button"
+                  className="p-2"
+                  onClick={() =>
+                    has_projectFields.length > 1 && removeHas_project(index)
+                  }
+                  disabled={has_projectFields.length === 1}
+                >
+                  <Minus className="w-4 h-4" />
+                </Button>
+                <Button
+                  type="button"
+                  className="p-2"
+                  onClick={() => appendHas_project("")}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
 
-          <div className="w-[40%]">
-            <Label htmlFor="payment" className="mb-1">
-              Payment
-            </Label>
-            <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-gray-300 p-4 rounded-lg">
-              <div className="w-full flex gap-4 items-center justify-between">
-                <Controller
-                  name="payment_type"
-                  control={control}
-                  rules={{ required: "Payment type is required" }}
-                  render={({ field, fieldState: { error } }) => (
-                    <SelectField
-                      id="payment_type"
-                      label="Payment Type"
-                      type="select"
-                      value={field.value || ""}
-                      options={[
-                        { value: "bank", label: "Bank" },
-                        { value: "cash", label: "Cash" },
-                        { value: "espace", label: "Espace" },
-                        { value: "Stripe", label: "Stripe" },
-                      ]}
-                      onChange={(e) => field.onChange(e)}
-                      onBlur={field.onBlur}
-                      error={error?.message}
-                    />
-                  )}
-                />
-          {isInvoice && (
+            {has_projectFields.length === 0 && (
+              <Button
+                type="button"
+                className="p-2 w-full mt-5"
+                onClick={() => appendHas_project("")}
+              >
+                <Plus className="w-4 h-4" /> Add Project
+              </Button>
+            )}
+          </div>
+          {isInvoice &
+          (
             <div className="w-[50%]">
               <Label htmlFor="payment" className="mb-1">
                 Payment
@@ -614,7 +670,6 @@ export function DocumentForm({ document, onSuccess }) {
                   <Controller
                     name="payment_type"
                     control={control}
-                    rules={{ required: "Payment type is required" }}
                     render={({ field, fieldState: { error } }) => (
                       <SelectField
                         id="payment_type"
@@ -634,47 +689,48 @@ export function DocumentForm({ document, onSuccess }) {
                     )}
                   />
 
-                <Controller
-                  name="payment_percentage"
-                  control={control}
-                  rules={{ required: "Amount is required" }}
-                  render={({ field, fieldState: { error } }) => (
-                    <FormField
-                      id="payment_percentage"
-                      label="Percentage Paid"
-                      min="1"
-                      max="100"
-                      type="number"
-                      value={field.value || ""}
-                      onChange={(e) => field.onChange(e.target.value)}
-                      onBlur={field.onBlur}
-                      error={error?.message}
-                    />
-                  )}
-                />
-                <Controller
-                  name="payment_status"
-                  control={control}
-                  rules={{ required: "Status is required" }}
-                  render={({ field, fieldState: { error } }) => (
-                    <SelectField
-                      id="payment_status"
-                      label="Payment Status"
-                      type="select"
-                      value={field.value || ""}
-                      options={[
-                        { value: "pending", label: "Pending" },
-                        { value: "paid", label: "Paid" },
-                      ]}
-                      onChange={(e) => field.onChange(e)}
-                      onBlur={field.onBlur}
-                      error={error?.message}
-                    />
-                  )}
-                />
+                  <Controller
+                    name="payment_percentage"
+                    control={control}
+                    rules={{ required: "Amount is required" }}
+                    render={({ field, fieldState: { error } }) => (
+                      <FormField
+                        id="payment_percentage"
+                        label="Percentage Paid"
+                        min="1"
+                        max="100"
+                        type="number"
+                        value={field.value || ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.onBlur}
+                        error={error?.message}
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="payment_status"
+                    control={control}
+                    rules={{ required: "Status is required" }}
+                    render={({ field, fieldState: { error } }) => (
+                      <SelectField
+                        id="payment_status"
+                        label="Payment Status"
+                        type="select"
+                        value={field.value || ""}
+                        options={[
+                          { value: "pending", label: "Pending" },
+                          { value: "paid", label: "Paid" },
+                        ]}
+                        onChange={(e) => field.onChange(e)}
+                        onBlur={field.onBlur}
+                        error={error?.message}
+                      />
+                    )}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="flex md:flex-row flex-col gap-4 items-start justify-between h-full">
@@ -691,7 +747,6 @@ export function DocumentForm({ document, onSuccess }) {
             </div>
           </div>
           <div className="w-[50%]">
-            
             <TextareaField
               id="terms"
               label="Terms & Conditions"
@@ -728,7 +783,7 @@ export function DocumentForm({ document, onSuccess }) {
                 data,
                 isInvoice
                   ? "sent"
-                  : existingDocument?.status === "confirmed"
+                  : document?.status === "confirmed"
                     ? "confirmed"
                     : "sent"
               )

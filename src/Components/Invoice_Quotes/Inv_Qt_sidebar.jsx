@@ -17,13 +17,14 @@ import {
 import { useDocuments } from "@/features/documents/hooks/useDocumentsQuery";
 
 export default function Inv_Qt_sidebar({ type }) {
+  const currentSection = type === "invoices" ? "invoice" : "quote";
   const {
     data: documents = [],
     isLoading: documentsLoading,
     isError: documentsError,
   } = useDocuments(type);
 
-  const title = type === "invoice" ? "Invoices" : "Quotes";
+  const title = type === "invoices" ? "Invoices" : "Quotes";
   const { id: currentId } = useParams();
   const { role } = useAuthContext();
   const queryClient = useQueryClient();
@@ -47,7 +48,7 @@ export default function Inv_Qt_sidebar({ type }) {
   ];
 
   const availableStatuses =
-    type === "invoice" ? invoiceStatuses : quoteStatuses;
+    type === "invoices" ? invoiceStatuses : quoteStatuses;
 
   const [selectedStatus, setSelectedStatus] = useState("all");
 
@@ -62,12 +63,11 @@ export default function Inv_Qt_sidebar({ type }) {
   }, [documents, selectedStatus]);
 
   const prefetchData = async (id) => {
-    const resource = type === "invoice" ? "invoices" : "quotes";
     await queryClient.prefetchQuery({
-      queryKey: [resource.slice(0, -1), id],
+      queryKey: [type, id],
       queryFn: () =>
         api
-          .get(`${import.meta.env.VITE_BACKEND_URL}/${resource}/${id}`)
+          .get(`${import.meta.env.VITE_BACKEND_URL}/${type}/${id}`)
           .then((res) => res.data?.quote ?? res.data?.invoice ?? {})
           .catch(() => ({})),
       staleTime: 5 * 60 * 1000,
@@ -99,7 +99,7 @@ export default function Inv_Qt_sidebar({ type }) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Link to={`/${role}/${type}/new`}>
+        <Link to={`/${role}/${currentSection}/new`}>
           <Button className="px-4 py-2 text-sm cursor-pointer">
             <Plus className="w-4 h-4" /> New
           </Button>
@@ -109,12 +109,12 @@ export default function Inv_Qt_sidebar({ type }) {
       <div className="flex-1 overflow-y-auto">
         {filteredData.length === 0 ? (
           <div className="p-4 text-center text-gray-500 text-sm">
-            No {type === "invoice" ? "documents" : "quotes"} found
+            No {type === "invoices" ? "documents" : "quotes"} found
           </div>
         ) : (
           filteredData.map((item) => (
             <Link
-              to={`/${role}/${type}/${item.id}`}
+              to={`/${role}/${currentSection}/${item.id}`}
               key={item.id}
               onMouseEnter={() => prefetchData(item.id)}
               onFocus={() => prefetchData(item.id)}
@@ -135,10 +135,12 @@ export default function Inv_Qt_sidebar({ type }) {
 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-blue-600">
-                  {type === "invoice" ? item.id : item.quote_number}
+                  {type === "invoices" ? item.id : item.quote_number}
                 </span>
                 <span className="text-gray-500">
-                  {type === "invoice" ? item.invoice_date : item.quotation_date}
+                  {type === "invoices"
+                    ? item.invoice_date
+                    : item.quotation_date}
                 </span>
                 <span className="px-2 py-0.5 rounded text-xs font-medium">
                   <StatusBadge status={item.status} />

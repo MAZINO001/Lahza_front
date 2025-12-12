@@ -7,8 +7,8 @@ export default function InvoiceViewPage() {
   const { id } = useParams();
   return (
     <div className="flex h-screen bg-gray-50">
-      <Inv_Qt_sidebar type="invoice" currentId={id} />
-      <Inv_Qt_page type="invoice" currentId={id} />
+      <Inv_Qt_sidebar type="invoices" currentId={id} />
+      <Inv_Qt_page type="invoices" currentId={id} />
     </div>
   );
 }

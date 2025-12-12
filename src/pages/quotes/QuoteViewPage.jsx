@@ -8,8 +8,8 @@ export default function QuoteViewPage() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <Inv_Qt_sidebar type="quote" currentId={id} />
-      <Inv_Qt_page type="quote" currentId={id} />
+      <Inv_Qt_sidebar type="quotes" currentId={id} />
+      <Inv_Qt_page type="quotes" currentId={id} />
     </div>
   );
 }

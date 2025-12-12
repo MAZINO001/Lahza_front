@@ -258,21 +258,19 @@ export function AdditionalDataForm({
               />
             </div>
 
-            <button
-              type="button"
-              className="p-2 rounded bg-red-500 text-white"
-              onClick={() => remove(index)}
+            <Button
+              className="p-2"
+              onClick={() => fields.length > 1 && remove(index)}
               disabled={fields.length === 1}
             >
               <Minus className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              className="p-2 rounded bg-black text-white"
+            </Button>
+            <Button
+              className="p-2"
               onClick={() => append({ link: "", email: "", password: "" })}
             >
               <Plus className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
         ))}
       </div>
