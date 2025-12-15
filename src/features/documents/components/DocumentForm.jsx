@@ -653,7 +653,8 @@ export function DocumentForm({ type, onSuccess }) {
               </Button>
             )}
           </div>
-          {isInvoice && (
+          {isInvoice &
+          (
             <div className="w-[50%]">
               <Label htmlFor="payment" className="mb-1">
                 Payment

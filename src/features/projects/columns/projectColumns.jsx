@@ -80,7 +80,7 @@ export const ProjectColumns = (role, navigate) => {
 
     {
       id: "actions",
-      header: "Actions",
+      header: "Actions", 
       cell: ({ row }) => {
         const { HandleEditProject } = globalFnStore();
         console.log(row.getValue("estimated_end_date"));
