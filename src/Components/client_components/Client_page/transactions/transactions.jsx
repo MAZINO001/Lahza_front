@@ -55,7 +55,6 @@ const TransactionSection = ({ title, data, isOpen, onToggle }) => {
 
       <CollapsibleContent>
         <div className="border-t border-gray-200">
-          {/* Filters */}
           {title === "Invoices" && (
             <div className="p-4 border-b border-gray-200 flex justify-end">
               <Button variant="outline" size="sm" className="text-gray-600">
@@ -66,7 +65,6 @@ const TransactionSection = ({ title, data, isOpen, onToggle }) => {
             </div>
           )}
 
-          {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
@@ -126,7 +124,6 @@ const TransactionSection = ({ title, data, isOpen, onToggle }) => {
             </table>
           </div>
 
-          {/* Footer */}
           <div className="p-4 border-t border-gray-200 flex items-center justify-between">
             <div className="text-sm text-gray-600">
               Total Count:{" "}
@@ -166,12 +163,10 @@ const TransactionSection = ({ title, data, isOpen, onToggle }) => {
 
 export default function Transactions({ data }) {
   const [openSections, setOpenSections] = useState({
-    invoices: true,
-    customerPayments: false,
+    invoices: false,
     quotes: false,
-    expenses: false,
+    payments: false,
     projects: false,
-    salesReceipts: false,
   });
 
   const toggleSection = (section) => {
@@ -183,15 +178,13 @@ export default function Transactions({ data }) {
 
   const sections = [
     { id: "invoices", title: "Invoices", data: transactionData.invoices },
-    { id: "customerPayments", title: "Customer Payments", data: [] },
     { id: "quotes", title: "Quotes", data: [] },
-    { id: "expenses", title: "Expenses", data: [] },
+    { id: "payments", title: "Payments", data: [] },
     { id: "projects", title: "Projects", data: [] },
-    { id: "salesReceipts", title: "Sales Receipts", data: [] },
   ];
 
   return (
-    <div className="space-y-4 p-6 bg-gray-50 min-h-screen">
+    <div className="space-y-4 p-4 bg-gray-50 min-h-screen">
       {sections.map((section) => (
         <TransactionSection
           key={section.id}

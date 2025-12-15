@@ -1,21 +1,21 @@
 /* eslint-disable no-unused-vars */
 import { Edit2, Link2Icon, MoreVertical, Plus, X } from "lucide-react";
 import React, { useState } from "react";
-import Transactions from "./Client_page/transactions";
-import { Link, useParams } from "react-router-dom";
+import Transactions from "./Client_page/transactions/transactions";
+import { Link, Links, useParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useAuthContext } from "@/hooks/AuthContext";
-import OverView from "./Client_page/overview";
-import Comments from "./Client_page/Comments";
-import Mails from "./Client_page/Mails";
+import OverView from "./Client_page/overview/overview";
+import Comments from "./Client_page/comments/Comments";
+import Mails from "./Client_page/mails/Mails";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useClient } from "@/features/clients/hooks/useClientsQuery";
+import ClientBanner from "@/components/ClientBanner";
 export default function Client_Page({ currentId }) {
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -52,35 +52,52 @@ export default function Client_Page({ currentId }) {
               </Link>
             </Button>
 
-            <Button variant="outline" className="p-2 cursor-pointer">
-              <Link2Icon className="w-4 h-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="p-2 cursor-pointer">
+                  <Link2Icon className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem>no files uploaded yet</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-            <Button className="p-2 cursor-pointer">
-              <Plus className="w-4 h-4" />
-              New Transaction
-            </Button>
+            <Link to={`/${role}/invoice/new`}>
+              <Button className="p-2 cursor-pointer">
+                <Plus className="w-4 h-4" />
+                New Transaction
+              </Button>
+            </Link>
 
-            <div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="p-2 cursor-pointer">
-                    <MoreVertical className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent align="start" className="w-56">
-                  <DropdownMenuRadioGroup>
-                    {/* </DropdownMenuRadioItem> */}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="p-2">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56 z-9999">
+                <DropdownMenuItem onClick={() => console.log("stop reminders")}>
+                  Stop all reminders
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => console.log("clone client")}>
+                  Clone client
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-red-600 focus:text-red-600"
+                  onClick={() => console.log("delete client")}
+                >
+                  Delete client
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             <div className="w-px h-6 bg-gray-300 mx-1"></div>
-            <Button variant="outline" className="p-2 cursor-pointer">
-              <X className="w-5 h-5" />
-            </Button>
+            <Link to={`/${role}/clients`}>
+              <Button variant="outline" className="p-2 cursor-pointer">
+                <X className="w-5 h-5" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -91,19 +108,18 @@ export default function Client_Page({ currentId }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
                   ? "border-blue-500 text-blue-600"
                   : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
           ))}
         </div>
       </div>
-
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex  flex-col gap-4 overflow-y-auto p-4">
+        <ClientBanner />
         {activeTab === "overview" && <OverView data={client} />}
         {activeTab === "comments" && <Comments data={client} />}
         {activeTab === "transactions" && <Transactions data={client} />}
