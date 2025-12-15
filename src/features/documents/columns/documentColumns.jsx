@@ -34,6 +34,7 @@ import {
   useDeleteDocument,
   useCreateInvoiceFromQuote,
 } from "@/features/documents/hooks/useDocumentsQuery";
+import { ConfirmDialog } from "@/components/client_components/ConfirmDialoge";
 export const DocumentsColumns = (role, navigate, currentSection) => {
   const isInvoice = currentSection === "invoice";
   return [
@@ -212,7 +213,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
         const { user } = useAuthContext();
         const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
         const [signatureFile, setSignatureFile] = useState(null);
-
+        const [open, setOpen] = useState(false);
         const createInvoice = useCreateInvoiceFromQuote();
         const deleteInvoice = useDeleteDocument("invoices");
 
@@ -446,10 +447,21 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleRemoveSignature}
+                onClick={() => setOpen(true)}
                 className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
               >
                 <Trash className="h-4 w-4" />
+
+                <ConfirmDialog
+                  open={open}
+                  onClose={() => setOpen(false)}
+                  onConfirm={() => {
+                    handleRemoveSignature;
+                    setOpen(false);
+                  }}
+                  title="Cancel Payment"
+                  description="Are you sure you want to cancel this payment? This action cannot be undone."
+                />
               </Button>
             )}
 

@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useClients } from "@/features/clients/hooks/useClientsQuery";
+import CSVUploadModal from "../common/CSVUploadModal";
 export default function Client_Sidebar({ currentId }) {
   const {
     data: clients = [],
@@ -72,6 +73,8 @@ export default function Client_Sidebar({ currentId }) {
             <Plus className="w-4 h-4" />
             New
           </Button>
+
+          <CSVUploadModal />
         </div>
       </div>
 

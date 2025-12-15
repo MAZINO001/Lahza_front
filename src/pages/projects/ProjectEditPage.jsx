@@ -1,10 +1,7 @@
-const ProjectEditPage = () => {
-  return (
-    <div>
-      <h1>Edit Project</h1>
-      {/* Project edit form will go here */}
-    </div>
-  );
-};
+import { ProjectForm } from "@/features/projects/components/ProjectForm";
+import { useNavigate } from "react-router-dom";
 
-export default ProjectEditPage;
+export default function ProjectEditPage() {
+  const navigate = useNavigate();
+  return <ProjectForm onSuccess={() => navigate(-1)} />;
+}

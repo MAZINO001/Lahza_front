@@ -8,6 +8,9 @@ import {
   Eye,
   Copy,
   Check,
+  Ban,
+  CircleX,
+  CircleCheck,
 } from "lucide-react";
 import { formatId } from "@/lib/utils/formatId";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -26,9 +29,9 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Outline } from "react-pdf";
-import { useConfirmPayment } from "../hooks/usePaymentQuery";
+import { useCancelPayment, useConfirmPayment } from "../hooks/usePaymentQuery";
 import { Link } from "react-router-dom";
+import { ConfirmDialog } from "@/components/client_components/ConfirmDialoge";
 export function paymentColumns(role) {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -46,7 +49,7 @@ export function paymentColumns(role) {
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Payment ID
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className="ml-1 h-4 w-4" />
         </Button>
       ),
 
@@ -181,6 +184,8 @@ export function paymentColumns(role) {
       header: "Actions",
       cell: ({ row }) => {
         const payment = row.original;
+        const [open, setOpen] = useState(false);
+
         const handleViewSession = () => {
           if (payment.stripe_session_id) {
             window.open(
@@ -191,6 +196,7 @@ export function paymentColumns(role) {
         };
         const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
         const confirmPayment = useConfirmPayment();
+        const cancelPayment = useCancelPayment();
         return (
           <div className="flex gap-2">
             {payment.stripe_session_id && row.getValue("status") === "paid" && (
@@ -225,13 +231,49 @@ export function paymentColumns(role) {
             {row.getValue("payment_method") === "bank" &&
               row.getValue("status") === "pending" &&
               role === "admin" && (
-                <Button
-                  onClick={() => confirmPayment.mutate(row.getValue("id"))}
-                  variant="outline"
-                  className="cursor-pointer"
-                >
-                  <Check />
-                </Button>
+                <>
+                  <Button
+                    onClick={() => setOpen(true)}
+                    variant="outline"
+                    className="cursor-pointer"
+                  >
+                    <CircleCheck className="h-4 w-4" />
+                  </Button>
+                  <ConfirmDialog
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    onConfirm={() => {
+                      confirmPayment.mutate(row.getValue("id"));
+                      setOpen(false);
+                    }}
+                    title="Cancel Payment"
+                    description="Are you sure you want to cancel this payment? This action cannot be undone."
+                  />
+                </>
+              )}
+            {row.getValue("payment_method") === "bank" &&
+              row.getValue("status") === "paid" &&
+              role === "admin" && (
+                <>
+                  <Button
+                    onClick={() => setOpen(true)}
+                    variant="outline"
+                    className="cursor-pointer"
+                  >
+                    <CircleX className="h-4 w-4" />
+                  </Button>
+
+                  <ConfirmDialog
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    onConfirm={() => {
+                      cancelPayment.mutate(row.getValue("id"));
+                      setOpen(false);
+                    }}
+                    title="Cancel Payment"
+                    description="Are you sure you want to cancel this payment? This action cannot be undone."
+                  />
+                </>
               )}
             {role === "admin" && row.getValue("status") === "pending" && (
               <Dialog
@@ -254,7 +296,6 @@ export function paymentColumns(role) {
                     <DialogDescription className="space-y-6 mt-4">
                       <EditPayment
                         payment={payment}
-                        //   onSubmit={handleUpdatePayment}
                         onClose={() => setIsSignDialogOpen(false)}
                       />
                     </DialogDescription>

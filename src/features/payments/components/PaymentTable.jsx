@@ -8,7 +8,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
 
 import { useAuthContext } from "@/hooks/AuthContext";
@@ -18,6 +17,7 @@ import { DataTable } from "@/components/table/DataTable";
 
 export default function PaymentTable() {
   const [sorting, setSorting] = useState([]);
+
   const [columnFilters, setColumnFilters] = useState([]);
 
   const { role } = useAuthContext();

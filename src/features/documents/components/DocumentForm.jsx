@@ -70,7 +70,7 @@ export function DocumentForm({ type, onSuccess }) {
       payment_status: "pending",
       payment_type: "",
       terms,
-      has_projects: { title: [""] },
+      has_projects: { title: [" "] },
       items: [
         {
           serviceId: null,
@@ -102,9 +102,6 @@ export function DocumentForm({ type, onSuccess }) {
     control,
     name: "has_projects.title",
   });
-
-  console.log("🔍 has_projectFields:", has_projectFields);
-  console.log("🔍 has_projects watch:", watch("has_projects"));
 
   const items = watch("items");
   useEffect(() => {
@@ -632,10 +629,7 @@ export function DocumentForm({ type, onSuccess }) {
                 <Button
                   type="button"
                   className="p-2"
-                  onClick={() =>
-                    has_projectFields.length > 1 && removeHas_project(index)
-                  }
-                  disabled={has_projectFields.length === 1}
+                  onClick={() => removeHas_project(index)}
                 >
                   <Minus className="w-4 h-4" />
                 </Button>
