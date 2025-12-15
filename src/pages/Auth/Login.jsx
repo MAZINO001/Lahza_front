@@ -29,50 +29,37 @@ export default function Login({ status, canResetPassword }) {
   });
 
   const watchedValues = watch();
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) {
-      return decodeURIComponent(parts.pop().split(";").shift());
-    }
-    return null;
-  }
+
   const onSubmit = async (data) => {
     setSubmitting(true);
 
     try {
-      await api.get(`http://localhost:8000/sanctum/csrf-cookie`, {
-        withCredentials: true,
-      });
+    const res = await api.post(
+      `${import.meta.env.VITE_BACKEND_URL}/login`,
+      data,
+      {
+        headers: { Accept: "application/json" },
+      }
+    );
 
-      await api.post(`${import.meta.env.VITE_BACKEND_URL}/login`, data, {
-        headers: {
-          Accept: "application/json",
-          "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
-        },
-      });
+    const token = res.data.token;
+    localStorage.setItem("token", token);
 
-      const userRes = await api.get(
-        `${import.meta.env.VITE_BACKEND_URL}/user`,
-        {
-          headers: {
-            Accept: "application/json",
-            "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
-          },
-        }
-      );
+    await verifyAuth();
 
-      localStorage.setItem("isAuthenticated", "true");
+    const nextRole = res.data.user?.role || "client";
+    navigate(`/${nextRole}/dashboard`, { replace: true });
+  } catch (error) {
+    console.error(error);
+    alert(error.response?.data?.message || "Login failed");
+  } finally {
+    setSubmitting(false);
+  }
+};
+    
 
-      await verifyAuth();
-      const nextRole = userRes?.data?.role || "client";
-      navigate(`/${nextRole}/dashboard`, { replace: true });
-    } catch (error) {
-      alert("login error:", error.response?.data || error.message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+    
+
   return (
     <Card className="bg-card p-4 border border-stale-900 flex flex-col md:flex-row text-foreground border-none">
       <div className="bg-white flex flex-col  h-full w-full md:w-1/2 rounded-md p-6 justify-center items-center">
