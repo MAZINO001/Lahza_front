@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Edit, Edit2, Phone, X } from "lucide-react";
+import { Edit2, Link2Icon, MoreVertical, Plus, X } from "lucide-react";
 import React, { useState } from "react";
 import Transactions from "./Client_page/transactions";
 import { Link, useParams } from "react-router-dom";
@@ -8,6 +8,13 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import OverView from "./Client_page/overview";
 import Comments from "./Client_page/Comments";
 import Mails from "./Client_page/Mails";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useClient } from "@/features/clients/hooks/useClientsQuery";
 export default function Client_Page({ currentId }) {
   const [activeTab, setActiveTab] = useState("overview");
@@ -17,7 +24,7 @@ export default function Client_Page({ currentId }) {
     isLoading: clientLoading,
     isError: clientError,
   } = useClient(currentId);
-  console.log(client)
+  console.log(client);
   const { role } = useAuthContext();
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -28,19 +35,50 @@ export default function Client_Page({ currentId }) {
 
   return (
     <div className=" w-[75%] flex flex-col">
-      <div className="bg-white px-2 py-4 border-b border-gray-200 p-2">
-        <div className="flex items-center justify-between">
+      <div className="bg-white p-4 border-b border-gray-200">
+        <div className="flex gap-4 items-center justify-between">
           <h1 className="text-xl font-semibold text-gray-900 ">
-            {client?.client_type === "company" ? client?.company : client?.user?.name}
+            {client?.client_type === "company"
+              ? client?.company
+              : client?.user?.name}
           </h1>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="p-2 rounded cursor-pointer">
-              <Link to={`/${role}/client/${currentId}/edit`} state={{ clientId: currentId }}>
+            <Button variant="outline" className="p-2 cursor-pointer">
+              <Link
+                to={`/${role}/client/${currentId}/edit`}
+                state={{ clientId: currentId }}
+              >
                 <Edit2 size={20} />
               </Link>
             </Button>
-            <div className="w-px h-6 bg-gray-300 mx-2"></div>
-            <Button variant="outline" className="p-2 rounded cursor-pointer">
+
+            <Button variant="outline" className="p-2 cursor-pointer">
+              <Link2Icon className="w-4 h-4" />
+            </Button>
+
+            <Button className="p-2 cursor-pointer">
+              <Plus className="w-4 h-4" />
+              New Transaction
+            </Button>
+
+            <div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="p-2 cursor-pointer">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="start" className="w-56">
+                  <DropdownMenuRadioGroup>
+                    {/* </DropdownMenuRadioItem> */}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
+            <div className="w-px h-6 bg-gray-300 mx-1"></div>
+            <Button variant="outline" className="p-2 cursor-pointer">
               <X className="w-5 h-5" />
             </Button>
           </div>
@@ -53,10 +91,11 @@ export default function Client_Page({ currentId }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
-                }`}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
+              }`}
             >
               {tab.label}
             </button>

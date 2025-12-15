@@ -21,6 +21,7 @@ const apiPayments = {
     delete: (id) => api.delete(`${API_URL}/payments/${id}`),
 
     confirm: (id) => api.put(`${API_URL}/validatePayments/${id}`),
+    cancel: (id) => api.put(`${API_URL}/cancelPayments/${id}`),
 };
 
 export function usePayments() {
@@ -108,6 +109,20 @@ export function useConfirmPayment() {
         onError: (err) => {
             console.error("Confirm payment failed:", err);
             toast.error("Failed to confirm payment");
+        },
+    });
+}
+export function useCancelPayment() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => apiPayments.cancel(id),
+        onSuccess: () => {
+            toast.success("Payment Canceled");
+            queryClient.invalidateQueries({ queryKey: ["payments"] });
+        },
+        onError: (err) => {
+            console.error("Cancel payment failed:", err);
+            toast.error("Failed to Cancel payment");
         },
     });
 }

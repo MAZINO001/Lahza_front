@@ -1,5 +1,7 @@
-import React from "react";
+import { ProjectForm } from "@/features/projects/components/ProjectForm";
+import { useNavigate } from "react-router-dom";
 
 export default function ProjectCreatePage() {
-  return <div>ProjectCreatePage</div>;
+  const navigate = useNavigate();
+  return <ProjectForm onSuccess={() => navigate(-1)} />;
 }
