@@ -50,9 +50,12 @@ export default function WhatsNextBanner() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                <button
+                  variant="outline"
+                  className="p-2 border border-border rounded-md "
+                >
                   <MoreVertical className="h-4 w-4" />
-                </Button>
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
                 <DropdownMenuItem>Don't show again</DropdownMenuItem>

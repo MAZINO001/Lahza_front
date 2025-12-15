@@ -21,7 +21,8 @@ const apiPayments = {
     delete: (id) => api.delete(`${API_URL}/payments/${id}`),
 
     confirm: (id) => api.put(`${API_URL}/validatePayments/${id}`),
-    cancel: (id) => api.put(`${API_URL}/cancelPayments/${id}`),
+
+    cancel: (id) => api.put(`${API_URL}/cancelPayment/${id}`),
 };
 
 export function usePayments() {

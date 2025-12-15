@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import api from "@/lib/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
 
-export function ClientForm({ onClientCreated }) {
+export function ClientForm({ onClientCreated, onClientUpdated, isEditMode }) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);

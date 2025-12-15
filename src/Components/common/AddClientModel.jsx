@@ -16,13 +16,13 @@ export default function AddClientModel() {
         <DialogTrigger asChild>
           <Button>
             <Plus className="w-4 h-4" />
-            Add New Client
+            Add Client
           </Button>
         </DialogTrigger>
 
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Adding New Client</DialogTitle>
+            <DialogTitle>Adding Client</DialogTitle>
           </DialogHeader>
 
           <ClientForm />

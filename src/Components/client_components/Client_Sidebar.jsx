@@ -13,7 +13,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useClients } from "@/features/clients/hooks/useClientsQuery";
-import CSVUploadModal from "../common/CSVUploadModal";
+import AddClientModel from "../common/AddClientModel";
+import { usePayment } from "@/features/payments/hooks/usePaymentQuery";
 export default function Client_Sidebar({ currentId }) {
   const {
     data: clients = [],
@@ -22,15 +23,6 @@ export default function Client_Sidebar({ currentId }) {
   } = useClients();
 
   const { role } = useAuthContext();
-  const {
-    register,
-    handleSubmit,
-    watch: Watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm();
-
   const clientStatuses = ["all", "active", "inactive", "unpaid", "overdue"];
   const [selectedStatus, setSelectedStatus] = useState("all");
 
@@ -43,6 +35,7 @@ export default function Client_Sidebar({ currentId }) {
   const selectStatus = (status) => {
     setSelectedStatus(status);
   };
+
   return (
     <div className="w-[25%] bg-white border-r border-gray-200">
       <div className="px-2 py-4 border-b flex items-center justify-between">
@@ -69,12 +62,7 @@ export default function Client_Sidebar({ currentId }) {
         </DropdownMenu>
 
         <div className="flex gap-2 items-center">
-          <Button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 text-sm flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            New
-          </Button>
-
-          <CSVUploadModal />
+          <AddClientModel />
         </div>
       </div>
 
