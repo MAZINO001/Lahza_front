@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Edit, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,10 +7,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-export default function ClientInfo({ data }) {
+import { useClient } from "@/features/clients/hooks/useClientsQuery";
+export default function ClientInfo({ id }) {
   const [isAddressOpen, setIsAddressOpen] = useState(true);
   const [isAdditionalOpen, setIsAdditionalOpen] = useState(false);
-
+  const { data: Client, isLoading } = useClient(id);
   return (
     <div className="bg-white rounded-lg border border-gray-200">
       <div className="p-6 border-b border-gray-200">
@@ -18,7 +20,7 @@ export default function ClientInfo({ data }) {
 
       <div className="divide-y divide-gray-200">
         <Collapsible open={isAddressOpen} onOpenChange={setIsAddressOpen}>
-          <div className="p-6">
+          <div className="p-4">
             <CollapsibleTrigger className="w-full">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -49,31 +51,31 @@ export default function ClientInfo({ data }) {
                 <div className="grid grid-cols-3 gap-2">
                   <span className="text-sm text-gray-500">Street Address</span>
                   <span className="col-span-2 text-sm text-gray-900">
-                    {data?.address}
+                    {Client?.address}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
                   <span className="text-sm text-gray-500">City</span>
                   <span className="col-span-2 text-sm text-gray-900">
-                    {data?.city}
+                    {Client?.city}
                   </span>
                 </div>
 
-                {data?.state && (
+                {Client?.state && (
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-sm text-gray-500">State</span>
                     <span className="col-span-2 text-sm text-gray-900">
-                      {data?.state}
+                      {Client?.state}
                     </span>
                   </div>
                 )}
 
-                {data?.zip_code && (
+                {Client?.zip_code && (
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-sm text-gray-500">Zip Code</span>
                     <span className="col-span-2 text-sm text-gray-900">
-                      {data?.zip_code}
+                      {Client?.zip_code}
                     </span>
                   </div>
                 )}
@@ -81,7 +83,7 @@ export default function ClientInfo({ data }) {
                 <div className="grid grid-cols-3 gap-2">
                   <span className="text-sm text-gray-500">Country</span>
                   <span className="col-span-2 text-sm text-gray-900">
-                    {data?.country}
+                    {Client?.country}
                   </span>
                 </div>
               </div>
@@ -119,32 +121,38 @@ export default function ClientInfo({ data }) {
             <CollapsibleContent className="mt-4">
               <div className="space-y-3">
                 <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">Tax ID</span>
+                  <span className="text-sm text-gray-500">Customer Type</span>
                   <span className="col-span-2 text-sm text-gray-900">
-                    123-45-6789
+                    {Client?.client_type}
                   </span>
                 </div>
-
+                {Client?.client_type !== "individual" && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-sm text-gray-500">Company Name</span>
+                    <span className="col-span-2 text-sm text-gray-900">
+                      {Client?.company}
+                    </span>
+                  </div>
+                )}
                 <div className="grid grid-cols-3 gap-2">
                   <span className="text-sm text-gray-500">
-                    Registration Date
+                    Default Currency
                   </span>
                   <span className="col-span-2 text-sm text-gray-900">
-                    Jan 15, 2024
+                    {Client?.phone}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <span className="text-sm text-gray-500">Tax Rate</span>
+                  <span className="col-span-2 text-sm text-gray-900">
+                    {Client?.vat}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">Payment Terms</span>
+                  <span className="text-sm text-gray-500">Tax Rate</span>
                   <span className="col-span-2 text-sm text-gray-900">
-                    Net 30
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">Credit Limit</span>
-                  <span className="col-span-2 text-sm text-gray-900">
-                    $50,000
+                    {Client?.currency}
                   </span>
                 </div>
               </div>

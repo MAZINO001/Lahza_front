@@ -54,7 +54,7 @@ export default function Overview({ data }) {
             </div>
           </div>
         </div>
-        <Overview_ClientInfo />
+        <Overview_ClientInfo id={data?.id} />
       </div>
 
       <div className="space-y-4">

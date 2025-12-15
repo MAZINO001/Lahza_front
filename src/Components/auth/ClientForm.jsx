@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import api from "@/lib/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
 
-export function ClientForm({ onClientCreated, onClientUpdated, isEditMode }) {
+export function ClientForm({ onClientCreated }) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,15 +81,6 @@ export function ClientForm({ onClientCreated, onClientUpdated, isEditMode }) {
     }
   };
 
-  // const handleNextStep = async () => {
-  //   if (isLoading || currentStep === steps.length) return;
-  //   setIsLoading(true);
-  //   try {
-  //     setCurrentStep((prev) => prev + 1);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
   const handleNextStep = async () => {
     if (currentStep === steps.length) return;
 
@@ -107,10 +98,9 @@ export function ClientForm({ onClientCreated, onClientUpdated, isEditMode }) {
           ]
         : ["address", "zip", "city", "country"];
 
-    const isStepValid = await trigger(fieldsToValidate); // ← this is the key
+    const isStepValid = await trigger(fieldsToValidate);
 
     if (!isStepValid) {
-      // Optional: show a toast or scroll to first error
       return;
     }
 
