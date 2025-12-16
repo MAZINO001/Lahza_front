@@ -37,6 +37,7 @@ export function DocumentForm({ type, onSuccess }) {
   const { data: document } = useDocument(id, type);
   const isInvoice = type === "invoices";
   const { data: clients = [], isLoading: clientsLoading } = useClients();
+  console.log(clients);
   const { data: services = [], isLoading: servicesLoading } = useServices();
   const createMutation = useCreateDocument(type);
   const updateMutation = useUpdateDocument(type);
