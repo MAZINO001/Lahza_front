@@ -61,12 +61,12 @@ export default function Mails() {
             key={mail.id}
             className="flex items-center gap-3 p-4  transition-colors"
           >
-            <Button
+            {/* <Button
               variant="ghost"
               className="w-8 h-8 flex items-center justify-center rounded-2xl"
             >
               <X className="h-4 w-4" />
-            </Button>
+            </Button> */}
 
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-4">
