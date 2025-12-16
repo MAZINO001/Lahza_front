@@ -13,13 +13,13 @@ import { useAuthContext } from "@/hooks/AuthContext";
 export default function ClientInfo({ id }) {
   const [isAddressOpen, setIsAddressOpen] = useState(true);
   const [isAdditionalOpen, setIsAdditionalOpen] = useState(false);
-  const { data: Client, isLoading } = useClient(id);
+  const { data: data, isLoading } = useClient(id);
   const { role } = useAuthContext();
   return (
     <div className="bg-white rounded-lg border border-border">
       <div className="flex items-center justify-between p-4 border-b border-border">
-        <h3 className="text-lg font-semibold text-gray-900">Client Info</h3>
-        <Link to={`/${role}/client/${Client?.id}/edit`}>
+        <h3 className="text-lg font-semibold text-gray-900">client Info</h3>
+        <Link to={`/${role}/client/${data?.client?.id}/edit`}>
           <Button
             variant="ghost"
             size="icon"
@@ -50,44 +50,49 @@ export default function ClientInfo({ id }) {
 
             <CollapsibleContent className="mt-4">
               <div className="space-y-3">
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">Street Address</span>
-                  <span className="col-span-2 text-sm text-gray-900">
-                    {Client?.address}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <span className="text-sm text-gray-500">City</span>
-                  <span className="col-span-2 text-sm text-gray-900">
-                    {Client?.city}
-                  </span>
-                </div>
-
-                {Client?.state && (
+                {data?.client?.address && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-sm text-gray-500">
+                      Street Address
+                    </span>
+                    <span className="col-span-2 text-sm text-gray-900">
+                      {data?.client?.address}
+                    </span>
+                  </div>
+                )}
+                {data?.client?.city && (
+                  <div className="grid grid-cols-3 gap-4">
+                    <span className="text-sm text-gray-500">City</span>
+                    <span className="col-span-2 text-sm text-gray-900">
+                      {data?.client?.city}
+                    </span>
+                  </div>
+                )}
+                {data?.client?.state && (
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-sm text-gray-500">State</span>
                     <span className="col-span-2 text-sm text-gray-900">
-                      {Client?.state}
+                      {data?.client?.state}
                     </span>
                   </div>
                 )}
 
-                {Client?.zip_code && (
+                {data?.client?.zip_code && (
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-sm text-gray-500">Zip Code</span>
                     <span className="col-span-2 text-sm text-gray-900">
-                      {Client?.zip_code}
+                      {data?.client?.zip_code}
                     </span>
                   </div>
                 )}
-
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">Country</span>
-                  <span className="col-span-2 text-sm text-gray-900">
-                    {Client?.country}
-                  </span>
-                </div>
+                {data?.client?.country && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-sm text-gray-500">Country</span>
+                    <span className="col-span-2 text-sm text-gray-900">
+                      {data?.client?.country}
+                    </span>
+                  </div>
+                )}
               </div>
             </CollapsibleContent>
           </div>
@@ -112,41 +117,46 @@ export default function ClientInfo({ id }) {
 
             <CollapsibleContent className="mt-4">
               <div className="space-y-3">
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">Customer Type</span>
-                  <span className="col-span-2 text-sm text-gray-900">
-                    {Client?.client_type}
-                  </span>
-                </div>
-                {Client?.client_type !== "individual" && (
+                {data?.client?.client_type && (
                   <div className="grid grid-cols-3 gap-2">
-                    <span className="text-sm text-gray-500">Company Name</span>
+                    <span className="text-sm text-gray-500">Customer Type</span>
                     <span className="col-span-2 text-sm text-gray-900">
-                      {Client?.company}
+                      {data?.client?.client_type}
                     </span>
                   </div>
                 )}
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">
-                    Default Currency
-                  </span>
-                  <span className="col-span-2 text-sm text-gray-900">
-                    {Client?.phone}
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">Tax Rate</span>
-                  <span className="col-span-2 text-sm text-gray-900">
-                    {Client?.vat}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">currency</span>
-                  <span className="col-span-2 text-sm text-gray-900">
-                    {Client?.currency}
-                  </span>
-                </div>
+                {data?.client?.client_type !== "individual" && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-sm text-gray-500">Company Name</span>
+                    <span className="col-span-2 text-sm text-gray-900">
+                      {data?.client?.company}
+                    </span>
+                  </div>
+                )}
+                {data?.client?.phone && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-sm text-gray-500">Phone Number</span>
+                    <span className="col-span-2 text-sm text-gray-900">
+                      {data?.client?.phone}
+                    </span>
+                  </div>
+                )}
+                {data?.client?.vat && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-sm text-gray-500">Tax Rate</span>
+                    <span className="col-span-2 text-sm text-gray-900">
+                      {data?.client?.vat}
+                    </span>
+                  </div>
+                )}
+                {data?.client?.currency && (
+                  <div className="grid grid-cols-3 gap-2">
+                    <span className="text-sm text-gray-500">currency</span>
+                    <span className="col-span-2 text-sm text-gray-900">
+                      {data?.client?.currency}
+                    </span>
+                  </div>
+                )}
               </div>
             </CollapsibleContent>
           </div>

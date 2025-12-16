@@ -32,13 +32,13 @@ export default function Overview_Payments({ formatCurrency }) {
 
           <div className="grid grid-cols-3 gap-4 py-2 border-b border-border">
             <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Currency
+              invoice id
             </div>
             <div className="text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
-              Outstanding Receivables
+              Balance Due
             </div>
             <div className="text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
-              Unused Credits
+              Total Income
             </div>
           </div>
 

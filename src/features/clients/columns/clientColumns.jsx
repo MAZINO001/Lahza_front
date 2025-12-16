@@ -1,57 +1,77 @@
 /* eslint-disable no-unused-vars */
-import { ArrowUpDown } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { formatId } from "@/lib/utils/formatId";
+import { toast } from "sonner";
 
-export const getClientColumns = (role) => [
-  {
-    id: "full_name",
-    header: "Full Name",
-    accessorFn: (row) => row.user?.name,
-    cell: ({ row, getValue }) => {
-      const id = row.original.id;
-      return (
-        <Link
-          to={`/admin/client/${id}`}
-          className="font-medium text-slate-900 hover:underline"
+export const getClientColumns = (role) => {
+  const copyToClipboard = (text, label) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied!`, { duration: 3000 });
+  };
+
+  return [
+    {
+      id: "full_name",
+      header: "Full Name",
+      accessorFn: (row) => row.client.user?.name ?? "-",
+      cell: ({ row, getValue }) => {
+        const clientId = row.original.client.id;
+
+        return (
+          <Link
+            to={`/${role}/client/${clientId}`}
+            className="font-medium text-slate-900 hover:underline"
+          >
+            {getValue()}
+          </Link>
+        );
+      },
+    },
+
+    {
+      header: "Company",
+      accessorFn: (row) => row.client.company ?? "-",
+      cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
+    },
+
+    {
+      header: "Email",
+      accessorFn: (row) => row.client.user?.email ?? "-",
+      cell: ({ getValue }) => (
+        <p
+          onClick={() => copyToClipboard(getValue(), "Client Email")}
+          className="cursor-pointer hover:underline"
         >
           {getValue()}
-        </Link>
-      );
+        </p>
+      ),
     },
-  },
-  {
-    accessorFn: (row) => row.company || "-",
-    header: "Company",
-    cell: ({ getValue }) => <div className="font-medium">{getValue()}</div>,
-  },
-  {
-    header: "Email",
-    accessorFn: (row) => row.user?.email,
-    cell: ({ getValue }) => (
-      <a href={`mailto:${getValue()}`} className="cursor-pointer">
-        {getValue()}
-      </a>
-    ),
-  },
 
-  {
-    accessorKey: "phone",
-    header: "Phone",
-    cell: ({ row }) => (
-      <div className="text-slate-700">{row.getValue("phone")}</div>
-    ),
-  },
-  {
-    accessorKey: "total_to_pay",
-    header: "Total To Pay",
-    cell: ({ row }) => <span className="text-slate-600">$1200.00</span>,
-  },
+    {
+      header: "Phone",
+      accessorFn: (row) => row.client.phone ?? "-",
+      cell: ({ getValue }) => (
+        <span className="text-slate-700">{getValue()}</span>
+      ),
+    },
 
-  {
-    accessorKey: "spending_total",
-    header: "Total Spent",
-    cell: ({ row }) => <span className="text-slate-600">$1200.00</span>,
-  },
-];
+    {
+      header: "Total Paid",
+      accessorFn: (row) => row.totalPaid,
+      cell: ({ getValue }) => (
+        <span className="text-slate-600">
+          {Number(getValue()).toFixed(2)} MAD
+        </span>
+      ),
+    },
+
+    {
+      header: "Balance Due",
+      accessorFn: (row) => row.balanceDue,
+      cell: ({ getValue }) => (
+        <span className="text-slate-600">
+          {Number(getValue()).toFixed(2)} MAD
+        </span>
+      ),
+    },
+  ];
+};

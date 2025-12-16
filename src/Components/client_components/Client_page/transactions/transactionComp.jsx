@@ -38,13 +38,6 @@ export default function TransactionSection({
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 1;
   const { role } = useAuthContext();
-  console.log(title);
-  console.log(data);
-  console.log(isLoading);
-  console.log(isOpen);
-  console.log(columns);
-  console.log(onToggle);
-
   const table = useReactTable({
     data: data ?? [],
     columns: columns ?? [],

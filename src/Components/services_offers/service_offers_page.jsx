@@ -12,7 +12,6 @@ import { useOffer } from "@/features/offers/hooks/useOffersQuery";
 
 export default function ServicePage({ currentId, type }) {
 
-  console.log(type, currentId)
   const servicesQuery = useService(currentId);
   const offersQuery = useOffer(currentId);
 

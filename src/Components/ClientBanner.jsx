@@ -17,7 +17,7 @@ export default function WhatsNextBanner() {
 
   return (
     <div className="bg-white border border-border rounded-lg px-4 py-4">
-      <div className="flex gap-3 items-start">
+      <div className="flex  gap-3 items-start ">
         <div
           aria-hidden="true"
           className="flex size-9 shrink-0 items-center justify-center rounded-full bg-purple-100"
@@ -58,7 +58,9 @@ export default function WhatsNextBanner() {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
-                <DropdownMenuItem>Don't show again</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsVisible(false)}>
+                  Don't show again
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

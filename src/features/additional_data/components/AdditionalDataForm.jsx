@@ -25,7 +25,6 @@ export function AdditionalDataForm({
   const updateMutation = useUpdateAdditionalData();
   const mutation = additionalData?.id ? updateMutation : createMutation;
   const isEditMode = !!additionalData?.id;
-  console.log(additionalData);
   const parseJSON = (str, fallback) => {
     try {
       return str ? JSON.parse(str) : fallback;
@@ -110,7 +109,6 @@ export function AdditionalDataForm({
       other: data.other,
     };
 
-    console.log("payload", payload);
 
     mutation.mutate(
       isEditMode ? { id: additionalData.id, data: payload } : payload,

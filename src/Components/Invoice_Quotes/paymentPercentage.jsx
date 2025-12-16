@@ -89,7 +89,7 @@ export default function PaymentPercentage({
       onGenerateLink(percentage);
     }
   };
-  console.log(lastPayment);
+
   return (
     <Dialog open={controlledOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
