@@ -1,16 +1,32 @@
-// src/features/logs/hooks/useLogs.ts
+/* eslint-disable no-unused-vars */
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-// Pure API functions
+// API functions
 const apiLog = {
-    getAll: () => api.get(`${API_URL}/logs`).then((res) => res.data ?? []),
-    getById: (id) =>
-        api.get(`${API_URL}/logs/${id}`).then((res) => res.data?.service ?? res.data ?? null),
+    getAll: async () => {
+        try {
+            const res = await api.get(`${API_URL}/logs`);
+            return res.data ?? [];
+        } catch (err) {
+            throw new Error("Failed to fetch logs");
+        }
+    },
+
+    getById: async (id) => {
+        if (!id) return null;
+        try {
+            const res = await api.get(`${API_URL}/logs/${id}`);
+            return res.data ?? null;
+        } catch (err) {
+            throw new Error("Failed to fetch log");
+        }
+    },
 };
 
+// Hooks
 export function useLogs() {
     return useQuery({
         queryKey: ["logs"],

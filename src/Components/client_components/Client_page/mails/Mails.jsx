@@ -41,8 +41,8 @@ export default function Mails() {
     },
   ];
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
+    <div className="bg-white rounded-lg border border-border">
+      <div className="flex items-center justify-between p-4 border-b border-border">
         <h2 className="text-base font-medium text-gray-900">System Mails</h2>
         {/* <Button
           variant="outline"

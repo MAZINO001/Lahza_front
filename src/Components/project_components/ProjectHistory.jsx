@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { useState } from "react";
-import TimelineComponent from "../comp-531";
+import TimelineComponent from "../timeline";
 
 export default function ProjectHistory() {
   const [history, setHistory] = useState([

@@ -20,16 +20,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/table/DataTable";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 
 export default function TransactionSection({
   title,
-  data,
+  data = [],
   isLoading,
   isOpen,
-  columns,
+  columns = [],
   onToggle,
 }) {
   const [sorting, setSorting] = useState([]);
@@ -46,8 +46,8 @@ export default function TransactionSection({
   console.log(onToggle);
 
   const table = useReactTable({
-    data: data,
-    columns: columns,
+    data: data ?? [],
+    columns: columns ?? [],
     state: { sorting, columnFilters, rowSelection },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -66,7 +66,7 @@ export default function TransactionSection({
     <Collapsible
       open={isOpen}
       onOpenChange={onToggle}
-      className="border border-gray-200 rounded-lg bg-white"
+      className="border border-border rounded-lg bg-white"
     >
       <div className="flex items-center justify-between p-4">
         <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-70 transition-opacity">
@@ -86,8 +86,8 @@ export default function TransactionSection({
         </Link>
       </div>
       <CollapsibleContent>
-        <div className="border-t border-gray-200">
-          <div className="overflow-x-auto">
+        <div className="border-t border-border">
+          <div className="pt-4 px-4">
             {table && (
               <DataTable
                 table={table}
@@ -98,7 +98,7 @@ export default function TransactionSection({
             )}
           </div>
 
-          <div className="p-4 border-t border-gray-200 flex items-center justify-between">
+          <div className="p-4 border-t border-border flex items-center justify-between">
             <div className="text-sm text-gray-600">
               Total Count:{" "}
               <a href="#" className="text-blue-600 hover:underline">

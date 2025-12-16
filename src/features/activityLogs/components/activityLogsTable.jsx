@@ -9,27 +9,17 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
-  ArrowUpDown,
-  Activity,
   PlusCircle,
   Edit3,
   Trash2,
   RotateCcw,
   CalendarDays,
   Sun,
-  Calendar,
-  CalendarClock,
-  Globe,
-  Smartphone,
-  Tablet,
-  Monitor,
-  Server,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   Select,
@@ -38,14 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 import { useAuthContext } from "@/hooks/AuthContext";
 
@@ -54,7 +36,8 @@ import { DataTable } from "@/components/table/DataTable";
 import { useLogs } from "../hooks/useLogsQuery";
 
 export function ActivityLogsTable() {
-  const { data: logs = [] } = useLogs();
+  const { data: logs, isLoading } = useLogs();
+  console.log(logs);
   const { role } = useAuthContext();
 
   const [globalFilter, setGlobalFilter] = useState("");
@@ -260,11 +243,7 @@ export function ActivityLogsTable() {
         </div>
       </Card>
 
-      <DataTable
-        table={table}
-        columns={columns}
-        //   isLoading={isLoading}
-      />
+      <DataTable table={table} columns={columns} isLoading={isLoading} />
     </div>
   );
 }

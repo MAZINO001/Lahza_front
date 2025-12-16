@@ -37,7 +37,7 @@ export default function Client_Sidebar({ currentId }) {
   };
 
   return (
-    <div className="w-[25%] bg-white border-r border-gray-200">
+    <div className="w-[25%] bg-white border-r border-border">
       <div className="px-2 py-4 border-b flex items-center justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -83,3 +83,37 @@ import SelectField from "@/Components/Form/SelectField";
                             Delete
                           </ContextMenuItem>
                         </ContextMenuContent>
+**********************************************
+<div className="flex items-end justify-between gap-4">
+            <FormField
+              placeholder="Filter clients..."
+              value={table.getColumn("full_name")?.getFilterValue() ?? ""}
+              onChange={(e) =>
+                table.getColumn("full_name")?.setFilterValue(e.target.value)
+              }
+            />
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="text-md flex-1 font-semibold rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
+                  {selectedStatus} Clients
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuRadioGroup
+                  value={selectedStatus}
+                  onValueChange={selectStatus}
+                >
+                  {clientStatuses.map((status) => (
+                    <DropdownMenuRadioItem key={status} value={status}>
+                      <span className="capitalize">
+                        {status.replace("_", " ")}
+                      </span>
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>

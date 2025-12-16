@@ -2,65 +2,41 @@
 import { useState } from "react";
 import AddComments from "./addComments";
 import DisplayComments from "./DisplayComments";
+import {
+  useComments,
+  useCreateComment,
+  useDeleteComment,
+} from "@/features/clients/hooks/useClientsComments";
+import { useParams } from "react-router-dom";
 
 export default function CommentInput() {
-  const handleDelete = (id) => {
-    setComments(comments.filter((comment) => comment.id !== id));
-  };
-
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      username: "Admin001",
-      text: "sgdfgsdfgsdfgsdg",
-      timestamp: "15 DEC 2025 08:48 AM",
-    },
-    {
-      id: 2,
-      username: "Admin001",
-      text: "ssdfgsdfgsd",
-      timestamp: "15 DEC 2025 08:48 AM",
-    },
-    {
-      id: 3,
-      username: "Admin001",
-      text: "sgdfgsdfgsdfg",
-      timestamp: "15 DEC 2025 08:48 AM",
-    },
-    {
-      id: 4,
-      username: "Admin001",
-      text: ":,x!;,b,cv!b;,x!c:v;b",
-      timestamp: "15 DEC 2025 08:48 AM",
-    },
-    {
-      id: 5,
-      username: "Admin001",
-      text: "hfsghdfghkmldfkl",
-      timestamp: "15 DEC 2025 08:45 AM",
-    },
-  ]);
+  const { id } = useParams();
   const [isFocused, setIsFocused] = useState(false);
   const [commentText, setCommentText] = useState("");
+
+  const { data: comments = [] } = useComments({ type: "client", id });
+  const queryClient = useComments().queryClient;
+
+  const { mutate: createComment } = useCreateComment();
+  const { mutate: deleteComment } = useDeleteComment();
 
   const handleSubmit = () => {
     if (!commentText.trim()) return;
 
-    const newComment = {
-      id: Date.now(),
-      username: "Admin001",
-      text: commentText,
-      timestamp: new Date().toLocaleString(),
-    };
+    createComment(
+      { type: "client", id, data: { username: "Admin001", text: commentText } },
+      {
+        onSuccess: () => setCommentText(""),
+      }
+    );
+  };
 
-    setComments([newComment, ...comments]);
-    setCommentText("");
+  const handleDelete = (commentId) => {
+    deleteComment(commentId);
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-      handleSubmit();
-    }
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleSubmit();
   };
 
   return (
@@ -72,7 +48,6 @@ export default function CommentInput() {
         setIsFocused={setIsFocused}
         setCommentText={setCommentText}
       />
-      {/* comments list part  */}
       <DisplayComments comments={comments} handleDelete={handleDelete} />
     </div>
   );

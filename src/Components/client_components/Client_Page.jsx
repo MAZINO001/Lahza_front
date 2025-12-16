@@ -46,7 +46,7 @@ export default function Client_Page({ currentId }) {
 
   return (
     <div className=" w-[75%] flex flex-col">
-      <div className="bg-white p-4 border-b border-gray-200">
+      <div className="bg-white p-4 border-b border-border">
         <div className="flex gap-4 items-center justify-between">
           <h1 className="text-xl font-semibold text-gray-900 ">
             {client?.client_type === "company"
@@ -67,7 +67,7 @@ export default function Client_Page({ currentId }) {
               <DropdownMenuTrigger asChild>
                 <button
                   variant="outline"
-                  className="p-2 border border-border rounded-md "
+                  className="p-2 border border-border rounded-md"
                 >
                   <Link2Icon className="w-4 h-4" />
                 </button>
@@ -90,7 +90,7 @@ export default function Client_Page({ currentId }) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Link to={`/${role}/invoice/new`}>
+            <Link to={`/${role}/invoice/new`} state={{ clientId: currentId }}>
               <Button className="p-2 cursor-pointer">
                 <Plus className="w-4 h-4" />
                 New Transaction
@@ -135,7 +135,7 @@ export default function Client_Page({ currentId }) {
         </div>
       </div>
 
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white border-b border-border">
         <div className="flex px-4">
           {tabs.map((tab) => (
             <button

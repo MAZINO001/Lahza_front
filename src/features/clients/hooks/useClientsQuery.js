@@ -10,7 +10,7 @@ const apiClient = {
     getById: (id) =>
         api
             .get(`${API_URL}/clients/${id}`)
-            .then((res) => res.data?.client ?? res.data ?? null),
+            .then((res) => res.data?.client ?? res.data[0] ?? null),
     create: (data) => api.post(`${API_URL}/clients`, data),
     update: (id, data) => api.put(`${API_URL}/clients/${id}`, data),
     delete: (id) => api.delete(`${API_URL}/clients/${id}`),

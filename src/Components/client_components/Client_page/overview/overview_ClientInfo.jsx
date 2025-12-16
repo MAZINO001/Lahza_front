@@ -8,14 +8,26 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { useClient } from "@/features/clients/hooks/useClientsQuery";
+import { Link } from "react-router-dom";
+import { useAuthContext } from "@/hooks/AuthContext";
 export default function ClientInfo({ id }) {
   const [isAddressOpen, setIsAddressOpen] = useState(true);
   const [isAdditionalOpen, setIsAdditionalOpen] = useState(false);
   const { data: Client, isLoading } = useClient(id);
+  const { role } = useAuthContext();
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
-      <div className="p-6 border-b border-gray-200">
+    <div className="bg-white rounded-lg border border-border">
+      <div className="flex items-center justify-between p-4 border-b border-border">
         <h3 className="text-lg font-semibold text-gray-900">Client Info</h3>
+        <Link to={`/${role}/client/${Client?.id}/edit`}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-gray-400 hover:text-gray-600"
+          >
+            <Edit className="w-4 h-4" />
+          </Button>
+        </Link>
       </div>
 
       <div className="divide-y divide-gray-200">
@@ -33,16 +45,6 @@ export default function ClientInfo({ id }) {
                     Address
                   </h4>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-gray-400 hover:text-gray-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
               </div>
             </CollapsibleTrigger>
 
@@ -92,7 +94,7 @@ export default function ClientInfo({ id }) {
         </Collapsible>
 
         <Collapsible open={isAdditionalOpen} onOpenChange={setIsAdditionalOpen}>
-          <div className="p-6">
+          <div className="p-4">
             <CollapsibleTrigger className="w-full">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -105,16 +107,6 @@ export default function ClientInfo({ id }) {
                     Additional Data
                   </h4>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-gray-400 hover:text-gray-600"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
               </div>
             </CollapsibleTrigger>
 
@@ -150,7 +142,7 @@ export default function ClientInfo({ id }) {
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
-                  <span className="text-sm text-gray-500">Tax Rate</span>
+                  <span className="text-sm text-gray-500">currency</span>
                   <span className="col-span-2 text-sm text-gray-900">
                     {Client?.currency}
                   </span>

@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { Card, CardContent } from "@/components/ui/card";
-export default function overview_Payments({ formatCurrency }) {
+import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+import { formatId } from "@/lib/utils/formatId";
+export default function Overview_Payments({ formatCurrency }) {
   const receivablesData = [
     {
       currency: "USD",
@@ -15,24 +18,19 @@ export default function overview_Payments({ formatCurrency }) {
     },
   ];
 
+  const { data: Payments, isLoading } = usePayments();
+
   const paymentDuePeriod = "Due on Receipt";
   const receivables = receivablesData;
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="mb-6">
-          <div className="text-sm text-gray-600 mb-1">Payment due period</div>
-          <div className="text-base font-semibold text-gray-900">
-            {paymentDuePeriod}
-          </div>
-        </div>
-
+    <Card className="p-0">
+      <CardContent className="p-4">
         <div>
-          <h3 className="text-base font-semibold text-gray-900 mb-4">
+          <h3 className="text-base font-semibold text-gray-900 mb-2">
             Receivables
           </h3>
 
-          <div className="grid grid-cols-3 gap-4 py-3 border-b border-gray-200">
+          <div className="grid grid-cols-3 gap-4 py-2 border-b border-border">
             <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
               Currency
             </div>
@@ -44,19 +42,19 @@ export default function overview_Payments({ formatCurrency }) {
             </div>
           </div>
 
-          {receivables.map((item, index) => (
+          {Payments?.map((item, index) => (
             <div
               key={index}
               className="grid grid-cols-3 gap-4 py-3 border-b border-gray-100 last:border-0"
             >
               <div className="text-sm text-gray-900">
-                {item.currency} - {item.fullName}
+                {formatId(item.invoice.id, "INVOICE")}
               </div>
               <div className="text-sm text-gray-900 text-right font-medium">
-                {formatCurrency(item.outstanding)}
+                {formatCurrency(item.invoice.balance_due)}
               </div>
               <div className="text-sm text-gray-900 text-right font-medium">
-                {formatCurrency(item.unusedCredits)}
+                {formatCurrency(item.invoice.total_amount)}
               </div>
             </div>
           ))}

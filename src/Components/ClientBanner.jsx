@@ -16,7 +16,7 @@ export default function WhatsNextBanner() {
   if (!isVisible) return null;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg px-4 py-4">
+    <div className="bg-white border border-border rounded-lg px-4 py-4">
       <div className="flex gap-3 items-start">
         <div
           aria-hidden="true"

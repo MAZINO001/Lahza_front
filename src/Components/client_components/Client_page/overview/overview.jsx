@@ -1,4 +1,4 @@
-import TimelineComponent from "@/Components/comp-531";
+import TimelineComponent from "@/components/timeline";
 import { Phone } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Overview_chart from "./overview_chart";
@@ -27,14 +27,14 @@ export default function Overview({ data }) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="space-y-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="bg-white rounded-lg border border-border p-4">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             {displayName}
           </h3>
 
           <div className="flex items-start gap-4">
             <Avatar className="w-12 h-12">
-              <AvatarImage src="" alt={data?.user?.name} />
+              <AvatarImage src="" alt={data?.user?.name || "unknown"} />
               <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
                 {getInitials(data?.user?.name || "CL")}
               </AvatarFallback>
@@ -42,7 +42,7 @@ export default function Overview({ data }) {
 
             <div className="flex-1">
               <div className="text-base font-medium text-gray-900 mb-1">
-                {data?.user?.name}
+                {data?.user?.name || "unknown"}
               </div>
               <div className="text-sm text-gray-600 mb-2">
                 {data?.user?.email}
@@ -60,7 +60,7 @@ export default function Overview({ data }) {
       <div className="space-y-4">
         <Overview_Payments formatCurrency={formatCurrency} />
         <Overview_chart formatCurrency={formatCurrency} />
-        <div className="bg-white max-h-[500px] overflow-y-auto rounded-lg border border-gray-200 p-4 shadow-sm">
+        <div className="bg-white max-h-[500px] overflow-y-auto rounded-lg border border-border p-4">
           <TimelineComponent />
         </div>
       </div>

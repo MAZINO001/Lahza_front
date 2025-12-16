@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, X } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
 import FormField from "@/Components/Form/FormField";
@@ -29,6 +29,10 @@ export function DocumentForm({ type, onSuccess }) {
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const { id } = useParams();
 
+  const { state } = useLocation();
+
+  const clientId = state?.clientId;
+
   const isEditMode = !!id;
   const { data: document } = useDocument(id, type);
   const isInvoice = type === "invoices";
@@ -36,8 +40,6 @@ export function DocumentForm({ type, onSuccess }) {
   const { data: services = [], isLoading: servicesLoading } = useServices();
   const createMutation = useCreateDocument(type);
   const updateMutation = useUpdateDocument(type);
-
-  console.log(document);
 
   const mutation = document?.id ? updateMutation : createMutation;
 
@@ -56,7 +58,7 @@ export function DocumentForm({ type, onSuccess }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      customerName: "",
+      customerName: clientId || "",
       ...(isInvoice
         ? {
             invoice_date: new Date().toISOString().split("T")[0],
@@ -116,7 +118,7 @@ export function DocumentForm({ type, onSuccess }) {
       }
 
       reset({
-        customerName: doc.client?.id,
+        customerName: doc.client?.id || clientId,
         ...(isInvoice
           ? {
               invoice_date: doc.invoice_date,
@@ -399,7 +401,7 @@ export function DocumentForm({ type, onSuccess }) {
                   return (
                     <tr
                       key={field.id}
-                      className="border-b border-gray-200 hover:bg-gray-50"
+                      className="border-b border-border hover:bg-gray-50"
                     >
                       <td className="p-2">
                         <Controller
@@ -653,8 +655,7 @@ export function DocumentForm({ type, onSuccess }) {
               </Button>
             )}
           </div>
-          {isInvoice &
-          (
+          {isInvoice && (
             <div className="w-[50%]">
               <Label htmlFor="payment" className="mb-1">
                 Payment

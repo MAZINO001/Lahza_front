@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 
 import { formatId } from "@/lib/utils/formatId";
+
 export const ActivityLogsColumns = (role) => {
   return [
     {
@@ -47,7 +48,7 @@ export const ActivityLogsColumns = (role) => {
         const isToday =
           format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
         return (
-          <div className="flex flex-col  ml-3">
+          <div className="flex flex-col ml-3">
             <span className="font-medium">
               {isToday ? "Today" : format(date, "MMM d, yyyy")}
             </span>
@@ -59,15 +60,18 @@ export const ActivityLogsColumns = (role) => {
       },
     },
     {
-      accessorKey: "user",
+      accessorKey: "user_id",
       header: "User",
       cell: ({ row }) => {
-        const user = row.original.user;
+        const userId = row.original.user_id;
+        const userRole = row.original.user_role;
         return (
           <div className="flex items-center gap-3">
             <div>
-              <p className="font-medium text-sm">{user.name}</p>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
+              <p className="font-medium text-sm">User #{userId}</p>
+              <p className="text-xs text-muted-foreground capitalize">
+                {userRole}
+              </p>
             </div>
           </div>
         );
@@ -155,7 +159,7 @@ export const ActivityLogsColumns = (role) => {
       id: "location",
       header: "Location",
       cell: ({ row }) => (
-        <div className="flex items-center justify-between gap-5 text-xs text-muted-foreground ">
+        <div className="flex items-center justify-between gap-5 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Globe className="h-3.5 w-3.5" />
             {row.original.ip_country}

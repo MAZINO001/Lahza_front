@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,18 +15,49 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
 export default function Overview_chart({ formatCurrency }) {
   const [selectedPeriod, setSelectedPeriod] = useState("Last 6 Months");
 
-  const incomeExpenseData = [
-    { month: "May 2025", income: 0, expense: 0 },
-    { month: "Jun 2025", income: 1500, expense: 800 },
-    { month: "Jul 2025", income: 2300, expense: 1200 },
-    { month: "Aug 2025", income: 1800, expense: 900 },
-    { month: "Sep 2025", income: 2800, expense: 1400 },
-    { month: "Oct 2025", income: 2200, expense: 1100 },
-    { month: "Nov 2025", income: 3200, expense: 1600 },
-  ];
+  const formatMonth = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const { data: payments = [] } = usePayments();
+
+  const transformPaymentsToChartData = (payments) => {
+    const map = {};
+
+    payments.forEach((payment) => {
+      const month = formatMonth(payment.created_at);
+      const amount = Number(payment.amount);
+
+      if (!map[month]) {
+        map[month] = {
+          month,
+          income: 0,
+          expense: 0,
+        };
+      }
+
+      if (payment.status === "paid") {
+        map[month].income += amount;
+      } else {
+        map[month].expense += amount;
+      }
+    });
+
+    return Object.values(map);
+  };
+
+  const incomeExpenseData = React.useMemo(
+    () => transformPaymentsToChartData(payments),
+    [payments]
+  );
 
   const chartData = incomeExpenseData;
   const maxValue = Math.max(
@@ -36,27 +68,24 @@ export default function Overview_chart({ formatCurrency }) {
   const totalIncome = chartData.reduce((sum, d) => sum + (d.income || 0), 0);
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
+    <Card className="p-0">
+      <CardHeader className="p-4">
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-base font-semibold text-gray-900">
               Income and Expense
             </CardTitle>
-            <CardDescription className="text-xs text-gray-500 mt-1">
-              This chart is displayed in the organization's base currency.
-            </CardDescription>
+            <CardDescription className="text-xs text-gray-500 mt-1"></CardDescription>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-blue-600 hover:text-blue-700"
+              <button
+                variant="outline"
+                className="text-xs flex p-2 border border-border rounded-md "
               >
                 {selectedPeriod}
                 <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
@@ -83,7 +112,7 @@ export default function Overview_chart({ formatCurrency }) {
       </CardHeader>
 
       <CardContent>
-        <div className="relative h-48 border-l-2 border-b-2 border-gray-200">
+        <div className="relative h-48 border-l-2 border-b-2 border-border">
           <div className="absolute inset-0 flex items-end justify-around px-4 pb-8">
             {chartData.slice(-7).map((data, index) => {
               const incomeHeight =
@@ -130,7 +159,7 @@ export default function Overview_chart({ formatCurrency }) {
           </div>
         </div>
 
-        <div className="mt-6 flex items-center gap-6">
+        <div className="mt-4 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-blue-500 rounded"></div>
             <span className="text-xs text-gray-600">Income</span>
@@ -141,7 +170,7 @@ export default function Overview_chart({ formatCurrency }) {
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="mt-4 pt-4 border-t border-border">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-600">
               Total Income ({selectedPeriod})
