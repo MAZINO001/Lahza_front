@@ -36,14 +36,13 @@ export function DocumentForm({ type, onSuccess }) {
   const isEditMode = !!id;
   const { data: document } = useDocument(id, type);
   const isInvoice = type === "invoices";
-  const { data: clients = [], isLoading: clientsLoading } = useClients();
+  const { data: clients, isLoading: clientsLoading } = useClients();
   const { data: services = [], isLoading: servicesLoading } = useServices();
   const createMutation = useCreateDocument(type);
   const updateMutation = useUpdateDocument(type);
+  const mutation = document?.client?.id ? updateMutation : createMutation;
 
-  const mutation = document?.id ? updateMutation : createMutation;
-
-  const projects = document?.has_projects
+  const projects = document?.client?.has_projects
     ? JSON.parse(document.has_projects)
     : [];
 
@@ -148,17 +147,22 @@ export function DocumentForm({ type, onSuccess }) {
       });
     }
   }, [document, isEditMode, isInvoice, reset]);
-  const clientOptions = clients.map((c) => ({
-    label: c.user?.name || c.name || "Unknown Client",
-    value: String(c.id),
+
+  const clientOptions = clients?.map((c) => ({
+    label: c.client?.user?.name || c.name || "Unknown Client",
+    value: String(c.client?.id),
   }));
 
+
   const selectedClientId = watch("customerName");
-  const selectedClient = clients.find((c) => c.id === Number(selectedClientId));
+
+  const selectedClient = clients?.find(
+    (c) => c.client?.id === Number(selectedClientId)
+  );
 
   useEffect(() => {
     if (selectedClient) {
-      const isMoroccan = selectedClient.country === "maroc";
+      const isMoroccan = selectedClient.client?.country === "Maroc";
       const defaultPaymentMethod = isMoroccan ? "bank" : "stripe";
       setValue("payment_type", defaultPaymentMethod);
     }
@@ -299,14 +303,16 @@ export function DocumentForm({ type, onSuccess }) {
           <div className="p-4 border rounded bg-gray-50 text-sm space-y-1 max-w-[300px]">
             <p>
               <span className="font-medium">Name:</span>{" "}
-              {selectedClient.user?.name || selectedClient.name}
+              {selectedClient.client?.client?.user?.name ||
+                selectedClient.client?.name}
             </p>
             <p>
               <span className="font-medium">Address:</span>{" "}
-              {selectedClient.address}
+              {selectedClient.client?.address}
             </p>
             <p>
-              <span className="font-medium">Phone:</span> {selectedClient.phone}
+              <span className="font-medium">Phone:</span>{" "}
+              {selectedClient.client?.phone}
             </p>
           </div>
         )}
@@ -778,7 +784,7 @@ export function DocumentForm({ type, onSuccess }) {
                 data,
                 isInvoice
                   ? "sent"
-                  : document?.status === "confirmed"
+                  : document?.client?.status === "confirmed"
                     ? "confirmed"
                     : "sent"
               )

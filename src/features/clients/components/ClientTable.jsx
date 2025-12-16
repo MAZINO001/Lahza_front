@@ -37,8 +37,6 @@ export function ClientTable() {
     [role, navigate]
   );
 
-  console.log(clients);
-
   const clientStatuses = ["all", "active", "inactive", "unpaid", "overdue"];
   const [selectedStatus, setSelectedStatus] = useState("all");
 

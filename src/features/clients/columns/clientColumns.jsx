@@ -5,20 +5,20 @@ import { toast } from "sonner";
 export const getClientColumns = (role) => {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
-    toast.success(`${label} copied!`, {
-      duration: 3000,
-    });
+    toast.success(`${label} copied!`, { duration: 3000 });
   };
+
   return [
     {
       id: "full_name",
       header: "Full Name",
-      accessorFn: (row) => row.user?.name,
+      accessorFn: (row) => row.client.user?.name ?? "-",
       cell: ({ row, getValue }) => {
-        const id = row.original.id;
+        const clientId = row.original.client.id;
+
         return (
           <Link
-            to={`/admin/client/${id}`}
+            to={`/${role}/client/${clientId}`}
             className="font-medium text-slate-900 hover:underline"
           >
             {getValue()}
@@ -26,18 +26,20 @@ export const getClientColumns = (role) => {
         );
       },
     },
+
     {
-      accessorFn: (row) => row.company || "-",
       header: "Company",
-      cell: ({ getValue }) => <div className="font-medium">{getValue()}</div>,
+      accessorFn: (row) => row.client.company ?? "-",
+      cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
     },
+
     {
       header: "Email",
-      accessorFn: (row) => row.user?.email,
+      accessorFn: (row) => row.client.user?.email ?? "-",
       cell: ({ getValue }) => (
         <p
           onClick={() => copyToClipboard(getValue(), "Client Email")}
-          className="cursor-pointer"
+          className="cursor-pointer hover:underline"
         >
           {getValue()}
         </p>
@@ -45,22 +47,31 @@ export const getClientColumns = (role) => {
     },
 
     {
-      accessorKey: "phone",
       header: "Phone",
-      cell: ({ row }) => (
-        <div className="text-slate-700">{row.getValue("phone")}</div>
+      accessorFn: (row) => row.client.phone ?? "-",
+      cell: ({ getValue }) => (
+        <span className="text-slate-700">{getValue()}</span>
       ),
-    },
-    {
-      accessorKey: "total_to_pay",
-      header: "Total To Pay",
-      cell: ({ row }) => <span className="text-slate-600">0.00 MAD</span>,
     },
 
     {
-      accessorKey: "spending_total",
-      header: "Total Spent",
-      cell: ({ row }) => <span className="text-slate-600">0.00 MAD</span>,
+      header: "Total Paid",
+      accessorFn: (row) => row.totalPaid,
+      cell: ({ getValue }) => (
+        <span className="text-slate-600">
+          {Number(getValue()).toFixed(2)} MAD
+        </span>
+      ),
+    },
+
+    {
+      header: "Balance Due",
+      accessorFn: (row) => row.balanceDue,
+      cell: ({ getValue }) => (
+        <span className="text-slate-600">
+          {Number(getValue()).toFixed(2)} MAD
+        </span>
+      ),
     },
   ];
 };
