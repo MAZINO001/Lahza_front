@@ -34,7 +34,7 @@ import {
   useDeleteDocument,
   useCreateInvoiceFromQuote,
 } from "@/features/documents/hooks/useDocumentsQuery";
-import { ConfirmDialog } from "@/components/client_components/ConfirmDialoge";
+import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
 export const DocumentsColumns = (role, navigate, currentSection) => {
   const isInvoice = currentSection === "invoice";
   return [

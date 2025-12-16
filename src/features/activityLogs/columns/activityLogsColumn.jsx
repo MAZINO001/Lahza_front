@@ -68,7 +68,9 @@ export const ActivityLogsColumns = (role) => {
         return (
           <div className="flex items-center gap-3">
             <div>
-              <p className="font-medium text-sm">User #{userId}</p>
+              <Link className="font-medium text-sm">
+                {formatId(userId, "USER")}
+              </Link>
               <p className="text-xs text-muted-foreground capitalize">
                 {userRole}
               </p>

@@ -14,6 +14,7 @@ export function ConfirmDialog({
   onConfirm,
   title,
   description,
+  action,
 }) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -27,8 +28,14 @@ export function ConfirmDialog({
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-
-          <Button variant="destructive" onClick={onConfirm}>
+          <Button
+            variant={
+              ["cancel", "delete", "remove"].includes(action)
+                ? "destructive"
+                : "default"
+            }
+            onClick={onConfirm}
+          >
             Confirm
           </Button>
         </DialogFooter>

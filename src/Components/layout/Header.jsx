@@ -2,6 +2,7 @@ import { BellIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import SearchBar from "@/Components/comp-25";
 import { useAuthContext } from "@/hooks/AuthContext";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 export default function Header() {
   const { role, user } = useAuthContext();
   return (
@@ -10,6 +11,7 @@ export default function Header() {
         <SearchBar />
 
         <div className="flex items-center gap-4 ml-4">
+          <ThemeToggle />
           <button className="relative p-2 rounded-md cursor-pointer">
             <BellIcon size={20} />
             <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>

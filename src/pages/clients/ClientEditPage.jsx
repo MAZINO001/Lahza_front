@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/Components/ui/button";
@@ -15,10 +16,11 @@ import {
 
 export default function ClientEditPage() {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { state } = useLocation();
+  const clientId = state?.clientId;
   const { role } = useAuthContext();
   const [submitting, setSubmitting] = useState(false);
-  const { data: client, isLoading } = useClient(id);
+  const { data: data, isLoading } = useClient(clientId);
   const updateClientMutation = useUpdateClient();
 
   const {
@@ -30,43 +32,42 @@ export default function ClientEditPage() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      client_type: "",
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      address: "",
-      city: "",
-      country: "",
-      ice: "",
-      siren: "",
-      vat: "",
-      currency: "",
+      client_type: data?.client.client_type || "",
+      name: data?.client.user?.name || "",
+      email: data?.client.user?.email || "",
+      phone: data?.client.phone || "",
+      company: data?.client.company || "",
+      address: data?.client.address || "",
+      city: data?.client.city || "",
+      country: data?.client.country || "",
+      ice: data?.client.ice || "",
+      siren: data?.client.siren || "",
+      vat: data?.client.vat || "",
+      currency: data?.client.currency || "",
     },
   });
-
-  console.log(client);
   const typeClientValue = watch("client_type");
   const paysValue = watch("country");
 
   useEffect(() => {
-    if (client) {
+    if (data) {
+      console.log("Country value from API:", data?.client.country);
       reset({
-        client_type: client.client_type || "",
-        name: client.user?.name || "",
-        email: client.user?.email || "",
-        phone: client.phone || "",
-        company: client.company || "",
-        address: client.address || "",
-        city: client.city || "",
-        country: client.country || "",
-        ice: client.ice || "",
-        siren: client.siren || "",
-        vat: client.vat || "",
-        currency: client.currency || "",
+        client_type: data?.client.client_type || "",
+        name: data?.client.user?.name || "",
+        email: data?.client.user?.email || "",
+        phone: data?.client.phone || "",
+        company: data?.client.company || "",
+        address: data?.client.address || "",
+        city: data?.client.city || "",
+        country: data?.client.country || "",
+        ice: data?.client.ice || "",
+        siren: data?.client.siren || "",
+        vat: data?.client.vat || "",
+        currency: data?.client.currency || "",
       });
     }
-  }, [client, reset]);
+  }, [data, reset]);
 
   useEffect(() => {
     if (paysValue === "Maroc") {
@@ -82,26 +83,25 @@ export default function ClientEditPage() {
   const onSubmit = (data) => {
     setSubmitting(true);
 
-    // Match database structure exactly
     const submitData = {
-      client_type: data.client_type,
-      company: data.company,
-      phone: data.phone,
-      address: data.address,
-      city: data.city,
-      country: data.country,
-      currency: data.currency || null,
-      vat: data.vat || null,
-      siren: data.siren || null,
-      ice: data.ice || null,
-      user: {
-        name: data.name,
-        email: data.email,
-      },
+      client_type: data.client_type || "",
+      name: data.name || "",
+      email: data.email || "",
+      phone: data.phone || "",
+      company: data.company || "",
+      address: data.address || "",
+      city: data.city || "",
+      country: data.country || "",
+      ice: data.ice || "",
+      siren: data.siren || "",
+      vat: data.vat || "",
+      currency: data.currency || "",
     };
 
+    console.log(submitData);
+
     updateClientMutation.mutate(
-      { id, data: submitData },
+      { id: clientId, data: submitData },
       {
         onSuccess: () => {
           setSubmitting(false);
@@ -114,12 +114,11 @@ export default function ClientEditPage() {
       }
     );
   };
-
   const handleCancel = () => {
     navigate(`/${role}/clients`);
   };
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-lg">Chargement...</div>
@@ -129,11 +128,11 @@ export default function ClientEditPage() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full p-4">
-      <FormSection title="Informations du client">
+      <FormSection title="Informations du data">
         <Controller
           name="client_type"
           control={control}
-          rules={{ required: "Le type de client est requis" }}
+          rules={{ required: "Le type de data est requis" }}
           render={({ field }) => (
             <ClientTypeRadio
               value={field.value}
@@ -335,7 +334,7 @@ export default function ClientEditPage() {
                   rules={{ required: "La devise est requise" }}
                   render={({ field }) => (
                     <CurrencySelect
-                      value={field.value}
+                      value={field.value || data?.client.country}
                       onChange={field.onChange}
                       error={errors.currency?.message}
                     />

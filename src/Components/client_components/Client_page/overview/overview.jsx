@@ -1,5 +1,5 @@
 import TimelineComponent from "@/components/timeline";
-import { Phone } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Overview_chart from "./overview_chart";
 import Overview_ClientInfo from "./overview_ClientInfo";
@@ -15,7 +15,9 @@ export default function Overview({ data }) {
   };
 
   const displayName =
-    data?.client_type === "company" ? data?.company : data?.user?.name;
+    data?.client?.client_type === "company"
+      ? data?.client?.company
+      : data?.client.user?.name;
 
   const formatCurrency = (amount) =>
     new Intl.NumberFormat("en-US", {
@@ -34,29 +36,29 @@ export default function Overview({ data }) {
 
           <div className="flex items-start gap-4">
             <Avatar className="w-12 h-12">
-              <AvatarImage src="" alt={data?.user?.name || "unknown"} />
+              <AvatarImage src="" alt={data?.client.user?.name || "unknown"} />
               <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
-                {getInitials(data?.user?.name || "CL")}
+                {getInitials(data?.client.user?.name || "CL")}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex-1">
-              <div className="text-base font-medium text-gray-900 mb-1">
-                {data?.user?.name || "unknown"}
+            <div className="flex flex-col gap-2">
+              <div className="text-base font-medium text-gray-900">
+                {data?.client.user?.name || "unknown"}
               </div>
-              <div className="text-sm text-gray-600 mb-2">
-                {data?.user?.email}
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <Mail className="w-4 h-4" />
+                {data?.client.user?.email}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Phone className="w-4 h-4" />
-                <span>{data?.phone}</span>
+                <span>{data?.client?.phone}</span>
               </div>
             </div>
           </div>
         </div>
-        <Overview_ClientInfo id={data?.id} />
+        <Overview_ClientInfo id={data?.client?.id} />
       </div>
-
       <div className="space-y-4">
         <Overview_Payments formatCurrency={formatCurrency} />
         <Overview_chart formatCurrency={formatCurrency} />

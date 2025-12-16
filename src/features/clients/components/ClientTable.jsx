@@ -7,38 +7,37 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useNavigate } from "react-router-dom";
-
 import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useClients } from "../hooks/useClientsQuery";
 import { getClientColumns } from "../columns/clientColumns";
 import CSVUploadModal from "@/components/common/CSVUploadModal";
-import { ChevronDown, MoreVertical, Plus, Upload } from "lucide-react";
+import { ChevronDown, Upload } from "lucide-react";
 import { DataTable } from "@/components/table/DataTable";
 import AddClientModel from "@/components/common/AddClientModel";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 export function ClientTable() {
-  const { data: clients = [], isLoading } = useClients();
+  const { data: clients, isLoading } = useClients();
   const { role } = useAuthContext();
   const navigate = useNavigate();
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
+
   const columns = React.useMemo(
     () => getClientColumns(role, navigate),
     [role, navigate]
   );
+
+  console.log(clients);
 
   const clientStatuses = ["all", "active", "inactive", "unpaid", "overdue"];
   const [selectedStatus, setSelectedStatus] = useState("all");
@@ -54,7 +53,6 @@ export function ClientTable() {
   };
 
   const table = useReactTable({
-    // data: clients,
     data: filteredData,
     columns,
     state: { sorting, columnFilters },

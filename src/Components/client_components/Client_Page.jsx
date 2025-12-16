@@ -35,7 +35,6 @@ export default function Client_Page({ currentId }) {
     isLoading: clientLoading,
     isError: clientError,
   } = useClient(currentId);
-  console.log(client);
   const { role } = useAuthContext();
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -157,7 +156,7 @@ export default function Client_Page({ currentId }) {
         {activeTab === "overview" && <OverView data={client} />}
         {activeTab === "comments" && <Comments data={client} />}
         {activeTab === "transactions" && <Transactions data={client} />}
-        {activeTab === "mails" && <Mails data={client} />}
+        {activeTab === "mails" && <Mails currentId={currentId} />}
       </div>
     </div>
   );

@@ -31,7 +31,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useCancelPayment, useConfirmPayment } from "../hooks/usePaymentQuery";
 import { Link } from "react-router-dom";
-import { ConfirmDialog } from "@/components/client_components/ConfirmDialoge";
+import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
 export function paymentColumns(role) {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -248,6 +248,7 @@ export function paymentColumns(role) {
                     }}
                     title="Cancel Payment"
                     description="Are you sure you want to cancel this payment? This action cannot be undone."
+                    action="confirm"
                   />
                 </>
               )}
@@ -272,6 +273,7 @@ export function paymentColumns(role) {
                     }}
                     title="Cancel Payment"
                     description="Are you sure you want to cancel this payment? This action cannot be undone."
+                    action="cancel"
                   />
                 </>
               )}

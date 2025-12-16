@@ -14,7 +14,6 @@
 //   const maxSizeMB = 2;
 //   const maxSize = maxSizeMB * 1024 * 1024;
 //   const registerStore = useRegisterStore();
-//   console.log(type);
 //   const [
 //     { files, isDragging, errors },
 //     {

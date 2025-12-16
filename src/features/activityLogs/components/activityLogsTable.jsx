@@ -37,7 +37,6 @@ import { useLogs } from "../hooks/useLogsQuery";
 
 export function ActivityLogsTable() {
   const { data: logs, isLoading } = useLogs();
-  console.log(logs);
   const { role } = useAuthContext();
 
   const [globalFilter, setGlobalFilter] = useState("");

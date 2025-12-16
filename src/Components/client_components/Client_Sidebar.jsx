@@ -17,7 +17,7 @@ import AddClientModel from "../common/AddClientModel";
 import { usePayment } from "@/features/payments/hooks/usePaymentQuery";
 export default function Client_Sidebar({ currentId }) {
   const {
-    data: clients = [],
+    data: clients ,
     isLoading: clientsLoading,
     isError: clientsError,
   } = useClients();
@@ -35,7 +35,6 @@ export default function Client_Sidebar({ currentId }) {
   const selectStatus = (status) => {
     setSelectedStatus(status);
   };
-
   return (
     <div className="w-[25%] bg-white border-r border-border">
       <div className="px-2 py-4 border-b flex items-center justify-between">
