@@ -19,7 +19,7 @@ export const getClientColumns = (role) => {
         return (
           <Link
             to={`/${role}/client/${clientId}`}
-            className="font-medium text-slate-900 hover:underline"
+            className="font-medium text-foreground hover:underline"
           >
             {getValue()}
           </Link>
@@ -39,7 +39,7 @@ export const getClientColumns = (role) => {
       cell: ({ getValue }) => (
         <p
           onClick={() => copyToClipboard(getValue(), "Client Email")}
-          className="cursor-pointer hover:underline"
+          className=" text-foreground cursor-pointer hover:underline"
         >
           {getValue()}
         </p>
@@ -50,7 +50,7 @@ export const getClientColumns = (role) => {
       header: "Phone",
       accessorFn: (row) => row.client.phone ?? "-",
       cell: ({ getValue }) => (
-        <span className="text-slate-700">{getValue()}</span>
+        <span className="text-foreground">{getValue()}</span>
       ),
     },
 
@@ -58,7 +58,7 @@ export const getClientColumns = (role) => {
       header: "Total Paid",
       accessorFn: (row) => row.totalPaid,
       cell: ({ getValue }) => (
-        <span className="text-slate-600">
+        <span className="text-muted-foreground">
           {Number(getValue()).toFixed(2)} MAD
         </span>
       ),
@@ -68,7 +68,7 @@ export const getClientColumns = (role) => {
       header: "Balance Due",
       accessorFn: (row) => row.balanceDue,
       cell: ({ getValue }) => (
-        <span className="text-slate-600">
+        <span className="text-muted-foreground">
           {Number(getValue()).toFixed(2)} MAD
         </span>
       ),

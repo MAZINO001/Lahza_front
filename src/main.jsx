@@ -10,8 +10,8 @@ import { ThemeProvider } from "next-themes";
 const qc = new QueryClient();
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem> */}
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      {/* <ThemeProvider attribute="class" defaultTheme="light" enableSystem> */}
       <AuthProvider>
         <QueryClientProvider client={qc}>
           <App />

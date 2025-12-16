@@ -356,11 +356,7 @@ export default function ClientEditPage() {
         >
           Annuler
         </Button>
-        <Button
-          type="submit"
-          disabled={submitting}
-          className="w-full md:w-auto bg-primary hover:bg-[color-mix(in oklch,var(--primary)80%,black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors"
-        >
+        <Button type="submit" disabled={submitting}>
           {submitting ? "Mise à jour..." : "Enregistrer les modifications"}
         </Button>
       </div>

@@ -153,7 +153,6 @@ export function DocumentForm({ type, onSuccess }) {
     value: String(c.client?.id),
   }));
 
-
   const selectedClientId = watch("customerName");
 
   const selectedClient = clients?.find(
@@ -303,8 +302,8 @@ export function DocumentForm({ type, onSuccess }) {
           <div className="p-4 border rounded bg-gray-50 text-sm space-y-1 max-w-[300px]">
             <p>
               <span className="font-medium">Name:</span>{" "}
-              {selectedClient.client?.client?.user?.name ||
-                selectedClient.client?.name}
+              {selectedClient.client?.user?.name ||
+                selectedClient.client?.user?.name}
             </p>
             <p>
               <span className="font-medium">Address:</span>{" "}
