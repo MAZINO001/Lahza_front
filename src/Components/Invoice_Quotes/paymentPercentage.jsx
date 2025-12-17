@@ -147,7 +147,7 @@ export default function PaymentPercentage({
                       value={`${field.value} DH`}
                       readOnly
                       disabled
-                      className="bg-gray-50 font-medium text-gray-700"
+                      className="bg-background font-medium text-foreground"
                     />
                   )}
                 />
@@ -179,7 +179,7 @@ export default function PaymentPercentage({
               </div>
             </div>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               <strong>Total Amount:</strong> {totalAmount} DH <br />
               <strong>Balance Due:</strong> {balanceDue} DH <br />
               <strong>Max Payable (%):</strong>{" "}

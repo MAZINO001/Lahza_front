@@ -46,11 +46,6 @@ export default function ProjectViewPage() {
   const { data: project, isLoading } = useProject(id);
   const { data: additionalData } = useAdditionalData(id);
   const { data: tasks } = useTasks(id);
-
-  // *******************************************************
-
-  // *******************************************************
-
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -78,15 +73,15 @@ export default function ProjectViewPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <p>Loading project...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="w-full bg-white border-b shadow-sm">
+    <div className="min-h-screen bg-background ">
+      <div className="w-full bg-background border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -105,7 +100,7 @@ export default function ProjectViewPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+                  <h1 className="text-3xl font-bold text-foreground tracking-tight">
                     {project.name}
                   </h1>
                 </div>
@@ -130,23 +125,30 @@ export default function ProjectViewPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
-          <Card>
-            <CardHeader>
+      <div className="p-4">
+        <div className="flex gap-4 w-full mb-4">
+          <Card className="w-[40%]">
+            <CardHeader className="flex items-start justify-between">
               <CardTitle>Client Information</CardTitle>
+              <Link
+                to={`/${role}/project/${id}/edit`}
+                variant="ghost"
+                className="flex items-center gap-2"
+              >
+                <Edit3 className="w-4 h-4" />
+                Edit
+              </Link>
             </CardHeader>
             <CardContent className="space-y-2">
               <div>
-                <p className="text-sm text-gray-500 mb-1">Client Name</p>
-                <p className="text-gray-900 font-medium">Admin User</p>
+                <p className="text-sm text-muted-foreground mb-1">
+                  Client Name
+                </p>
+                <p className="text-foreground font-medium">Admin User</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500 mb-1">Email</p>
-                <a
-                  // href={`mailto:${project.client.email}`}
-                  className="inline-flex items-center gap-2"
-                >
+                <p className="text-sm text-muted-foreground mb-1">Email</p>
+                <a className="inline-flex items-center gap-2">
                   <Mail className="w-4 h-4" />
                   admin@lahza.com
                 </a>
@@ -154,12 +156,20 @@ export default function ProjectViewPage() {
             </CardContent>
           </Card>
 
-          <Card className="lg:col-span-2">
-            <CardHeader>
+          <Card className="w-[60%]">
+            <CardHeader className="flex items-start justify-between">
               <CardTitle>Project Description</CardTitle>
+              <Link
+                to={`/${role}/project/${id}/edit`}
+                variant="ghost"
+                className="flex items-center gap-2"
+              >
+                <Edit3 className="w-4 h-4" />
+                Edit
+              </Link>
             </CardHeader>
             <CardContent>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-foreground leading-relaxed">
                 {project.description ||
                   "No description available for this project."}
               </p>
@@ -168,7 +178,7 @@ export default function ProjectViewPage() {
         </div>
 
         <div className="flex w-full gap-4">
-          <Card className="border rounded-xl shadow-sm w-1/2 h-57 overflow-auto">
+          <Card className="w-[50%]">
             <CardContent className="space-y-4">
               {tasks?.map((task) => (
                 <div
@@ -195,22 +205,22 @@ export default function ProjectViewPage() {
             </CardContent>
           </Card>
 
-          <Card className="mb-4 p-2 w-1/2">
+          <Card className="w-[50%]">
             <CardHeader>
               <CardTitle>Progress</CardTitle>
             </CardHeader>
             <CardContent>
               {progressLoading ? (
-                <p className="text-gray-500">Loading progress...</p>
+                <p className="text-muted-foreground">Loading progress...</p>
               ) : progress?.message === "Project progress not avaible" ? (
-                <p className="text-gray-500">No tasks available yet</p>
+                <p className="text-muted-foreground">No tasks available yet</p>
               ) : (
                 <>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-2xl font-bold text-blue-600">
                       {completionPercentage}%
                     </span>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-muted-foreground">
                       {progress?.done_tasks_count || 0} of{" "}
                       {progress?.tasks_count || 0} tasks completed
                     </span>
@@ -222,10 +232,10 @@ export default function ProjectViewPage() {
                       style={{ width: `${completionPercentage}%` }}
                     />
                   </div>
-                  <div className="mt-4 space-y-1 text-sm text-gray-600">
+                  <div className="mt-4 space-y-1 text-sm text-muted-foreground">
                     <p>
                       Total Tasks:{" "}
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-foreground">
                         {progress?.tasks_count}
                       </span>
                     </p>
@@ -249,7 +259,7 @@ export default function ProjectViewPage() {
           </Card>
         </div>
 
-        <Card className="mt-4 h-130 p-0">
+        <Card className="w-full mt-4 h-130 p-0">
           <CardContent className="h-full p-4">
             <Tabs defaultValue="gantt" className="h-full flex flex-col">
               <TabsList className="mb-2">

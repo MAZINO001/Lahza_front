@@ -8,7 +8,7 @@ export default function SignatureExamples() {
             alt="Good signature example"
             width={240}
             height={160}
-            className="rounded-lg border shadow-md bg-white object-contain"
+            className="rounded-lg border shadow-md bg-background object-contain"
           />
           <div className="absolute -top-3 -right-3 bg-green-500 text-white rounded-full p-2 shadow-lg">
             <svg
@@ -35,7 +35,7 @@ export default function SignatureExamples() {
             alt="Bad signature example - do not upload like this"
             width={240}
             height={160}
-            className="rounded-lg border shadow-md bg-white object-contain"
+            className="rounded-lg border shadow-md bg-background object-contain"
           />
           <div className="absolute -top-3 -right-3 bg-red-500 text-white rounded-full p-2 shadow-lg">
             <svg

@@ -102,7 +102,7 @@ export function CreateAdditionalPayment() {
 export function useConfirmPayment() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (id) => apiPayments.confirm(id), // make sure id is passed
+        mutationFn: (id) => apiPayments.confirm(id),
         onSuccess: () => {
             toast.success("Payment Confirmed");
             queryClient.invalidateQueries({ queryKey: ["payments"] });

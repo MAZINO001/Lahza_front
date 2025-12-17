@@ -113,8 +113,8 @@ export default function GanttComponent({ tasks, projectId }) {
   };
 
   return (
-    <div className=" w-full h-full">
-      <div className="flex justify-between mb-4">
+    <div className="w-full h-full">
+      <div className="flex justify-between mb-4 ">
         <h2 className="text-2xl font-bold">Project Timeline</h2>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -131,7 +131,7 @@ export default function GanttComponent({ tasks, projectId }) {
         </Dialog>
       </div>
 
-      <div className="w-full h-[88%]">
+      <div className="w-full h-full">
         <GanttProvider
           tasks={tasks}
           onTaskChange={(task) => handleTaskEdit(task.id, task)}

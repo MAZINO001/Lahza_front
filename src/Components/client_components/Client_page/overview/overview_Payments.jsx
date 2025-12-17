@@ -26,18 +26,18 @@ export default function Overview_Payments({ formatCurrency }) {
     <Card className="p-0">
       <CardContent className="p-4">
         <div>
-          <h3 className="text-base font-semibold text-gray-900 mb-2">
+          <h3 className="text-base font-semibold text-foreground mb-2">
             Receivables
           </h3>
 
           <div className="grid grid-cols-3 gap-4 py-2 border-b border-border">
-            <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               invoice id
             </div>
-            <div className="text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">
               Balance Due
             </div>
-            <div className="text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">
               Total Income
             </div>
           </div>
@@ -45,15 +45,15 @@ export default function Overview_Payments({ formatCurrency }) {
           {Payments?.map((item, index) => (
             <div
               key={index}
-              className="grid grid-cols-3 gap-4 py-3 border-b border-gray-100 last:border-0"
+              className="grid grid-cols-3 gap-4 py-3 border-b border-border last:border-0"
             >
-              <div className="text-sm text-gray-900">
+              <div className="text-sm text-foreground">
                 {formatId(item.invoice.id, "INVOICE")}
               </div>
-              <div className="text-sm text-gray-900 text-right font-medium">
+              <div className="text-sm text-foreground text-right font-medium">
                 {formatCurrency(item.invoice.balance_due)}
               </div>
-              <div className="text-sm text-gray-900 text-right font-medium">
+              <div className="text-sm text-foreground text-right font-medium">
                 {formatCurrency(item.invoice.total_amount)}
               </div>
             </div>

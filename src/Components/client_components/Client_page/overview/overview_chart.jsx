@@ -73,10 +73,10 @@
 //       <CardHeader className="p-4">
 //         <div className="flex items-start justify-between">
 //           <div>
-//             <CardTitle className="text-base font-semibold text-gray-900">
+//             <CardTitle className="text-base font-semibold text-foreground">
 //               Income and Expense
 //             </CardTitle>
-//             <CardDescription className="text-xs text-gray-500 mt-1"></CardDescription>
+//             <CardDescription className="text-xs text-muted-foreground mt-1"></CardDescription>
 //           </div>
 //           <DropdownMenu>
 //             <DropdownMenuTrigger asChild>
@@ -152,7 +152,7 @@
 //           <div className="absolute bottom-0 left-0 right-0 flex justify-around px-4">
 //             {chartData.slice(-7).map((data, index) => (
 //               <div key={index} className="flex-1 max-w-[60px] text-center">
-//                 <span className="text-xs text-gray-500">
+//                 <span className="text-xs text-muted-foreground">
 //                   {data.month.split(" ")[0]}
 //                 </span>
 //               </div>
@@ -163,20 +163,20 @@
 //         <div className="mt-4 flex items-center gap-4">
 //           <div className="flex items-center gap-2">
 //             <div className="w-3 h-3 bg-blue-500 rounded"></div>
-//             <span className="text-xs text-gray-600">Income</span>
+//             <span className="text-xs text-muted-foreground">Income</span>
 //           </div>
 //           <div className="flex items-center gap-2">
 //             <div className="w-3 h-3 bg-orange-500 rounded"></div>
-//             <span className="text-xs text-gray-600">Expense</span>
+//             <span className="text-xs text-muted-foreground">Expense</span>
 //           </div>
 //         </div>
 
 //         <div className="mt-4 pt-4 border-t border-border">
 //           <div className="flex items-center justify-between text-sm">
-//             <span className="text-gray-600">
+//             <span className="text-muted-foreground">
 //               Total Income ({selectedPeriod})
 //             </span>
-//             <span className="font-semibold text-gray-900">
+//             <span className="font-semibold text-foreground">
 //               {formatCurrency(totalIncome)}
 //             </span>
 //           </div>
@@ -297,10 +297,10 @@ export default function Overview_chart({ formatCurrency }) {
       <CardHeader className="p-4">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-base font-semibold text-gray-900">
+            <CardTitle className="text-base font-semibold text-foreground">
               Income and Expense
             </CardTitle>
-            <CardDescription className="text-xs text-gray-500 mt-1"></CardDescription>
+            <CardDescription className="text-xs text-muted-foreground mt-1"></CardDescription>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -376,7 +376,7 @@ export default function Overview_chart({ formatCurrency }) {
           <div className="absolute bottom-0 left-0 right-0 flex justify-around px-4">
             {chartData.map((data, index) => (
               <div key={index} className="flex-1 max-w-20 text-center">
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-muted-foreground">
                   {data.month.split(" ")[0]}
                 </span>
               </div>
@@ -387,28 +387,28 @@ export default function Overview_chart({ formatCurrency }) {
         <div className="mt-4 flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-blue-500 rounded"></div>
-            <span className="text-xs text-gray-600">Income</span>
+            <span className="text-xs text-muted-foreground">Income</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-orange-500 rounded"></div>
-            <span className="text-xs text-gray-600">Expense</span>
+            <span className="text-xs text-muted-foreground">Expense</span>
           </div>
         </div>
 
         <div className="mt-4 pt-4 border-t border-border space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">
+            <span className="text-muted-foreground">
               Total Income ({selectedPeriod})
             </span>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-foreground">
               {formatCurrency(totalIncome)}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">
+            <span className="text-muted-foreground">
               Total Expense ({selectedPeriod})
             </span>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-foreground">
               {formatCurrency(totalExpense)}
             </span>
           </div>

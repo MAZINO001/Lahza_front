@@ -90,7 +90,7 @@ export const ActivityLogsColumns = (role) => {
           deleted: "bg-red-100 text-red-800",
         };
         return (
-          <Badge className={variants[action] || "bg-gray-100 text-gray-800"}>
+          <Badge className={variants[action] || "bg-background text-gray-800"}>
             {action.charAt(0).toUpperCase() + action.slice(1)}
           </Badge>
         );

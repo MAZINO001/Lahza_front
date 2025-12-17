@@ -44,10 +44,10 @@ export default function Client_Page({ currentId }) {
   ];
 
   return (
-    <div className=" w-[75%] flex flex-col">
-      <div className="bg-white p-4 border-b border-border">
+    <div className=" bg-background w-[75%] flex flex-col">
+      <div className="bg-background p-4 border-b border-border">
         <div className="flex gap-4 items-center justify-between">
-          <h1 className="text-xl font-semibold text-gray-900 ">
+          <h1 className="text-xl font-semibold text-foreground ">
             {client?.client_type === "company"
               ? client?.company
               : client?.user?.name}
@@ -72,7 +72,7 @@ export default function Client_Page({ currentId }) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56 z-9999">
-                <DropdownMenuItem className="bg-white hover:bg-white hover:text-black focus:bg-white focus:text-black">
+                <DropdownMenuItem className="bg-background hover:bg-background hover:text-foreground focus:bg-background focus:text-foreground">
                   <Controller
                     name="client_files"
                     control={control}
@@ -100,7 +100,7 @@ export default function Client_Page({ currentId }) {
               <DropdownMenuTrigger asChild>
                 <button
                   variant="outline"
-                  className="p-2 border border-border rounded-md "
+                  className="p-2 border border-border rounded-md"
                 >
                   <MoreVertical className="w-4 h-4" />
                 </button>
@@ -124,7 +124,7 @@ export default function Client_Page({ currentId }) {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <div className="w-px h-6 bg-gray-300 mx-1"></div>
+            <div className="w-px h-6 bg-background mx-1"></div>
             <Link to={`/${role}/clients`}>
               <Button variant="outline" className="p-2 cursor-pointer">
                 <X className="w-5 h-5" />
@@ -134,7 +134,7 @@ export default function Client_Page({ currentId }) {
         </div>
       </div>
 
-      <div className="bg-white border-b border-border">
+      <div className="bg-background border-b border-border">
         <div className="flex px-4">
           {tabs.map((tab) => (
             <button
@@ -143,7 +143,7 @@ export default function Client_Page({ currentId }) {
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab.id
                   ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
+                  : "border-transparent text-muted-foreground  hover:text-foreground "
               }`}
             >
               {tab.label}
@@ -151,8 +151,8 @@ export default function Client_Page({ currentId }) {
           ))}
         </div>
       </div>
-      <div className="flex  flex-col gap-4 overflow-y-auto p-4">
-        {activeTab === "overview" && <ClientBanner />}
+      <div className="flex flex-col gap-4 overflow-y-auto p-4">
+        {activeTab === "overview" && <ClientBanner currentId={currentId} />}
         {activeTab === "overview" && <OverView data={client} />}
         {activeTab === "comments" && <Comments data={client} />}
         {activeTab === "transactions" && <Transactions data={client} />}

@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 export default function ServiceViewPage() {
   const { id } = useParams();
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <ServicesSidebar type="service" currentId={id} />
       <ServicePage type="service" currentId={id} />
     </div>

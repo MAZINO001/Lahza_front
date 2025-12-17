@@ -44,13 +44,13 @@ export default function CSVUploadModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-lg p-6 w-[90%] max-w-md relative">
+      <div className="bg-background dark:bg-neutral-900 rounded-2xl shadow-lg p-6 w-[90%] max-w-md relative">
         <button
           onClick={() => {
             setMessage("");
             onClose();
           }}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-800"
+          className="absolute top-4 right-4 text-muted-foreground hover:text-gray-800"
         >
           <X />
         </button>
@@ -67,9 +67,7 @@ export default function CSVUploadModal({
         />
 
         {progress > 0 && (
-          <div className="text-sm text-blue-500">
-            Uploading... {progress}%
-          </div>
+          <div className="text-sm text-blue-500">Uploading... {progress}%</div>
         )}
 
         {message && (

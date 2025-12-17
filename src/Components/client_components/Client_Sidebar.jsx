@@ -26,7 +26,7 @@ export default function Client_Sidebar({ currentId }) {
 
   if (isLoading) {
     return (
-      <div className="w-[25%] border-r p-4 text-sm text-gray-500">
+      <div className="w-[25%] border-r p-4 text-sm text-muted-foreground">
         Loading clients...
       </div>
     );
@@ -41,12 +41,11 @@ export default function Client_Sidebar({ currentId }) {
   }
 
   return (
-    <div className="w-[25%] bg-white border-r border-border">
-      {/* Header */}
+    <div className="w-[25%] bg-background border-r border-border">
       <div className="px-2 py-4 border-b flex items-center justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="text-md flex-1 font-semibold rounded flex items-center gap-2 hover:bg-gray-50 px-2 py-1 -ml-2 transition capitalize">
+            <button className="text-md flex-1 font-semibold rounded flex items-center gap-2 hover:bg-background px-2 py-1 -ml-2 transition capitalize">
               {selectedStatus} Clients
               <ChevronDown className="w-4 h-4" />
             </button>
@@ -69,10 +68,9 @@ export default function Client_Sidebar({ currentId }) {
         <AddClientModel />
       </div>
 
-      {/* Client list */}
       <div className="cursor-pointer">
         {filteredData.length === 0 ? (
-          <div className="p-4 text-center text-gray-500 text-sm">
+          <div className="p-4 text-center text-muted-foreground text-sm">
             No client found
           </div>
         ) : (
@@ -86,15 +84,15 @@ export default function Client_Sidebar({ currentId }) {
                 to={`/${role}/client/${client.id}`}
                 className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 border-l-2 transition ${
                   isActive
-                    ? "bg-blue-50 border-l-blue-500"
-                    : "border-l-transparent hover:bg-gray-100"
+                    ? "bg-background border-l-blue-500"
+                    : "border-l-transparent hover:bg-accent-foreground"
                 }`}
               >
-                <div className="font-medium text-gray-900 truncate">
+                <div className="font-medium text-foreground truncate">
                   {client.user?.name ?? "-"}
                 </div>
 
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-muted-foreground">
                   {Number(item.totalPaid).toFixed(2)} MAD
                 </div>
               </Link>

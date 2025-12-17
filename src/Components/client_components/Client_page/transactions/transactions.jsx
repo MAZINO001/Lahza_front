@@ -69,7 +69,7 @@ export default function Transactions() {
   ];
 
   return (
-    <div className="space-y-4 bg-gray-50 min-h-screen">
+    <div className="space-y-4 bg-background min-h-screen">
       {sections.map((section) => (
         <TransactionSection
           key={section.id}

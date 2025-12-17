@@ -10,7 +10,7 @@
 //   return (
 //     <div className="flex flex-col items-center justify-center space-y-4">
 //       <Loader2 className={`animate-spin text-blue-600 ${sizeClasses[size]}`} />
-//       {text && <p className="text-gray-600 text-sm">{text}</p>}
+//       {text && <p className="text-muted-foreground text-sm">{text}</p>}
 //     </div>
 //   );
 // }
@@ -52,7 +52,7 @@ export default function TheLoader({
         : "animate-spin";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-6">
         <div className="relative">
           <Icon
@@ -69,7 +69,7 @@ export default function TheLoader({
 
         {text && (
           <p
-            className={`${textSizeMap[size]} font-medium text-gray-700 animate-pulse`}
+            className={`${textSizeMap[size]} font-medium text-foreground animate-pulse`}
           >
             {text}
           </p>

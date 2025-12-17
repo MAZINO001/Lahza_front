@@ -1,64 +1,64 @@
 const statusConfig = {
   draft: {
     label: "Draft",
-    color: "bg-gray-100 text-gray-800 border-border",
+    color: "bg-background text-gray-800 border-border",
   },
   sent: {
     label: "Sent",
-    color: "bg-yellow-100 text-yellow-800 border-yellow-200",
+    color: "bg-yellow-100 text-yellow-800 border-border",
   },
   confirmed: {
     label: "Confirmed",
-    color: "bg-blue-100 text-blue-800 border-blue-200",
+    color: "bg-blue-100 text-blue-800 border-border",
   },
   signed: {
     label: "Signed",
-    color: "bg-green-100 text-green-800 border-green-200",
+    color: "bg-green-100 text-green-800 border-border",
   },
   rejected: {
     label: "Rejected",
-    color: "bg-red-100 text-red-800 border-red-200",
+    color: "bg-red-100 text-red-800 border-border",
   },
   unpaid: {
     label: "Unpaid",
-    color: "bg-orange-100 text-orange-800 border-orange-200",
+    color: "bg-orange-100 text-orange-800 border-border",
   },
   partially_paid: {
     label: "Partially Paid",
-    color: "bg-yellow-100 text-yellow-800 border-yellow-200 text-center",
+    color: "bg-yellow-100 text-yellow-800 border-border text-center",
   },
   paid: {
     label: "Paid",
-    color: "bg-green-100 text-green-800 border-green-200",
+    color: "bg-green-100 text-green-800 border-border",
   },
   overdue: {
     label: "Overdue",
-    color: "bg-red-100 text-red-800 border-red-200",
+    color: "bg-red-100 text-red-800 border-border",
   },
   active: {
     label: "Active",
-    color: "bg-green-100 text-green-800 border-green-200",
+    color: "bg-green-100 text-green-800 border-border",
   },
   inactive: {
     label: "Inactive",
-    color: "bg-gray-100 text-gray-700 border-gray-300",
+    color: "bg-background text-foreground border-border",
   },
 
   pending: {
     label: "Pending",
-    color: "bg-purple-100 text-purple-800 border-purple-200",
+    color: "bg-purple-100 text-purple-800 border-border",
   },
   in_progress: {
     label: "In Progress",
-    color: "bg-indigo-100 text-indigo-800 border-indigo-200",
+    color: "bg-indigo-100 text-indigo-800 border-border",
   },
   completed: {
     label: "Completed",
-    color: "bg-green-100 text-green-800 border-green-200",
+    color: "bg-green-100 text-green-800 border-border",
   },
   cancelled: {
     label: "Cancelled",
-    color: "bg-red-100 text-red-800 border-red-200",
+    color: "bg-red-100 text-red-800 border-border",
   },
 };
 
@@ -66,7 +66,7 @@ export function StatusBadge({ status, type = "default", is_fully_signed }) {
   const effectiveStatus = is_fully_signed ? "signed" : status;
   const config = statusConfig[effectiveStatus] || {
     label: status,
-    color: "bg-slate-100 text-slate-800 border-slate-200",
+    color: "bg-slate-100 text-muted-foreground border-border",
   };
 
   if (type === "dot") {

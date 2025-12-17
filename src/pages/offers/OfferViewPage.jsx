@@ -7,7 +7,7 @@ export default function ServiceViewPage() {
   const { id } = useParams();
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <ServicesSidebar type="offer" currentId={id} />
       <ServicePage type="offer" currentId={id} />
     </div>

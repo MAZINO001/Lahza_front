@@ -85,7 +85,7 @@ export default function Inv_Qt_page({ type, currentId }) {
 
   return (
     <div className="flex-1 flex flex-col">
-      <div className="bg-white border-b px-2 py-4 flex items-center justify-between">
+      <div className="bg-background border-b px-2 py-4 flex items-center justify-between">
         <div className="text-lg font-semibold">
           {isInvoice ? "INV" : "QT"}-000{currentId}
         </div>

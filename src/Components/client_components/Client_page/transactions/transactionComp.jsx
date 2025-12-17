@@ -59,16 +59,16 @@ export default function TransactionSection({
     <Collapsible
       open={isOpen}
       onOpenChange={onToggle}
-      className="border border-border rounded-lg bg-white"
+      className="border border-border rounded-lg bg-background"
     >
       <div className="flex items-center justify-between p-4">
         <CollapsibleTrigger className="flex items-center gap-2 hover:opacity-70 transition-opacity">
           {isOpen ? (
-            <ChevronDown className="h-4 w-4 text-gray-600" />
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
           ) : (
-            <ChevronRight className="h-4 w-4 text-gray-600" />
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
           )}
-          <span className="font-medium text-gray-900">{title}</span>
+          <span className="font-medium text-foreground">{title}</span>
         </CollapsibleTrigger>
 
         <Link to={`/${role}/${title.toLowerCase().slice(0, -1)}/new`}>
@@ -92,7 +92,7 @@ export default function TransactionSection({
           </div>
 
           <div className="p-4 border-t border-border flex items-center justify-between">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               Total Count:{" "}
               <a href="#" className="text-blue-600 hover:underline">
                 View
@@ -107,7 +107,7 @@ export default function TransactionSection({
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm text-gray-700 px-2">
+              <span className="text-sm text-foreground px-2">
                 {currentPage} - {totalPages}
               </span>
               <Button

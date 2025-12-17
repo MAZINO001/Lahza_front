@@ -45,7 +45,7 @@ export function NavMain({ items }) {
                   ${
                     location.pathname === item.url
                       ? "bg-primary text-white"
-                      : "text-slate-800 hover:text-black hover:bg-primary/70"
+                      : "text-muted-foreground hover:text-foreground hover:bg-primary/70"
                   }`}
               >
                 <SidebarMenuButton tooltip={item.title}>

@@ -27,10 +27,10 @@ export default function Overview({ data }) {
     }).format(amount);
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid bg-background grid-cols-2 gap-4">
       <div className="space-y-4">
-        <div className="bg-white rounded-lg border border-border p-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-background rounded-lg border border-border p-4">
+          <h3 className="text-lg font-semibold text-foreground mb-4">
             {displayName}
           </h3>
 
@@ -43,14 +43,14 @@ export default function Overview({ data }) {
             </Avatar>
 
             <div className="flex flex-col gap-2">
-              <div className="text-base font-medium text-gray-900">
+              <div className="text-base font-medium text-foreground">
                 {data?.client.user?.name || "unknown"}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="w-4 h-4" />
                 {data?.client.user?.email}
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Phone className="w-4 h-4" />
                 <span>{data?.client?.phone}</span>
               </div>
@@ -62,7 +62,7 @@ export default function Overview({ data }) {
       <div className="space-y-4">
         <Overview_Payments formatCurrency={formatCurrency} />
         <Overview_chart formatCurrency={formatCurrency} />
-        <div className="bg-white max-h-[500px] overflow-y-auto rounded-lg border border-border p-4">
+        <div className="bg-background max-h-[500px] overflow-y-auto rounded-lg border border-border p-4">
           <TimelineComponent />
         </div>
       </div>
