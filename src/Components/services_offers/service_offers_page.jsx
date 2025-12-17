@@ -11,13 +11,14 @@ import { useService } from "@/features/services/hooks/useServiceQuery";
 import { useOffer } from "@/features/offers/hooks/useOffersQuery";
 
 export default function ServicePage({ currentId, type }) {
-
   const servicesQuery = useService(currentId);
   const offersQuery = useOffer(currentId);
 
   const data = type === "service" ? servicesQuery.data : offersQuery.data;
-  const isLoading = type === "service" ? servicesQuery.isLoading : offersQuery.isLoading;
-  const isError = type === "service" ? servicesQuery.isError : offersQuery.isError;
+  const isLoading =
+    type === "service" ? servicesQuery.isLoading : offersQuery.isLoading;
+  const isError =
+    type === "service" ? servicesQuery.isError : offersQuery.isError;
   const error = type === "service" ? servicesQuery.error : offersQuery.error;
 
   const { role } = useAuthContext();
@@ -44,17 +45,21 @@ export default function ServicePage({ currentId, type }) {
       day: "numeric",
     });
 
-
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="bg-white border-b px-4 py-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {type === "service" ? (data?.name || "Unnamed Service") : (data?.title || "Untitled Offer")}
+      <div className="bg-background border-b px-4 py-4 flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">
+          {type === "service"
+            ? data?.name || "Unnamed Service"
+            : data?.title || "Untitled Offer"}
         </h1>
 
         <div className="flex items-center gap-2">
           <Button variant="outline" asChild>
-            <Link to={`/${role}/${type}/${currentId}/edit`} state={{ editId: currentId }}>
+            <Link
+              to={`/${role}/${type}/${currentId}/edit`}
+              state={{ editId: currentId }}
+            >
               <Edit2 className="w-4 h-4 mr-2" /> Edit
             </Link>
           </Button>
@@ -84,24 +89,24 @@ export default function ServicePage({ currentId, type }) {
       <div className="p-4 w-full">
         <Card>
           <CardContent className="space-y-6 py-4 px-4">
-
             <div>
-              <p className="text-sm font-medium text-gray-600 mb-1">
+              <p className="text-sm font-medium text-muted-foreground mb-1">
                 {type === "service" ? "Name" : "Title"}
               </p>
               <p className="text-lg font-semibold">
-                {type === "service" ? (data?.name || "N/A") : (data?.title || "N/A")}
+                {type === "service"
+                  ? data?.name || "N/A"
+                  : data?.title || "N/A"}
               </p>
             </div>
 
-
             <div>
-              <p className="text-sm font-medium text-gray-600 mb-2">
+              <p className="text-sm font-medium text-muted-foreground mb-2">
                 Description
               </p>
               <p className="text-md text-gray-800 whitespace-pre-wrap">
                 {data?.description || (
-                  <span className="text-gray-400 italic">
+                  <span className="text-muted-foreground italic">
                     No description provided
                   </span>
                 )}
@@ -110,38 +115,47 @@ export default function ServicePage({ currentId, type }) {
 
             {type === "service" ? (
               <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
+                <p className="text-sm font-medium text-muted-foreground mb-1">
                   Base Price
                 </p>
                 <p className="text-3xl font-bold text-blue-600">
-                  ${data?.base_price ? Number(data.base_price).toFixed(2) : "0.00"}
+                  $
+                  {data?.base_price
+                    ? Number(data.base_price).toFixed(2)
+                    : "0.00"}
                 </p>
               </div>
             ) : (
               <>
                 <div className="flex gap-8">
                   <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
                       Start Date
                     </p>
-                    <p className="text-md">{data?.start_date ? formatDate(data.start_date) : "N/A"}</p>
+                    <p className="text-md">
+                      {data?.start_date ? formatDate(data.start_date) : "N/A"}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
                       End Date
                     </p>
-                    <p className="text-md">{data?.end_date ? formatDate(data.end_date) : "N/A"}</p>
+                    <p className="text-md">
+                      {data?.end_date ? formatDate(data.end_date) : "N/A"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex gap-8 mt-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
                       Discount Type
                     </p>
-                    <p className="text-md capitalize">{data?.discount_type || "N/A"}</p>
+                    <p className="text-md capitalize">
+                      {data?.discount_type || "N/A"}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">
+                    <p className="text-sm font-medium text-muted-foreground mb-1">
                       Discount Value
                     </p>
                     <p className="text-md">

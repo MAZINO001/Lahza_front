@@ -63,7 +63,7 @@ export function ClientTable() {
   });
 
   return (
-    <div className="w-full p-4 bg-slate-50 min-h-screen">
+    <div className="w-full p-4 bg-background min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between mb-4">
           <div className="flex items-end justify-between gap-4">

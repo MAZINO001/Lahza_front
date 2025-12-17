@@ -78,7 +78,7 @@ export function AppSidebar(props) {
         {
           title: "Calendar",
           url: `/${currentRole}/calendar`,
-          icon: Calendar1
+          icon: Calendar1,
         },
         {
           title: "Projects",

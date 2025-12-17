@@ -53,13 +53,13 @@ export function TasksTable() {
   });
 
   return (
-    <div className="w-full p-4 bg-slate-50 min-h-screen">
+    <div className="w-full p-4 bg-background min-h-screen">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-4">
             <Link
               to={-1}
-              className="flex items-center gap-2 text-md text-gray-600 hover:text-gray-900 transition font-medium"
+              className="flex items-center gap-2 text-md text-muted-foreground hover:text-foreground transition font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back</span>

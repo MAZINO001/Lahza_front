@@ -39,7 +39,7 @@ export default function AdditionalDataViewPage() {
   }
 
   const renderFileField = (label, value) => {
-    if (!value) return <span className="text-gray-400">None</span>;
+    if (!value) return <span className="text-muted-foreground">None</span>;
 
     return (
       <div className="flex items-center gap-2">
@@ -65,7 +65,7 @@ export default function AdditionalDataViewPage() {
         <div className="flex items-center gap-4">
           <Link
             to={-1}
-            className="flex items-center gap-2 text-md text-gray-600 hover:text-gray-900 transition font-medium"
+            className="flex items-center gap-2 text-md text-muted-foreground hover:text-foreground transition font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back</span>
@@ -89,7 +89,7 @@ export default function AdditionalDataViewPage() {
           <CardContent className="space-y-4">
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">
+                <label className="text-sm font-medium text-muted-foreground">
                   Host Accounts
                 </label>
                 <div className="mt-1 space-y-2">
@@ -140,7 +140,7 @@ export default function AdditionalDataViewPage() {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-600">
+                <label className="text-sm font-medium text-muted-foreground">
                   Website Accounts
                 </label>
                 <div className="mt-1 space-y-2">
@@ -195,7 +195,7 @@ export default function AdditionalDataViewPage() {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-600">
+                <label className="text-sm font-medium text-muted-foreground">
                   Social Media
                 </label>
                 <div className="mt-1 space-y-2">
@@ -278,7 +278,7 @@ export default function AdditionalDataViewPage() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">
+                <label className="text-sm font-medium text-muted-foreground">
                   Media Files
                 </label>
                 <div className="mt-1">
@@ -286,7 +286,7 @@ export default function AdditionalDataViewPage() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">
+                <label className="text-sm font-medium text-muted-foreground">
                   Specification File
                 </label>
                 <div className="mt-1">
@@ -297,7 +297,7 @@ export default function AdditionalDataViewPage() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">
+                <label className="text-sm font-medium text-muted-foreground">
                   Logo
                 </label>
                 <div className="mt-1">
@@ -305,7 +305,7 @@ export default function AdditionalDataViewPage() {
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">
+                <label className="text-sm font-medium text-muted-foreground">
                   Other files
                 </label>
                 <div className="mt-1">

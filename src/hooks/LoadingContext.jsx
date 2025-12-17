@@ -39,14 +39,14 @@ export function LoadingProvider({ children }) {
           <div
             className={`fixed inset-0 z-50 flex ${getLoaderPosition()} justify-center ${
               loaderType === "fullscreen"
-                ? "bg-white/80 backdrop-blur-sm"
+                ? "bg-background/80 backdrop-blur-sm"
                 : "pointer-events-none"
             }`}
           >
             <div
               className={`${loaderType === "content" ? "absolute inset-0" : ""} flex items-center justify-center`}
             >
-              <div className="rounded-xl bg-white p-6 shadow-xl border border-border">
+              <div className="rounded-xl bg-background p-6 shadow-xl border border-border">
                 <TheLoader size="lg" variant="orbit" text={text} />
               </div>
             </div>

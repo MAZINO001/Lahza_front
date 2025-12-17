@@ -5,7 +5,7 @@ export default function CustomerOverview() {
   const { id } = useParams();
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <Client_Sidebar currentId={id} />
       <Client_Page currentId={id} />
     </div>

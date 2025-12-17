@@ -18,6 +18,8 @@ export function useOffers() {
         queryKey: ["offers"],
         queryFn: apiOffer.getAll,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+
     });
 }
 
@@ -27,6 +29,7 @@ export function useOffer(id) {
         queryFn: () => apiOffer.getById(id),
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
     });
 }
 
@@ -38,6 +41,7 @@ export function useCreateOffer() {
             toast.success("Offer created successfully!");
             queryClient.invalidateQueries({ queryKey: ["offers"] });
         },
+        refetchOnWindowFocus: true,
         onError: (error) => toast.error(error?.response?.data?.message || "Failed to create offer"),
     });
 }
@@ -51,6 +55,7 @@ export function useUpdateOffer() {
             queryClient.invalidateQueries({ queryKey: ["offers"] });
             queryClient.invalidateQueries({ queryKey: ["offers"] });
         },
+        refetchOnWindowFocus: true,
         onError: () => toast.error("Failed to update offer"),
     });
 }
@@ -63,6 +68,7 @@ export function useDeleteOffer() {
             toast.success("Offer deleted");
             queryClient.invalidateQueries({ queryKey: ["offers"] });
         },
+        refetchOnWindowFocus: true,
         onError: () => toast.error("Failed to delete offer"),
     });
 }

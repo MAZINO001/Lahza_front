@@ -78,7 +78,7 @@ export function ProjectForm({ onSuccess }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
       {invoicesLoading && (
-        <p className="text-sm text-gray-500">Loading invoices...</p>
+        <p className="text-sm text-muted-foreground">Loading invoices...</p>
       )}
 
       <Controller

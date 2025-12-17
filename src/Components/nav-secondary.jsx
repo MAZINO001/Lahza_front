@@ -23,7 +23,7 @@ export function NavSecondary({ items, ...props }) {
   ${
     location.pathname === item.url
       ? "bg-primary text-white"
-      : "text-slate-800 hover:text-black hover:bg-primary/70"
+      : "text-muted-foreground hover:text-foreground hover:bg-primary/70"
   }`}
             >
               <SidebarMenuButton asChild>

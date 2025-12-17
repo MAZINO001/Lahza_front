@@ -174,7 +174,7 @@ export default function Component({ error, onChange, type, name, label }) {
     if (["pdf", "doc", "docx", "txt", "rtf"].includes(ext)) {
       return <FileText className="size-5 text-red-500" />;
     }
-    return <File className="size-5 text-gray-500" />;
+    return <File className="size-5 text-muted-foreground" />;
   };
 
   // Helper function to format file size

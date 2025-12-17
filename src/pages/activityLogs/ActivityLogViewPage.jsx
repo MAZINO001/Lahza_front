@@ -79,7 +79,7 @@ export default function ActivityLogViewPage() {
   const displayChanges = getDisplayChanges();
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="mb-4 flex items-center justify-between">
         <Link
           to={`/${role}/logs`}

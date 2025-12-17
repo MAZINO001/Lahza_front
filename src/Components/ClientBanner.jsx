@@ -10,13 +10,13 @@ import {
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link } from "react-router-dom";
 
-export default function WhatsNextBanner() {
+export default function WhatsNextBanner({ currentId }) {
   const [isVisible, setIsVisible] = useState(true);
   const { role } = useAuthContext();
   if (!isVisible) return null;
 
   return (
-    <div className="bg-white border border-border rounded-lg px-4 py-4">
+    <div className="bg-background border border-border rounded-lg px-4 py-4">
       <div className="flex  gap-3 items-start ">
         <div
           aria-hidden="true"
@@ -27,8 +27,10 @@ export default function WhatsNextBanner() {
 
         <div className="flex-1 min-w-0">
           <div className="space-y-1 mb-3">
-            <p className="font-semibold text-sm text-gray-900">WHAT'S NEXT?</p>
-            <p className="text-sm text-gray-600">
+            <p className="font-semibold text-sm text-foreground">
+              WHAT'S NEXT?
+            </p>
+            <p className="text-sm text-muted-foreground">
               Create an <span className="font-medium">invoice</span> or a{" "}
               <span className="font-medium">quote</span> and send it to your
               customer.
@@ -36,14 +38,19 @@ export default function WhatsNextBanner() {
           </div>
 
           <div className="flex gap-2 items-center flex-wrap">
-            <Link to={`/${role}/invoice/new`}>
+            <Link to={`/${role}/invoice/new`} state={{ clientId: currentId }}>
               <Button size="sm">
                 <Plus className="h-4 w-4" />
                 New Invoice
               </Button>
             </Link>
-            <Link to={`/${role}/quote/new`}>
-              <Button size="sm" variant="outline" className="border-gray-300 ">
+            <Link to={`/${role}/quote/new`} state={{ clientId: currentId }}>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border border-border"
+              >
+                <Plus className="h-4 w-4" />
                 New Quote
               </Button>
             </Link>
@@ -68,11 +75,11 @@ export default function WhatsNextBanner() {
 
         <Button
           aria-label="Close banner"
-          className="size-8 shrink-0 p-0 hover:bg-gray-100 -mt-1 -mr-1"
+          className="size-8 shrink-0 p-0 -mt-1 -mr-1"
           onClick={() => setIsVisible(false)}
           variant="ghost"
         >
-          <X className="h-4 w-4 text-gray-500" />
+          <X className="h-4 w-4 text-muted-foreground" />
         </Button>
       </div>
     </div>

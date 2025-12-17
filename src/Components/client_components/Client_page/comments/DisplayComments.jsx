@@ -24,14 +24,14 @@ export default function DisplayComments({ comments, handleDelete }) {
 
   return (
     <div className="w-full mt-4">
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
             <MessageSquare className="h-5 w-5 text-blue-600" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Comments</h2>
-            <p className="text-xs text-gray-500">
+            <h2 className="text-lg font-semibold text-foreground">Comments</h2>
+            <p className="text-xs text-muted-foreground">
               {comments?.length || 0} comments
             </p>
           </div>
@@ -40,10 +40,12 @@ export default function DisplayComments({ comments, handleDelete }) {
 
       <div className="space-y-0">
         {comments?.length === 0 ? (
-          <div className="text-center py-16 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+          <div className="text-center py-16 bg-background rounded-lg border-2 border-dashed border-border">
             <MessageSquare className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-            <p className="text-gray-500 font-medium mb-1">No comments yet</p>
-            <p className="text-sm text-gray-400">
+            <p className="text-muted-foreground font-medium mb-1">
+              No comments yet
+            </p>
+            <p className="text-sm text-muted-foreground">
               Be the first to share your thoughts!
             </p>
           </div>
@@ -51,10 +53,10 @@ export default function DisplayComments({ comments, handleDelete }) {
           comments.map((comment, index) => (
             <div
               key={comment.id}
-              className="flex gap-3 py-5 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 px-3 -mx-3 rounded-lg transition-all group"
+              className="flex gap-3 py-5 border-b border-border last:border-b-0 hover:bg-accent-foreground px-3 -mx-3 rounded-lg transition-all group"
             >
               <div className="shrink-0 pt-1">
-                <Avatar className="w-10 h-10 border-2 border-gray-200 ring-2 ring-white">
+                <Avatar className="w-10 h-10 border-2 border-border ring-2 ring-white">
                   <AvatarImage
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${comment.username}`}
                   />
@@ -67,13 +69,13 @@ export default function DisplayComments({ comments, handleDelete }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-sm text-gray-900">
+                    <span className="font-semibold text-sm text-foreground">
                       {comment.user_id}
                     </span>
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                       Member
                     </span>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />
                       <span>{formatTimestamp(comment.created_at)}</span>
                     </div>
@@ -84,7 +86,7 @@ export default function DisplayComments({ comments, handleDelete }) {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 ">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -96,7 +98,7 @@ export default function DisplayComments({ comments, handleDelete }) {
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-700 leading-relaxed mb-3 whitespace-pre-wrap">
+                <p className="text-sm text-foreground leading-relaxed mb-3 whitespace-pre-wrap">
                   {comment.body}
                 </p>
               </div>

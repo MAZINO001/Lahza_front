@@ -19,7 +19,6 @@ import { useOffers } from "@/features/offers/hooks/useOffersQuery";
 export default function ServicesSidebar({ type, currentId }) {
   const title = type === "service" ? "Services" : "Offers";
 
-
   const servicesQuery = useServices();
   const offersQuery = useOffers();
 
@@ -28,9 +27,12 @@ export default function ServicesSidebar({ type, currentId }) {
 
   const [selectedFilter, setSelectedFilter] = useState("all");
 
-  const data = type === "service" ? servicesQuery.data || [] : offersQuery.data || [];
-  const isLoading = type === "service" ? servicesQuery.isLoading : offersQuery.isLoading;
-  const isError = type === "service" ? servicesQuery.isError : offersQuery.isError;
+  const data =
+    type === "service" ? servicesQuery.data || [] : offersQuery.data || [];
+  const isLoading =
+    type === "service" ? servicesQuery.isLoading : offersQuery.isLoading;
+  const isError =
+    type === "service" ? servicesQuery.isError : offersQuery.isError;
 
   const filteredData = data.filter((item) => {
     if (selectedFilter === "all") return true;
@@ -51,11 +53,11 @@ export default function ServicesSidebar({ type, currentId }) {
   };
 
   return (
-    <div className="w-[260px] bg-white border-r flex flex-col">
+    <div className="w-[260px] bg-background border-r flex flex-col">
       <div className="px-2 py-4 border-b flex items-center gap-3">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="text-md flex-1 font-semibold rounded flex items-center gap-2 hover:bg-gray-50 px-2 py-1 -ml-2 transition capitalize">
+            <button className="text-md flex-1 font-semibold rounded flex items-center gap-2 hover:bg-background px-2 py-1 -ml-2 transition capitalize">
               {selectedFilter === "all"
                 ? "All"
                 : selectedFilter === "inActive"
@@ -92,7 +94,7 @@ export default function ServicesSidebar({ type, currentId }) {
 
       <div className="flex-1 overflow-y-auto">
         {filteredData.length === 0 ? (
-          <div className="p-8 text-center text-gray-500 text-sm">
+          <div className="p-8 text-center text-muted-foreground text-sm">
             No {title.toLowerCase()} found
           </div>
         ) : (
@@ -102,13 +104,14 @@ export default function ServicesSidebar({ type, currentId }) {
               to={`/${role}/${type}/${item.id}`}
               onMouseEnter={() => prefetchItem(item.id)}
               onFocus={() => prefetchItem(item.id)}
-              className={`block mb-1 rounded-tr-lg rounded-br-lg p-3 cursor-pointer border-l-2 transition-all ${item.id == currentId
-                ? "bg-blue-50 border-l-blue-500"
-                : "border-l-transparent hover:bg-gray-50"
-                }`}
+              className={`block mb-1 rounded-tr-lg rounded-br-lg p-3 cursor-pointer border-l-2 transition-all ${
+                item.id == currentId
+                  ? "bg-blue-50 border-l-blue-500"
+                  : "border-l-transparent hover:bg-background"
+              }`}
             >
               <div className="flex flex-col gap-2">
-                <div className="font-medium text-gray-900 truncate">
+                <div className="font-medium text-foreground truncate">
                   {type === "service" ? item.name : item.title}
                 </div>
 

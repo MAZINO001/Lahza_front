@@ -34,35 +34,32 @@ export default function Login({ status, canResetPassword }) {
     setSubmitting(true);
 
     try {
-    const res = await api.post(
-      `${import.meta.env.VITE_BACKEND_URL}/login`,
-      data,
-      {
-        headers: { Accept: "application/json" },
-      }
-    );
+      const res = await api.post(
+        `${import.meta.env.VITE_BACKEND_URL}/login`,
+        data,
+        {
+          headers: { Accept: "application/json" },
+        }
+      );
 
-    const token = res.data.token;
-    localStorage.setItem("token", token);
+      const token = res.data.token;
+      localStorage.setItem("token", token);
 
-    await verifyAuth();
+      await verifyAuth();
 
-    const nextRole = res.data.user?.role || "client";
-    navigate(`/${nextRole}/dashboard`, { replace: true });
-  } catch (error) {
-    console.error(error);
-    alert(error.response?.data?.message || "Login failed");
-  } finally {
-    setSubmitting(false);
-  }
-};
-    
-
-    
+      const nextRole = res.data.user?.role || "client";
+      navigate(`/${nextRole}/dashboard`, { replace: true });
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Login failed");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <Card className="bg-card p-4 border border-stale-900 flex flex-col md:flex-row text-foreground border-none">
-      <div className="bg-white flex flex-col  h-full w-full md:w-1/2 rounded-md p-6 justify-center items-center">
+      <div className="bg-background flex flex-col  h-full w-full md:w-1/2 rounded-md p-6 justify-center items-center">
         <div className="w-full max-w-md">
           <CardTitle className="mb-6 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-primary to-primary-gradient-end">
             {t("login.title")}
@@ -122,9 +119,9 @@ export default function Login({ status, canResetPassword }) {
                   type="checkbox"
                   id="remember"
                   {...register("remember")}
-                  className="border-gray-300 text-indigo-600 focus:ring-indigo-500 rounded shadow-sm"
+                  className="border-border text-indigo-600 focus:ring-indigo-500 rounded shadow-sm"
                 />
-                <span className="text-gray-600 ml-2 select-none text-sm">
+                <span className="text-muted-foreground ml-2 select-none text-sm">
                   {t("login.remember")}
                 </span>
               </label>
@@ -133,14 +130,14 @@ export default function Login({ status, canResetPassword }) {
                 {canResetPassword && (
                   <Link
                     to="/auth/forgot-password"
-                    className="text-gray-600 hover:text-gray-900 text-sm underline"
+                    className="text-muted-foreground hover:text-foreground text-sm underline"
                   >
                     {t("login.forgot_password")}
                   </Link>
                 )}
                 <Link
                   to="/auth/register"
-                  className="text-gray-600 hover:text-gray-900 text-sm underline"
+                  className="text-muted-foreground hover:text-foreground text-sm underline"
                 >
                   {t("login.no_account")}
                 </Link>

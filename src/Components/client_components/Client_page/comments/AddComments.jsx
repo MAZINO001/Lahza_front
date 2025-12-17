@@ -11,16 +11,16 @@
 //   setCommentText,
 // }) {
 //   return (
-//     <div className="bg-white rounded-xl border border-border shadow-sm">
-//       <div className="flex items-start gap-4 p-4 border-b border-gray-100">
+//     <div className="bg-background rounded-xl border border-border shadow-sm">
+//       <div className="flex items-start gap-4 p-4 border-b border-border">
 //         <Avatar className="w-10 h-10">
 //           <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" />
 //           <AvatarFallback>U</AvatarFallback>
 //         </Avatar>
 //         <div className="flex-1">
 //           <div className="flex items-center gap-2 mb-2">
-//             <span className="font-medium text-sm text-gray-900">Your Name</span>
-//             <span className="text-xs text-gray-500">@username</span>
+//             <span className="font-medium text-sm text-foreground">Your Name</span>
+//             <span className="text-xs text-muted-foreground">@username</span>
 //           </div>
 //           <TextareaField
 //             placeholder="Share your thoughts..."
@@ -34,28 +34,28 @@
 //         </div>
 //       </div>
 
-//       <div className="flex items-center justify-between p-4 bg-gray-50">
+//       <div className="flex items-center justify-between p-4 bg-background">
 //         <div className="flex items-center gap-1">
 //           <Button
 //             variant="ghost"
 //             size="sm"
 //             className="h-9 w-9 p-0 hover:bg-gray-200"
 //           >
-//             <Image className="h-4 w-4 text-gray-600" />
+//             <Image className="h-4 w-4 text-muted-foreground" />
 //           </Button>
 //           <Button
 //             variant="ghost"
 //             size="sm"
 //             className="h-9 w-9 p-0 hover:bg-gray-200"
 //           >
-//             <Smile className="h-4 w-4 text-gray-600" />
+//             <Smile className="h-4 w-4 text-muted-foreground" />
 //           </Button>
 //           <Button
 //             variant="ghost"
 //             size="sm"
 //             className="h-9 w-9 p-0 hover:bg-gray-200"
 //           >
-//             <AtSign className="h-4 w-4 text-gray-600" />
+//             <AtSign className="h-4 w-4 text-muted-foreground" />
 //           </Button>
 //         </div>
 
@@ -64,7 +64,7 @@
 //           <Button
 //             onClick={handleSubmit}
 //             disabled={!commentText.trim()}
-//             className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300 disabled:text-gray-500 h-9 px-4"
+//             className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-300 disabled:text-muted-foreground h-9 px-4"
 //           >
 //             <Send className="h-4 w-4 mr-2" />
 //             Post
@@ -93,9 +93,9 @@ export default function AddComments({
   const isAtLimit = remainingChars === 0;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex items-start gap-4 p-5 border-b border-gray-100">
-        <Avatar className="w-11 h-11 border-2 border-gray-200 ring-2 ring-blue-50">
+    <div className="bg-background rounded-xl border border-border">
+      <div className="flex items-start gap-4 p-5 border-b border-border">
+        <Avatar className="w-11 h-11 border-2 border-border ring-2 ring-blue-50">
           <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" />
           <AvatarFallback className="bg-linear-to-br from-purple-400 to-purple-600 text-white font-semibold">
             U
@@ -103,10 +103,10 @@ export default function AddComments({
         </Avatar>
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-3">
-            <span className="font-semibold text-sm text-gray-900">
+            <span className="font-semibold text-sm text-foreground">
               Your Name
             </span>
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+            <span className="text-xs text-muted-foreground bg-background px-2 py-0.5 rounded-full">
               @username
             </span>
           </div>
@@ -117,36 +117,36 @@ export default function AddComments({
             onKeyDown={handleKeyPress}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            className="min-h-[100px] resize-none border-gray-200 focus:border-blue-300"
+            className="min-h-[100px] resize-none border-border"
           />
         </div>
       </div>
 
-      <div className="flex items-center justify-between p-4 bg-linear-to-r from-gray-50 to-white">
+      <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 p-0 hover:bg-gray-200 rounded-lg transition-colors"
+            className="h-9 w-9 p-0"
             title="Add image"
           >
-            <Image className="h-4 w-4 text-gray-600" />
+            <Image className="h-4 w-4 text-muted-foreground" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 p-0 hover:bg-gray-200 rounded-lg transition-colors"
+            className="h-9 w-9 p-0"
             title="Add emoji"
           >
-            <Smile className="h-4 w-4 text-gray-600" />
+            <Smile className="h-4 w-4 text-muted-foreground" />
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 w-9 p-0 hover:bg-gray-200 rounded-lg transition-colors"
+            className="h-9 w-9 p-0"
             title="Mention someone"
           >
-            <AtSign className="h-4 w-4 text-gray-600" />
+            <AtSign className="h-4 w-4 text-muted-foreground" />
           </Button>
         </div>
 
@@ -158,7 +158,7 @@ export default function AddComments({
                   ? "text-red-600"
                   : isNearLimit
                     ? "text-orange-600"
-                    : "text-gray-500"
+                    : "text-muted-foreground"
               }`}
             >
               {remainingChars}/{maxLength}
@@ -172,8 +172,8 @@ export default function AddComments({
             disabled={!commentText.trim() || isAtLimit}
             className={`h-9 px-5 rounded-lg font-medium transition-all ${
               !commentText.trim() || isAtLimit
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700 text-white shadow-sm hover:shadow-md"
+                ? "bg-gray-200 text-muted-foreground cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-foreground shadow-sm hover:shadow-md"
             }`}
           >
             <Send className="h-4 w-4 mr-2" />

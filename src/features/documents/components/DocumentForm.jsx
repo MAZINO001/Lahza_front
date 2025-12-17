@@ -153,7 +153,6 @@ export function DocumentForm({ type, onSuccess }) {
     value: String(c.client?.id),
   }));
 
-
   const selectedClientId = watch("customerName");
 
   const selectedClient = clients?.find(
@@ -300,11 +299,11 @@ export function DocumentForm({ type, onSuccess }) {
         </div>
 
         {selectedClient && (
-          <div className="p-4 border rounded bg-gray-50 text-sm space-y-1 max-w-[300px]">
+          <div className="p-4 border rounded bg-background text-sm space-y-1 max-w-[300px]">
             <p>
               <span className="font-medium">Name:</span>{" "}
-              {selectedClient.client?.client?.user?.name ||
-                selectedClient.client?.name}
+              {selectedClient.client?.user?.name ||
+                selectedClient.client?.user?.name}
             </p>
             <p>
               <span className="font-medium">Address:</span>{" "}
@@ -379,23 +378,23 @@ export function DocumentForm({ type, onSuccess }) {
           <div className="overflow-x-auto border rounded-md rounded-br-none">
             <table className="w-full min-w-[500px] border-collapse">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="p-2 text-left text-sm font-semibold text-gray-700">
+                <tr className="bg-background">
+                  <th className="p-2 text-left text-sm font-semibold text-foreground">
                     ITEM DETAILS
                   </th>
-                  <th className="p-2 text-right text-sm font-semibold text-gray-700 w-30">
+                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
                     QUANTITY
                   </th>
-                  <th className="p-2 text-right text-sm font-semibold text-gray-700 w-30">
+                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
                     RATE
                   </th>
-                  <th className="p-2 text-right text-sm font-semibold text-gray-700 w-30">
+                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
                     TAX
                   </th>
-                  <th className="p-2 text-right text-sm font-semibold text-gray-700 w-30">
+                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
                     DISCOUNT
                   </th>
-                  <th className="p-2 text-right text-sm font-semibold text-gray-700 w-30">
+                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
                     AMOUNT
                   </th>
                   <th className="p-2 w-16"></th>
@@ -407,7 +406,7 @@ export function DocumentForm({ type, onSuccess }) {
                   return (
                     <tr
                       key={field.id}
-                      className="border-b border-border hover:bg-gray-50"
+                      className="border-b border-border hover:bg-background"
                     >
                       <td className="p-2">
                         <Controller
@@ -471,7 +470,7 @@ export function DocumentForm({ type, onSuccess }) {
                           <Textarea
                             {...register(`items.${index}.description`)}
                             placeholder="Enter service description"
-                            className="mt-2 w-full border border-gray-300 p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                            className="mt-2 w-full border border-border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
                             rows={2}
                             value={watch(`items.${index}.description`) || ""}
                             onChange={(e) =>
@@ -571,7 +570,7 @@ export function DocumentForm({ type, onSuccess }) {
                           }}
                         />
                       </td>
-                      <td className="p-2 text-right font-medium text-gray-900">
+                      <td className="p-2 text-right font-medium text-foreground">
                         {(watch(`items.${index}.amount`) || 0).toFixed(2)}
                       </td>
 
@@ -579,7 +578,7 @@ export function DocumentForm({ type, onSuccess }) {
                         <button
                           type="button"
                           onClick={() => deleteRow(index)}
-                          className="text-gray-600 hover:text-red-600 transition-colors p-1"
+                          className="text-muted-foreground hover:text-red-600 transition-colors p-1"
                           disabled={itemFields.length === 1}
                         >
                           <X size={20} />
@@ -600,7 +599,7 @@ export function DocumentForm({ type, onSuccess }) {
               <Plus size={18} /> Add New Row
             </Button>
 
-            <div className="border-gray-300 md:w-[50%] w-full px-2 rounded-bl-lg rounded-br-lg border-b border-x">
+            <div className="border-border md:w-[50%] w-full px-2 rounded-bl-lg rounded-br-lg border-b border-x">
               <div className="flex justify-between py-3 text-lg font-semibold">
                 <span className="text-gray-800">Total ( $ )</span>
                 <span className="text-gray-800">
@@ -644,7 +643,7 @@ export function DocumentForm({ type, onSuccess }) {
                 <Button
                   type="button"
                   className="p-2"
-                  onClick={() => appendHas_project("")}
+                  onClick={() => appendHas_project(" ")}
                 >
                   <Plus className="w-4 h-4" />
                 </Button>
@@ -666,7 +665,7 @@ export function DocumentForm({ type, onSuccess }) {
               <Label htmlFor="payment" className="mb-1">
                 Payment
               </Label>
-              <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-gray-300 p-4 rounded-lg">
+              <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-border p-4 rounded-lg">
                 <div className="w-full flex gap-4 items-center justify-between">
                   <Controller
                     name="payment_type"
@@ -765,7 +764,7 @@ export function DocumentForm({ type, onSuccess }) {
           <Button
             onClick={cancelFunction}
             type="button"
-            className="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 bg-background border border-border text-foreground rounded font-medium text-sm hover:bg-background transition-colors"
           >
             Cancel
           </Button>

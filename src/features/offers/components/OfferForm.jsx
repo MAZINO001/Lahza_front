@@ -9,7 +9,10 @@ import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
 import TextareaField from "@/Components/Form/TextareaField";
 
-import { useCreateOffer, useUpdateOffer } from "@/features/offers/hooks/useOffersQuery";
+import {
+  useCreateOffer,
+  useUpdateOffer,
+} from "@/features/offers/hooks/useOffersQuery";
 import { useServices } from "@/features/services/hooks/useServiceQuery";
 
 export function OfferForm({ offer, onSuccess }) {
@@ -49,26 +52,25 @@ export function OfferForm({ offer, onSuccess }) {
       service_id: Number(data.service_id),
     };
 
-    mutation.mutate(
-      isEditMode ? { id: offer.id, data: payload } : payload,
-      {
-        onSuccess: () => {
-          onSuccess?.();
-          if (!isEditMode) reset();
-        },
-        onSettled: () => endSubmit(),
-      }
-    );
+    mutation.mutate(isEditMode ? { id: offer.id, data: payload } : payload, {
+      onSuccess: () => {
+        onSuccess?.();
+        if (!isEditMode) reset();
+      },
+      onSettled: () => endSubmit(),
+    });
   };
 
-  const serviceOptions = services.map(s => ({
+  const serviceOptions = services.map((s) => ({
     label: s.name,
     value: String(s.id),
   }));
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
-      {servicesLoading && <p className="text-sm text-gray-500">Loading services...</p>}
+      {servicesLoading && (
+        <p className="text-sm text-muted-foreground">Loading services...</p>
+      )}
 
       <Controller
         name="title"
@@ -106,7 +108,9 @@ export function OfferForm({ offer, onSuccess }) {
           <SelectField
             label="Service"
             options={serviceOptions}
-            placeholder={servicesLoading ? "Loading services..." : "Select a service"}
+            placeholder={
+              servicesLoading ? "Loading services..." : "Select a service"
+            }
             value={String(field.value || "")}
             onChange={(v) => field.onChange(Number(v))}
             disabled={servicesLoading}
@@ -158,7 +162,8 @@ export function OfferForm({ offer, onSuccess }) {
             type="date"
             label="Start Date"
             error={errors.start_date?.message}
-            {...field} />
+            {...field}
+          />
         )}
       />
 
@@ -171,7 +176,8 @@ export function OfferForm({ offer, onSuccess }) {
             type="date"
             label="End Date"
             error={errors.end_date?.message}
-            {...field} />
+            {...field}
+          />
         )}
       />
 
@@ -201,7 +207,11 @@ export function OfferForm({ offer, onSuccess }) {
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting || mutation.isPending}>
-          {mutation.isPending ? "Saving..." : isEditMode ? "Update Offer" : "Create Offer"}
+          {mutation.isPending
+            ? "Saving..."
+            : isEditMode
+              ? "Update Offer"
+              : "Create Offer"}
         </Button>
       </div>
     </form>

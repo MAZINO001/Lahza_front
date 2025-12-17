@@ -56,7 +56,7 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
         return (
           <Link
             to={`/${role}/${isInvoice ? "invoice" : "quote"}/${id}`}
-            className="font-medium text-slate-900 hover:underline ml-3"
+            className="font-medium text-foreground hover:underline ml-3"
           >
             {formatId(id, prefix)}
           </Link>
