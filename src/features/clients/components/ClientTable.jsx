@@ -21,8 +21,10 @@ import {
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 export function ClientTable() {
   const { data: clients, isLoading } = useClients();
   const { role } = useAuthContext();
@@ -31,27 +33,61 @@ export function ClientTable() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [clientType, setClientType] = useState("all");
+  const [location, setLocation] = useState("all");
+  const [selectedStatus, setSelectedStatus] = useState("Z-A");
 
   const columns = React.useMemo(
     () => getClientColumns(role, navigate),
     [role, navigate]
   );
 
-  const clientStatuses = ["all", "active", "inactive", "unpaid", "overdue"];
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  const clientOrder = ["A-Z", "Z-A"];
+  const clientTypeSelect = {
+    clientType: ["all", "company", "individual"],
+    location: ["all", "national", "foreign"],
+  };
 
   const filteredData = useMemo(() => {
-    return selectedStatus === "all"
-      ? clients
-      : clients.filter((item) => item.status === selectedStatus);
-  }, [clients, selectedStatus]);
+    if (!clients) return [];
+
+    let filtered = [...clients];
+
+    if (clientType !== "all") {
+      filtered = filtered.filter(
+        (client) => client.client.client_type === clientType
+      );
+    }
+
+    if (location !== "all") {
+      filtered = filtered.filter((client) => {
+        const isMorocco = client.client.country === "Maroc";
+
+        return location === "national" ? isMorocco : !isMorocco;
+      });
+    }
+
+    if (selectedStatus === "A-Z") {
+      filtered.sort((a, b) =>
+        (a.client?.user?.name || "").localeCompare(b.client?.user?.name || "")
+      );
+    } else if (selectedStatus === "Z-A") {
+      filtered.sort((a, b) =>
+        (b.client?.user?.name || "").localeCompare(a.client?.user?.name || "")
+      );
+    }
+
+    return filtered;
+  }, [clients, selectedStatus, clientType, location]);
+
+  console.log(filteredData);
 
   const selectStatus = (status) => {
     setSelectedStatus(status);
   };
 
   const table = useReactTable({
-    data: filteredData,
+    data: filteredData || [],
     columns,
     state: { sorting, columnFilters },
     onSortingChange: setSorting,
@@ -68,7 +104,7 @@ export function ClientTable() {
         <div className="flex justify-between mb-4">
           <div className="flex items-end justify-between gap-4">
             <FormField
-              placeholder="Filter clients..."
+              placeholder="Filter clients By Name..."
               value={table.getColumn("full_name")?.getFilterValue() ?? ""}
               onChange={(e) =>
                 table.getColumn("full_name")?.setFilterValue(e.target.value)
@@ -77,8 +113,8 @@ export function ClientTable() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="text-md flex-1 font-semibold rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
-                  {selectedStatus} Clients
+                <button className="flex-1 rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
+                  Order {selectedStatus}
                   <ChevronDown className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
@@ -88,10 +124,58 @@ export function ClientTable() {
                   value={selectedStatus}
                   onValueChange={selectStatus}
                 >
-                  {clientStatuses.map((status) => (
+                  {clientOrder.map((status) => (
                     <DropdownMenuRadioItem key={status} value={status}>
                       <span className="capitalize">
                         {status.replace("_", " ")}
+                      </span>
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex rounded-md items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
+                  {clientType === "all" ? "All Types" : clientType} •{" "}
+                  {location === "all" ? "All Locations" : location}
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent align="start" className="w-56">
+                <p className="px-2 py-1 text-xs text-muted-foreground">
+                  Client Type
+                </p>
+                <DropdownMenuRadioGroup
+                  value={clientType}
+                  onValueChange={setClientType}
+                >
+                  {clientTypeSelect.clientType.map((type) => (
+                    <DropdownMenuRadioItem key={type} value={type}>
+                      <span className="capitalize">
+                        {type === "all" ? "All Types" : type}
+                      </span>
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+
+                <DropdownMenuSeparator />
+
+                <p className="px-2 py-1 text-xs text-muted-foreground">
+                  Location
+                </p>
+                <DropdownMenuRadioGroup
+                  value={location}
+                  onValueChange={setLocation}
+                >
+                  {clientTypeSelect.location.map((loc) => (
+                    <DropdownMenuRadioItem key={loc} value={loc}>
+                      <span className="capitalize">
+                        {loc === "all"
+                          ? "All Locations"
+                          : loc.replace("Morocco", " Morocco")}
                       </span>
                     </DropdownMenuRadioItem>
                   ))}
@@ -104,6 +188,7 @@ export function ClientTable() {
             <Button onClick={() => setShowUploadModal(true)} variant="outline">
               <Upload className="mr-2 h-4 w-4" /> Upload CSV
             </Button>
+            
             <AddClientModel />
           </div>
         </div>

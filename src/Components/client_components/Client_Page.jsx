@@ -2,7 +2,7 @@
 import { Edit2, Link2Icon, MoreVertical, Plus, X } from "lucide-react";
 import React, { useState } from "react";
 import Transactions from "./Client_page/transactions/transactions";
-import { Link, Links, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useAuthContext } from "@/hooks/AuthContext";
 import OverView from "./Client_page/overview/overview";
@@ -64,14 +64,11 @@ export default function Client_Page({ currentId }) {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button
-                  variant="outline"
-                  className="p-2 border border-border rounded-md"
-                >
+                <button className="p-2 border border-border rounded-md">
                   <Link2Icon className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 z-9999">
+              <DropdownMenuContent align="start" className="w-56 z-50">
                 <DropdownMenuItem className="bg-background hover:bg-background hover:text-foreground focus:bg-background focus:text-foreground">
                   <Controller
                     name="client_files"
@@ -98,22 +95,16 @@ export default function Client_Page({ currentId }) {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button
-                  variant="outline"
-                  className="p-2 border border-border rounded-md"
-                >
+                <button className="p-2 border border-border rounded-md">
                   <MoreVertical className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 z-9999">
+              <DropdownMenuContent align="start" className="w-56 z-50">
                 <DropdownMenuItem onClick={() => console.log("stop reminders")}>
                   Stop all reminders
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => console.log("clone client")}>
                   Client Portal
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => console.log("clone client")}>
-                  Clone client
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="text-red-600 focus:text-red-600"
@@ -153,9 +144,11 @@ export default function Client_Page({ currentId }) {
       </div>
       <div className="flex flex-col gap-4 overflow-y-auto p-4">
         {activeTab === "overview" && <ClientBanner currentId={currentId} />}
-        {activeTab === "overview" && <OverView data={client} />}
+        {activeTab === "overview" && (
+          <OverView data={client} currentId={currentId} />
+        )}
         {activeTab === "comments" && <Comments data={client} />}
-        {activeTab === "transactions" && <Transactions data={client} />}
+        {activeTab === "transactions" && <Transactions currentId={currentId} />}
         {activeTab === "mails" && <Mails currentId={currentId} />}
       </div>
     </div>

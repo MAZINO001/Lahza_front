@@ -1,84 +1,152 @@
+// // import { create } from "zustand";
+
+// // export const useRegisterStore = create((set) => ({
+// //   // common fields
+// //   role: "equipe", // "equipe" | "client"
+// //   nom: "",
+// //   email: "",
+// //   mot_de_passe: "",
+// //   mot_de_passe_confirmation: "",
+
+// //   // worker-specific
+// //   poste: "",
+// //   departement: "",
+// //   specialite: "",
+// //   linkdin: "",
+// //   portfolio: "",
+// //   github: "",
+// //   date_debut: "",
+// //   date_fin: "",
+// //   description: "",
+// //   tags: [],
+// //   cv: "",
+// //   // client-specific
+// //   entreprise: "",
+// //   adresse: "",
+// //   zip: "",
+// //   telephone: "",
+// //   ville: "",
+// //   pays: "",
+// //   type_client: "", // "particulier" | "entreprise"
+// //   tva: "",
+// //   siren: "",
+// //   ice: "",
+// //   devise: "",
+
+// //   // generic handlers
+// //   setField: (key, value) =>
+// //     set((state) => ({ ...state, [key]: value })),
+
+// //   reset: () =>
+// //     set({
+// //       role: "equipe",
+// //       // nom: "",
+// //       // email: "",
+// //       // mot_de_passe: "",
+// //       // mot_de_passe_confirmation: "",
+// //       poste: "",
+// //       departement: "",
+// //       specialite: "",
+// //       linkdin: "",
+// //       portfolio: "",
+// //       github: "",
+// //       date_debut: "",
+// //       date_fin: "",
+// //       description: "",
+// //       entreprise: "",
+// //       adresse: "",
+// //       zip: "",
+// //       telephone: "",
+// //       ville: "",
+// //       pays: "",
+// //       type_client: "",
+// //       tva: "",
+// //       siren: "",
+// //       ice: "",
+// //       devise: "",
+// //       tags: [],
+// //     }),
+// // }));
+
 // import { create } from "zustand";
 
 // export const useRegisterStore = create((set) => ({
 //   // common fields
-//   role: "equipe", // "equipe" | "client"
-//   nom: "",
+//   user_type: "team", // "team" | "client"
+//   name: "",
 //   email: "",
-//   mot_de_passe: "",
-//   mot_de_passe_confirmation: "",
+//   password: "",
+//   password_confirmation: "",
 
 //   // worker-specific
-//   poste: "",
-//   departement: "",
-//   specialite: "",
-//   linkdin: "",
+//   position: "",
+//   department: "",
+//   specialty: "",
+//   linkedin: "",
 //   portfolio: "",
 //   github: "",
-//   date_debut: "",
-//   date_fin: "",
+//   start_date: "",
+//   end_date: "",
 //   description: "",
-//   tags: [],
-//   cv: "",
-//   // client-specific
-//   entreprise: "",
-//   adresse: "",
+//   tags: ["imprimeur", "commercial", "filmmaker"],
+//   resume: "",
+//   company: "",
+//   address: "",
 //   zip: "",
-//   telephone: "",
-//   ville: "",
-//   pays: "",
-//   type_client: "", // "particulier" | "entreprise"
-//   tva: "",
+//   phone: "",
+//   city: "",
+//   country: "",
+//   client_type: "",
+//   vat: "",
 //   siren: "",
 //   ice: "",
-//   devise: "",
+//   currency: "",
 
-//   // generic handlers
 //   setField: (key, value) =>
 //     set((state) => ({ ...state, [key]: value })),
 
 //   reset: () =>
 //     set({
-//       role: "equipe",
-//       // nom: "",
+//       user_type: "team",
+//       // name: "",
 //       // email: "",
-//       // mot_de_passe: "",
-//       // mot_de_passe_confirmation: "",
-//       poste: "",
-//       departement: "",
-//       specialite: "",
-//       linkdin: "",
+//       // password: "",
+//       // password_confirmation: "",
+//       position: "",
+//       department: "",
+//       specialty: "",
+//       linkedin: "",
 //       portfolio: "",
 //       github: "",
-//       date_debut: "",
-//       date_fin: "",
+//       start_date: "",
+//       end_date: "",
 //       description: "",
-//       entreprise: "",
-//       adresse: "",
+//       company: "",
+//       address: "",
 //       zip: "",
-//       telephone: "",
-//       ville: "",
-//       pays: "",
-//       type_client: "",
-//       tva: "",
+//       phone: "",
+//       city: "",
+//       country: "",
+//       client_type: "",
+//       vat: "",
 //       siren: "",
 //       ice: "",
-//       devise: "",
-//       tags: [],
+//       currency: "",
+//       resume: "",
+//       poste: "",
 //     }),
-// }));
 
+// }));
 import { create } from "zustand";
 
 export const useRegisterStore = create((set) => ({
   // common fields
-  user_type: "team", // "team" | "client"
+  user_type: "team",
   name: "",
   email: "",
   password: "",
   password_confirmation: "",
-
-  // worker-specific
+  // ... other fields
   position: "",
   department: "",
   specialty: "",
@@ -101,17 +169,33 @@ export const useRegisterStore = create((set) => ({
   siren: "",
   ice: "",
   currency: "",
+  tempPassword: "",
 
   setField: (key, value) =>
     set((state) => ({ ...state, [key]: value })),
 
+  generateTempPassword: (name) =>
+    set((state) => {
+      const year = new Date().getFullYear();
+      const tempPassword = name
+        ? `${name.trim().toLowerCase().replace(/\s+/g, '')}${year}`
+        : "";
+      return {
+        ...state,
+        password: tempPassword,
+        tempPassword: tempPassword,
+        password_confirmation: tempPassword,
+      };
+    }),
+
   reset: () =>
     set({
       user_type: "team",
-      // name: "",
-      // email: "",
-      // password: "",
-      // password_confirmation: "",
+      name: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
+      tempPassword: "",
       position: "",
       department: "",
       specialty: "",
@@ -133,8 +217,6 @@ export const useRegisterStore = create((set) => ({
       ice: "",
       currency: "",
       resume: "",
-      poste: "",
+      tags: [],
     }),
-
 }));
-

@@ -18,6 +18,8 @@ import {
 } from "../hooks/useProjects";
 import { formatId } from "@/lib/utils/formatId";
 import Checkbox from "@/components/Checkbox";
+import { useClients } from "@/features/clients/hooks/useClientsQuery";
+import AddClientModel from "@/components/common/AddClientModel";
 
 export function ProjectForm({ onSuccess }) {
   const [directProject, setDirectProject] = useState(false);
@@ -38,9 +40,12 @@ export function ProjectForm({ onSuccess }) {
     control,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: project || {
+      customerName: "",
       name: "",
       description: "",
       invoice_id: "",
@@ -75,8 +80,59 @@ export function ProjectForm({ onSuccess }) {
     label: formatId(invoice.id, "INVOICE"),
     value: String(invoice.id),
   }));
+  const { data: clients } = useClients();
+  const selectedClientId = watch("customerName");
+
+  const selectedClient = clients?.find(
+    (c) => c.client?.id === Number(selectedClientId)
+  );
+
+  const clientOptions = clients?.map((c) => ({
+    label: c.client?.user?.name || c.name || "Unknown Client",
+    value: String(c.client?.id),
+  }));
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+      <div className="flex items-end justify-between gap-4">
+        <div className="w-full">
+          <Controller
+            name="customerName"
+            control={control}
+            rules={{ required: "Please select a customer" }}
+            render={({ field, fieldState: { error } }) => (
+              <SelectField
+                label="Customer"
+                options={clientOptions}
+                value={field.value || ""}
+                onChange={(val) => field.onChange(val)}
+                onBlur={field.onBlur}
+                error={error?.message}
+                placeholder="Select or add a customer"
+              />
+            )}
+          />
+        </div>
+        <AddClientModel />
+      </div>
+      {selectedClient && (
+        <div className="p-4 border rounded bg-background text-sm space-y-1 max-w-[300px]">
+          <p>
+            <span className="font-medium">Name:</span>{" "}
+            {selectedClient.client?.user?.name ||
+              selectedClient.client?.user?.name}
+          </p>
+          <p>
+            <span className="font-medium">Address:</span>{" "}
+            {selectedClient.client?.address}
+          </p>
+          <p>
+            <span className="font-medium">Phone:</span>{" "}
+            {selectedClient.client?.phone}
+          </p>
+        </div>
+      )}
+
       {invoicesLoading && (
         <p className="text-sm text-muted-foreground">Loading invoices...</p>
       )}

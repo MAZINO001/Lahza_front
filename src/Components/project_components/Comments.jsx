@@ -100,7 +100,9 @@ export default function Comments() {
                 <span>{comment.user}</span>
                 <span>{comment.date}</span>
               </div>
-              <p className="text-sm leading-snug break-words">{comment.text}</p>
+              <p className="text-sm leading-snug wrap-break-word">
+                {comment.text}
+              </p>
             </div>
           </div>
         ))}

@@ -48,7 +48,7 @@ export default function PdfPreview({ src }) {
   if (!blobUrl) return null;
 
   return (
-    <div className="flex items-start justify-between min-h-screen bg-background py-0 border border-black">
+    <div className="flex items-start justify-between min-h-screen bg-background py-0 border border-border rounded-lg overflow-hidden">
       <Document
         file={blobUrl}
         onLoadSuccess={onLoadSuccess}

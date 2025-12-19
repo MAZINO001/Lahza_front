@@ -10,57 +10,41 @@ import {
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link } from "react-router-dom";
 
-export default function WhatsNextBanner({ currentId }) {
+export default function WhatsNextBanner({ type, action, content, clientId }) {
   const [isVisible, setIsVisible] = useState(true);
   const { role } = useAuthContext();
   if (!isVisible) return null;
 
   return (
-    <div className="bg-background border border-border rounded-lg px-4 py-4">
-      <div className="flex gap-3 items-start ">
+    <div className="bg-background border border-border rounded-lg px-4 py-4 w-full">
+      <div className="flex  gap-4 items-center">
         <div
           aria-hidden="true"
-          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-purple-100"
+          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-purple-100 "
         >
           <Sparkles className="text-purple-600" size={18} />
         </div>
 
-        <div className="flex flex-col w-full min-w-0">
-          <div className="space-y-1 mb-3">
+        <div className="flex items-center gap-4 w-full min-w-0 ">
+          <div className="flex gap-2 space-y-1">
             <p className="font-semibold text-sm text-foreground">
               WHAT'S NEXT?
             </p>
-            <p className="text-sm text-muted-foreground">
-              Create an <span className="font-medium">invoice</span> or a{" "}
-              <span className="font-medium">quote</span> and send it to your
-              customer.
-            </p>
+            <p className="text-sm text-muted-foreground">{content}</p>
           </div>
 
+          {/* Buttons */}
           <div className="flex gap-2 items-center flex-wrap">
-            <Link to={`/${role}/invoice/new`} state={{ clientId: currentId }}>
+            <Link to={`/${role}/${type}/new`} state={{ clientId }}>
               <Button size="sm">
                 <Plus className="h-4 w-4" />
-                New Invoice
-              </Button>
-            </Link>
-            <Link to={`/${role}/quote/new`} state={{ clientId: currentId }}>
-              <Button
-                size="sm"
-                variant="outline"
-                className="border border-border"
-              >
-                <Plus className="h-4 w-4" />
-                New Quote
+                {action}
               </Button>
             </Link>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button
-                  variant="outline"
-                  className="p-2 border border-border rounded-md "
-                >
+                <button className="p-2 border border-border rounded-md">
                   <MoreVertical className="h-4 w-4" />
                 </button>
               </DropdownMenuTrigger>

@@ -204,7 +204,7 @@ import {
 } from "@/components/ui/card";
 import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
 
-export default function Overview_chart({ formatCurrency }) {
+export default function Overview_chart({ formatCurrency, currentId }) {
   const [selectedPeriod, setSelectedPeriod] = useState("Last 6 Months");
 
   const formatMonth = (dateString) => {
@@ -214,10 +214,13 @@ export default function Overview_chart({ formatCurrency }) {
       year: "numeric",
     });
   };
+  const { data: Payments = [] } = usePayments();
 
-  const { data: payments = [] } = usePayments();
+  const filteredData = Payments.filter(
+    (payment) =>
+      payment.client_id === Number(currentId) && payment.status === "paid"
+  );
 
-  // Get the number of months based on selected period
   const getMonthsCount = (period) => {
     switch (period) {
       case "Last 3 Months":
@@ -261,7 +264,7 @@ export default function Overview_chart({ formatCurrency }) {
     });
 
     // Fill in actual payment data
-    payments.forEach((payment) => {
+    filteredData?.forEach((payment) => {
       const month = formatMonth(payment.created_at);
       const amount = Number(payment.amount);
 
@@ -279,8 +282,8 @@ export default function Overview_chart({ formatCurrency }) {
 
   const monthsCount = getMonthsCount(selectedPeriod);
   const chartData = React.useMemo(
-    () => transformPaymentsToChartData(payments, monthsCount),
-    [payments, selectedPeriod]
+    () => transformPaymentsToChartData(filteredData, monthsCount),
+    [filteredData, selectedPeriod]
   );
 
   const maxValue =

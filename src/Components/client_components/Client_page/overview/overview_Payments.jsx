@@ -2,7 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
 import { formatId } from "@/lib/utils/formatId";
-export default function Overview_Payments({ formatCurrency }) {
+export default function Overview_Payments({ formatCurrency, currentId }) {
   const receivablesData = [
     {
       currency: "USD",
@@ -18,7 +18,12 @@ export default function Overview_Payments({ formatCurrency }) {
     },
   ];
 
-  const { data: Payments, isLoading } = usePayments();
+  const { data: Payments = [] } = usePayments();
+
+  const filteredData = Payments.filter(
+    (payment) =>
+      payment.client_id === Number(currentId) && payment.status === "paid"
+  );
 
   const paymentDuePeriod = "Due on Receipt";
   const receivables = receivablesData;
@@ -42,19 +47,19 @@ export default function Overview_Payments({ formatCurrency }) {
             </div>
           </div>
 
-          {Payments?.map((item, index) => (
+          {filteredData?.map((item, index) => (
             <div
               key={index}
               className="grid grid-cols-3 gap-4 py-3 border-b border-border last:border-0"
             >
               <div className="text-sm text-foreground">
-                {formatId(item.invoice.id, "INVOICE")}
+                {formatId(item?.invoice.id, "INVOICE")}
               </div>
               <div className="text-sm text-foreground text-right font-medium">
-                {formatCurrency(item.invoice.balance_due)}
+                {formatCurrency(item?.invoice.balance_due)}
               </div>
               <div className="text-sm text-foreground text-right font-medium">
-                {formatCurrency(item.invoice.total_amount)}
+                {formatCurrency(item?.invoice.total_amount)}
               </div>
             </div>
           ))}

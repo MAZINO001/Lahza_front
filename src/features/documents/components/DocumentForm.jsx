@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -8,8 +9,10 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
 import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
+import SelectField_Search from "@/Components/Form/SelectField_Search";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import FileUploader from "@/components/Form/FileUploader";
 import ServiceSelect from "@/Components/Invoice_Quotes/ServiceSelector";
 
 import { terms } from "@/lib/Terms_Conditions.json";
@@ -22,6 +25,7 @@ import { useClients } from "@/features/clients/hooks/useClientsQuery";
 import { useServices } from "@/features/services/hooks/useServiceQuery";
 import AddClientModel from "@/components/common/AddClientModel";
 import TextareaField from "@/components/Form/TextareaField";
+import { useProject } from "@/features/projects/hooks/useProjects";
 
 export function DocumentForm({ type, onSuccess }) {
   const navigate = useNavigate();
@@ -30,17 +34,22 @@ export function DocumentForm({ type, onSuccess }) {
   const { id } = useParams();
 
   const { state } = useLocation();
-
   const clientId = state?.clientId;
+  const cloneFromId = state?.cloneFromId;
 
   const isEditMode = !!id;
-  const { data: document } = useDocument(id, type);
+  const isCloneMode = !!cloneFromId;
+
+  const { data: document } = useDocument(id || cloneFromId, type);
+
   const isInvoice = type === "invoices";
   const { data: clients, isLoading: clientsLoading } = useClients();
   const { data: services = [], isLoading: servicesLoading } = useServices();
+
   const createMutation = useCreateDocument(type);
   const updateMutation = useUpdateDocument(type);
-  const mutation = document?.client?.id ? updateMutation : createMutation;
+
+  const mutation = isEditMode ? updateMutation : createMutation;
 
   const projects = document?.client?.has_projects
     ? JSON.parse(document.has_projects)
@@ -70,15 +79,17 @@ export function DocumentForm({ type, onSuccess }) {
       payment_percentage: "50",
       payment_status: "pending",
       payment_type: "",
+      description: "",
       terms,
-      has_projects: { title: [" "] },
+      old_projects: [],
+      has_projects: { title: [] },
       items: [
         {
           serviceId: null,
           description: "",
           quantity: 1,
           rate: 0,
-          tax: 0,
+          tax_rate: 0,
           discount: 0,
           amount: 0,
         },
@@ -106,7 +117,7 @@ export function DocumentForm({ type, onSuccess }) {
 
   const items = watch("items");
   useEffect(() => {
-    if (document && isEditMode) {
+    if (document && (isEditMode || isCloneMode)) {
       const doc = document;
 
       let projectTitles = [""];
@@ -117,7 +128,7 @@ export function DocumentForm({ type, onSuccess }) {
       }
 
       reset({
-        customerName: doc.client?.id || clientId,
+        customerName: doc.client?.id || doc.client_id || clientId,
         ...(isInvoice
           ? {
               invoice_date: doc.invoice_date,
@@ -131,26 +142,54 @@ export function DocumentForm({ type, onSuccess }) {
         payment_percentage: "50",
         payment_status: "pending",
         payment_type: doc.payment_type,
+        description: doc?.description,
         has_projects: {
-          title: projectTitles,
+          title: projectTitles.filter((t) => t !== ""),
         },
+        old_projects: doc?.old_projects,
         items:
-          (isInvoice ? doc.invoice_services : doc.quote_services)?.map((s) => ({
-            serviceId: Number(s.service_id),
-            description: s.description || "",
-            quantity: s.quantity,
-            rate: parseFloat(s.individual_total) / s.quantity || 0,
-            tax: parseFloat(s.tax) || 0,
-            discount: 0,
-            amount: parseFloat(s.individual_total),
-          })) || [],
+          (isInvoice ? doc.invoice_services : doc.quote_services)?.map((s) => {
+            const serviceDetails = services.find(
+              (srv) => Number(srv.id) === Number(s.service_id)
+            );
+
+            return {
+              serviceId: Number(s.service_id),
+              description: serviceDetails?.description || "",
+              quantity: s.quantity,
+              rate: parseFloat(s.individual_total) / s.quantity || 0,
+              tax_rate: Number(s.tax_rate) || 0,
+              discount: 0,
+              amount: parseFloat(s.individual_total),
+            };
+          }) || [],
       });
     }
-  }, [document, isEditMode, isInvoice, reset]);
+  }, [document, isEditMode, isCloneMode, isInvoice, reset, services]);
 
   const clientOptions = clients?.map((c) => ({
     label: c.client?.user?.name || c.name || "Unknown Client",
     value: String(c.client?.id),
+  }));
+
+  // const { data: AllProjects } = useProject();
+
+  const AllProjects = [
+    { id: 1, name: "Landing Page Redesign" },
+    { id: 2, name: "E-commerce Dashboard" },
+    { id: 3, name: "Mobile App API" },
+    { id: 4, name: "Portfolio Website" },
+    { id: 5, name: "Admin Panel Revamp" },
+    { id: 6, name: "SaaS Auth System" },
+    { id: 7, name: "Marketing Website" },
+    { id: 8, name: "CRM Integration" },
+    { id: 9, name: "Internal Tools" },
+    { id: 10, name: "Blog Platform" },
+  ];
+
+  const ProjectOptions = AllProjects?.map((p) => ({
+    label: p.name || "Unknown Project",
+    value: String(p.id),
   }));
 
   const selectedClientId = watch("customerName");
@@ -161,7 +200,8 @@ export function DocumentForm({ type, onSuccess }) {
 
   useEffect(() => {
     if (selectedClient) {
-      const isMoroccan = selectedClient.client?.country === "Maroc";
+      const isMoroccan =
+        selectedClient?.client?.country?.trim().toLowerCase() === "maroc";
       const defaultPaymentMethod = isMoroccan ? "bank" : "stripe";
       setValue("payment_type", defaultPaymentMethod);
     }
@@ -180,7 +220,7 @@ export function DocumentForm({ type, onSuccess }) {
       description: "",
       quantity: 1,
       rate: 0,
-      tax: 0,
+      tax_rate: 0,
       discount: 0,
       amount: 0,
     });
@@ -199,14 +239,12 @@ export function DocumentForm({ type, onSuccess }) {
 
   const updateItem = (index, field, value) => {
     setValue(`items.${index}.${field}`, Number(value));
-
     const quantity = Number(watch(`items.${index}.quantity`) || 1);
     const rate = Number(watch(`items.${index}.rate`) || 0);
-    const tax = Number(watch(`items.${index}.tax`) || 0);
+    const tax_rate = Number(watch(`items.${index}.tax_rate`) || 0);
     const discount = Number(watch(`items.${index}.discount`) || 0);
-
     const base = quantity * rate;
-    const taxAmount = base * (tax / 100);
+    const taxAmount = base * (tax_rate / 100);
     const totalAfterTax = base + taxAmount;
     const discountAmount = totalAfterTax * (discount / 100);
     const finalAmount = totalAfterTax - discountAmount;
@@ -239,7 +277,7 @@ export function DocumentForm({ type, onSuccess }) {
       has_projects: JSON.stringify({
         title: data.has_projects?.title || [],
       }),
-
+      old_projects: data.old_projects,
       payment_percentage: Number(data.payment_percentage),
       payment_status: data.payment_status,
       payment_type: data.payment_type,
@@ -248,7 +286,7 @@ export function DocumentForm({ type, onSuccess }) {
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
         rate: Number(item.rate),
-        tax: Number(item.tax || 0),
+        tax_rate: Number(item.tax_rate),
         discount: Number(item.discount || 0),
         individual_total: Number(item.amount),
       })),
@@ -256,7 +294,7 @@ export function DocumentForm({ type, onSuccess }) {
 
     console.log("the payload:", payload);
 
-    mutation.mutate(isEditMode ? { id: document.id, data: payload } : payload, {
+    mutation.mutate(isEditMode ? { id: id, data: payload } : payload, {
       onSuccess: () => {
         onSuccess?.();
         if (!isEditMode) reset();
@@ -272,7 +310,6 @@ export function DocumentForm({ type, onSuccess }) {
       </div>
     );
   }
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full">
       <div className="space-y-4">
@@ -299,20 +336,67 @@ export function DocumentForm({ type, onSuccess }) {
         </div>
 
         {selectedClient && (
-          <div className="p-4 border rounded bg-background text-sm space-y-1 max-w-[300px]">
-            <p>
-              <span className="font-medium">Name:</span>{" "}
-              {selectedClient.client?.user?.name ||
-                selectedClient.client?.user?.name}
-            </p>
-            <p>
-              <span className="font-medium">Address:</span>{" "}
-              {selectedClient.client?.address}
-            </p>
-            <p>
-              <span className="font-medium">Phone:</span>{" "}
-              {selectedClient.client?.phone}
-            </p>
+          <div className="flex gap-4 p-4 border rounded bg-background text-sm space-y-4 max-w-[700px]">
+            <div className="flex flex-col gap-2 w-[50%]">
+              <p>
+                <span className="font-medium">Name:</span>{" "}
+                {selectedClient?.client?.user?.name}
+              </p>
+              <p>
+                <span className="font-medium">Email:</span>{" "}
+                {selectedClient?.client?.user?.email}
+              </p>
+              <p>
+                <span className="font-medium">Client Type:</span>{" "}
+                {selectedClient?.client?.client_type}
+              </p>
+              {selectedClient?.client?.company && (
+                <p>
+                  <span className="font-medium">Company:</span>{" "}
+                  {selectedClient?.client?.company}
+                </p>
+              )}
+              <p>
+                <span className="font-medium">Phone:</span>{" "}
+                {selectedClient?.client?.phone}
+              </p>
+              <p>
+                <span className="font-medium">Address:</span>{" "}
+                {selectedClient?.client?.address}
+              </p>
+              <p>
+                <span className="font-medium">City:</span>{" "}
+                {selectedClient?.client?.city}
+              </p>
+            </div>
+
+            {/* Second Row */}
+            <div className="flex flex-col gap-4  w-[50%]">
+              <p>
+                <span className="font-medium">Country:</span>{" "}
+                {selectedClient?.client?.country}
+              </p>
+              <p>
+                <span className="font-medium">Currency:</span>{" "}
+                {selectedClient?.client?.currency || "MAD"}
+              </p>
+              {selectedClient?.client?.ice && (
+                <p>
+                  <span className="font-medium">ICE:</span>{" "}
+                  {selectedClient?.client?.ice}
+                </p>
+              )}
+              {selectedClient?.client?.siren && (
+                <p>
+                  <span className="font-medium">SIREN:</span>{" "}
+                  {selectedClient?.client?.siren}
+                </p>
+              )}
+              <p>
+                <span className="font-medium">VAT:</span>{" "}
+                {selectedClient?.client?.vat || "20%"}
+              </p>
+            </div>
           </div>
         )}
 
@@ -353,22 +437,41 @@ export function DocumentForm({ type, onSuccess }) {
             />
           </>
         ) : (
-          <Controller
-            name="quoteDate"
-            control={control}
-            rules={{ required: "Quote date is required" }}
-            render={({ field, fieldState: { error } }) => (
-              <FormField
-                id="quoteDate"
-                label="Quote Date*"
-                type="date"
-                value={field.value || ""}
-                onChange={(e) => field.onChange(e.target.value)}
-                onBlur={field.onBlur}
-                error={error?.message}
-              />
-            )}
-          />
+          <>
+            <Controller
+              name="quoteDate"
+              control={control}
+              rules={{ required: "Quote date is required" }}
+              render={({ field, fieldState: { error } }) => (
+                <FormField
+                  id="quoteDate"
+                  label="Quote Date*"
+                  type="date"
+                  value={field.value || ""}
+                  onChange={(e) => field.onChange(e.target.value)}
+                  onBlur={field.onBlur}
+                  error={error?.message}
+                />
+              )}
+            />
+
+            <Controller
+              name="description"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <FormField
+                  id="description"
+                  label="Object"
+                  type="text"
+                  value={field.value || ""}
+                  placeholder="Type An Object"
+                  onChange={(e) => field.onChange(e.target.value)}
+                  onBlur={field.onBlur}
+                  error={error?.message}
+                />
+              )}
+            />
+          </>
         )}
 
         <div className="mt-4">
@@ -441,15 +544,16 @@ export function DocumentForm({ type, onSuccess }) {
                                 const quantity = Number(
                                   watch(`items.${index}.quantity`) || 1
                                 );
-                                const tax = Number(
-                                  watch(`items.${index}.tax`) || 0
-                                );
+
+                                const tax_rate = Number(service.tax_rate);
+                                setValue(`items.${index}.tax_rate`, tax_rate);
+
                                 const discount = Number(
                                   watch(`items.${index}.discount`) || 0
                                 );
 
                                 const base = quantity * unitPrice;
-                                const taxAmount = base * (tax / 100);
+                                const taxAmount = base * (tax_rate / 100);
                                 const totalAfterTax = base + taxAmount;
                                 const discountAmount =
                                   totalAfterTax * (discount / 100);
@@ -526,8 +630,8 @@ export function DocumentForm({ type, onSuccess }) {
                       <td className="p-2">
                         <FormField
                           type="number"
-                          value={watch(`items.${index}.tax`) ?? ""}
-                          {...register(`items.${index}.tax`, {
+                          value={watch(`items.${index}.tax_rate`) ?? ""}
+                          {...register(`items.${index}.tax_rate`, {
                             required: "Tax is required",
                             min: {
                               value: 0,
@@ -539,10 +643,10 @@ export function DocumentForm({ type, onSuccess }) {
                             },
                             valueAsNumber: true,
                           })}
-                          error={errors.items?.[index]?.tax?.message}
+                          error={errors.items?.[index]?.tax_rate?.message}
                           onChange={(e) => {
-                            updateItem(index, "tax", e.target.value);
-                            trigger(`items.${index}.tax`);
+                            updateItem(index, "tax_rate", e.target.value);
+                            trigger(`items.${index}.tax_rate`);
                           }}
                         />
                       </td>
@@ -612,53 +716,28 @@ export function DocumentForm({ type, onSuccess }) {
 
         <div className="flex gap-4 w-full items-start space-between">
           <div
-            className={`flex flex-col gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"}`}
+            className={`flex gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"}`}
           >
-            {has_projectFields.map((field, index) => (
-              <div
-                key={field.id}
-                className="flex gap-4 items-end justify-between w-full"
-              >
-                <div className="w-full">
-                  <Controller
-                    name={`has_projects.title.${index}`}
-                    control={control}
-                    render={({ field }) => (
-                      <FormField
-                        label={index === 0 ? "Project Title" : ""}
-                        placeholder="Enter Title..."
-                        className="w-full"
-                        {...field}
-                      />
-                    )}
+            <div className="w-full">
+              <Controller
+                name="old_projects"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <SelectField_Search
+                    label="Project"
+                    options={ProjectOptions}
+                    value={field.value || []}
+                    onChange={field.onChange}
+                    customValue={watch("has_projects.title") || []}
+                    onCustomChange={(newCustom) =>
+                      setValue("has_projects.title", newCustom)
+                    }
+                    error={error?.message}
+                    placeholder="Select or add a project"
                   />
-                </div>
-                <Button
-                  type="button"
-                  className="p-2"
-                  onClick={() => removeHas_project(index)}
-                >
-                  <Minus className="w-4 h-4" />
-                </Button>
-                <Button
-                  type="button"
-                  className="p-2"
-                  onClick={() => appendHas_project(" ")}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
-              </div>
-            ))}
-
-            {has_projectFields.length === 0 && (
-              <Button
-                type="button"
-                className="p-2 w-full mt-5"
-                onClick={() => appendHas_project("")}
-              >
-                <Plus className="w-4 h-4" /> Add Project
-              </Button>
-            )}
+                )}
+              />
+            </div>
           </div>
           {isInvoice && (
             <div className="w-[50%]">
@@ -734,7 +813,7 @@ export function DocumentForm({ type, onSuccess }) {
         </div>
 
         <div className="flex md:flex-row flex-col gap-4 items-start justify-between h-full">
-          <div className="w-[50%]">
+          <div className={`${isInvoice ? "w-[50%]" : "w-[40%]"}`}>
             <div className="w-full">
               <TextareaField
                 className=" min-h-22"
@@ -746,7 +825,7 @@ export function DocumentForm({ type, onSuccess }) {
               />
             </div>
           </div>
-          <div className="w-[50%]">
+          <div className={`${isInvoice ? "w-[50%]" : "w-[40%]"}`}>
             <TextareaField
               id="terms"
               label="Terms & Conditions"
@@ -758,6 +837,23 @@ export function DocumentForm({ type, onSuccess }) {
               onChange={(e) => setValue("terms", e.target.value)}
             />
           </div>
+          {!isInvoice && (
+            <div className="w-[20%] h-full ">
+              <Controller
+                name="attach_file"
+                control={control}
+                render={({ field }) => (
+                  <FileUploader
+                    name="Attach File"
+                    label="Attach File(s) to Quote"
+                    placeholder="Add Your Attach File"
+                    error={errors.media_files?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex md:flex-row flex-col justify-end gap-3 mt-8">

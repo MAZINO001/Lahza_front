@@ -1,59 +1,10 @@
-// import React from "react";
-// import { useEmailsById } from "@/features/clients/hooks/useClientsEmails";
-
-// export default function Mails({ currentId }) {
-//   const { data: data, isLoading } = useEmailsById(currentId);
-
-//   console.log(data);
-
-//   if (isLoading) {
-//     return <div>loading ....</div>;
-//   }
-//   return (
-//     <div className="bg-background rounded-lg border border-border">
-//       <div className="flex items-center justify-between p-4 border-b border-border">
-//         <h2 className="text-base font-medium text-foreground">System Mails</h2>
-//       </div>
-
-//       <div className="divide-y divide-gray-200">
-//         {data.map((mail) => (
-//           <div
-//             key={mail.id}
-//             className="flex items-center gap-3 p-4  transition-colors"
-//           >
-//             <div className="flex-1 min-w-0">
-//               <div className="flex items-start justify-between gap-4">
-//                 <div className="flex-1 min-w-0">
-//                   <p className="text-sm text-muted-foreground mb-1">
-//                     To {mail?.new_values?.to[0]}
-//                   </p>
-//                   <p className="text-sm text-foreground">
-//                     <span className="font-medium">
-//                       {mail?.new_values?.subject}
-//                     </span>
-//                     <span className="text-muted-foreground"> - {mail.description}</span>
-//                   </p>
-//                 </div>
-//                 <span className="text-sm text-muted-foreground whitespace-nowrap shrink-0">
-//                   {mail.updated_at || mail.created_at
-// }
-//                 </span>
-//               </div>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
-
 import React from "react";
 import { Mail, Clock, User, CheckCircle2, Send } from "lucide-react";
 import { useEmailsById } from "@/features/clients/hooks/useClientsEmails";
 
 export default function Mails({ currentId = 1 }) {
   const { data, isLoading } = useEmailsById(currentId);
-
+  console.log(data);
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
