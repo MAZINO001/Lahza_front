@@ -5,7 +5,7 @@ import { formatId } from "@/lib/utils/formatId";
 import { StatusBadge } from "@/components/StatusBadge";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 
-export const ProjectColumns = (role, navigate) => {
+export function ProjectColumns(role, navigate) {
   return [
     {
       accessorKey: "id",
@@ -100,4 +100,4 @@ export const ProjectColumns = (role, navigate) => {
       },
     },
   ];
-};
+}

@@ -15,7 +15,7 @@ import { Link } from "react-router-dom";
 
 import { formatId } from "@/lib/utils/formatId";
 
-export const ActivityLogsColumns = (role) => {
+export function ActivityLogsColumns(role) {
   return [
     {
       accessorKey: "id",
@@ -170,4 +170,4 @@ export const ActivityLogsColumns = (role) => {
       ),
     },
   ];
-};
+}

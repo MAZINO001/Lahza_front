@@ -110,7 +110,7 @@ export default function ServicePage({ currentId }) {
 
       <div className="p-4 w-full">
         {activeTab === "overview" && <Overview data={data} />}
-        {activeTab === "transactions" && <Transactions data={data} />}
+        {activeTab === "transactions" && <Transactions currentId={currentId} />}
       </div>
     </div>
   );

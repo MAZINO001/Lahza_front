@@ -10,7 +10,7 @@ import { globalFnStore } from "@/hooks/GlobalFnStore";
 import axios from "axios";
 import {
   useDocument,
-  useCreateInvoiceFromQuote,
+  useCreateDocument,
 } from "@/features/documents/hooks/useDocumentsQuery";
 
 import { MoreVertical } from "lucide-react";
@@ -20,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 export default function Inv_Qt_page({ type, currentId }) {
   const isInvoice = type === "invoices";
@@ -34,7 +35,7 @@ export default function Inv_Qt_page({ type, currentId }) {
 
   const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =
     globalFnStore();
-  const createInvoiceFromQuote = useCreateInvoiceFromQuote();
+  const createInvoiceMutation = useCreateDocument("invoices");
 
   const handleSendPdf = () => {
     handleSendInvoice_Quote(document.id, user.email, `${type}`);
@@ -69,24 +70,8 @@ export default function Inv_Qt_page({ type, currentId }) {
     }
   };
   const handleInvoiceConversion = async () => {
-    try {
-      await createInvoiceFromQuote.mutateAsync(document.id);
-
-      await api.put(
-        `${import.meta.env.VITE_BACKEND_URL}/quotes/${document.id}`,
-        { status: "confirmed" }
-      );
-
-      alert("Quote converted and marked as accepted!");
-      navigate(`/${role}/invoices`);
-    } catch (error) {
-      console.error("Error details:", error.response?.data || error);
-      alert(
-        `Failed to convert to invoice: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    const quoteId = document?.id;
+    navigate(`/${role}/invoice/new`, { state: { quoteId } });
   };
   const handleClone = () => {
     navigate(`/${role}/${currentSection}/new`, {

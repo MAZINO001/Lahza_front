@@ -180,6 +180,33 @@ export function paymentColumns(role) {
       },
     },
     {
+      accessorKey: "updated_at",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Updated At
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const date = new Date(row.getValue("updated_at"));
+        return (
+          <div className="text-sm">
+            {isNaN(date)
+              ? "Invalid Date"
+              : date.toLocaleDateString("fr-MA", {
+                  month: "numeric",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+          </div>
+        );
+      },
+    },
+    {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {

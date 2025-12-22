@@ -59,6 +59,10 @@ export function useCreateDocument(type) {
       queryClient.setQueryData(["documents", type, newDoc.id], newDoc);
     },
     refetchOnWindowFocus: true,
+    onError: (error) => {
+      toast.error(error.message);
+      console.log(error)
+    }
   });
 }
 
@@ -94,6 +98,10 @@ export function useUpdateDocument(type) {
       queryClient.setQueryData(["documents", type, updatedDoc.id], updatedDoc);
     },
     refetchOnWindowFocus: true,
+    onError: (error) => {
+      toast.error(error.message);
+      console.log(error)
+    }
   });
 }
 
@@ -106,5 +114,9 @@ export function useDeleteDocument(type) {
       queryClient.invalidateQueries({ queryKey: ["documents", type] });
     },
     refetchOnWindowFocus: true,
+    onError: (error) => {
+      toast.error(error.message);
+      console.log(error)
+    }
   });
 }

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import TransactionSection from "./service_TransactionsComp";
-import { useDocuments } from "@/features/documents/hooks/useDocumentsQuery";
 import { DocumentsColumns } from "@/features/documents/columns/documentColumns";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
@@ -13,15 +12,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ChevronDown } from "lucide-react";
+import { useDocsByService } from "@/features/services/hooks/useServiceQuery";
 
 export default function Transactions({ currentId }) {
   const [selectedStatus, setSelectedStatus] = useState("invoices");
   const { role } = useAuthContext();
   const navigate = useNavigate();
 
-  const { data: invoices, isLoading: loadingInvoices } =
-    useDocuments("invoices");
-  const { data: quotes, isLoading: loadingQuotes } = useDocuments("quotes");
+  const { data: invoices, isLoading: loadingInvoices } = useDocsByService(
+    currentId,
+    selectedStatus
+  );
+
+  const { data: quotes, isLoading: loadingQuotes } = useDocsByService(
+    currentId,
+    selectedStatus
+  );
+
+  console.log(invoices);
+  console.log(quotes);
 
   const columnsBySection = React.useMemo(
     () => ({

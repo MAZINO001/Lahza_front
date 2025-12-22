@@ -35,7 +35,7 @@ import {
   useCreateInvoiceFromQuote,
 } from "@/features/documents/hooks/useDocumentsQuery";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
-export const DocumentsColumns = (role, navigate, currentSection) => {
+export function DocumentsColumns(role, navigate, currentSection) {
   const isInvoice = currentSection === "invoice";
   return [
     {
@@ -247,7 +247,6 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
             toast.success("Signature uploaded successfully!");
 
             if (!isInvoice && role === "client") {
-              // Only create invoice if user confirms
               const shouldCreateInvoice = confirm(
                 "Would you like to create an invoice from this signed quote?"
               );
@@ -444,25 +443,28 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
               />
             )}
             {role === "admin" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setOpen(true)}
-                className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                <Trash className="h-4 w-4" />
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOpen(true)}
+                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash className="h-4 w-4" />
+                </Button>
 
                 <ConfirmDialog
                   open={open}
                   onClose={() => setOpen(false)}
                   onConfirm={() => {
-                    handleRemoveSignature;
+                    handleRemoveSignature();
                     setOpen(false);
                   }}
-                  title="Cancel Payment"
-                  description="Are you sure you want to cancel this payment? This action cannot be undone."
+                  title="Remove Signature"
+                  description="Are you sure you want to remove this signature? This action cannot be undone."
+                  action="cancel"
                 />
-              </Button>
+              </>
             )}
 
             <Button
@@ -478,4 +480,4 @@ export const DocumentsColumns = (role, navigate, currentSection) => {
       },
     },
   ];
-};
+}

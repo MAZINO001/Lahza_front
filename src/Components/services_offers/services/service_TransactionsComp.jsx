@@ -18,7 +18,6 @@ export default function TransactionSection({
   const [columnFilters, setColumnFilters] = useState([]);
   const [rowSelection, setRowSelection] = useState({});
 
-  console.log(data);
 
   const table = useReactTable({
     data: data ?? [],

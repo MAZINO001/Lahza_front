@@ -1,105 +1,129 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 // src/features/offers/columns/offerColumns.js
-import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, Pencil, Trash, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { StatusBadge } from "@/components/StatusBadge";
+import { useState } from "react";
+import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
 
-export const getOfferColumns = (role, navigate) => [
+export function getOfferColumns(role, navigate) {
+  return [
     {
-        accessorKey: "title",
-        header: ({ column }) => (
+      accessorKey: "title",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Offer Title <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const offer = row.original;
+
+        return (
+          <Link
+            to={`/${role}/offer/${offer.id}`}
+            className="font-medium hover:underline"
+          >
+            {offer.title}
+          </Link>
+        );
+      },
+    },
+    {
+      accessorKey: "discount_type",
+      header: "Type",
+      cell: ({ row }) => (
+        <span className="capitalize font-medium">
+          {row.getValue("discount_type")}
+        </span>
+      ),
+    },
+    {
+      accessorKey: "discount_value",
+      header: "Discount",
+      cell: ({ row }) => {
+        const value = row.getValue("discount_value");
+        const type = row.getValue("discount_type");
+        return (
+          <span className="font-medium">
+            {type === "percent"
+              ? `${value}%`
+              : `MAD ${Number(value).toFixed(2)}`}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "start_date",
+      header: "Start Date",
+      cell: ({ row }) => {
+        const date = row.getValue("start_date");
+        return date ? new Date(date).toLocaleDateString() : "—";
+      },
+    },
+    {
+      accessorKey: "end_date",
+      header: "End Date",
+      cell: ({ row }) => {
+        const date = row.getValue("end_date");
+        return date ? new Date(date).toLocaleDateString() : "—";
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status");
+        return <StatusBadge status={status} />;
+      },
+    },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => {
+        const offer = row.original;
+        const { HandleEditOffer, handleDeleteOffer } = globalFnStore();
+        const [open, setOpen] = useState(false);
+        return (
+          <div className="flex gap-2">
             <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+              size="sm"
+              variant="outline"
+              onClick={() => HandleEditOffer(offer.id, navigate, role)}
             >
-                Offer Title <ArrowUpDown className="ml-2 h-4 w-4" />
+              <Pencil className="h-4 w-4" />
             </Button>
-        ),
-        cell: ({ row }) => {
-            const offer = row.original;
-
-            return (
-                <Link
-                    to={`/${role}/offer/${offer.id}`}
-                    className="font-medium hover:underline"
+            {role === "admin" && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOpen(true)}
+                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                    {offer.title}
-                </Link>
-            );
-        },
-    },
-    {
-        accessorKey: "discount_type",
-        header: "Type",
-        cell: ({ row }) => (
-            <span className="capitalize font-medium">
-                {row.getValue("discount_type")}
-            </span>
-        ),
-    },
-    {
-        accessorKey: "discount_value",
-        header: "Discount",
-        cell: ({ row }) => {
-            const value = row.getValue("discount_value");
-            const type = row.getValue("discount_type");
-            return (
-                <span className="font-medium">
-                    {type === "percent" ? `${value}%` : `MAD ${Number(value).toFixed(2)}`}
-                </span>
-            );
-        },
-    },
-    {
-        accessorKey: "start_date",
-        header: "Start Date",
-        cell: ({ row }) => {
-            const date = row.getValue("start_date");
-            return date ? new Date(date).toLocaleDateString() : "—";
-        },
-    },
-    {
-        accessorKey: "end_date",
-        header: "End Date",
-        cell: ({ row }) => {
-            const date = row.getValue("end_date");
-            return date ? new Date(date).toLocaleDateString() : "—";
-        },
-    },
-    {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
-            const status = row.getValue("status");
-            return <StatusBadge status={status} />;
-        },
-    },
-    {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => {
-            const offer = row.original;
-            const { HandleEditOffer, handleDeleteOffer } = globalFnStore();
+                  <Trash className="h-4 w-4" />
+                </Button>
 
-            return (
-                <div className="flex gap-2">
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => HandleEditOffer(offer.id, navigate, role)}
-                    >
-                        <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleDeleteOffer(offer.id)}
-                    >
-                        <Trash2 className="h-4 w-4" />
-                    </Button>
-                </div>
-            );
-        },
+                <ConfirmDialog
+                  open={open}
+                  onClose={() => setOpen(false)}
+                  onConfirm={() => {
+                    handleDeleteOffer(offer.id);
+                    setOpen(false);
+                  }}
+                  title="Remove Signature"
+                  description="Are you sure you want to remove this signature? This action cannot be undone."
+                  action="cancel"
+                />
+              </>
+            )}
+          </div>
+        );
+      },
     },
-];
+  ];
+}
