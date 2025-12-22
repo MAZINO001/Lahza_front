@@ -25,7 +25,6 @@
 // import { useServices } from "@/features/services/hooks/useServiceQuery";
 // import AddClientModel from "@/components/common/AddClientModel";
 // import TextareaField from "@/components/Form/TextareaField";
-// import { useProject } from "@/features/projects/hooks/useProjects";
 
 // export function DocumentForm({ type, onSuccess }) {
 //   const navigate = useNavigate();
@@ -36,11 +35,17 @@
 //   const { state } = useLocation();
 //   const clientId = state?.clientId;
 //   const cloneFromId = state?.cloneFromId;
+//   const quoteId = state?.quoteId;
 
 //   const isEditMode = !!id;
 //   const isCloneMode = !!cloneFromId;
 
-//   const { data: document } = useDocument(id || cloneFromId, type);
+//   const documentId = quoteId ?? id ?? cloneFromId;
+//   const documentType = quoteId ? "quotes" : type;
+
+//   const { data: document } = useDocument(documentId, documentType);
+
+//   console.log(document);
 
 //   const isInvoice = type === "invoices";
 //   const { data: clients, isLoading: clientsLoading } = useClients();
@@ -120,11 +125,13 @@
 //     if (document && (isEditMode || isCloneMode)) {
 //       const doc = document;
 //       console.log(doc);
-//       let projectTitles = [""];
+//       let projectTitles = [];
 //       if (projects && projects.title && Array.isArray(projects.title)) {
-//         projectTitles = projects.title.length > 0 ? projects.title : [""];
+//         projectTitles = projects.title.filter((t) => t !== "");
 //       } else if (Array.isArray(projects) && projects.length > 0) {
-//         projectTitles = projects.map((p) => p.title || "");
+//         projectTitles = projects
+//           .map((p) => p.title || "")
+//           .filter((t) => t !== "");
 //       }
 
 //       reset({
@@ -144,7 +151,7 @@
 //         payment_type: doc.payment_type,
 //         description: doc?.description,
 //         has_projects: {
-//           title: projectTitles.filter((t) => t !== ""),
+//           title: projectTitles,
 //         },
 //         old_projects: doc?.old_projects,
 //         items:
@@ -152,14 +159,13 @@
 //             const serviceDetails = services.find(
 //               (srv) => Number(srv.id) === Number(s.service_id)
 //             );
-//             console.log(Number(s.tax));
 
 //             return {
 //               serviceId: Number(s.service_id),
 //               description: serviceDetails?.description || "",
 //               quantity: s.quantity,
 //               rate: parseFloat(s.individual_total) / s.quantity || 0,
-//               tax: Number(s.tax) || 0,
+//               tax: Number(serviceDetails?.tax_rate) || 0,
 //               discount: 0,
 //               amount: parseFloat(s.individual_total),
 //             };
@@ -211,7 +217,7 @@
 //   useEffect(() => {
 //     const currentProjects = watch("has_projects");
 //     if (!currentProjects?.title || currentProjects.title.length === 0) {
-//       setValue("has_projects", { title: [""] });
+//       setValue("has_projects", { title: [] });
 //     }
 //   }, []);
 //   const addNewRow = () => {
@@ -270,6 +276,7 @@
 //         : {
 //             quotation_date: data.quoteDate,
 //             status: status || "draft",
+//             description: data.description,
 //           }),
 
 //       total_amount: Number(calculateTotal().toFixed(2)),
@@ -287,7 +294,7 @@
 //         service_id: Number(item.serviceId),
 //         quantity: Number(item.quantity),
 //         rate: Number(item.rate),
-//         tax: Number(item.tax_rate),
+//         tax: Number(item.tax),
 //         discount: Number(item.discount || 0),
 //         individual_total: Number(item.amount),
 //       })),
@@ -636,7 +643,7 @@
 //                             watch(`items.${index}.tax`)
 //                           }
 //                           {...register(`items.${index}.tax_rate`, {
-//                             required: "Tax is required",
+//                             // required: "Tax is required",
 //                             min: {
 //                               value: 0,
 //                               message: "Tax cannot be negative",
@@ -932,7 +939,6 @@ import { useClients } from "@/features/clients/hooks/useClientsQuery";
 import { useServices } from "@/features/services/hooks/useServiceQuery";
 import AddClientModel from "@/components/common/AddClientModel";
 import TextareaField from "@/components/Form/TextareaField";
-import { useProject } from "@/features/projects/hooks/useProjects";
 
 export function DocumentForm({ type, onSuccess }) {
   const navigate = useNavigate();
@@ -943,11 +949,18 @@ export function DocumentForm({ type, onSuccess }) {
   const { state } = useLocation();
   const clientId = state?.clientId;
   const cloneFromId = state?.cloneFromId;
+  const quoteId = state?.quoteId;
 
   const isEditMode = !!id;
   const isCloneMode = !!cloneFromId;
+  const isConvertMode = !!quoteId && type === "invoices"; // Convert mode: creating invoice from quote
 
-  const { data: document } = useDocument(id || cloneFromId, type);
+  const documentId = quoteId ?? id ?? cloneFromId;
+  const documentType = quoteId ? "quotes" : type;
+
+  const { data: document } = useDocument(documentId, documentType);
+
+  console.log(document);
 
   const isInvoice = type === "invoices";
   const { data: clients, isLoading: clientsLoading } = useClients();
@@ -1023,63 +1036,110 @@ export function DocumentForm({ type, onSuccess }) {
   });
 
   const items = watch("items");
+
   useEffect(() => {
-    if (document && (isEditMode || isCloneMode)) {
+    if (document && (isEditMode || isCloneMode || isConvertMode)) {
       const doc = document;
       console.log(doc);
-      let projectTitles = [""];
+      let projectTitles = [];
       if (projects && projects.title && Array.isArray(projects.title)) {
-        projectTitles = projects.title.length > 0 ? projects.title : [""];
+        projectTitles = projects.title.filter((t) => t !== "");
       } else if (Array.isArray(projects) && projects.length > 0) {
-        projectTitles = projects.map((p) => p.title || "");
+        projectTitles = projects
+          .map((p) => p.title || "")
+          .filter((t) => t !== "");
       }
 
-      reset({
-        customerName: doc.client?.id || doc.client_id || clientId,
-        ...(isInvoice
-          ? {
-              invoice_date: doc.invoice_date,
-              due_date: doc.due_date,
-            }
-          : {
-              quoteDate: doc.quotation_date,
-            }),
-        notes: doc.notes || "",
-        terms: doc.terms || terms,
-        payment_percentage: "50",
-        payment_status: "pending",
-        payment_type: doc.payment_type,
-        description: doc?.description,
-        has_projects: {
-          title: projectTitles.filter((t) => t !== ""),
-        },
-        old_projects: doc?.old_projects,
-        items:
-          (isInvoice ? doc.invoice_services : doc.quote_services)?.map((s) => {
-            const serviceDetails = services.find(
-              (srv) => Number(srv.id) === Number(s.service_id)
-            );
+      // For convert mode, we're creating an invoice from a quote
+      if (isConvertMode) {
+        reset({
+          customerName: doc.client?.id || doc.client_id || clientId,
+          invoice_date: new Date().toISOString().split("T")[0],
+          due_date: new Date().toISOString().split("T")[0],
+          notes: doc.notes || "",
+          terms: doc.terms || terms,
+          payment_percentage: "50",
+          payment_status: "pending",
+          payment_type: doc.payment_type || "",
+          description: doc?.description,
+          has_projects: {
+            title: projectTitles,
+          },
+          old_projects: doc?.old_projects,
+          items:
+            doc.quote_services?.map((s) => {
+              const serviceDetails = services.find(
+                (srv) => Number(srv.id) === Number(s.service_id)
+              );
 
-            return {
-              serviceId: Number(s.service_id),
-              description: serviceDetails?.description || "",
-              quantity: s.quantity,
-              rate: parseFloat(s.individual_total) / s.quantity || 0,
-              tax: Number(serviceDetails?.tax_rate) || 0,
-              discount: 0,
-              amount: parseFloat(s.individual_total),
-            };
-          }) || [],
-      });
+              return {
+                serviceId: Number(s.service_id),
+                description: serviceDetails?.description || "",
+                quantity: s.quantity,
+                rate: parseFloat(s.individual_total) / s.quantity || 0,
+                tax: Number(serviceDetails?.tax_rate) || 0,
+                discount: 0,
+                amount: parseFloat(s.individual_total),
+              };
+            }) || [],
+        });
+      } else {
+        // Original logic for edit and clone modes
+        reset({
+          customerName: doc.client?.id || doc.client_id || clientId,
+          ...(isInvoice
+            ? {
+                invoice_date: doc.invoice_date,
+                due_date: doc.due_date,
+              }
+            : {
+                quoteDate: doc.quotation_date,
+              }),
+          notes: doc.notes || "",
+          terms: doc.terms || terms,
+          payment_percentage: "50",
+          payment_status: "pending",
+          payment_type: doc.payment_type,
+          description: doc?.description,
+          has_projects: {
+            title: projectTitles,
+          },
+          old_projects: doc?.old_projects,
+          items:
+            (isInvoice ? doc.invoice_services : doc.quote_services)?.map(
+              (s) => {
+                const serviceDetails = services.find(
+                  (srv) => Number(srv.id) === Number(s.service_id)
+                );
+
+                return {
+                  serviceId: Number(s.service_id),
+                  description: serviceDetails?.description || "",
+                  quantity: s.quantity,
+                  rate: parseFloat(s.individual_total) / s.quantity || 0,
+                  tax: Number(serviceDetails?.tax_rate) || 0,
+                  discount: 0,
+                  amount: parseFloat(s.individual_total),
+                };
+              }
+            ) || [],
+        });
+      }
     }
-  }, [document, isEditMode, isCloneMode, isInvoice, reset, services]);
+  }, [
+    document,
+    isEditMode,
+    isCloneMode,
+    isConvertMode,
+    isInvoice,
+    reset,
+    services,
+  ]);
 
   const clientOptions = clients?.map((c) => ({
     label: c.client?.user?.name || c.name || "Unknown Client",
     value: String(c.client?.id),
   }));
-
-  // const { data: AllProjects } = useProject();
 
   const AllProjects = [
     { id: 1, name: "Landing Page Redesign" },
@@ -1117,9 +1177,10 @@ export function DocumentForm({ type, onSuccess }) {
   useEffect(() => {
     const currentProjects = watch("has_projects");
     if (!currentProjects?.title || currentProjects.title.length === 0) {
-      setValue("has_projects", { title: [""] });
+      setValue("has_projects", { title: [] });
     }
   }, []);
+
   const addNewRow = () => {
     appendItem({
       service: "",
@@ -1161,6 +1222,7 @@ export function DocumentForm({ type, onSuccess }) {
 
   const calculateTotal = () =>
     items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
   const onSubmit = async (data, status) => {
     if (isSubmitting || !startSubmit()) return;
 
@@ -1172,6 +1234,8 @@ export function DocumentForm({ type, onSuccess }) {
             due_date: data.due_date,
             status: status || "unpaid",
             balance_due: Number(calculateTotal().toFixed(2)),
+            // Add quote reference if converting
+            ...(isConvertMode && { quote_id: quoteId }),
           }
         : {
             quotation_date: data.quoteDate,
@@ -1218,6 +1282,7 @@ export function DocumentForm({ type, onSuccess }) {
       </div>
     );
   }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full">
       <div className="space-y-4">
