@@ -117,3 +117,701 @@ import SelectField from "@/Components/Form/SelectField";
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+          ***********************************
+          // /* eslint-disable no-unused-vars */
+// import React, { useState, useMemo } from "react";
+// import {
+//   format,
+//   startOfMonth,
+//   endOfMonth,
+//   startOfWeek,
+//   endOfWeek,
+//   addDays,
+//   addMonths,
+//   subMonths,
+//   isSameMonth,
+//   isSameDay,
+//   isToday,
+//   parseISO,
+// } from "date-fns";
+// import {
+//   ChevronLeft,
+//   ChevronRight,
+//   Calendar as CalendarIcon,
+//   Clock,
+//   Users,
+//   MapPin,
+//   X,
+// } from "lucide-react";
+// import {
+//   CalendarProvider,
+//   CalendarHeader,
+//   CalendarBody,
+//   CalendarDatePicker,
+//   CalendarDatePagination,
+//   CalendarMonthPicker,
+//   CalendarYearPicker,
+//   CalendarDate,
+//   CalendarItem,
+//   useCalendarMonth,
+//   useCalendarYear,
+// } from "@/components/kibo-ui/calendar";
+// import { Button } from "@/components/ui/button";
+// import { cn } from "@/lib/utils";
+
+// const CalendarComponent = ({
+//   events = [],
+//   onDateSelect,
+//   onEventClick,
+//   onEventAdd,
+//   selectedDate,
+//   view = "month",
+//   className = "",
+// }) => {
+//   const [selectedEvent, setSelectedEvent] = useState(null);
+//   const [month, setMonth] = useCalendarMonth();
+//   const [year, setYear] = useCalendarYear();
+
+//   console.log(selectedEvent);
+//   console.log(month);
+//   console.log(year);
+
+//   const getEventStatusColor = (event) => {
+//     if (event.color) return event.color.replace("bg-", "");
+//     if (event.type === "meeting") return "#3b82f6";
+//     if (event.type === "deadline") return "#ef4444";
+//     if (event.type === "reminder") return "#eab308";
+//     if (event.priority === "high") return "#ef4444";
+//     if (event.priority === "medium") return "#f97316";
+//     return "#22c55e";
+//   };
+
+//   const processedEvents = useMemo(() => {
+//     return events.map((event) => ({
+//       ...event,
+//       startAt:
+//         event.startAt instanceof Date ? event.startAt : parseISO(event.startAt),
+//       endAt: event.endAt
+//         ? event.endAt instanceof Date
+//           ? event.endAt
+//           : parseISO(event.endAt)
+//         : null,
+//     }));
+//   }, [events]);
+
+//   const calendarFeatures = useMemo(() => {
+//     return processedEvents.map((event) => ({
+//       name: event.title,
+//       startAt: event.startAt,
+//       endAt: event.endAt || event.startAt,
+//       status: { color: getEventStatusColor(event) },
+//       originalEvent: event,
+//     }));
+//   }, [processedEvents]);
+
+//   const handleFeatureClick = (feature) => {
+//     const event = feature.originalEvent;
+//     setSelectedEvent(event);
+//     if (onEventClick) {
+//       onEventClick(event);
+//     }
+//   };
+
+//   const earliestYear =
+//     calendarFeatures
+//       .map((feature) => feature.startAt.getFullYear())
+//       .sort()
+//       .at(0) ?? new Date().getFullYear();
+//   const latestYear =
+//     calendarFeatures
+//       .map((feature) => feature.endAt.getFullYear())
+//       .sort()
+//       .at(-1) ?? new Date().getFullYear();
+
+//   return (
+//     <CalendarProvider
+//       className={cn("bg-background rounded-lg border border-border", className)}
+//     >
+//       <CalendarDate>
+//         <div className="flex items-center gap-2">
+//           <CalendarIcon className="w-5 h-5 text-muted-foreground" />
+//           <CalendarDatePicker>
+//             <CalendarMonthPicker />
+//             <CalendarYearPicker end={latestYear} start={earliestYear} />
+//           </CalendarDatePicker>
+//         </div>
+//         <div className="flex items-center gap-2">
+//           <CalendarDatePagination />
+//         </div>
+//       </CalendarDate>
+
+//       <div className="flex flex-col flex-1">
+//         <CalendarHeader />
+//         <CalendarBody features={calendarFeatures}>
+//           {({ feature }) => (
+//             <div
+//               className="cursor-pointer hover:opacity-80 transition-opacity"
+//               onClick={() => handleFeatureClick(feature)}
+//             >
+//               <CalendarItem feature={feature} />
+//             </div>
+//           )}
+//         </CalendarBody>
+//       </div>
+
+//       {selectedEvent && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+//           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+//             <div className="flex justify-between items-start mb-4">
+//               <h3 className="text-lg font-semibold text-foreground">
+//                 {selectedEvent.title}
+//               </h3>
+//               <button
+//                 onClick={() => setSelectedEvent(null)}
+//                 className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
+//               >
+//                 <X className="w-4 h-4" />
+//               </button>
+//             </div>
+
+//             <div className="space-y-3">
+//               <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                 <Clock className="w-4 h-4" />
+//                 <span>
+//                   {format(selectedEvent.startAt, "MMM d, yyyy")}
+//                   {selectedEvent.time && ` at ${selectedEvent.time}`}
+//                 </span>
+//               </div>
+
+//               {selectedEvent.endAt && (
+//                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                   <Clock className="w-4 h-4" />
+//                   <span>
+//                     Until {format(selectedEvent.endAt, "MMM d, yyyy")}
+//                   </span>
+//                 </div>
+//               )}
+
+//               {selectedEvent.location && (
+//                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                   <MapPin className="w-4 h-4" />
+//                   <span>{selectedEvent.location}</span>
+//                 </div>
+//               )}
+
+//               {selectedEvent.attendees && (
+//                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                   <Users className="w-4 h-4" />
+//                   <span>{selectedEvent.attendees}</span>
+//                 </div>
+//               )}
+
+//               {selectedEvent.description && (
+//                 <div className="text-sm text-gray-700">
+//                   {selectedEvent.description}
+//                 </div>
+//               )}
+
+//               {selectedEvent.type && (
+//                 <div className="flex items-center gap-2">
+//                   <span
+//                     className={`text-xs px-2 py-1 rounded-full text-white bg-${selectedEvent.type === "meeting" ? "blue" : selectedEvent.type === "deadline" ? "red" : selectedEvent.type === "reminder" ? "yellow" : "green"}-500`}
+//                   >
+//                     {selectedEvent.type}
+//                   </span>
+//                   {selectedEvent.priority && (
+//                     <span className="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-700">
+//                       {selectedEvent.priority} priority
+//                     </span>
+//                   )}
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <div className="p-4 border-t border-border">
+//         <div className="flex flex-wrap gap-4 text-xs">
+//           <div className="flex items-center gap-2">
+//             <div className="w-3 h-3 bg-blue-500 rounded"></div>
+//             <span className="text-muted-foreground">Meeting</span>
+//           </div>
+//           <div className="flex items-center gap-2">
+//             <div className="w-3 h-3 bg-red-500 rounded"></div>
+//             <span className="text-muted-foreground">Deadline</span>
+//           </div>
+//           <div className="flex items-center gap-2">
+//             <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+//             <span className="text-muted-foreground">Reminder</span>
+//           </div>
+//           <div className="flex items-center gap-2">
+//             <div className="w-3 h-3 bg-green-500 rounded"></div>
+//             <span className="text-muted-foreground">Other</span>
+//           </div>
+//         </div>
+//       </div>
+//     </CalendarProvider>
+//   );
+// };
+
+// export default CalendarComponent;
+/*************************************************
+/* eslint-disable react-hooks/exhaustive-deps */
+// /* eslint-disable react-hooks/exhaustive-deps */
+// /* eslint-disable no-unused-vars */
+// import React, { useState, useMemo } from "react";
+// import { format, parseISO } from "date-fns";
+// import {
+//   Calendar as CalendarIcon,
+//   Clock,
+//   Users,
+//   MapPin,
+//   X,
+// } from "lucide-react";
+// import {
+//   CalendarProvider,
+//   CalendarHeader,
+//   CalendarBody,
+//   CalendarDatePagination,
+//   CalendarDate,
+//   CalendarItem,
+//   useCalendarMonth,
+//   useCalendarYear,
+// } from "@/components/kibo-ui/calendar";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import { Button } from "@/components/ui/button";
+// import { cn } from "@/lib/utils";
+
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuRadioGroup,
+//   DropdownMenuRadioItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import { ChevronDown } from "lucide-react";
+// import { useEvents } from "../hooks/useCalendarQuery";
+
+// export default function CalendarComponent({ view = "month", className = "" }) {
+//   const [selectedEvent, setSelectedEvent] = useState(null);
+//   const [month, setMonth] = useCalendarMonth();
+//   const [year, setYear] = useCalendarYear();
+//   const [selectedDate, setSelectedDate] = useState(null);
+//   //   const { data: events } = useEvents();
+//   //   console.log(events);
+
+//   const [events, setEvents] = useState([
+//     {
+//       id: "1",
+//       title: "Team Meeting",
+//       start_date: "2025-12-25",
+//       end_date: "2025-12-25",
+//       start_hour: "10:00",
+//       end_hour: "11:00",
+//       category: "meeting",
+//       other_notes: "Weekly team sync to discuss project progress",
+//       status: "confirmed",
+//       url: "https://example.com/meeting-link",
+//       type: "online",
+//       repeatedly: "weekly",
+//       created_at: "2025-12-01T08:00:00Z",
+//       updated_at: "2025-12-10T08:00:00Z",
+//     },
+//     {
+//       id: "2",
+//       title: "Project Deadline",
+//       start_date: "2025-12-28",
+//       end_date: "2025-12-28",
+//       start_hour: "09:00",
+//       end_hour: "17:00",
+//       category: "deadline",
+//       other_notes: "Submit final project deliverables",
+//       status: "pending",
+//       url: "",
+//       type: "offline",
+//       repeatedly: "none",
+//       created_at: "2025-12-01T09:00:00Z",
+//       updated_at: "2025-12-10T09:00:00Z",
+//     },
+//     {
+//       id: "3",
+//       title: "Client Presentation",
+//       start_date: "2025-12-30",
+//       end_date: "2025-12-30",
+//       start_hour: "14:00",
+//       end_hour: "15:00",
+//       category: "meeting",
+//       other_notes: "Prepare slides and demo",
+//       status: "confirmed",
+//       url: "https://example.com/client-presentation",
+//       type: "online",
+//       repeatedly: "none",
+//       created_at: "2025-12-05T10:00:00Z",
+//       updated_at: "2025-12-12T10:00:00Z",
+//     },
+//     {
+//       id: "4",
+//       title: "Code Review",
+//       start_date: "2024-12-22",
+//       end_date: "2024-12-22",
+//       start_hour: "15:00",
+//       end_hour: "16:00",
+//       category: "reminder",
+//       other_notes: "Review pull requests and provide feedback",
+//       status: "pending",
+//       url: "",
+//       type: "offline",
+//       repeatedly: "daily",
+//       created_at: "2024-12-01T11:00:00Z",
+//       updated_at: "2024-12-10T11:00:00Z",
+//     },
+//     {
+//       id: "5",
+//       title: "Holiday Party",
+//       start_date: "2025-12-31",
+//       end_date: "2030-12-31",
+//       start_hour: "18:00",
+//       end_hour: "23:00",
+//       category: "other",
+//       other_notes: "Year-end celebration",
+//       status: "confirmed",
+//       url: "",
+//       type: "offline",
+//       repeatedly: "yearly",
+//       created_at: "2025-12-01T12:00:00Z",
+//       updated_at: "2025-12-15T12:00:00Z",
+//     },
+//   ]);
+
+//   const handleEventAdd = (date) => {
+//     console.log("event added");
+//   };
+//   const handleEventClick = (event) => {
+//     console.log("Event clicked:", event);
+//   };
+//   const handleDateSelect = (date) => {
+//     setSelectedDate(date);
+//     console.log("Selected date:", date);
+//   };
+
+//   const getEventStatusColor = (event) => {
+//     if (event.color) return event.color.replace("bg-", "");
+//     if (event.type === "meeting") return "#3b82f6";
+//     if (event.type === "deadline") return "#ef4444";
+//     if (event.type === "reminder") return "#eab308";
+//     if (event.priority === "high") return "#ef4444";
+//     if (event.priority === "medium") return "#f97316";
+//     return "#22c55e";
+//   };
+
+//   const processedEvents = useMemo(() => {
+//     return events?.map((event) => ({
+//       ...event,
+//       start_date:
+//         event.start_date instanceof Date
+//           ? event.start_date
+//           : parseISO(event.start_date),
+//       end_date: event.end_date
+//         ? event.end_date instanceof Date
+//           ? event.end_date
+//           : parseISO(event.end_date)
+//         : null,
+//     }));
+//   }, [events]);
+
+//   const calendarFeatures = useMemo(() => {
+//     return processedEvents?.map((event) => ({
+//       name: event.title,
+//       start_date: event.start_date,
+//       end_date: event.end_date || event.start_date,
+//       status: { color: getEventStatusColor(event) },
+//       originalEvent: event,
+//     }));
+//   }, [processedEvents]);
+
+//   const handleFeatureClick = (feature) => {
+//     const event = feature.originalEvent;
+//     setSelectedEvent(event);
+//     handleEventClick(event);processedEvents
+//   };
+
+//   const handleDeleteEvent = (eventId) => {
+//     console.log(eventId + "is deleted");
+//     setSelectedEvent(null);
+//   };
+
+//   const earliestYear =
+//     calendarFeatures
+//       .map((feature) => feature.start_date.getFullYear())
+//       .sort()
+//       .at(0) ?? new Date().getFullYear();
+//   const latestYear =
+//     calendarFeatures
+//       .map((feature) => feature.end_date.getFullYear())
+//       .sort()
+//       .at(-1) ?? new Date().getFullYear();
+
+//   const months = [
+//     "January",
+//     "February",
+//     "March",
+//     "April",
+//     "May",
+//     "June",
+//     "July",
+//     "August",
+//     "September",
+//     "October",
+//     "November",
+//     "December",
+//   ];
+
+//   const years = Array.from(
+//     { length: latestYear - earliestYear + 1 },
+//     (_, i) => earliestYear + i
+//   );
+
+//   const [selectedStatus, setSelectedStatus] = useState("calendar");
+//   const viewsType = ["calendar", "table"];
+//   const selectStatus = (value) => {
+//     setSelectedStatus(value);
+//   };
+
+//   return (
+//     <div className="w-full h-screen">
+//       <div className="flex item-center justify-between mb-4">
+//         <div>
+//           <DropdownMenu>
+//             <DropdownMenuTrigger asChild>
+//               <button className="flex-1 rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
+//                 Order {selectedStatus}
+//                 <ChevronDown className="w-4 h-4" />
+//               </button>
+//             </DropdownMenuTrigger>
+
+//             <DropdownMenuContent align="start" className="w-56">
+//               <DropdownMenuRadioGroup
+//                 value={selectedStatus}
+//                 onValueChange={selectStatus}
+//               >
+//                 {viewsType.map((status) => (
+//                   <DropdownMenuRadioItem key={status} value={status}>
+//                     <span className="capitalize">
+//                       {status.replace("_", " ")}
+//                     </span>
+//                   </DropdownMenuRadioItem>
+//                 ))}
+//               </DropdownMenuRadioGroup>
+//             </DropdownMenuContent>
+//           </DropdownMenu>
+//         </div>
+//         <Button
+//           onClick={() => {
+//             handleEventAdd();
+//           }}
+//         >
+//           Add Event
+//         </Button>
+//       </div>
+//       <div className="w-full h-full">
+//         <CalendarProvider
+//           className={cn(
+//             "bg-background rounded-lg border border-border",
+//             className
+//           )}
+//         >
+//           <CalendarDate>
+//             <div className="flex items-center gap-2 ">
+//               {/* <CalendarIcon className="w-5 h-5 text-muted-foreground" /> */}
+//               <Select
+//                 value={month.toString()}
+//                 onValueChange={(val) => setMonth(parseInt(val))}
+//               >
+//                 <SelectTrigger className="w-[140px] h-8">
+//                   <SelectValue placeholder="Select month" />
+//                 </SelectTrigger>
+//                 <SelectContent>
+//                   {months.map((monthName, index) => (
+//                     <SelectItem key={index} value={index.toString()}>
+//                       {monthName}
+//                     </SelectItem>
+//                   ))}
+//                 </SelectContent>
+//               </Select>
+//               <Select
+//                 value={year.toString()}
+//                 onValueChange={(val) => setYear(parseInt(val))}
+//               >
+//                 <SelectTrigger className="w-[100px] h-8">
+//                   <SelectValue placeholder="Select year" />
+//                 </SelectTrigger>
+//                 <SelectContent>
+//                   {years.map((yearValue) => (
+//                     <SelectItem key={yearValue} value={yearValue.toString()}>
+//                       {yearValue}
+//                     </SelectItem>
+//                   ))}
+//                 </SelectContent>
+//               </Select>
+//             </div>
+//             <div className="flex items-center gap-2 ">
+//               <CalendarDatePagination />
+//               <button
+//                 onClick={() => {
+//                   const today = new Date();
+//                   setMonth(today.getMonth());
+//                   setYear(today.getFullYear());
+//                   setSelectedDate(today);
+//                 }}
+//                 className="border border-border rounded-lg w-[80px] h-8 cursor-pointer"
+//               >
+//                 Today
+//               </button>
+//             </div>
+//           </CalendarDate>
+
+//           <div className="flex flex-col flex-1">
+//             <CalendarHeader />
+//             <CalendarBody features={calendarFeatures}>
+//               {({ feature }) => (
+//                 <div
+//                   className="cursor-pointer hover:opacity-80 transition-opacity"
+//                   onClick={() => handleFeatureClick(feature)}
+//                 >
+//                   <CalendarItem feature={feature} />
+//                 </div>
+//               )}
+//             </CalendarBody>
+//           </div>
+
+//           {selectedEvent && (
+//             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+//               <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+//                 <div className="flex justify-between items-start mb-4">
+//                   <h3 className="text-lg font-semibold text-foreground">
+//                     {selectedEvent.title}
+//                   </h3>
+//                   <Button
+//                     variant="ghost"
+//                     onClick={() => setSelectedEvent(null)}
+//                     className="w-8 h-8 p-0"
+//                   >
+//                     <X className="w-4 h-4" />
+//                   </Button>
+//                 </div>
+
+//                 <div className="space-y-3">
+//                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                     <Clock className="w-4 h-4" />
+//                     <span>
+//                       {format(selectedEvent.start_date, "MMM d, yyyy")}
+//                       {selectedEvent.start_hour &&
+//                         ` at ${selectedEvent.start_hour}`}
+//                     </span>
+//                   </div>
+
+//                   {selectedEvent.end_date && (
+//                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                       <Clock className="w-4 h-4" />
+//                       <span>
+//                         Until {format(selectedEvent.end_date, "MMM d, yyyy")}
+//                       </span>
+//                     </div>
+//                   )}
+
+//                   {selectedEvent.location && (
+//                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                       <MapPin className="w-4 h-4" />
+//                       <span>{selectedEvent.location}</span>
+//                     </div>
+//                   )}
+
+//                   {selectedEvent.attendees && (
+//                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                       <Users className="w-4 h-4" />
+//                       <span>{selectedEvent.attendees}</span>
+//                     </div>
+//                   )}
+
+//                   {selectedEvent.description && (
+//                     <div className="text-sm text-gray-700">
+//                       {selectedEvent.description}
+//                     </div>
+//                   )}
+
+//                   {selectedEvent.type && (
+//                     <div className="flex items-center gap-2">
+//                       <span
+//                         className={cn(
+//                           "text-xs px-2 py-1 rounded-full text-white",
+//                           selectedEvent.type === "meeting" && "bg-blue-500",
+//                           selectedEvent.type === "deadline" && "bg-red-500",
+//                           selectedEvent.type === "reminder" && "bg-yellow-500",
+//                           !["meeting", "deadline", "reminder"].includes(
+//                             selectedEvent.type
+//                           ) && "bg-green-500"
+//                         )}
+//                       >
+//                         {selectedEvent.type}
+//                       </span>
+//                       {selectedEvent.priority && (
+//                         <span className="text-xs px-2 py-1 rounded-full bg-gray-200 text-gray-700">
+//                           {selectedEvent.priority} priority
+//                         </span>
+//                       )}
+//                     </div>
+//                   )}
+//                 </div>
+
+//                 <div className="mt-4 flex gap-2">
+//                   <Button
+//                     variant="destructive"
+//                     onClick={() => handleDeleteEvent(selectedEvent.id)}
+//                     className="flex-1"
+//                   >
+//                     Delete Event
+//                   </Button>
+//                   <Button
+//                     variant="outline"
+//                     onClick={() => setSelectedEvent(null)}
+//                     className="flex-1"
+//                   >
+//                     Close
+//                   </Button>
+//                 </div>
+//               </div>
+//             </div>
+//           )}
+
+//           <div className="p-4 border-t border-border">
+//             <div className="flex flex-wrap gap-4 text-xs">
+//               <div className="flex items-center gap-2">
+//                 <div className="w-3 h-3 bg-blue-500 rounded"></div>
+//                 <span className="text-muted-foreground">Meeting</span>
+//               </div>
+//               <div className="flex items-center gap-2">
+//                 <div className="w-3 h-3 bg-red-500 rounded"></div>
+//                 <span className="text-muted-foreground">Deadline</span>
+//               </div>
+//               <div className="flex items-center gap-2">
+//                 <div className="w-3 h-3 bg-yellow-500 rounded"></div>
+//                 <span className="text-muted-foreground">Reminder</span>
+//               </div>
+//               <div className="flex items-center gap-2">
+//                 <div className="w-3 h-3 bg-green-500 rounded"></div>
+//                 <span className="text-muted-foreground">Other</span>
+//               </div>
+//             </div>
+//           </div>
+//         </CalendarProvider>
+//       </div>
+//     </div>
+//   );
+// }
