@@ -337,8 +337,6 @@
 //   ];
 // }
 
-// kflmsdmlfjsmqkljfmlkq
-
 /* eslint-disable react-hooks/rules-of-hooks */
 import {
   LinkIcon,
@@ -369,29 +367,12 @@ import { toast } from "sonner";
 import { useCancelPayment, useConfirmPayment } from "../hooks/usePaymentQuery";
 import { Link } from "react-router-dom";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
-import axios from "axios";
-import { useForm } from "react-hook-form";
-export function paymentColumns(role) {
+export function paymentColumns(role, { onEditPaidAt }) {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copied!`, {
       duration: 3000,
     });
-  };
-
-  const [open, setOpen] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState(null);
-
-  const { control, handleSubmit, reset } = useForm();
-
-  const onSubmit = async (data) => {
-    await axios.patch(`/payments/${selectedPayment.id}/paid-at`, {
-      paid_at: data.paid_at,
-    });
-
-    setOpen(false);
-    setSelectedPayment(null);
-    reset();
   };
 
   return [
@@ -546,42 +527,21 @@ export function paymentColumns(role) {
       cell: ({ row }) => {
         const payment = row.original;
         const date = new Date(row.getValue("updated_at"));
-        const [open, setOpen] = useState(false);
 
         return (
-          <>
-            <div
-              className="text-sm cursor-pointer hover:underline"
-              onDoubleClick={() => setOpen(true)}
-            >
-              {isNaN(date)
-                ? "Invalid Date"
-                : date.toLocaleDateString("fr-MA", {
-                    month: "numeric",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-            </div>
-
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogContent
-                className="sm:max-w-md"
-                onInteractOutside={(e) => e.preventDefault()}
-                onPointerDownOutside={(e) => e.preventDefault()}
-                onEscapeKeyDown={(e) => e.preventDefault()}
-              >
-                <DialogHeader>
-                  <DialogDescription className="space-y-6 mt-4">
-                    <EditPayment
-                      payment={payment}
-                      onClose={() => setOpen(false)}
-                    />
-                  </DialogDescription>
-                </DialogHeader>
-              </DialogContent>
-            </Dialog>
-          </>
+          <div
+            className="text-sm cursor-pointer hover:underline"
+            onDoubleClick={() => onEditPaidAt(payment)}
+          >
+            {isNaN(date)
+              ? "Invalid Date"
+              : date.toLocaleDateString("fr-MA", {
+                  month: "numeric",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+          </div>
         );
       },
     },

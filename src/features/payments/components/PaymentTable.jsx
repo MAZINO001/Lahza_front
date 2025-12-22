@@ -7,23 +7,44 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import FormField from "@/Components/Form/FormField";
 
 import { useAuthContext } from "@/hooks/AuthContext";
 import { paymentColumns } from "../columns/paymentColumns";
 import { usePayments } from "../hooks/usePaymentQuery";
 import { DataTable } from "@/components/table/DataTable";
-
+import EditDatePayment from "../components/editDatePayment";
 export default function PaymentTable() {
   const [sorting, setSorting] = useState([]);
-
   const [columnFilters, setColumnFilters] = useState([]);
-
   const { role } = useAuthContext();
   const { data: payments = [], isLoading } = usePayments();
 
-  const columns = React.useMemo(() => paymentColumns(role), [role]);
+  const [paidAtOpen, setPaidAtOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+
+  const handleEditPaidAt = (payment) => {
+    setSelectedPayment(payment);
+    setPaidAtOpen(true);
+  };
+
+  const columns = React.useMemo(
+    () =>
+      paymentColumns(role, {
+        onEditPaidAt: handleEditPaidAt,
+      }),
+    [role]
+  );
+
+  // const columns = React.useMemo(() => paymentColumns(role), [role]);
 
   const table = useReactTable({
     data: payments,
@@ -57,6 +78,23 @@ export default function PaymentTable() {
           isLoading={isLoading}
           isInvoiceTable={false}
         />
+
+        <Dialog open={paidAtOpen} onOpenChange={setPaidAtOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit payment Date</DialogTitle>
+              <DialogDescription className="space-y-6 mt-4">
+                {selectedPayment && (
+                  <EditDatePayment
+                    PaymentId={selectedPayment?.id}
+                    date={selectedPayment?.updated_at}
+                    onClose={() => setPaidAtOpen(false)}
+                  />
+                )}
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
