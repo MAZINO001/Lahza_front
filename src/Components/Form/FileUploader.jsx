@@ -248,15 +248,19 @@ export default function Component({ error, onChange, type, name, label }) {
               </Button>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center px-4 py-3 text-center">
-              <Upload className="size-10 mb-3 text-muted-foreground" />
-              <p className="mb-1.5 text-sm font-medium">Add Your {name} Here</p>
-              <p className="text-xs text-muted-foreground mb-4">
-                Drag & drop files or click to browse
-              </p>
-              <p className="text-xs text-muted-foreground mb-4">
-                All file types supported (max {maxSizeMB}MB per file)
-              </p>
+            <div className="flex flex-col items-center justify-center  text-center">
+              {name === "Attach File" ? (
+                <>
+                  <Upload className="size-10 mb-3 text-muted-foreground" />
+                  <p className="mb-1.5 text-sm font-medium">
+                    Add Your {name} Here
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Drag & drop files or click to browse
+                  </p>
+                </>
+              ) : null}
+
               <Button variant="outline" type="button" onClick={openFileDialog}>
                 <Upload
                   className="-ms-1 size-4 opacity-60"

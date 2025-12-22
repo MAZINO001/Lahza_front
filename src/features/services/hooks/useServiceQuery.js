@@ -10,6 +10,11 @@ const apiService = {
     getAll: () => api.get(`${API_URL}/services`).then((res) => res.data ?? []),
     getById: (id) =>
         api.get(`${API_URL}/services/${id}`).then((res) => res.data?.service ?? res.data ?? null),
+
+    getByDocsId: (id, type) =>
+        api.get(`${API_URL}/services/${id}/${type}`).then((res) => {
+            return res.data ?? [];
+        }),
     create: (data) => api.post(`${API_URL}/services`, data),
     update: (id, data) => api.put(`${API_URL}/services/${id}`, data),
     delete: (id) => api.delete(`${API_URL}/services/${id}`),
@@ -28,6 +33,16 @@ export function useService(id) {
         queryKey: ["services", id],
         queryFn: () => apiService.getById(id),
         enabled: !!id,
+        staleTime: 5 * 60 * 1000,
+    });
+}
+
+
+export function useDocsByService(id, type) {
+    return useQuery({
+        queryKey: ["services", id, type],
+        queryFn: () => apiService.getByDocsId(id, type),
+        enabled: !!id && !!type,
         staleTime: 5 * 60 * 1000,
     });
 }
@@ -64,3 +79,4 @@ export function useDeleteService() {
         },
     });
 }
+

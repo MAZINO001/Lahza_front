@@ -9,7 +9,7 @@ import { ProjectColumns } from "@/features/projects/columns/projectColumns";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 
-export default function Transactions() {
+export default function Transactions({ currentId }) {
   const [openSections, setOpenSections] = useState({
     invoices: false,
     quotes: false,
@@ -79,6 +79,7 @@ export default function Transactions() {
           isLoading={section.isLoading}
           isOpen={openSections[section.id]}
           onToggle={() => toggleSection(section.id)}
+          currentId={currentId}
         />
       ))}
     </div>

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-export const getClientColumns = (role) => {
+export function getClientColumns(role) {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copied!`, { duration: 3000 });
@@ -73,4 +73,4 @@ export const getClientColumns = (role) => {
       ),
     },
   ];
-};
+}

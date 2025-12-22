@@ -1,6 +1,6 @@
 // src/pages/services/ServiceViewPage.jsx
 import ServicesSidebar from "@/components/services_offers/service_sidebar";
-import ServicePage from "@/components/services_offers/service_offers_page";
+import ServicePage from "@/components/services_offers/services/services_page";
 import { useParams } from "react-router-dom";
 export default function ServiceViewPage() {
   const { id } = useParams();

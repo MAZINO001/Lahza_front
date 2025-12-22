@@ -62,12 +62,15 @@ export function useUpdateClient() {
 
 export function useDeleteClient() {
     const queryClient = useQueryClient();
+
     return useMutation({
-        mutationFn: apiClient.delete,
+        mutationFn: (url) => apiClient.delete(url),
         onSuccess: () => {
             toast.success("Client deleted");
             queryClient.invalidateQueries({ queryKey: ["clients"] });
         },
-        onError: () => toast.error("Failed to delete client"),
+        onError: () => {
+            toast.error("Failed to delete client");
+        },
     });
 }

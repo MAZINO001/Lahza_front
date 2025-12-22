@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   ChevronDown,
   ChevronRight,
@@ -31,15 +31,22 @@ export default function TransactionSection({
   isOpen,
   columns = [],
   onToggle,
+  currentId,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [rowSelection, setRowSelection] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 1;
   const { role } = useAuthContext();
+
+  const filteredData = useMemo(
+    () => data?.filter((data) => data?.client_id == currentId),
+    [data, currentId]
+  );
+  const totalPages = Math.ceil((filteredData?.length || 0) / 10) || 1;
+
   const table = useReactTable({
-    data: data ?? [],
+    data: filteredData ?? [],
     columns: columns ?? [],
     state: { sorting, columnFilters, rowSelection },
     onSortingChange: setSorting,
@@ -71,7 +78,9 @@ export default function TransactionSection({
           <span className="font-medium text-foreground">{title}</span>
         </CollapsibleTrigger>
 
-        <Link to={`/${role}/${title.toLowerCase().slice(0, -1)}/new`}>
+        <Link
+          to={`/${role}/${title.toLowerCase() === "invoices" ? "invoice" : title.toLowerCase() === "quotes" ? "quote" : title.toLowerCase()}/new`}
+        >
           <Button size="sm">
             <Plus className="h-4 w-4 mr-1" />
             New

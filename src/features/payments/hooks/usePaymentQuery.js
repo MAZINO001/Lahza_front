@@ -23,6 +23,8 @@ const apiPayments = {
     confirm: (id) => api.put(`${API_URL}/validatePayments/${id}`),
 
     cancel: (id) => api.put(`${API_URL}/cancelPayment/${id}`),
+    updatePaymentDate: (id, paid_at) => api.put(`${API_URL}/payment/date/${id}`, { updated_at: paid_at })
+
 };
 
 export function usePayments() {
@@ -124,6 +126,24 @@ export function useCancelPayment() {
         onError: (err) => {
             console.error("Cancel payment failed:", err);
             toast.error("Failed to Cancel payment");
+        },
+    });
+}
+
+export function useUpdatePaymentDate() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, paid_at }) => {
+            console.log("Mutation called with ID:", id, "Paid At:", paid_at);
+            return apiPayments.updatePaymentDate(id, paid_at);
+        },
+        onSuccess: () => {
+            toast.success("Payment Date Updated");
+            queryClient.invalidateQueries({ queryKey: ["payments"] });
+        },
+        onError: (err) => {
+            console.error("Payment Date Update failed:", err);
+            toast.error("Failed to update Payment Date");
         },
     });
 }

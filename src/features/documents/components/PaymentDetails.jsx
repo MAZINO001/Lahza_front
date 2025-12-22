@@ -79,7 +79,7 @@ export default function PaymentDetails({ invoiceId }) {
                             copyToClipboard(payment.payment_url, "Payment Url");
                           }
 
-                          if (payment.payment_method === "banc") {
+                          if (payment.payment_method === "bank") {
                             copyToClipboard(
                               "007 640 0014332000000260 29",
                               "Payment Url"
@@ -88,7 +88,7 @@ export default function PaymentDetails({ invoiceId }) {
                         }}
                       >
                         <Copy className="mr-1 h-4 w-4" />
-                        Copy Url
+                        Copy Rib
                       </Button>
                     </div>
                   )}

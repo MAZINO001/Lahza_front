@@ -4,7 +4,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Overview_chart from "./overview_chart";
 import Overview_ClientInfo from "./overview_ClientInfo";
 import Overview_Payments from "./overview_Payments";
-export default function Overview({ data }) {
+import { useClientHistory } from "@/features/clients/hooks/useClientsHistory";
+export default function Overview({ data, currentId }) {
   const getInitials = (name) => {
     return name
       .split(" ")
@@ -14,6 +15,8 @@ export default function Overview({ data }) {
       .slice(0, 2);
   };
 
+  const { data: history } = useClientHistory(currentId);
+  console.log(history);
   const displayName =
     data?.client?.client_type === "company"
       ? data?.client?.company
@@ -28,13 +31,13 @@ export default function Overview({ data }) {
 
   return (
     <div className="grid bg-background grid-cols-2 gap-4">
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         <div className="bg-background rounded-lg border border-border p-4">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             {displayName}
           </h3>
 
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-4 ">
             <Avatar className="w-12 h-12">
               <AvatarImage src="" alt={data?.client.user?.name || "unknown"} />
               <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
@@ -60,10 +63,13 @@ export default function Overview({ data }) {
         <Overview_ClientInfo id={data?.client?.id} />
       </div>
       <div className="space-y-4">
-        <Overview_Payments formatCurrency={formatCurrency} />
-        <Overview_chart formatCurrency={formatCurrency} />
+        <Overview_Payments
+          formatCurrency={formatCurrency}
+          currentId={currentId}
+        />
+        <Overview_chart formatCurrency={formatCurrency} currentId={currentId} />
         <div className="bg-background max-h-[500px] overflow-y-auto rounded-lg border border-border p-4">
-          <TimelineComponent />
+          <TimelineComponent data={history} />
         </div>
       </div>
     </div>

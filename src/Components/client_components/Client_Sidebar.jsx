@@ -9,11 +9,18 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useClients } from "@/features/clients/hooks/useClientsQuery";
+import {
+  useClients,
+  useDeleteClient,
+} from "@/features/clients/hooks/useClientsQuery";
 import AddClientModel from "../common/AddClientModel";
+import { Button } from "../ui/button";
+import Checkbox from "../Checkbox";
 
 export default function Client_Sidebar({ currentId }) {
   const { data: clients = [], isLoading, isError } = useClients();
+  const [selectedIds, setSelectedIds] = useState([]);
+
   const { role } = useAuthContext();
 
   const clientStatuses = ["all", "active", "inactive", "unpaid", "overdue"];
@@ -23,6 +30,18 @@ export default function Client_Sidebar({ currentId }) {
     if (selectedStatus === "all") return clients;
     return clients.filter((item) => item.client?.status === selectedStatus);
   }, [clients, selectedStatus]);
+
+  const deleteClientMutation = useDeleteClient();
+
+  const deleteSelected = async () => {
+    if (selectedIds.length === 0) return;
+
+    selectedIds.forEach((id) => {
+      deleteClientMutation.mutate(id);
+    });
+
+    setSelectedIds([]);
+  };
 
   if (isLoading) {
     return (
@@ -40,8 +59,14 @@ export default function Client_Sidebar({ currentId }) {
     );
   }
 
+  const toggleSelect = (id) => {
+    setSelectedIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
   return (
-    <div className="w-[25%] bg-background border-r border-border">
+    <div className="w-[25%]  bg-background border-r border-border h-full ">
       <div className="px-2 py-4 border-b flex items-center justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -65,10 +90,16 @@ export default function Client_Sidebar({ currentId }) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <AddClientModel />
+        {selectedIds.length > 0 ? (
+          <Button onClick={deleteSelected} variant="destructive">
+            Delete ({selectedIds.length})
+          </Button>
+        ) : (
+          <AddClientModel />
+        )}
       </div>
 
-      <div className="cursor-pointer">
+      <div className="cursor-pointer  overflow-auto h-full">
         {filteredData.length === 0 ? (
           <div className="p-4 text-center text-muted-foreground text-sm">
             No client found
@@ -79,23 +110,32 @@ export default function Client_Sidebar({ currentId }) {
             const isActive = client.id == currentId;
 
             return (
-              <Link
+              <div
                 key={client.id}
-                to={`/${role}/client/${client.id}`}
-                className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 border-l-2 transition ${
+                className={`mb-1 rounded-tr-lg rounded-br-lg p-2 border-l-2 transition flex gap-4 items-center w-full ${
                   isActive
                     ? "bg-background border-l-blue-500"
                     : "border-l-transparent hover:bg-accent-foreground"
                 }`}
               >
-                <div className="font-medium text-foreground truncate">
-                  {client.user?.name ?? "-"}
-                </div>
+                <Checkbox
+                  type="checkbox"
+                  checked={selectedIds.includes(client.id)}
+                  onChange={() => toggleSelect(client.id)}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-4 h-4 mt-1 cursor-pointer"
+                />
 
-                <div className="text-sm text-muted-foreground">
-                  {Number(item.totalPaid).toFixed(2)} MAD
-                </div>
-              </Link>
+                <Link to={`/${role}/client/${client.id}`} className="flex-1">
+                  <div className="font-medium text-foreground truncate">
+                    {client.user?.name ?? "-"}
+                  </div>
+
+                  <div className="text-sm text-muted-foreground">
+                    {Number(item.totalPaid).toFixed(2)} MAD
+                  </div>
+                </Link>
+              </div>
             );
           })
         )}

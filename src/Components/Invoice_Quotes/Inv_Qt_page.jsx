@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { Download, Edit2, Filter, Printer, Send, X } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import DocumentBanner from "@/components/DocumentBanner";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
@@ -11,8 +10,17 @@ import { globalFnStore } from "@/hooks/GlobalFnStore";
 import axios from "axios";
 import {
   useDocument,
-  useCreateInvoiceFromQuote,
+  useCreateDocument,
 } from "@/features/documents/hooks/useDocumentsQuery";
+
+import { MoreVertical } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 export default function Inv_Qt_page({ type, currentId }) {
   const isInvoice = type === "invoices";
@@ -27,7 +35,7 @@ export default function Inv_Qt_page({ type, currentId }) {
 
   const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =
     globalFnStore();
-  const createInvoiceFromQuote = useCreateInvoiceFromQuote();
+  const createInvoiceMutation = useCreateDocument("invoices");
 
   const handleSendPdf = () => {
     handleSendInvoice_Quote(document.id, user.email, `${type}`);
@@ -62,34 +70,22 @@ export default function Inv_Qt_page({ type, currentId }) {
     }
   };
   const handleInvoiceConversion = async () => {
-    try {
-      await createInvoiceFromQuote.mutateAsync(document.id);
-
-      // Update quote status to confirmed
-      await api.put(
-        `${import.meta.env.VITE_BACKEND_URL}/quotes/${document.id}`,
-        { status: "confirmed" }
-      );
-
-      alert("Quote converted and marked as accepted!");
-      navigate(`/${role}/invoices`);
-    } catch (error) {
-      console.error("Error details:", error.response?.data || error);
-      alert(
-        `Failed to convert to invoice: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-    }
+    const quoteId = document?.id;
+    navigate(`/${role}/invoice/new`, { state: { quoteId } });
+  };
+  const handleClone = () => {
+    navigate(`/${role}/${currentSection}/new`, {
+      state: { cloneFromId: currentId },
+    });
   };
 
   return (
-    <div className="flex-1 flex flex-col">
-      <div className="bg-background border-b px-2 py-4 flex items-center justify-between">
+    <div className="flex-1 flex flex-col h-screen">
+      <div className="bg-background px-2 py-4 border-b gap-3 flex items-center justify-between">
         <div className="text-lg font-semibold">
-          {isInvoice ? "INV" : "QT"}-000{currentId}
+          {isInvoice ? "INVOICE" : "QUOTE"}-000{currentId}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ">
           <Link
             to={`/${role}/${currentSection}/${currentId}/edit`}
             state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
@@ -113,13 +109,31 @@ export default function Inv_Qt_page({ type, currentId }) {
             <Printer size={20} />
           </Button>
           {role === "admin" ? (
-            <Button
-              onClick={handleSendPdf}
-              variant="outline"
-              className="h-8 w-8 cursor-pointer"
-            >
-              <Send size={20} />
-            </Button>
+            <>
+              <Button
+                onClick={handleSendPdf}
+                variant="outline"
+                className="h-8 w-8 cursor-pointer"
+              >
+                <Send size={20} />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="p-2 border border-border rounded-md">
+                    <MoreVertical className="h-4 w-4" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      handleClone();
+                    }}
+                  >
+                    Clone
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
           ) : (
             ""
           )}
@@ -153,10 +167,21 @@ export default function Inv_Qt_page({ type, currentId }) {
           </button>
         </div>
       </div>
-      <div className="flex items-center justify-center">
-        <PdfPreview
-          src={`http://127.0.0.1:8000/pdf/${currentSection}/${currentId}`}
-        />
+      <div className="flex flex-col h-full p-4 gap-4 overflow-auto">
+        <div className="shrink-0">
+          <DocumentBanner
+            type="quote"
+            action="New Quote"
+            content="Prepare a quote for your customer."
+            clientId={currentId}
+          />
+        </div>
+
+        <div className="flex-1 min-h-0">
+          <PdfPreview
+            src={`http://127.0.0.1:8000/pdf/${currentSection}/${currentId}`}
+          />
+        </div>
       </div>
     </div>
   );
