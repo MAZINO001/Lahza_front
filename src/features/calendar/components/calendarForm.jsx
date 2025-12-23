@@ -3,12 +3,24 @@ import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import FormField from "@/components/Form/FormField";
 import { useCreateEvent } from "../hooks/useCalendarQuery";
-import { useEvent } from "@dnd-kit/utilities";
+import { useEventById } from "../hooks/useCalendarQuery";
+import SelectField from "@/components/comp-192";
+import TagsField from "@/components/Form/TagsField";
+import TextareaField from "@/components/Form/TextareaField";
+import ColorPicker from "@/components/kibo-ui/ColorPicker";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function CalendarForm({ EventID, onSuccess }) {
   const isEditMode = !!EventID;
 
-  const { data: event } = useEvent(EventID);
+  const { data: event } = useEventById(EventID);
   const {
     handleSubmit,
     control,
@@ -22,7 +34,7 @@ export default function CalendarForm({ EventID, onSuccess }) {
       start_hour: "",
       end_hour: "",
       category: "meeting",
-      status: "confirmed",
+      status: "pending",
       type: "online",
       repeatedly: "none",
       url: "",
@@ -119,43 +131,43 @@ export default function CalendarForm({ EventID, onSuccess }) {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Controller
-          name="category"
-          control={control}
-          render={({ field }) => (
-            <FormField
-              {...field}
-              type="select"
-              label="Category"
-              options={[
-                { label: "Meeting", value: "meeting" },
-                { label: "Appointment", value: "appointment" },
-                { label: "Event", value: "event" },
-                { label: "Task", value: "task" },
-              ]}
-              error={errors?.category?.message}
-            />
-          )}
-        />
-
-        <Controller
-          name="status"
-          control={control}
-          render={({ field }) => (
-            <FormField
-              {...field}
-              type="select"
-              label="Status"
-              options={[
-                { label: "Confirmed", value: "confirmed" },
-                { label: "Pending", value: "pending" },
-                { label: "Cancelled", value: "cancelled" },
-              ]}
-              error={errors?.status?.message}
-            />
-          )}
-        />
+      <div className="flex flex-col w-full gap-4 ">
+        <div className="w-full">
+          <Controller
+            name="tags"
+            control={control}
+            render={({ field }) => (
+              <TagsField
+                id="tags"
+                label="Tags"
+                value={field.value || []}
+                onChange={(newTags) => {
+                  field.onChange(newTags);
+                }}
+                error={errors.tags?.message}
+                {...field}
+              />
+            )}
+          />
+        </div>
+        <div>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button type="button" variant="outline">
+                Pick a color
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Select Event Color</DialogTitle>
+                <DialogDescription>
+                  Choose a color to represent your event.
+                </DialogDescription>
+              </DialogHeader>
+              <ColorPicker />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -163,15 +175,18 @@ export default function CalendarForm({ EventID, onSuccess }) {
           name="type"
           control={control}
           render={({ field }) => (
-            <FormField
-              {...field}
-              type="select"
+            <SelectField
+              id="type"
               label="Type"
+              value={field.value || ""}
+              onChange={(val) => {
+                field.onChange(val);
+              }}
+              error={errors.type?.message}
               options={[
                 { label: "Online", value: "online" },
-                { label: "In-Person", value: "in-person" },
+                { label: "Offline", value: "offline" },
               ]}
-              error={errors?.type?.message}
             />
           )}
         />
@@ -180,17 +195,20 @@ export default function CalendarForm({ EventID, onSuccess }) {
           name="repeatedly"
           control={control}
           render={({ field }) => (
-            <FormField
-              {...field}
-              type="select"
+            <SelectField
+              id="repeatedly"
               label="Repeat"
+              value={field.value || ""}
+              onChange={(val) => {
+                field.onChange(val);
+              }}
+              error={errors.repeatedly?.message}
               options={[
                 { label: "Does not repeat", value: "none" },
                 { label: "Daily", value: "daily" },
                 { label: "Weekly", value: "weekly" },
                 { label: "Monthly", value: "monthly" },
               ]}
-              error={errors?.repeatedly?.message}
             />
           )}
         />
@@ -214,7 +232,7 @@ export default function CalendarForm({ EventID, onSuccess }) {
         name="other_notes"
         control={control}
         render={({ field }) => (
-          <FormField
+          <TextareaField
             {...field}
             type="textarea"
             label="Notes"

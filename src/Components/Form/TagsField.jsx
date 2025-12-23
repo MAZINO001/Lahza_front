@@ -17,10 +17,14 @@ export default function TagsField({
 
   // sync when external value (from react-hook-form) changes
   useEffect(() => {
-    setTags(
-      (value || []).map((t) => (typeof t === "string" ? { text: t } : t))
-    );
-  }, [value]);
+    const newTags = (value || []).map((t) => (typeof t === "string" ? { text: t } : t));
+    const currentTagsText = tags.map(t => t.text).join(',');
+    const newTagsText = newTags.map(t => t.text).join(',');
+
+    if (currentTagsText !== newTagsText) {
+      setTags(newTags);
+    }
+  }, [value, tags]);
 
   // when local tags change -> propagate upward
   const handleTagsChange = (newTags) => {

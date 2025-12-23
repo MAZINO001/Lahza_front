@@ -16,6 +16,12 @@ import {
   useMemo,
   useState,
 } from "react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -25,11 +31,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 const monthAtom = atom(new Date().getMonth());
@@ -128,12 +129,133 @@ const OutOfBoundsDay = ({ day }) => (
   </div>
 );
 
+// export const CalendarBody = ({ features, children }) => {
+//   const [month] = useCalendarMonth();
+//   const [year] = useCalendarYear();
+//   const { startDay } = useContext(CalendarContext);
+
+//   // Memoize expensive date calculations
+//   const currentMonthDate = useMemo(
+//     () => new Date(year, month, 1),
+//     [year, month]
+//   );
+//   const daysInMonth = useMemo(
+//     () => getDaysInMonth(currentMonthDate),
+//     [currentMonthDate]
+//   );
+//   const firstDay = useMemo(
+//     () => (getDay(currentMonthDate) - startDay + 7) % 7,
+//     [currentMonthDate, startDay]
+//   );
+
+//   // Memoize previous month calculations
+//   const prevMonthData = useMemo(() => {
+//     const prevMonth = month === 0 ? 11 : month - 1;
+//     const prevMonthYear = month === 0 ? year - 1 : year;
+//     const prevMonthDays = getDaysInMonth(new Date(prevMonthYear, prevMonth, 1));
+//     const prevMonthDaysArray = Array.from(
+//       { length: prevMonthDays },
+//       (_, i) => i + 1
+//     );
+//     return { prevMonthDays, prevMonthDaysArray };
+//   }, [month, year]);
+
+//   // Memoize next month calculations
+//   const nextMonthData = useMemo(() => {
+//     const nextMonth = month === 11 ? 0 : month + 1;
+//     const nextMonthYear = month === 11 ? year + 1 : year;
+//     const nextMonthDays = getDaysInMonth(new Date(nextMonthYear, nextMonth, 1));
+//     const nextMonthDaysArray = Array.from(
+//       { length: nextMonthDays },
+//       (_, i) => i + 1
+//     );
+//     return { nextMonthDaysArray };
+//   }, [month, year]);
+
+//   // Memoize features filtering by day to avoid recalculating on every render
+//   const featuresByDay = useMemo(() => {
+//     const result = {};
+//     for (let day = 1; day <= daysInMonth; day++) {
+//       result[day] = features.filter((feature) => {
+//         return isSameDay(new Date(feature.endAt), new Date(year, month, day));
+//       });
+//     }
+//     return result;
+//   }, [features, daysInMonth, year, month]);
+
+//   const days = [];
+
+//   for (let i = 0; i < firstDay; i++) {
+//     const day =
+//       prevMonthData.prevMonthDaysArray[
+//         prevMonthData.prevMonthDays - firstDay + i
+//       ];
+
+//     if (day) {
+//       days.push(<OutOfBoundsDay day={day} key={`prev-${i}`} />);
+//     }
+//   }
+
+//   for (let day = 1; day <= daysInMonth; day++) {
+//     const featuresForDay = featuresByDay[day] || [];
+//     days.push(
+//       <div
+//         // className="relative flex h-full w-full flex-col gap-1 p-1 text-muted-foreground text-xs"
+//         className="relative flex h-full w-full flex-col gap-1 text-muted-foreground text-xs"
+//         key={day}
+//       >
+//         {/* {day} */}
+//         <div className="w-7 h-7 flex items-center text-foreground justify-center rounded-br-sm bg-muted-foreground/30 text-md">
+//           {day}
+//         </div>
+//         <div className="">
+//           {featuresForDay.slice(0, 4).map((feature) => children({ feature }))}
+//         </div>
+//         {featuresForDay.length > 4 && (
+//           <span className="block text-muted-foreground text-xs ">
+//             +{featuresForDay.length - 4} more
+//           </span>
+//         )}
+//       </div>
+//     );
+//   }
+
+//   const remainingDays = 7 - ((firstDay + daysInMonth) % 7);
+//   if (remainingDays < 7) {
+//     for (let i = 0; i < remainingDays; i++) {
+//       const day = nextMonthData.nextMonthDaysArray[i];
+
+//       if (day) {
+//         days.push(<OutOfBoundsDay day={day} key={`next-${i}`} />);
+//       }
+//     }
+//   }
+
+//   return (
+//     <div className="grid grow grid-cols-7">
+//       {days.map((day, index) => (
+//         <div
+//           className={cn(
+//             "relative aspect-square overflow-hidden border-t border-r",
+//             index % 7 === 6 && "border-r-0"
+//           )}
+//           key={index}
+//         >
+//           {day}
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
 export const CalendarBody = ({ features, children }) => {
   const [month] = useCalendarMonth();
   const [year] = useCalendarYear();
   const { startDay } = useContext(CalendarContext);
 
-  // Memoize expensive date calculations
+  // ... (keep all your existing useMemo calculations unchanged)
+  // currentMonthDate, daysInMonth, firstDay, prevMonthData, nextMonthData, featuresByDay
+
   const currentMonthDate = useMemo(
     () => new Date(year, month, 1),
     [year, month]
@@ -147,7 +269,6 @@ export const CalendarBody = ({ features, children }) => {
     [currentMonthDate, startDay]
   );
 
-  // Memoize previous month calculations
   const prevMonthData = useMemo(() => {
     const prevMonth = month === 0 ? 11 : month - 1;
     const prevMonthYear = month === 0 ? year - 1 : year;
@@ -159,7 +280,6 @@ export const CalendarBody = ({ features, children }) => {
     return { prevMonthDays, prevMonthDaysArray };
   }, [month, year]);
 
-  // Memoize next month calculations
   const nextMonthData = useMemo(() => {
     const nextMonth = month === 11 ? 0 : month + 1;
     const nextMonthYear = month === 11 ? year + 1 : year;
@@ -171,56 +291,150 @@ export const CalendarBody = ({ features, children }) => {
     return { nextMonthDaysArray };
   }, [month, year]);
 
-  // Memoize features filtering by day to avoid recalculating on every render
   const featuresByDay = useMemo(() => {
     const result = {};
     for (let day = 1; day <= daysInMonth; day++) {
-      result[day] = features.filter((feature) => {
-        return isSameDay(new Date(feature.endAt), new Date(year, month, day));
-      });
+      result[day] = features.filter((feature) =>
+        isSameDay(new Date(feature.endAt), new Date(year, month, day))
+      );
     }
     return result;
   }, [features, daysInMonth, year, month]);
 
   const days = [];
 
+  // Previous month days
   for (let i = 0; i < firstDay; i++) {
     const day =
       prevMonthData.prevMonthDaysArray[
         prevMonthData.prevMonthDays - firstDay + i
       ];
-
     if (day) {
       days.push(<OutOfBoundsDay day={day} key={`prev-${i}`} />);
     }
   }
+
+  // State for popover (which day is open)
+  const [openPopoverDay, setOpenPopoverDay] = useState(null);
+
+  // We'll get the handleFeatureClick from context or props later — but for now, assume parent passes it
+  // Better: we'll create a context to pass it down (see note below)
 
   for (let day = 1; day <= daysInMonth; day++) {
     const featuresForDay = featuresByDay[day] || [];
 
     days.push(
       <div
-        className="relative flex h-full w-full flex-col gap-1 p-1 text-muted-foreground text-xs"
+        className="relative flex h-full w-full flex-col gap-1 text-muted-foreground text-xs"
         key={day}
       >
-        {day}
-        <div>
-          {featuresForDay.slice(0, 3).map((feature) => children({ feature }))}
+        {/* Clickable Day Number */}
+        <button
+          className="w-7 h-7 flex items-center justify-center rounded-br-sm bg-muted-foreground/30 text-md text-foreground hover:bg-muted-foreground/50 transition-colors font-medium"
+          onClick={() => setOpenPopoverDay(openPopoverDay === day ? null : day)}
+        >
+          {day}
+        </button>
+
+        {/* Render first 4 events */}
+        <div className="space-y-1">
+          {featuresForDay.slice(0, 4).map((feature) => children({ feature }))}
         </div>
-        {featuresForDay.length > 3 && (
-          <span className="block text-muted-foreground text-xs">
-            +{featuresForDay.length - 3} more
-          </span>
+
+        {/* +X more button */}
+        {featuresForDay.length > 4 && (
+          <button
+            className="text-xs text-left ml-2 text-blue-500 cursor-pointer hover:underline"
+            onClick={() =>
+              setOpenPopoverDay(openPopoverDay === day ? null : day)
+            }
+          >
+            +{featuresForDay.length - 4} more
+          </button>
         )}
+
+        {/* Popover with full list */}
+        <Popover
+          open={openPopoverDay === day}
+          onOpenChange={(open) => setOpenPopoverDay(open ? day : null)}
+        >
+          <PopoverTrigger asChild>
+            <div className="absolute inset-0 pointer-events-none" />
+          </PopoverTrigger>
+          <PopoverContent
+            className="w-96 p-4 z-50"
+            side="top"
+            align="start"
+            sideOffset={8}
+            onInteractOutside={() => setOpenPopoverDay(null)}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold text-base">
+                Events on {month + 1}/{day}/{year}
+              </h3>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={() => setOpenPopoverDay(null)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
+              {featuresForDay.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">
+                  No events
+                </p>
+              ) : (
+                featuresForDay.map((feature) => (
+                  <button
+                    key={feature.id}
+                    className="flex items-center gap-3 p-3 rounded-lg text-left hover:bg-accent transition-colors text-sm w-full"
+                    style={{ backgroundColor: feature.status.color + "15" }}
+                    onClick={() => {
+                      // This is the key part: trigger the full detail modal
+                      // We'll access handleFeatureClick via context (see below)
+                      if (feature.originalEvent) {
+                        // Find the parent component's handler
+                        const event = feature.originalEvent;
+                        // We'll fix this with context in a sec
+                        window.dispatchEvent(
+                          new CustomEvent("openEventDetail", { detail: event })
+                        );
+                      }
+                      setOpenPopoverDay(null); // Close popover
+                    }}
+                  >
+                    <div
+                      className="w-3 h-3 rounded-full shrink-0"
+                      style={{ backgroundColor: feature.status.color }}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{feature.name}</p>
+                      {feature.originalEvent?.start_time && (
+                        <p className="text-xs text-muted-foreground">
+                          {feature.originalEvent.start_time} -{" "}
+                          {feature.originalEvent.end_time || ""}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                ))
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     );
   }
 
+  // Next month days
   const remainingDays = 7 - ((firstDay + daysInMonth) % 7);
   if (remainingDays < 7) {
     for (let i = 0; i < remainingDays; i++) {
       const day = nextMonthData.nextMonthDaysArray[i];
-
       if (day) {
         days.push(<OutOfBoundsDay day={day} key={`next-${i}`} />);
       }
@@ -228,7 +442,7 @@ export const CalendarBody = ({ features, children }) => {
   }
 
   return (
-    <div className="grid flex-grow grid-cols-7">
+    <div className="grid grow grid-cols-7">
       {days.map((day, index) => (
         <div
           className={cn(
@@ -343,7 +557,7 @@ export const CalendarHeader = ({ className }) => {
   }, [locale, startDay]);
 
   return (
-    <div className={cn("grid flex-grow grid-cols-7", className)}>
+    <div className={cn("grid grow grid-cols-7", className)}>
       {daysData.map((day) => (
         <div className="p-3 text-right text-muted-foreground text-xs" key={day}>
           {day}

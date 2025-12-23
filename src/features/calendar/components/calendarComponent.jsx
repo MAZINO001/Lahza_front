@@ -1,31 +1,20 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useMemo } from "react";
 import {
   format,
   parseISO,
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
   addDays,
   addWeeks,
-  addYears,
   isWithinInterval,
+  getDay,
 } from "date-fns";
-import {
-  Calendar as CalendarIcon,
-  Clock,
-  MapPin,
-  Users,
-  X,
-} from "lucide-react";
+import { Clock, X } from "lucide-react";
 import {
   CalendarProvider,
   CalendarHeader,
   CalendarBody,
   CalendarDatePagination,
   CalendarDate,
-  CalendarItem,
   useCalendarMonth,
   useCalendarYear,
 } from "@/components/kibo-ui/calendar";
@@ -38,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useEvents } from "../hooks/useCalendarQuery";
+import { useDeleteEvent, useEvents } from "../hooks/useCalendarQuery";
 
 export default function CalendarComponent() {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -56,20 +45,41 @@ export default function CalendarComponent() {
     [year, month]
   );
 
+  const isWeekend = (date) => {
+    const day = getDay(date);
+    return day === 0 || day === 6;
+  };
+
+  const isHoliday = (date) => {
+    if (!events || events.length === 0) return [];
+
+    const target = date.toISOString().split("T")[0];
+
+    return events.filter(
+      (event) =>
+        event.category === "holiday" &&
+        target >= event.start_date &&
+        target <= event.end_date
+    );
+  };
+
+  const isNonWorkingDay = (date) => {
+    return isWeekend(date) || isHoliday(date);
+  };
   const expandedEvents = useMemo(() => {
     const instances = [];
 
-    events?.forEach((event) => {
+    if (!events || events.length === 0) return instances;
+
+    events.forEach((event) => {
       const baseStart = parseISO(event.start_date);
       const baseEnd = event.end_date ? parseISO(event.end_date) : baseStart;
 
       if (event.repeatedly === "none" || event.repeatedly === "") {
-        if (
-          isWithinInterval(baseStart, {
-            start: currentMonthStart,
-            end: currentMonthEnd,
-          })
-        ) {
+        const eventOverlapsMonth =
+          baseStart <= currentMonthEnd && baseEnd >= currentMonthStart;
+
+        if (eventOverlapsMonth) {
           instances.push({
             ...event,
             start_date: baseStart,
@@ -79,7 +89,7 @@ export default function CalendarComponent() {
         }
       } else if (event.repeatedly === "daily") {
         let current = baseStart;
-        const limit = baseEnd ?? currentMonthEnd;
+        const limit = baseEnd ?? addDays(currentMonthEnd, 365);
 
         while (current <= limit && current <= currentMonthEnd) {
           if (
@@ -100,49 +110,53 @@ export default function CalendarComponent() {
       } else if (event.repeatedly === "weekly") {
         let current = baseStart;
         const maxDate = addWeeks(currentMonthEnd, 52);
-        while (current <= maxDate && current <= currentMonthEnd) {
-          if (
-            isWithinInterval(current, {
-              start: currentMonthStart,
-              end: currentMonthEnd,
-            })
-          ) {
+        while (current <= maxDate) {
+          const occurrenceEnd = new Date(
+            current.getTime() + (baseEnd - baseStart)
+          );
+          const occurrenceOverlapsMonth =
+            current <= currentMonthEnd && occurrenceEnd >= currentMonthStart;
+
+          if (occurrenceOverlapsMonth) {
             instances.push({
               ...event,
               start_date: current,
-              end_date: new Date(current.getTime() + (baseEnd - baseStart)),
+              end_date: occurrenceEnd,
               instanceId: `${event.id}-${format(current, "yyyy-MM-dd")}`,
             });
           }
+
+          if (current > currentMonthEnd) break;
           current = addWeeks(current, 1);
         }
       } else if (event.repeatedly === "yearly") {
-        const candidate = new Date(
-          year,
-          baseStart.getMonth(),
-          baseStart.getDate()
-        );
-        if (
-          isWithinInterval(candidate, {
-            start: currentMonthStart,
-            end: currentMonthEnd,
-          })
-        ) {
-          instances.push({
-            ...event,
-            start_date: candidate,
-            end_date: event.end_date
-              ? new Date(year, baseEnd.getMonth(), baseEnd.getDate())
-              : candidate,
-            instanceId: `${event.id}-${year}`,
-          });
+        for (let y = year - 1; y <= year + 1; y++) {
+          const candidate = new Date(
+            y,
+            baseStart.getMonth(),
+            baseStart.getDate()
+          );
+          const candidateEnd = event.end_date
+            ? new Date(y, baseEnd.getMonth(), baseEnd.getDate())
+            : candidate;
+
+          const occurrenceOverlapsMonth =
+            candidate <= currentMonthEnd && candidateEnd >= currentMonthStart;
+
+          if (occurrenceOverlapsMonth) {
+            instances.push({
+              ...event,
+              start_date: candidate,
+              end_date: candidateEnd,
+              instanceId: `${event.id}-${y}`,
+            });
+          }
         }
       }
     });
 
     return instances;
   }, [events, year, month, currentMonthStart, currentMonthEnd]);
-
   const getCategoryColor = (category) => {
     switch (category) {
       case "meeting":
@@ -151,25 +165,83 @@ export default function CalendarComponent() {
         return "#ef4444";
       case "reminder":
         return "#eab308";
+      case "holiday":
+        return "#f5f5f4";
       case "other":
       default:
         return "#22c55e";
     }
   };
 
+  const getEventDays = (event) => {
+    const start = new Date(event.start_date);
+    const end = event.end_date ? new Date(event.end_date) : start;
+    const days = [];
+
+    let current = new Date(start);
+    while (current <= end) {
+      days.push(new Date(current));
+      current = addDays(current, 1);
+    }
+
+    return days;
+  };
+
   const calendarFeatures = useMemo(() => {
-    return expandedEvents.map((event) => ({
-      id: event.instanceId,
-      name: event.title,
-      start_date: event.start_date,
-      endAt: event.end_date || event.start_date,
-      status: { color: getCategoryColor(event.category) },
-      originalEvent: event,
-    }));
-  }, [expandedEvents]);
+    const features = [];
+
+    expandedEvents.forEach((event) => {
+      const eventDays = getEventDays(event);
+
+      eventDays.forEach((day, index) => {
+        if (
+          isWithinInterval(day, {
+            start: currentMonthStart,
+            end: currentMonthEnd,
+          })
+        ) {
+          features.push({
+            id: `${event.instanceId}-${format(day, "yyyy-MM-dd")}`,
+            name: event.title,
+            start_date: day,
+            endAt: day,
+            status: { color: getCategoryColor(event.category) },
+            originalEvent: event,
+            isStart: index === 0,
+            isEnd: index === eventDays.length - 1,
+            isContinuation: index > 0,
+            totalDays: eventDays.length,
+          });
+        }
+      });
+    });
+
+    return features;
+  }, [expandedEvents, currentMonthStart, currentMonthEnd]);
 
   const handleFeatureClick = (feature) => {
     setSelectedEvent(feature.originalEvent);
+  };
+
+  const deleteEventMutation = useDeleteEvent();
+
+  const handleDeleteEvent = (id) => {
+    if (!id) return console.warn("No event ID provided");
+
+    console.log("Deleting event with ID:", id);
+
+    deleteEventMutation.mutate(
+      { id },
+      {
+        onSuccess: () => {
+          console.log("Event deleted successfully");
+          setSelectedEvent(null);
+        },
+        onError: (error) => {
+          console.error("Failed to delete event:", error);
+        },
+      }
+    );
   };
 
   const months = [
@@ -194,16 +266,21 @@ export default function CalendarComponent() {
       </div>
     );
   }
-  const earliestYear = Math.min(
-    ...events.map((e) => parseISO(e.start_date).getFullYear()),
-    new Date().getFullYear()
-  );
-  const latestYear = Math.max(
-    ...events.map((e) =>
-      (e.end_date ? parseISO(e.end_date) : parseISO(e.start_date)).getFullYear()
-    ),
-    new Date().getFullYear()
-  );
+  const currentYear = new Date().getFullYear();
+  const earliestYear = events && events.length > 0
+    ? Math.min(
+      ...events.map((e) => parseISO(e.start_date).getFullYear()),
+      currentYear
+    )
+    : currentYear;
+  const latestYear = events && events.length > 0
+    ? Math.max(
+      ...events.map((e) =>
+        (e.end_date ? parseISO(e.end_date) : parseISO(e.start_date)).getFullYear()
+      ),
+      currentYear
+    )
+    : currentYear;
   const years = Array.from(
     { length: latestYear - earliestYear + 1 },
     (_, i) => earliestYear + i
@@ -267,17 +344,40 @@ export default function CalendarComponent() {
           </div>
         </CalendarDate>
 
-        <div className="flex flex-col flex-1 ">
+        <div className="flex flex-col flex-1">
           <CalendarHeader />
 
-          <CalendarBody features={calendarFeatures}>
+          <CalendarBody features={calendarFeatures} key={calendarFeatures.id}>
             {({ feature }) => {
+              const isMultiDay = feature.totalDays > 1;
+
               return (
                 <div
-                  className="cursor-pointer"
+                  className={cn(
+                    "cursor-pointer relative",
+                    isMultiDay && "h-6 mb-1"
+                  )}
                   onClick={() => handleFeatureClick(feature)}
                 >
-                  <CalendarItem feature={feature} key={feature.id} />
+                  <div
+                    className={cn(
+                      "flex items-center justify-center absolute inset-0 py-3 text-xs text-foreground overflow-hidden ",
+                      feature.isStart && "rounded-l",
+                      feature.isEnd && "rounded-r",
+                      !feature.isStart && !feature.isEnd && "rounded-none"
+                    )}
+                    style={{
+                      backgroundColor: feature.status.color,
+                      left: feature.isStart ? "2px" : "0",
+                      right: feature.isEnd ? "2px" : "0",
+                    }}
+                  >
+                    {feature.isStart && (
+                      <span className="font-medium truncate">
+                        {feature.name}
+                      </span>
+                    )}
+                  </div>
                 </div>
               );
             }}
@@ -334,11 +434,22 @@ export default function CalendarComponent() {
                   >
                     {selectedEvent.category}
                   </span>
+                  {isNonWorkingDay(selectedEvent.start_date) && (
+                    <span className="text-xs px-3 py-1 rounded-full bg-stone-500 text-white">
+                      {isWeekend(selectedEvent.start_date)
+                        ? "Weekend"
+                        : "Holiday"}
+                    </span>
+                  )}
                 </div>
               </div>
 
               <div className="mt-6 flex gap-3">
-                <Button variant="destructive" className="flex-1">
+                <Button
+                  onClick={() => handleDeleteEvent(selectedEvent.id)}
+                  variant="destructive"
+                  className="flex-1"
+                >
                   Delete
                 </Button>
                 <Button
@@ -372,9 +483,22 @@ export default function CalendarComponent() {
               <div className="w-3 h-3 rounded bg-green-500"></div>
               <span className="text-muted-foreground">Other</span>
             </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded bg-stone-400"></div>
+              <span className="text-muted-foreground">Weekend/Holiday</span>
+            </div>
           </div>
         </div>
       </CalendarProvider>
+
+      <style jsx>{`
+        .bg-stone-100 {
+          background-color: #f5f5f4;
+        }
+        .dark .bg-stone-900/30 {
+          background-color: rgba(28, 25, 23, 0.3);
+        }
+      `}</style>
     </div>
   );
 }

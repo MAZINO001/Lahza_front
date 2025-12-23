@@ -73,7 +73,7 @@ export function useDeleteEvent() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: eventsApi.delete,
+        mutationFn: ({ id }) => eventsApi.delete(id),
         onSuccess: () => {
             toast.success("Event deleted successfully");
             queryClient.invalidateQueries({ queryKey: ["events"] });
