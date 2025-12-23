@@ -933,6 +933,7 @@ import { terms } from "@/lib/Terms_Conditions.json";
 import {
   useCreateDocument,
   useDocument,
+  useNoInvoiceProject,
   useUpdateDocument,
 } from "../hooks/useDocumentsQuery";
 import { useClients } from "@/features/clients/hooks/useClientsQuery";
@@ -953,7 +954,7 @@ export function DocumentForm({ type, onSuccess }) {
 
   const isEditMode = !!id;
   const isCloneMode = !!cloneFromId;
-  const isConvertMode = !!quoteId && type === "invoices"; // Convert mode: creating invoice from quote
+  const isConvertMode = !!quoteId && type === "invoices";
 
   const documentId = quoteId ?? id ?? cloneFromId;
   const documentType = quoteId ? "quotes" : type;
@@ -1141,18 +1142,21 @@ export function DocumentForm({ type, onSuccess }) {
     value: String(c.client?.id),
   }));
 
-  const AllProjects = [
-    { id: 1, name: "Landing Page Redesign" },
-    { id: 2, name: "E-commerce Dashboard" },
-    { id: 3, name: "Mobile App API" },
-    { id: 4, name: "Portfolio Website" },
-    { id: 5, name: "Admin Panel Revamp" },
-    { id: 6, name: "SaaS Auth System" },
-    { id: 7, name: "Marketing Website" },
-    { id: 8, name: "CRM Integration" },
-    { id: 9, name: "Internal Tools" },
-    { id: 10, name: "Blog Platform" },
-  ];
+  const { data: AllProjects } = useNoInvoiceProject();
+  console.log(AllProjects);
+
+  // const AllProjects = [
+  //   { id: 1, name: "Landing Page Redesign" },
+  //   { id: 2, name: "E-commerce Dashboard" },
+  //   { id: 3, name: "Mobile App API" },
+  //   { id: 4, name: "Portfolio Website" },
+  //   { id: 5, name: "Admin Panel Revamp" },
+  //   { id: 6, name: "SaaS Auth System" },
+  //   { id: 7, name: "Marketing Website" },
+  //   { id: 8, name: "CRM Integration" },
+  //   { id: 9, name: "Internal Tools" },
+  //   { id: 10, name: "Blog Platform" },
+  // ];
 
   const ProjectOptions = AllProjects?.map((p) => ({
     label: p.name || "Unknown Project",
@@ -1701,7 +1705,7 @@ export function DocumentForm({ type, onSuccess }) {
                 render={({ field, fieldState: { error } }) => (
                   <SelectField_Search
                     label="Project"
-                    options={ProjectOptions}
+                    options={isInvoice ? ProjectOptions : []}
                     value={field.value || []}
                     onChange={field.onChange}
                     customValue={watch("has_projects.title") || []}
