@@ -1150,8 +1150,7 @@ export function DocumentForm({ type, onSuccess }) {
   //   { id: 2, name: "E-commerce Dashboard" },
   //   { id: 3, name: "Mobile App API" },
   //   { id: 4, name: "Portfolio Website" },
-  //   { id: 5, name: "Admin Panel Revamp" },
-  //   { id: 6, name: "SaaS Auth System" },
+  //   { id: 5, name: "Admin Panel Revamp" },//   { id: 6, name: "SaaS Auth System" },
   //   { id: 7, name: "Marketing Website" },
   //   { id: 8, name: "CRM Integration" },
   //   { id: 9, name: "Internal Tools" },
@@ -1695,30 +1694,32 @@ export function DocumentForm({ type, onSuccess }) {
         </div>
 
         <div className="flex gap-4 w-full items-start space-between">
-          <div
-            className={`flex gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"}`}
-          >
-            <div className="w-full">
-              <Controller
-                name="old_projects"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <SelectField_Search
-                    label="Project"
-                    options={isInvoice ? ProjectOptions : []}
-                    value={field.value || []}
-                    onChange={field.onChange}
-                    customValue={watch("has_projects.title") || []}
-                    onCustomChange={(newCustom) =>
-                      setValue("has_projects.title", newCustom)
-                    }
-                    error={error?.message}
-                    placeholder="Select or add a project"
-                  />
-                )}
-              />
+          {isInvoice && (
+            <div
+              className={`flex gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"}`}
+            >
+              <div className="w-full">
+                <Controller
+                  name="old_projects"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <SelectField_Search
+                      label="Project"
+                      options={ProjectOptions}
+                      value={field.value || []}
+                      onChange={field.onChange}
+                      customValue={watch("has_projects.title") || []}
+                      onCustomChange={(newCustom) =>
+                        setValue("has_projects.title", newCustom)
+                      }
+                      error={error?.message}
+                      placeholder="Select or add a project"
+                    />
+                  )}
+                />
+              </div>
             </div>
-          </div>
+          )}
           {isInvoice && (
             <div className="w-[50%]">
               <Label htmlFor="payment" className="mb-1">
