@@ -50,6 +50,9 @@ export function useDocument(id, type) {
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: true,
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Failed to fetch document");
+    },
   });
 }
 
@@ -132,6 +135,6 @@ export function useNoInvoiceProject() {
     queryFn: () => apiDocuments.getProjects(),
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: true,
-    
+
   });
 }

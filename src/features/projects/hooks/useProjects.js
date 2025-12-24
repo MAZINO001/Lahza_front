@@ -28,6 +28,9 @@ export function useProjects() {
         queryFn: apiProject.getAll,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch projects");
+        },
     });
 }
 
@@ -39,6 +42,9 @@ export function useProject(id) {
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch project");
+        },
     });
 }
 
@@ -51,6 +57,9 @@ export function useProjectProgress(id) {
         retry: false,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch project progress");
+        },
     });
 }
 

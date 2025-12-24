@@ -33,6 +33,9 @@ export function usePayments() {
         queryFn: apiPayments.getAll,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch payments");
+        },
     });
 }
 
@@ -43,6 +46,9 @@ export function usePayment(id) {
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch payment");
+        },
     });
 }
 
@@ -55,6 +61,9 @@ export function useCreatePayment() {
             queryClient.invalidateQueries({ queryKey: ["payments"] });
         },
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to create payment");
+        },
     });
 
 }
@@ -90,6 +99,9 @@ export function useDeletePayment() {
             queryClient.invalidateQueries({ queryKey: ["payments"] });
         },
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to delete payment");
+        },
     });
 }
 
@@ -101,7 +113,11 @@ export function CreateAdditionalPayment() {
             toast.success("additional Payment created");
             queryClient.invalidateQueries({ queryKey: ["payments"] });
         },
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to create additional payment");
+        },
         refetchOnWindowFocus: true,
+
     });
 }
 export function useConfirmPayment() {

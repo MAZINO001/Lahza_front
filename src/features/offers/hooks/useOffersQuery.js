@@ -19,7 +19,9 @@ export function useOffers() {
         queryFn: apiOffer.getAll,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
-
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch offers");
+        },
     });
 }
 
@@ -30,6 +32,9 @@ export function useOffer(id) {
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch offer");
+        },
     });
 }
 

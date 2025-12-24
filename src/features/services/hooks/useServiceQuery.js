@@ -26,6 +26,9 @@ export function useServices() {
         queryFn: apiService.getAll,
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch services");
+        },
     });
 }
 
@@ -35,6 +38,9 @@ export function useService(id) {
         queryFn: () => apiService.getById(id),
         enabled: !!id,
         staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch service");
+        },
     });
 }
 
@@ -45,6 +51,9 @@ export function useDocsByService(id, type) {
         queryFn: () => apiService.getByDocsId(id, type),
         enabled: !!id && !!type,
         staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch documents by service");
+        },
     });
 }
 
@@ -56,6 +65,9 @@ export function useCreateService() {
             toast.success("Service created!");
             queryClient.invalidateQueries({ queryKey: ["services"] });
         }, refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to create service");
+        },
     });
 }
 
@@ -67,6 +79,9 @@ export function useUpdateService() {
             toast.success("Service updated!");
             queryClient.invalidateQueries({ queryKey: ["services"] });
         }, refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to update service");
+        },
     });
 }
 
@@ -78,6 +93,9 @@ export function useDeleteService() {
             toast.success("Service deleted");
             queryClient.invalidateQueries({ queryKey: ["services"] });
         }, refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to delete service");
+        },
     });
 }
 
