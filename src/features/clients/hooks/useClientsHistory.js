@@ -14,5 +14,6 @@ export function useClientHistory(clientId) {
         queryFn: () => apiClientHistory.getHistory(clientId),
         enabled: !!clientId,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
     });
 }

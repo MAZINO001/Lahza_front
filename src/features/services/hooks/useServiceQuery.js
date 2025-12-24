@@ -25,6 +25,7 @@ export function useServices() {
         queryKey: ["services"],
         queryFn: apiService.getAll,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
     });
 }
 
@@ -33,7 +34,7 @@ export function useService(id) {
         queryKey: ["services", id],
         queryFn: () => apiService.getById(id),
         enabled: !!id,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
     });
 }
 
@@ -43,7 +44,7 @@ export function useDocsByService(id, type) {
         queryKey: ["services", id, type],
         queryFn: () => apiService.getByDocsId(id, type),
         enabled: !!id && !!type,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
     });
 }
 
@@ -54,7 +55,7 @@ export function useCreateService() {
         onSuccess: () => {
             toast.success("Service created!");
             queryClient.invalidateQueries({ queryKey: ["services"] });
-        },
+        }, refetchOnWindowFocus: true,
     });
 }
 
@@ -65,7 +66,7 @@ export function useUpdateService() {
         onSuccess: () => {
             toast.success("Service updated!");
             queryClient.invalidateQueries({ queryKey: ["services"] });
-        },
+        }, refetchOnWindowFocus: true,
     });
 }
 
@@ -76,7 +77,7 @@ export function useDeleteService() {
         onSuccess: () => {
             toast.success("Service deleted");
             queryClient.invalidateQueries({ queryKey: ["services"] });
-        },
+        }, refetchOnWindowFocus: true,
     });
 }
 

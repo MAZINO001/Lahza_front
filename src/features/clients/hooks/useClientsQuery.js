@@ -69,6 +69,7 @@ export function useDeleteClient() {
             toast.success("Client deleted");
             queryClient.invalidateQueries({ queryKey: ["clients"] });
         },
+             refetchOnWindowFocus: true,
         onError: () => {
             toast.error("Failed to delete client");
         },

@@ -31,7 +31,10 @@ export function useDocumentPayments(invoiceId) {
         queryFn: () => apiDocumentPayments.getByInvoiceId(invoiceId),
         enabled: !!invoiceId,
         staleTime: 5 * 60 * 1000,
-        onError: () => toast.error("Failed to load payments"),
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch document payments");
+        },
     });
 }
 
@@ -47,6 +50,7 @@ export function useAddAdditionalPayment() {
             queryClient.invalidateQueries({ queryKey: ["document-payments", invoiceId] });
             queryClient.invalidateQueries({ queryKey: ["payments"] });
         },
+        refetchOnWindowFocus: true,
         onError: () => toast.error("Failed to add additional payment"),
     });
 }

@@ -132,5 +132,6 @@ export function useNoInvoiceProject() {
     queryFn: () => apiDocuments.getProjects(),
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: true,
+    
   });
 }

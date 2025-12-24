@@ -128,3 +128,6 @@ and
               ? "Update Event"
               : "Create Event"}
         </Button>
+        *********************************
+        fot adding a backfrop blur effect , fixed inset-0 bg-black/60 backdrop-blur-sm 
+        
