@@ -226,8 +226,28 @@ export const CalendarBody = ({ features, children }) => {
         </button>
 
         {/* Render first 4 events */}
-        <div className="space-y-1">
+        {/* <div className="space-y-1">
           {featuresForDay.slice(0, 4).map((feature) => children({ feature }))}
+        </div> */}
+
+        {/* Render first 4 events */}
+        <div
+          className="relative"
+          style={{ minHeight: `${Math.min(featuresForDay.length, 4) * 28}px` }}
+        >
+          {featuresForDay.slice(0, 4).map((feature) => (
+            <div
+              key={feature.id}
+              style={{
+                position: "absolute",
+                top: `${(feature.row || 0) * 28}px`,
+                left: 0,
+                right: 0,
+              }}
+            >
+              {children({ feature })}
+            </div>
+          ))}
         </div>
 
         {/* +X more button */}

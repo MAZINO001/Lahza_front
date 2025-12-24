@@ -36,7 +36,7 @@ export default function EventColorPicker({ value, onChange }) {
         >
           <div
             className={cn(
-              "w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ring-2 ring-offset-1",
+              "w-6 h-6 rounded-full flex items-center justify-center shrink-0 ring-2 ring-offset-1",
               color.color,
               selectedColor.name === color.name
                 ? "ring-ring shadow-md"

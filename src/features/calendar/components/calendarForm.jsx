@@ -3,11 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import FormField from "@/components/Form/FormField";
-import { useCreateEvent } from "../hooks/useCalendarQuery";
 import { useEventById } from "../hooks/useCalendarQuery";
 import SelectField from "@/components/Form/SelectField";
 import TextareaField from "@/components/Form/TextareaField";
-
+import { useCreateEvent, useUpdateEvent } from "../hooks/useCalendarQuery";
 import {
   Popover,
   PopoverContent,
@@ -36,14 +35,13 @@ export default function CalendarForm({ EventID, onSuccess }) {
   const { data: event } = useEventById(EventID);
   const now = new Date();
 
-  const today = now.toISOString().split("T")[0]; // YYYY-MM-DD
-  const currentTime = now.toTimeString().slice(0, 5); // HH:MM
+  const today = now.toISOString().split("T")[0];
+  const currentTime = now.toTimeString().slice(0, 5);
 
   const {
     handleSubmit,
     control,
     reset,
-    setValue,
     watch,
     formState: { errors },
   } = useForm({
@@ -94,28 +92,40 @@ export default function CalendarForm({ EventID, onSuccess }) {
     }
   }, [formColor, formTags]);
 
+  // useEffect(() => {
+  //   if (formTags?.length > 0) {
+  //     const firstTag = formTags[0];
+  //     const matchingColor = eventColors.find((c) => c.name === firstTag);
+
+  //     if (matchingColor) {
+  //       setEventColor(firstTag);
+
+  //       setValue("category", firstTag);
+  //     }
+  //   } else {
+  //     setValue("category", "Other");
+  //   }
+  // }, [formTags, setValue]);
+
+  // useEffect(() => {
+  //   if (event?.color) {
+  //     setEventColor(event.color);
+  //   }
+  // }, [event]);
+
+  const selectedCategory = watch("category");
+
+  // Derive color from category or first tag
   useEffect(() => {
     if (formTags?.length > 0) {
-      const firstTag = formTags[0];
-      const matchingColor = eventColors.find((c) => c.name === firstTag);
-
-      if (matchingColor) {
-        setEventColor(firstTag);
-
-        setValue("category", firstTag);
-      }
+      setEventColor(formTags[0]);
     } else {
-      setValue("category", "Other");
+      setEventColor(selectedCategory || "Agency");
     }
-  }, [formTags, setValue]);
+  }, [formTags, selectedCategory]);
 
-  useEffect(() => {
-    if (event?.color) {
-      setEventColor(event.color);
-    }
-  }, [event]);
-
-  const createMutate = useCreateEvent();
+  const createMutation = useCreateEvent();
+  const updateMutation = useUpdateEvent();
 
   const onSubmit = (data) => {
     const payload = {
@@ -125,8 +135,25 @@ export default function CalendarForm({ EventID, onSuccess }) {
     };
 
     console.log("Sending:", payload);
-    createMutate.mutate(payload);
+
+    if (isEditMode) {
+      updateMutation.mutate(
+        { id: EventID, data: payload },
+        {
+          onSuccess: () => {
+            onSuccess?.();
+          },
+        }
+      );
+    } else {
+      createMutation.mutate(payload, {
+        onSuccess: () => {
+          onSuccess?.();
+        },
+      });
+    }
   };
+  const isMutating = createMutation.isPending || updateMutation.isPending;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4">
@@ -355,8 +382,12 @@ export default function CalendarForm({ EventID, onSuccess }) {
         <Button onClick={onSuccess} type="button" variant="outline">
           Cancel
         </Button>
-        <Button type="submit">
-          {isEditMode ? "Update Event" : "Create Event"}
+        <Button type="submit" disabled={isMutating}>
+          {isMutating
+            ? "Saving..."
+            : isEditMode
+              ? "Update Event"
+              : "Create Event"}
         </Button>
       </div>
     </form>
