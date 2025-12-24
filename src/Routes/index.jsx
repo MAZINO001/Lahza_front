@@ -8,6 +8,11 @@ import {
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 
+import VerifyEmail from "../pages/Auth/VerifyEmail";
+import ResetPassword from "../pages/Auth/ResetPassword";
+import ForgotPassword from "../pages/Auth/ForgotPassword";
+import ConfirmPassword from "../pages/Auth/ConfirmPassword";
+
 import DashboardPage from "../pages/dashboard/DashboardPage";
 
 import ProjectsPage from "../pages/projects/ProjectsPage";
@@ -83,6 +88,10 @@ export default function AppRoutes() {
           <Route path="/auth" element={<AuthLayout />}>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Register />} />
+            <Route path="verify-email" element={<VerifyEmail />} />
+            <Route path="reset-password" element={<ResetPassword />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="confirm-password" element={<ConfirmPassword />} />
           </Route>
         </Route>
 

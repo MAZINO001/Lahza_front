@@ -104,7 +104,7 @@ export default function ProjectViewPage() {
                     {project.name}
                   </h1>
                 </div>
-                <StatusBadge status={project.statu} />
+                <StatusBadge status={project.status} />
               </div>
             </div>
 
@@ -127,8 +127,8 @@ export default function ProjectViewPage() {
 
       <div className="p-4">
         <div className="flex gap-4 w-full mb-4">
-          <Card className="w-[40%]">
-            <CardHeader className="flex items-start justify-between">
+          <Card className="w-[40%] py-4">
+            <CardHeader className="flex items-start justify-between px-4">
               <CardTitle>Client Information</CardTitle>
               <Link
                 to={`/${role}/project/${id}/edit`}
@@ -139,7 +139,7 @@ export default function ProjectViewPage() {
                 Edit
               </Link>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 px-4">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">
                   Client Name
@@ -156,8 +156,8 @@ export default function ProjectViewPage() {
             </CardContent>
           </Card>
 
-          <Card className="w-[60%]">
-            <CardHeader className="flex items-start justify-between">
+          <Card className="w-[60%] py-4">
+            <CardHeader className="flex items-start justify-between px-4">
               <CardTitle>Project Description</CardTitle>
               <Link
                 to={`/${role}/project/${id}/edit`}
@@ -168,7 +168,7 @@ export default function ProjectViewPage() {
                 Edit
               </Link>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <p className="text-foreground leading-relaxed">
                 {project.description ||
                   "No description available for this project."}
@@ -177,9 +177,9 @@ export default function ProjectViewPage() {
           </Card>
         </div>
 
-        <div className="flex w-full gap-4">
-          <Card className="w-[50%]">
-            <CardContent className="space-y-4">
+        <div className="flex w-full gap-2 ">
+          <Card className="w-[50%] py-4">
+            <CardContent className="space-y-4 px-4">
               {tasks?.map((task) => (
                 <div
                   key={task.id}
@@ -205,14 +205,14 @@ export default function ProjectViewPage() {
             </CardContent>
           </Card>
 
-          <Card className="w-[50%]">
-            <CardHeader>
+          <Card className="w-[50%] py-4">
+            <CardHeader className="px-4">
               <CardTitle>Progress</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               {progressLoading ? (
                 <p className="text-muted-foreground">Loading progress...</p>
-              ) : progress?.message === "Project progress not avaible" ? (
+              ) : progress?.message === "Project progress not available" ? (
                 <p className="text-muted-foreground">No tasks available yet</p>
               ) : (
                 <>
@@ -259,7 +259,7 @@ export default function ProjectViewPage() {
           </Card>
         </div>
 
-        <Card className="w-full mt-4 h-130 p-0">
+        <Card className="w-full mt-4 h-full p-0">
           <CardContent className="h-full p-4">
             <Tabs defaultValue="gantt" className="h-full flex flex-col">
               <TabsList className="mb-2">

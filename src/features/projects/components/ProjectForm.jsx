@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-// src/features/projects/components/ProjectForm.jsx
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -27,10 +26,12 @@ export function ProjectForm({ onSuccess }) {
   const navigate = useNavigate();
   const { id } = useParams();
   const { role } = useAuthContext();
+
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const { data: invoices = [], isLoading: invoicesLoading } =
     useDocuments("invoices");
   const { data: project = [], isLoading: projectLoading } = useProject(id);
+  console.log(project);
   const createMutation = useCreateProject();
   const updateMutation = useUpdateProject();
   const mutation = project?.id ? updateMutation : createMutation;
@@ -51,9 +52,23 @@ export function ProjectForm({ onSuccess }) {
       invoice_id: "",
       start_date: "",
       estimated_end_date: "",
-      status: "active",
+      status: "draft",
     },
   });
+
+  useEffect(() => {
+    if (isEditMode && project?.id) {
+      reset({
+        customerName: project.client_id ? String(project.client_id) : "",
+        name: project.name || "",
+        description: project.description || "",
+        invoice_id: project.invoice_id ? String(project.invoice_id) : "",
+        start_date: project.start_date || "",
+        estimated_end_date: project.estimated_end_date || "",
+        status: project.status || "draft",
+      });
+    }
+  }, [isEditMode, project, reset]);
 
   useEffect(() => {
     setDirectProject(isEditMode && project?.invoice_id === null);
@@ -64,8 +79,11 @@ export function ProjectForm({ onSuccess }) {
 
     const payload = {
       ...data,
+      status: "draft",
+      client_id: Number(data.customerName),
       invoice_id: directProject ? "" : Number(data.invoice_id),
     };
+    console.log(`payload :`);
     console.log(payload);
     mutation.mutate(isEditMode ? { id: project.id, data: payload } : payload, {
       onSuccess: () => {
@@ -84,7 +102,7 @@ export function ProjectForm({ onSuccess }) {
   const selectedClientId = watch("customerName");
 
   const selectedClient = clients?.find(
-    (c) => c.client?.id === Number(selectedClientId)
+    (c) => selectedClientId && c.client?.id === Number(selectedClientId)
   );
 
   const clientOptions = clients?.map((c) => ({
@@ -116,20 +134,67 @@ export function ProjectForm({ onSuccess }) {
         <AddClientModel />
       </div>
       {selectedClient && (
-        <div className="p-4 border rounded bg-background text-sm space-y-1 max-w-[300px]">
-          <p>
-            <span className="font-medium">Name:</span>{" "}
-            {selectedClient.client?.user?.name ||
-              selectedClient.client?.user?.name}
-          </p>
-          <p>
-            <span className="font-medium">Address:</span>{" "}
-            {selectedClient.client?.address}
-          </p>
-          <p>
-            <span className="font-medium">Phone:</span>{" "}
-            {selectedClient.client?.phone}
-          </p>
+        <div className="flex gap-4 p-4 border rounded bg-background text-sm space-y-4 max-w-[700px]">
+          <div className="flex flex-col gap-2 w-[50%]">
+            <p>
+              <span className="font-medium">Name:</span>{" "}
+              {selectedClient?.client?.user?.name}
+            </p>
+            <p>
+              <span className="font-medium">Email:</span>{" "}
+              {selectedClient?.client?.user?.email}
+            </p>
+            <p>
+              <span className="font-medium">Client Type:</span>{" "}
+              {selectedClient?.client?.client_type}
+            </p>
+            {selectedClient?.client?.company && (
+              <p>
+                <span className="font-medium">Company:</span>{" "}
+                {selectedClient?.client?.company}
+              </p>
+            )}
+            <p>
+              <span className="font-medium">Phone:</span>{" "}
+              {selectedClient?.client?.phone}
+            </p>
+            <p>
+              <span className="font-medium">Address:</span>{" "}
+              {selectedClient?.client?.address}
+            </p>
+            <p>
+              <span className="font-medium">City:</span>{" "}
+              {selectedClient?.client?.city}
+            </p>
+          </div>
+
+          {/* Second Row */}
+          <div className="flex flex-col gap-4  w-[50%]">
+            <p>
+              <span className="font-medium">Country:</span>{" "}
+              {selectedClient?.client?.country}
+            </p>
+            <p>
+              <span className="font-medium">Currency:</span>{" "}
+              {selectedClient?.client?.currency || "MAD"}
+            </p>
+            {selectedClient?.client?.ice && (
+              <p>
+                <span className="font-medium">ICE:</span>{" "}
+                {selectedClient?.client?.ice}
+              </p>
+            )}
+            {selectedClient?.client?.siren && (
+              <p>
+                <span className="font-medium">SIREN:</span>{" "}
+                {selectedClient?.client?.siren}
+              </p>
+            )}
+            <p>
+              <span className="font-medium">VAT:</span>{" "}
+              {selectedClient?.client?.vat || "20%"}
+            </p>
+          </div>
         </div>
       )}
 
