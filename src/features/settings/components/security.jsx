@@ -1,0 +1,174 @@
+import React from "react";
+import { useForm, Controller } from "react-hook-form";
+import FormSection from "@/components/Form/FormSection";
+import FormField from "@/components/Form/FormField";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+
+export default function Security() {
+  /* ---------------- Password ---------------- */
+  const {
+    control: passwordControl,
+    handleSubmit: handlePasswordSubmit,
+    formState: { errors: passwordErrors },
+  } = useForm({
+    defaultValues: {
+      current_password: "",
+      new_password: "",
+      confirm_password: "",
+    },
+  });
+
+  /* ---------------- Email ---------------- */
+  const {
+    control: emailControl,
+    handleSubmit: handleEmailSubmit,
+    formState: { errors: emailErrors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onPasswordSubmit = (values) => {
+    console.log("PASSWORD UPDATE", values);
+  };
+
+  const onEmailSubmit = (values) => {
+    console.log("EMAIL UPDATE", values);
+  };
+
+  return (
+    <div className="w-full max-w-3xl space-y-4">
+      {/* Reset Password */}
+      <FormSection title="Password">
+        <form
+          onSubmit={handlePasswordSubmit(onPasswordSubmit)}
+          className="space-y-4"
+        >
+          <Controller
+            name="current_password"
+            control={passwordControl}
+            rules={{ required: "Current password is required" }}
+            render={({ field }) => (
+              <FormField
+                label="Current Password"
+                type="password"
+                error={passwordErrors.current_password?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            name="new_password"
+            control={passwordControl}
+            rules={{ required: "New password is required", minLength: 8 }}
+            render={({ field }) => (
+              <FormField
+                label="New Password"
+                type="password"
+                error={passwordErrors.new_password?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            name="confirm_password"
+            control={passwordControl}
+            rules={{
+              validate: (v, f) =>
+                v === f.new_password || "Passwords do not match",
+            }}
+            render={({ field }) => (
+              <FormField
+                label="Confirm Password"
+                type="password"
+                error={passwordErrors.confirm_password?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <div className="flex justify-end">
+            <Button type="submit">Update Password</Button>
+          </div>
+        </form>
+      </FormSection>
+
+      {/* Change Email */}
+      <FormSection title="Email Address">
+        <form onSubmit={handleEmailSubmit(onEmailSubmit)} className="space-y-4">
+          <Controller
+            name="email"
+            control={emailControl}
+            rules={{ required: "Email is required" }}
+            render={({ field }) => (
+              <FormField
+                label="New Email"
+                placeholder="you@company.com"
+                error={emailErrors.email?.message}
+                {...field}
+              />
+            )}
+          />
+
+          <Controller
+            name="password"
+            control={emailControl}
+            rules={{ required: "Password is required" }}
+            render={({ field }) => (
+              <FormField
+                label="Current Password"
+                type="password"
+                error={emailErrors.password?.message}
+                {...field}
+              />
+            )}
+          />
+          <div className="flex justify-end">
+            <Button variant="outline">Update Email</Button>
+          </div>
+        </form>
+      </FormSection>
+
+      {/* Danger Zone */}
+      <FormSection title="Danger Zone">
+        <div className="rounded-lg border border-destructive p-4">
+          <p className="text-sm text-muted-foreground mb-4">
+            Permanently delete your account and all associated data.
+          </p>
+
+          <Button variant="destructive">Delete Account</Button>
+        </div>
+      </FormSection>
+    </div>
+  );
+}
+
+/* ----------------------------- */
+/* Reusable Toggle */
+/* ----------------------------- */
+
+function Setting({ label, description, name, control }) {
+  return (
+    <div className="flex items-center justify-between rounded-lg border p-4">
+      <div>
+        <Label className="text-sm font-medium">{label}</Label>
+        <p className="text-xs text-muted-foreground">{description}</p>
+      </div>
+
+      <Controller
+        name={name}
+        control={control}
+        render={({ field }) => (
+          <Switch checked={field.value} onCheckedChange={field.onChange} />
+        )}
+      />
+    </div>
+  );
+}

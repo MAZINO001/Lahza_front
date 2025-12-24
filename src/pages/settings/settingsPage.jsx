@@ -1,102 +1,57 @@
 "use client";
 
 import React from "react";
-import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardContent,
-    CardDescription,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
 
-import {
-    Select,
-    SelectTrigger,
-    SelectContent,
-    SelectItem,
-    SelectValue,
-} from "@/components/ui/select";
+import Agency_info from "@/features/settings/components/agency_info";
+import Notifications from "@/features/settings/components/notifications";
+import Preferences from "@/features/settings/components/preferences";
+import Security from "@/features/settings/components/security";
+import User_team_management from "@/features/settings/components/user_team_management";
 
 export default function SettingsPage() {
-    return (
-        <div className="p-4">
-            <Card className="shadow-lg">
-                <CardContent>
-                    <Tabs defaultValue="security" className="w-full">
-                        <TabsList className="grid grid-cols-2 mb-4">
-                            <TabsTrigger value="security">Security</TabsTrigger>
-                            <TabsTrigger value="preferences">Preferences</TabsTrigger>
-                        </TabsList>
+  return (
+    <div className="p-4">
+      <Card className="py-4">
+        <CardContent className="px-4">
+          <Tabs defaultValue="agency_info" className="w-full">
+            <TabsList className="flex items-center justify-between w-full mb-4">
+              <TabsTrigger className="w-1/5" value="agency_info">
+                Agency Info
+              </TabsTrigger>
+              <TabsTrigger className="w-1/5" value="notifications">
+                Notifications
+              </TabsTrigger>
+              <TabsTrigger className="w-1/5" value="preferences">
+                Preferences
+              </TabsTrigger>
+              <TabsTrigger className="w-1/5" value="security">
+                Security
+              </TabsTrigger>
+              <TabsTrigger className="w-1/5" value="user_team_management">
+                User&Team Management
+              </TabsTrigger>
+            </TabsList>
 
-                        <TabsContent value="security" className="space-y-4">
-                            <Separator />
-
-                            <div className="flex items-center justify-between">
-                                <Label>Enable Two-Factor Authentication (2FA)</Label>
-                                <Switch />
-                            </div>
-
-                            <Button className="mt-4">Update Password</Button>
-
-                            <Separator className="my-6" />
-
-                            <div>
-                                <Label className="text-red-600">Danger Zone</Label>
-                                <p className="text-sm text-muted-foreground mb-2">
-                                    Once deleted, your account and all data will be permanently
-                                    removed.
-                                </p>
-                                <Button variant="destructive">Delete Account</Button>
-                            </div>
-                        </TabsContent>
-
-                        {/* <TabsContent value="notifications" className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label>Email Notifications</Label>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label>SMS Notifications</Label>
-                <Switch />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label>System Alerts</Label>
-                <Switch defaultChecked />
-              </div>
-              <Button className="mt-4">Save Preferences</Button>
-            </TabsContent> */}
-
-                        <TabsContent value="preferences" className="space-y-6">
-                            <div>
-                                <Label>Language</Label>
-                                <Select defaultValue="en">
-                                    <SelectTrigger className="w-[200px] mt-1">
-                                        <SelectValue placeholder="Choose language" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="en">English</SelectItem>
-                                        <SelectItem value="fr">French</SelectItem>
-                                        <SelectItem value="ar">Arabic</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <Label>Dark Mode</Label>
-                                <Switch />
-                            </div>
-
-                            <Button className="mt-4">Save Settings</Button>
-                        </TabsContent>
-                    </Tabs>
-                </CardContent>
-            </Card>
-        </div>
-    );
+            <TabsContent value="agency_info" className="space-y-4">
+              <Agency_info />
+            </TabsContent>
+            <TabsContent value="notifications" className="space-y-4">
+              <Notifications />
+            </TabsContent>
+            <TabsContent value="preferences" className="space-y-4">
+              <Preferences />
+            </TabsContent>
+            <TabsContent value="security" className="space-y-4">
+              <Security />
+            </TabsContent>
+            <TabsContent value="user_team_management" className="space-y-4">
+              <User_team_management />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

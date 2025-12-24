@@ -21,6 +21,11 @@ export function useClients() {
         queryKey: ["clients"],
         queryFn: apiClient.getAll,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            console.log(error)
+            toast.error(error?.response?.data?.message || "Failed to fetch clients");
+        },
     });
 }
 
@@ -30,6 +35,11 @@ export function useClient(id) {
         queryFn: () => apiClient.getById(id),
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            console.log(error)
+            toast.error(error?.response?.data?.message || "Failed to fetch client");
+        },
     });
 }
 
@@ -41,6 +51,7 @@ export function useCreateClient() {
             toast.success("Client created successfully!");
             queryClient.invalidateQueries({ queryKey: ["clients"] });
         },
+        refetchOnWindowFocus: true,
         onError: (error) =>
             toast.error(
                 error?.response?.data?.message || "Failed to create client"
@@ -56,6 +67,7 @@ export function useUpdateClient() {
             toast.success("Client updated successfully!");
             queryClient.invalidateQueries({ queryKey: ["clients"] });
         },
+        refetchOnWindowFocus: true,
         onError: () => toast.error("Failed to update client"),
     });
 }
@@ -69,7 +81,7 @@ export function useDeleteClient() {
             toast.success("Client deleted");
             queryClient.invalidateQueries({ queryKey: ["clients"] });
         },
-             refetchOnWindowFocus: true,
+        refetchOnWindowFocus: true,
         onError: () => {
             toast.error("Failed to delete client");
         },

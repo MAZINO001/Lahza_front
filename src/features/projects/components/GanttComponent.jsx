@@ -9,12 +9,10 @@ import {
   GanttFeatureList,
   GanttFeatureListGroup,
   GanttFeatureRow,
-  GanttCreateMarkerTrigger,
 } from "@/components/kibo-ui/gantt";
 
 import React, { useState } from "react";
 
-// Helper function to group array by key
 const groupBy = (array, key) => {
   return array.reduce((result, item) => {
     const value = key.split(".").reduce((obj, k) => obj?.[k], item);
@@ -113,8 +111,8 @@ export default function GanttComponent({ tasks, projectId }) {
   };
 
   return (
-    <div className="w-full h-full">
-      <div className="flex justify-between mb-4 ">
+    <div className="w-full h-full ">
+      <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-bold">Project Timeline</h2>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>
@@ -137,7 +135,7 @@ export default function GanttComponent({ tasks, projectId }) {
           onTaskChange={(task) => handleTaskEdit(task.id, task)}
           onTaskClick={(task) => console.log("EDIT THIS:", task)}
           onTaskDelete={(task) => handleTaskDelete(task.id)}
-          className="border rounded-lg"
+          className="border border-border rounded-lg"
           range="monthly"
           zoom={100}
         >

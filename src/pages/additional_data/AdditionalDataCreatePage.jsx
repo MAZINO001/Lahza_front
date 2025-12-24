@@ -9,10 +9,6 @@ export default function AdditionalDataCreatePage() {
   const projectId = pathMatch ? pathMatch[1] : null;
 
   return (
-    <AdditionalDataForm
-      projectId={projectId}
-      clientID={"2"}
-      onSuccess={() => navigate(-1)}
-    />
+    <AdditionalDataForm projectId={projectId} onSuccess={() => navigate(-1)} />
   );
 }

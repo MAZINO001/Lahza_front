@@ -1,50 +1,32 @@
-/* eslint-disable no-unused-vars */
-// ProjectViewPage.jsx
-
-import { format } from "date-fns";
-import {
-  ArrowLeft,
-  Edit3,
-  CheckCircle,
-  Clock,
-  Calendar,
-  CheckSquare,
-} from "lucide-react";
+import { Edit3, CheckCircle } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
+  useMarkAsComplete,
   useProject,
   useProjectProgress,
 } from "@/features/projects/hooks/useProjects";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useEffect, useState } from "react";
-import { Database, ImageIcon } from "lucide-react";
+import { Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Mail,
-  ExternalLink,
-  Briefcase,
-  ListTodo,
-  FileText,
-} from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Mail } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 import { useTasks } from "@/features/tasks/hooks/useTasksQuery";
 import GanttComponent from "@/features/projects/components/GanttComponent";
-import Comments from "@/components/project_components/Comments";
-import ProjectHistory from "@/components/project_components/ProjectHistory";
+import Comments from "@/components/client_components/Client_page/comments/Comments";
+import TimelineComponent from "@/components/timeline";
+import { useProjectHistory } from "@/features/projects/hooks/useProjectHistory";
+import { useClient } from "@/features/clients/hooks/useClientsQuery";
 export default function ProjectViewPage() {
   const { id } = useParams();
   const { role } = useAuthContext();
   const { data: project, isLoading } = useProject(id);
   const { data: additionalData } = useAdditionalData(id);
+  const { data: history } = useProjectHistory(id);
+  console.log(history);
   const { data: tasks } = useTasks(id);
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -55,6 +37,10 @@ export default function ProjectViewPage() {
       day: "numeric",
     });
   };
+
+  const clientId = project?.client_id;
+
+  const { data: client } = useClient(clientId);
 
   let destination = "";
   if (!additionalData) {
@@ -70,6 +56,19 @@ export default function ProjectViewPage() {
     const percentage = progress?.accumlated_percentage || 0;
     setCompletionPercentage(percentage);
   }, [progress]);
+
+  const navigate = useNavigate();
+  const useMarkCompleteMutate = useMarkAsComplete();
+  const handleMarkAsComplete = (projectId) => {
+    useMarkCompleteMutate.mutate(
+      { id: projectId, data: { status: "completed" } },
+      {
+        onSuccess: () => {
+          navigate(-1);
+        },
+      }
+    );
+  };
 
   if (isLoading) {
     return (
@@ -109,11 +108,15 @@ export default function ProjectViewPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              {" "}
-              <Button variant="outline" className="flex items-center gap-2">
+              <Button
+                onClick={() => handleMarkAsComplete(project.id)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
                 <CheckCircle className="w-4 h-4" />
                 Done
               </Button>
+
               <Link to={`/${role}/project/${id}/${destination}`}>
                 <Button className="flex items-center gap-2">
                   <Database className="w-4 h-4" />
@@ -131,8 +134,8 @@ export default function ProjectViewPage() {
             <CardHeader className="flex items-start justify-between px-4">
               <CardTitle>Client Information</CardTitle>
               <Link
-                to={`/${role}/project/${id}/edit`}
-                variant="ghost"
+                to={`/${role}/client/${clientId}/edit`}
+                state={{ clientId: clientId }}
                 className="flex items-center gap-2"
               >
                 <Edit3 className="w-4 h-4" />
@@ -144,13 +147,15 @@ export default function ProjectViewPage() {
                 <p className="text-sm text-muted-foreground mb-1">
                   Client Name
                 </p>
-                <p className="text-foreground font-medium">Admin User</p>
+                <p className="text-foreground font-medium">
+                  {client?.client?.user?.name}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Email</p>
                 <a className="inline-flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  admin@lahza.com
+                  {client?.client.user?.email}
                 </a>
               </div>
             </CardContent>
@@ -161,6 +166,7 @@ export default function ProjectViewPage() {
               <CardTitle>Project Description</CardTitle>
               <Link
                 to={`/${role}/project/${id}/edit`}
+                state={{ clientId: clientId }}
                 variant="ghost"
                 className="flex items-center gap-2"
               >
@@ -177,31 +183,38 @@ export default function ProjectViewPage() {
           </Card>
         </div>
 
-        <div className="flex w-full gap-2 ">
+        <div className="flex w-full gap-4">
           <Card className="w-[50%] py-4">
             <CardContent className="space-y-4 px-4">
-              {tasks?.map((task) => (
-                <div
-                  key={task.id}
-                  className="bg-gray-70 border border-border p-2 rounded-md flex items-center justify-between"
-                >
-                  <div>
-                    <span className="inline-block text-xs px-2 py-1 rounded-full min-w-70">
-                      {task.title}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="inline-block text-xs px-2 py-1 rounded-full">
+              {tasks && tasks.length > 0 ? (
+                tasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="bg-gray-70 border border-border p-2 rounded-md flex items-center justify-between"
+                  >
+                    <div>
+                      <span className="inline-block text-xs px-2 py-1 rounded-full min-w-70">
+                        {task.title}
+                      </span>
+                    </div>
+
+                    <div>
                       <StatusBadge status={task.status} />
-                    </span>
+                    </div>
+
+                    <div>
+                      <span className="inline-block text-xs px-2 py-1 rounded-full">
+                        {formatDate(task.start_date)} -{" "}
+                        {formatDate(task.end_date)}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="inline-block text-xs px-2 py-1 rounded-full">
-                      {formatDate(task.start_date)}-{formatDate(task.end_date)}
-                    </span>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  You have no tasks
+                </p>
+              )}
             </CardContent>
           </Card>
 
@@ -209,7 +222,7 @@ export default function ProjectViewPage() {
             <CardHeader className="px-4">
               <CardTitle>Progress</CardTitle>
             </CardHeader>
-            <CardContent className="px-4">
+            <CardContent className="px-4 min-w-full">
               {progressLoading ? (
                 <p className="text-muted-foreground">Loading progress...</p>
               ) : progress?.message === "Project progress not available" ? (
@@ -218,6 +231,7 @@ export default function ProjectViewPage() {
                 <>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-2xl font-bold text-blue-600">
+                      {completionPercentage === "100"}
                       {completionPercentage}%
                     </span>
                     <span className="text-sm text-muted-foreground">
@@ -225,7 +239,6 @@ export default function ProjectViewPage() {
                       {progress?.tasks_count || 0} tasks completed
                     </span>
                   </div>
-
                   <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                     <div
                       className="bg-blue-600 h-full transition-all duration-500"
@@ -255,6 +268,16 @@ export default function ProjectViewPage() {
                   </div>
                 </>
               )}
+              <div className="mt-8">
+                {/* <Button
+                  onClick={() => {
+                    console.log("fhsjdfhqlkjs jqshkjfh qsljhf");
+                  }}
+                  className="cursor-pointer"
+                >
+                  mark as completed
+                </Button> */}
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -273,11 +296,11 @@ export default function ProjectViewPage() {
               </TabsContent>
 
               <TabsContent value="comments" className="h-full overflow-auto">
-                <Comments />
+                <Comments type={"project"} currentId={id} />
               </TabsContent>
 
               <TabsContent value="history" className="h-full overflow-auto">
-                <ProjectHistory />
+                <TimelineComponent data={history} />
               </TabsContent>
             </Tabs>
           </CardContent>
