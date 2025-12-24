@@ -539,7 +539,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useDeleteEvent, useEvents } from "../hooks/useCalendarQuery";
-
 export default function CalendarComponent() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [month, setMonth] = useCalendarMonth();
