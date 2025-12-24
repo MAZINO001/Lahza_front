@@ -20,6 +20,10 @@ export function useComments() {
         queryKey: ["comments"],
         queryFn: commentApi.getAll,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch comments");
+        },
     });
 }
 
@@ -28,7 +32,11 @@ export function useCommentsByType(type, id) {
         queryKey: ["comments", type, id],
         queryFn: () => commentApi.getByType(type, id),
         enabled: !!type && !!id,
+        refetchOnWindowFocus: true,
         staleTime: 5 * 60 * 1000,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch comments");
+        },
     });
 }
 
@@ -38,6 +46,10 @@ export function useCommentsByUser(userId) {
         queryFn: () => commentApi.getByUser(userId),
         enabled: !!userId,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch comments");
+        },
     });
 }
 
@@ -50,6 +62,7 @@ export function useCreateComment() {
             toast.success("Comment added successfully!");
             queryClient.invalidateQueries({ queryKey: ["comments"] });
         },
+        refetchOnWindowFocus: true,
         onError: () => toast.error("Failed to add comment"),
     });
 }
@@ -62,6 +75,7 @@ export function useDeleteComment() {
             toast.success("Comment deleted!");
             queryClient.invalidateQueries({ queryKey: ["comments"] });
         },
+        refetchOnWindowFocus: true,
         onError: () => toast.error("Failed to delete comment"),
     });
 }

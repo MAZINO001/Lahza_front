@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
+import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -32,6 +33,10 @@ export function useLogs() {
         queryKey: ["logs"],
         queryFn: apiLog.getAll,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch logs");
+        },
     });
 }
 
@@ -41,5 +46,10 @@ export function useLog(id) {
         queryFn: () => apiLog.getById(id),
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch log");
+        },
     });
+
 }

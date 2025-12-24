@@ -1,47 +1,159 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import FormField from "@/components/Form/FormField";
-import { useCreateEvent } from "../hooks/useCalendarQuery";
-import { useEvent } from "@dnd-kit/utilities";
+import { useEventById } from "../hooks/useCalendarQuery";
+import SelectField from "@/components/Form/SelectField";
+import TextareaField from "@/components/Form/TextareaField";
+import { useCreateEvent, useUpdateEvent } from "../hooks/useCalendarQuery";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import EventColorPicker from "./ColorPicker";
+import SearchTypeTags from "./searchTypeTags";
+import { ChevronDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function CalendarForm({ EventID, onSuccess }) {
   const isEditMode = !!EventID;
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [eventColor, setEventColor] = useState("Agency");
 
-  const { data: event } = useEvent(EventID);
+  const eventColors = [
+    { name: "Meeting", color: "bg-blue-500" },
+    { name: "Reminder", color: "bg-yellow-500" },
+    { name: "Agency", color: "bg-indigo-500" },
+    { name: "Holiday", color: "bg-pink-500" },
+    { name: "Other", color: "bg-green-500" },
+    { name: "Weekend", color: "bg-gray-400" },
+  ];
+
+  const { data: event } = useEventById(EventID);
+  const now = new Date();
+
+  const today = now.toISOString().split("T")[0];
+  const currentTime = now.toTimeString().slice(0, 5);
+
   const {
     handleSubmit,
     control,
     reset,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: event || {
-      title: "",
-      start_date: "",
-      end_date: "",
-      start_hour: "",
-      end_hour: "",
-      category: "meeting",
-      status: "confirmed",
+      title: "test001",
+      start_date: today,
+      end_date: today,
+      start_hour: currentTime,
+      end_hour: currentTime,
+      category: "Agency",
+      status: "pending",
       type: "online",
       repeatedly: "none",
-      url: "",
-      other_notes: "",
+      url: "http://test.com",
+      other_notes: "test/test/test/test/test/test/",
+      tags: [],
     },
   });
 
-  const createMutate = useCreateEvent();
+  const formColor = watch("category");
+  const formTags = watch("tags");
+
+  useEffect(() => {
+    if (event) {
+      reset({
+        title: event.title || "",
+        start_date: event.start_date || today,
+        end_date: event.end_date || today,
+        start_hour: event.start_hour?.slice(0, 5) || currentTime,
+        end_hour: event.end_hour?.slice(0, 5) || currentTime,
+        category: event.category || "",
+        status: event.status,
+        type: event.type,
+        repeatedly: event.repeatedly,
+        url: event.url,
+        other_notes: event.other_notes,
+        tags: event.tags,
+      });
+      if (event.category) {
+        setEventColor(event.category);
+      }
+    }
+  }, [event, reset]);
+
+  useEffect(() => {
+    if (formColor && (!formTags || formTags.length === 0)) {
+      setEventColor(formColor);
+    }
+  }, [formColor, formTags]);
+
+  // useEffect(() => {
+  //   if (formTags?.length > 0) {
+  //     const firstTag = formTags[0];
+  //     const matchingColor = eventColors.find((c) => c.name === firstTag);
+
+  //     if (matchingColor) {
+  //       setEventColor(firstTag);
+
+  //       setValue("category", firstTag);
+  //     }
+  //   } else {
+  //     setValue("category", "Other");
+  //   }
+  // }, [formTags, setValue]);
+
+  // useEffect(() => {
+  //   if (event?.color) {
+  //     setEventColor(event.color);
+  //   }
+  // }, [event]);
+
+  const selectedCategory = watch("category");
+
+  // Derive color from category or first tag
+  useEffect(() => {
+    if (formTags?.length > 0) {
+      setEventColor(formTags[0]);
+    } else {
+      setEventColor(selectedCategory || "Agency");
+    }
+  }, [formTags, selectedCategory]);
+
+  const createMutation = useCreateEvent();
+  const updateMutation = useUpdateEvent();
 
   const onSubmit = (data) => {
-    console.log(data);
-    createMutate.mutate(data, {
-      onSuccess: () => {
-        console.log("Created:", data);
-        onSuccess?.();
-        if (!isEditMode) reset();
-      },
-    });
+    const payload = {
+      ...data,
+      description: data.other_notes,
+      other_notes: undefined,
+    };
+
+    console.log("Sending:", payload);
+
+    if (isEditMode) {
+      updateMutation.mutate(
+        { id: EventID, data: payload },
+        {
+          onSuccess: () => {
+            onSuccess?.();
+          },
+        }
+      );
+    } else {
+      createMutation.mutate(payload, {
+        onSuccess: () => {
+          onSuccess?.();
+        },
+      });
+    }
   };
+  const isMutating = createMutation.isPending || updateMutation.isPending;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4">
@@ -119,43 +231,80 @@ export default function CalendarForm({ EventID, onSuccess }) {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Controller
-          name="category"
-          control={control}
-          render={({ field }) => (
-            <FormField
-              {...field}
-              type="select"
-              label="Category"
-              options={[
-                { label: "Meeting", value: "meeting" },
-                { label: "Appointment", value: "appointment" },
-                { label: "Event", value: "event" },
-                { label: "Task", value: "task" },
-              ]}
-              error={errors?.category?.message}
-            />
-          )}
-        />
+      <div className="flex flex-col w-full gap-4 ">
+        <div className="w-full">
+          <Controller
+            name="tags"
+            control={control}
+            render={({ field }) => (
+              <SearchTypeTags
+                label="tags"
+                value={field.value || []}
+                onChange={(tags) => field.onChange(tags)}
+                allTags={[
+                  "Meeting",
+                  "Deadline",
+                  "Reminder",
+                  "Workshop",
+                  "Agency",
+                  "Travel",
+                  "Urgent",
+                  "Holiday",
+                  "Other",
+                  "Weekend",
+                ]}
+              />
+            )}
+          />
+        </div>
+        <div>
+          <Controller
+            name="category"
+            control={control}
+            render={({ field }) => (
+              <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                    variant="outline"
+                    className="w-full flex justify-between p-2 rounded-md border border-border"
+                    type="button"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className={cn(
+                          "w-5 h-5 rounded-full ring-2 ring-offset-2",
+                          eventColors.find((c) => c.name === eventColor)
+                            ?.color || "bg-blue-500",
+                          popoverOpen && "ring-ring"
+                        )}
+                      />
+                      <span>{eventColor || "Select color"}</span>
+                    </div>
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 opacity-50",
+                        popoverOpen && "rotate-180 transition-transform"
+                      )}
+                    />
+                  </button>
+                </PopoverTrigger>
 
-        <Controller
-          name="status"
-          control={control}
-          render={({ field }) => (
-            <FormField
-              {...field}
-              type="select"
-              label="Status"
-              options={[
-                { label: "Confirmed", value: "confirmed" },
-                { label: "Pending", value: "pending" },
-                { label: "Cancelled", value: "cancelled" },
-              ]}
-              error={errors?.status?.message}
-            />
-          )}
-        />
+                <PopoverContent className="w-80 p-0" align="start">
+                  <div className="p-4 pt-3">
+                    <EventColorPicker
+                      value={eventColor}
+                      onChange={(colorName) => {
+                        setEventColor(colorName);
+                        field.onChange(colorName); // ← This correctly sets "category"
+                        setPopoverOpen(false);
+                      }}
+                    />
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -163,15 +312,18 @@ export default function CalendarForm({ EventID, onSuccess }) {
           name="type"
           control={control}
           render={({ field }) => (
-            <FormField
-              {...field}
-              type="select"
+            <SelectField
+              id="type"
               label="Type"
+              value={field.value || ""}
+              onChange={(val) => {
+                field.onChange(val);
+              }}
+              error={errors.type?.message}
               options={[
                 { label: "Online", value: "online" },
-                { label: "In-Person", value: "in-person" },
+                { label: "Offline", value: "offline" },
               ]}
-              error={errors?.type?.message}
             />
           )}
         />
@@ -180,17 +332,20 @@ export default function CalendarForm({ EventID, onSuccess }) {
           name="repeatedly"
           control={control}
           render={({ field }) => (
-            <FormField
-              {...field}
-              type="select"
+            <SelectField
+              id="repeatedly"
               label="Repeat"
+              value={field.value || ""}
+              onChange={(val) => {
+                field.onChange(val);
+              }}
+              error={errors.repeatedly?.message}
               options={[
                 { label: "Does not repeat", value: "none" },
                 { label: "Daily", value: "daily" },
                 { label: "Weekly", value: "weekly" },
                 { label: "Monthly", value: "monthly" },
               ]}
-              error={errors?.repeatedly?.message}
             />
           )}
         />
@@ -214,7 +369,7 @@ export default function CalendarForm({ EventID, onSuccess }) {
         name="other_notes"
         control={control}
         render={({ field }) => (
-          <FormField
+          <TextareaField
             {...field}
             type="textarea"
             label="Notes"
@@ -227,8 +382,12 @@ export default function CalendarForm({ EventID, onSuccess }) {
         <Button onClick={onSuccess} type="button" variant="outline">
           Cancel
         </Button>
-        <Button type="submit">
-          {isEditMode ? "Update Event" : "Create Event"}
+        <Button type="submit" disabled={isMutating}>
+          {isMutating
+            ? "Saving..."
+            : isEditMode
+              ? "Update Event"
+              : "Create Event"}
         </Button>
       </div>
     </form>

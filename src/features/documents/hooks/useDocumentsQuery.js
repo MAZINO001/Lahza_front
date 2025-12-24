@@ -15,6 +15,11 @@ const apiDocuments = {
       .get(`${API_URL}/${type}/${id}`)
       .then((res) => res.data?.invoice || res.data?.quote || res.data),
 
+  getProjects: () =>
+    api
+      .get(`${API_URL}/getproject/invoices`)
+      .then((res) => res.data || []),
+
   create: (data, type) =>
     api.post(`${API_URL}/${type}`, data),
 
@@ -45,6 +50,9 @@ export function useDocument(id, type) {
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
     refetchOnWindowFocus: true,
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Failed to fetch document");
+    },
   });
 }
 
@@ -118,5 +126,15 @@ export function useDeleteDocument(type) {
       toast.error(error.message);
       console.log(error)
     }
+  });
+}
+
+export function useNoInvoiceProject() {
+  return useQuery({
+    queryKey: ["invoices"],
+    queryFn: () => apiDocuments.getProjects(),
+    staleTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: true,
+
   });
 }

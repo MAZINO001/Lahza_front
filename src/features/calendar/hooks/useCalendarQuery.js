@@ -22,6 +22,7 @@ export function useEvents() {
         queryKey: ["events"],
         queryFn: eventsApi.getAll,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to create event");
         },
@@ -35,6 +36,10 @@ export function useEventById(id) {
         queryFn: () => eventsApi.getById(id),
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch event");
+        },
     });
 }
 
@@ -47,6 +52,7 @@ export function useCreateEvent() {
             toast.success("Event created successfully");
             queryClient.invalidateQueries({ queryKey: ["events"] });
         },
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to create event");
         },
@@ -63,6 +69,7 @@ export function useUpdateEvent() {
             queryClient.invalidateQueries({ queryKey: ["events"] });
             queryClient.invalidateQueries({ queryKey: ["events", variables.id] });
         },
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to update event");
         },
@@ -73,11 +80,12 @@ export function useDeleteEvent() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: eventsApi.delete,
+        mutationFn: ({ id }) => eventsApi.delete(id),
         onSuccess: () => {
             toast.success("Event deleted successfully");
             queryClient.invalidateQueries({ queryKey: ["events"] });
         },
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to delete event");
         },
