@@ -37,8 +37,8 @@ export default function overview({ data }) {
                 Base Price
               </p>
               <p className="text-3xl font-bold text-blue-600">
-                $
-                {data?.base_price ? Number(data.base_price).toFixed(2) : "0.00"}
+                {data?.base_price ? Number(data.base_price).toFixed(2) : "0.00"}{" "}
+                MAD
               </p>
             </div>
             <div>

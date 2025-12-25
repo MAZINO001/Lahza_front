@@ -119,7 +119,7 @@ export default function ServicesSidebar({ type, currentId }) {
                 <div className="flex justify-between items-center">
                   {type === "service" && (
                     <span className="text-lg font-semibold text-blue-600">
-                      ${Number(item.base_price).toFixed(2)}
+                      {Number(item.base_price).toFixed(2)} MAD
                     </span>
                   )}
                   <StatusBadge status={item.status} />
