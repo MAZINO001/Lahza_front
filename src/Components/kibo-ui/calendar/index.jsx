@@ -367,7 +367,6 @@ export const CalendarMonthPicker = ({ className }) => {
   const [month, setMonth] = useCalendarMonth();
   const { locale } = useContext(CalendarContext);
 
-  // Memoize month data to avoid recalculating date formatting
   const monthData = useMemo(() => {
     return monthsForLocale(locale).map((month, index) => ({
       value: index.toString(),

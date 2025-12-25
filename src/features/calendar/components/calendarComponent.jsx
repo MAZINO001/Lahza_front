@@ -102,23 +102,68 @@ export default function CalendarComponent() {
         }
       } else if (event.repeatedly === "daily") {
         let current = baseStart;
-        const limit = baseEnd ?? addDays(currentMonthEnd, 365);
+        const limit = baseEnd ?? addDays(baseStart, 36500); // 100 years
 
-        while (current <= limit && current <= currentMonthEnd) {
-          if (
-            isWithinInterval(current, {
-              start: currentMonthStart,
-              end: currentMonthEnd,
-            })
-          ) {
+        while (current <= limit) {
+          // Skip weekends and holidays
+          if (!isWeekend(current) && isHoliday(current).length === 0) {
+            if (
+              isWithinInterval(current, {
+                start: currentMonthStart,
+                end: currentMonthEnd,
+              })
+            ) {
+              instances.push({
+                ...event,
+                start_date: current,
+                end_date: new Date(current.getTime() + (baseEnd - baseStart)),
+                instanceId: `${event.id}-${format(current, "yyyy-MM-dd")}`,
+              });
+            }
+          }
+
+          // Stop if we've passed current month and limit
+          if (current > currentMonthEnd && current > limit) break;
+
+          current = addDays(current, 1);
+        }
+      } else if (event.repeatedly === "monthly") {
+        let current = new Date(
+          baseStart.getFullYear(),
+          baseStart.getMonth(),
+          baseStart.getDate()
+        );
+        const maxDate = addDays(currentMonthEnd, 365);
+
+        while (current <= maxDate) {
+          const occurrenceEnd = new Date(
+            current.getFullYear(),
+            current.getMonth(),
+            current.getDate() + (baseEnd.getDate() - baseStart.getDate())
+          );
+          const occurrenceOverlapsMonth =
+            current <= currentMonthEnd && occurrenceEnd >= currentMonthStart;
+
+          if (occurrenceOverlapsMonth) {
             instances.push({
               ...event,
               start_date: current,
-              end_date: new Date(current.getTime() + (baseEnd - baseStart)),
+              end_date: occurrenceEnd,
               instanceId: `${event.id}-${format(current, "yyyy-MM-dd")}`,
             });
           }
-          current = addDays(current, 1);
+
+          if (current > currentMonthEnd && occurrenceOverlapsMonth === false)
+            break;
+
+          // Move to same day next month
+          const nextMonth =
+            current.getMonth() === 11 ? 0 : current.getMonth() + 1;
+          const nextYear =
+            current.getMonth() === 11
+              ? current.getFullYear() + 1
+              : current.getFullYear();
+          current = new Date(nextYear, nextMonth, baseStart.getDate());
         }
       } else if (event.repeatedly === "weekly") {
         let current = baseStart;
@@ -360,6 +405,7 @@ export default function CalendarComponent() {
   }
 
   const currentYear = new Date().getFullYear();
+
   const earliestYear =
     events && events.length > 0
       ? Math.min(
@@ -367,18 +413,20 @@ export default function CalendarComponent() {
           currentYear
         )
       : currentYear;
-  const latestYear =
-    events && events.length > 0
-      ? Math.max(
-          ...events.map((e) =>
-            (e.end_date
-              ? parseISO(e.end_date)
-              : parseISO(e.start_date)
-            ).getFullYear()
-          ),
-          currentYear
-        )
-      : currentYear;
+
+  const latestYear = earliestYear + 10;
+  // events && events.length > 0
+  //   ? Math.max(
+  //       ...events.map((e) =>
+  //         (e.end_date
+  //           ? parseISO(e.end_date)
+  //           : parseISO(e.start_date)
+  //         ).getFullYear()
+  //       ),
+  //       currentYear
+  //     )
+  //   : currentYear;
+
   const years = Array.from(
     { length: latestYear - earliestYear + 1 },
     (_, i) => earliestYear + i
