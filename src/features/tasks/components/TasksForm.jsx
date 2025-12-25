@@ -58,7 +58,7 @@ export function TasksForm({ task, projectId, onCancel }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
       <Controller
         name="title"
         control={control}

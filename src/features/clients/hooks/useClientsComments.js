@@ -5,7 +5,7 @@ import { toast } from "sonner";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const commentApi = {
-    getAll: () => api.get(`${API_URL}/comments`).then(res => res.data ?? []),
+    getAll: (type, id) => api.get(`${API_URL}/comments/${type}/${id}`).then(res => res.data ?? []),
     getByType: (type, id) =>
         api.get(`${API_URL}/comments/${type}/${id}`).then(res => res.data ?? []),
     getByUser: (userId) =>
@@ -14,18 +14,21 @@ const commentApi = {
     delete: (commentId) => api.delete(`${API_URL}/comments/${commentId}`),
 };
 
-// Queries
-export function useComments() {
-    return useQuery({
-        queryKey: ["comments"],
-        queryFn: commentApi.getAll,
-        staleTime: 5 * 60 * 1000,
-        refetchOnWindowFocus: true,
-        onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to fetch comments");
-        },
-    });
+export function useAllCommentsByType(type, id) {
+  return useQuery({
+    queryKey: ["comments", type, id],
+    queryFn: () => commentApi.getByType(type, id),
+    enabled: !!type && !!id,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    onError: (error) => {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Failed to fetch comments");
+    },
+  });
 }
+
+
 
 export function useCommentsByType(type, id) {
     return useQuery({
@@ -35,6 +38,8 @@ export function useCommentsByType(type, id) {
         refetchOnWindowFocus: true,
         staleTime: 5 * 60 * 1000,
         onError: (error) => {
+            console.log(error)
+
             toast.error(error?.response?.data?.message || "Failed to fetch comments");
         },
     });
@@ -48,22 +53,26 @@ export function useCommentsByUser(userId) {
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
         onError: (error) => {
+            console.log(error)
+
             toast.error(error?.response?.data?.message || "Failed to fetch comments");
         },
     });
 }
 
-// Mutations
 export function useCreateComment() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ type, id, data }) => commentApi.create(type, id, data),
-        onSuccess: () => {
+        onSuccess: ({ type, id }) => {
             toast.success("Comment added successfully!");
+            queryClient.invalidateQueries({ queryKey: ["comments", type, id] });
             queryClient.invalidateQueries({ queryKey: ["comments"] });
         },
-        refetchOnWindowFocus: true,
-        onError: () => toast.error("Failed to add comment"),
+        onError: (error) => {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Failed to add comment");
+        },
     });
 }
 

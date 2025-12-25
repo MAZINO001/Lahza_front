@@ -7,6 +7,7 @@ import {
   FileSignature,
   Trash,
   LinkIcon,
+  SignatureIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { StatusBadge } from "@/Components/StatusBadge";
@@ -212,6 +213,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
         const document = row.original;
         const { user } = useAuthContext();
         const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
+        const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
         const [signatureFile, setSignatureFile] = useState(null);
         const [open, setOpen] = useState(false);
         const createInvoice = useCreateInvoiceFromQuote();
@@ -438,8 +440,9 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 InvoiceId={row.getValue("id")}
                 totalAmount={row.getValue("total_amount")}
                 balanceDue={row.getValue("balance_due")}
-                isOpen={isSignDialogOpen}
-                onOpenChange={setIsSignDialogOpen}
+                isOpen={isPaymentDialogOpen}
+                onOpenChange={setIsPaymentDialogOpen}
+                icon={true}
               />
             )}
             {role === "admin" && (
@@ -448,9 +451,9 @@ export function DocumentsColumns(role, navigate, currentSection) {
                   variant="outline"
                   size="sm"
                   onClick={() => setOpen(true)}
-                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="h-8 text-muted-foreground hover:text-red-700 hover:bg-red-50"
                 >
-                  <Trash className="h-4 w-4" />
+                  <SignatureIcon className="h-4 w-4" />
                 </Button>
 
                 <ConfirmDialog

@@ -1,8 +1,9 @@
-import { Link, Navigate, useNavigate } from "react-router-dom";
+/* eslint-disable no-undef */
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, Download, ExternalLink, Copy } from "lucide-react";
+import { ArrowLeft, Edit, Download, Copy } from "lucide-react";
 import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { toast } from "sonner";
@@ -10,6 +11,27 @@ import { toast } from "sonner";
 export default function AdditionalDataViewPage() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
+
+  const downloadFile = async (filePath, fileName) => {
+    try {
+      const response = await api.get(`${API_URL}/download`, {
+        params: { file: filePath },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName || "download");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error("Failed to download file");
+      console.error("Download error:", error);
+    }
+  };
 
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -28,9 +50,6 @@ export default function AdditionalDataViewPage() {
     error,
   } = useAdditionalData(projectId);
 
-  console.log(additionalData);
-  console.log(error);
-
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading additional data</div>;
   if (!additionalData) {
@@ -44,17 +63,14 @@ export default function AdditionalDataViewPage() {
     return (
       <div className="flex items-center gap-2">
         <Badge variant="secondary">Available</Badge>
-        {value.startsWith("http") ? (
-          <Button size="sm" variant="outline" asChild>
-            <a href={value} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </Button>
-        ) : (
-          <Button size="sm" variant="outline">
-            <Download className="h-3 w-3" />
-          </Button>
-        )}
+
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => downloadFile(value, "filename.ext")}
+        >
+          <Download className="h-3 w-3" />
+        </Button>
       </div>
     );
   };

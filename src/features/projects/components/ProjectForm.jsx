@@ -9,7 +9,10 @@ import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
 import TextareaField from "@/Components/Form/TextareaField";
 
-import { useDocuments } from "@/features/documents/hooks/useDocumentsQuery";
+import {
+  useDocuments,
+  useNoInvoiceProject,
+} from "@/features/documents/hooks/useDocumentsQuery";
 import {
   useCreateProject,
   useProject,
@@ -22,16 +25,13 @@ import AddClientModel from "@/components/common/AddClientModel";
 
 export function ProjectForm({ onSuccess }) {
   const [directProject, setDirectProject] = useState(false);
-
   const navigate = useNavigate();
   const { id } = useParams();
   const { role } = useAuthContext();
-
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const { data: invoices = [], isLoading: invoicesLoading } =
-    useDocuments("invoices");
+    useNoInvoiceProject();
   const { data: project = [], isLoading: projectLoading } = useProject(id);
-  console.log(project);
   const createMutation = useCreateProject();
   const updateMutation = useUpdateProject();
   const mutation = project?.id ? updateMutation : createMutation;
@@ -52,7 +52,7 @@ export function ProjectForm({ onSuccess }) {
       invoice_id: "",
       start_date: "",
       estimated_end_date: "",
-      status: "draft",
+      status: "pending",
     },
   });
 
@@ -65,7 +65,7 @@ export function ProjectForm({ onSuccess }) {
         invoice_id: project.invoice_id ? String(project.invoice_id) : "",
         start_date: project.start_date || "",
         estimated_end_date: project.estimated_end_date || "",
-        status: project.status || "draft",
+        status: project.status || "pending",
       });
     }
   }, [isEditMode, project, reset]);
@@ -79,7 +79,7 @@ export function ProjectForm({ onSuccess }) {
 
     const payload = {
       ...data,
-      status: "draft",
+      status: "pending",
       client_id: Number(data.customerName),
       invoice_id: directProject ? "" : Number(data.invoice_id),
     };
@@ -89,6 +89,7 @@ export function ProjectForm({ onSuccess }) {
       onSuccess: () => {
         onSuccess?.();
         if (!isEditMode) reset();
+        navigate(`/${role}/projects`);
       },
       onSettled: () => endSubmit(),
     });
@@ -98,6 +99,7 @@ export function ProjectForm({ onSuccess }) {
     label: formatId(invoice.id, "INVOICE"),
     value: String(invoice.id),
   }));
+
   const { data: clients } = useClients();
   const selectedClientId = watch("customerName");
 

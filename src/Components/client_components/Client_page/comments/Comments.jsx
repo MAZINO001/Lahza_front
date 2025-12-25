@@ -3,65 +3,18 @@ import { useState } from "react";
 import AddComments from "./addComments";
 import DisplayComments from "./DisplayComments";
 import {
-  useComments,
-  useCommentsByType,
+  useAllCommentsByType,
   useCreateComment,
   useDeleteComment,
 } from "@/features/clients/hooks/useClientsComments";
 import { useParams } from "react-router-dom";
 
-// export default function CommentInput() {
-// const { id } = useParams();
-// const [isFocused, setIsFocused] = useState(false);
-// const [commentText, setCommentText] = useState("");
-
-// const { data: comments = [] } = useComments({ type: "client", id });
-// const queryClient = useComments().queryClient;
-
-// const { mutate: createComment } = useCreateComment();
-// const { mutate: deleteComment } = useDeleteComment();
-
-// const handleSubmit = () => {
-//   if (!commentText.trim()) return;
-
-//   createComment(
-//     { type: "client", id, data: { username: "Admin001", text: commentText } },
-//     {
-//       onSuccess: () => setCommentText(""),
-//     }
-//   );
-// };
-
-// const handleDelete = (commentId) => {
-//   deleteComment(commentId);
-// };
-
-// const handleKeyPress = (e) => {
-//   if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) handleSubmit();
-// };
-
-//   return (
-//     <div className="w-full">
-//       <AddComments
-//         commentText={commentText}
-//         handleKeyPress={handleKeyPress}
-//         handleSubmit={handleSubmit}
-//         setIsFocused={setIsFocused}
-//         setCommentText={setCommentText}
-//       />
-//       <DisplayComments comments={comments} handleDelete={handleDelete} />
-//     </div>
-//   );
-// }
-
-export default function CommentsDemo() {
+export default function Comments({ type, currentId }) {
   const { id } = useParams();
   const [isFocused, setIsFocused] = useState(false);
   const [commentText, setCommentText] = useState("");
 
-  const { data: comments = [] } = useComments({ type: "client", id });
-  const queryClient = useComments().queryClient;
-
+  const { data: comments = [] } = useAllCommentsByType(type, currentId);
   const { mutate: createComment } = useCreateComment();
   const { mutate: deleteComment } = useDeleteComment();
 
@@ -69,7 +22,14 @@ export default function CommentsDemo() {
     if (!commentText.trim()) return;
 
     createComment(
-      { type: "client", id, data: { username: "Admin001", text: commentText } },
+      {
+        type,
+        id,
+        data: {
+          body: commentText,
+          is_internal: false,
+        },
+      },
       {
         onSuccess: () => setCommentText(""),
       }

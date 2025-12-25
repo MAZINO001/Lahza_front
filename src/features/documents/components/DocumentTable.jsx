@@ -39,6 +39,23 @@ export function DocumentTable({ type }) {
     [role, navigate]
   );
 
+  // const table = useReactTable({
+  //   data: documents,
+  //   columns,
+  //   state: {
+  //     sorting,
+  //     columnFilters,
+  //     rowSelection,
+  //   },
+  //   onSortingChange: setSorting,
+  //   onColumnFiltersChange: setColumnFilters,
+  //   onRowSelectionChange: setRowSelection,
+  //   getCoreRowModel: getCoreRowModel(),
+  //   getSortedRowModel: getSortedRowModel(),
+  //   getFilteredRowModel: getFilteredRowModel(),
+  //   getPaginationRowModel: getPaginationRowModel(),
+  // });
+  const [globalFilter, setGlobalFilter] = useState("");
   const table = useReactTable({
     data: documents,
     columns,
@@ -46,25 +63,38 @@ export function DocumentTable({ type }) {
       sorting,
       columnFilters,
       rowSelection,
+      globalFilter,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onRowSelectionChange: setRowSelection,
+
+    globalFilterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+
+      const id = row.original?.id?.toString() || "";
+      const status = row.original?.status?.toString().toLowerCase() || "";
+      const searchTerm = filterValue.toLowerCase();
+
+      const idMatch = id.includes(searchTerm);
+      const statusMatch = status.includes(searchTerm);
+      return idMatch || statusMatch;
+    },
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
   return (
     <div className="w-full p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <FormField
-            placeholder={`Search ${type}...`}
-            value={table.getColumn("status")?.getFilterValue() ?? ""}
-            onChange={(e) =>
-              table.getColumn("status")?.setFilterValue(e.target.value)
-            }
+            placeholder={`Search by ID or Status...`}
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
             className="max-w-sm"
           />
 

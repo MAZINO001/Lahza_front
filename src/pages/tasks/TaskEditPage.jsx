@@ -1,15 +1,7 @@
-import { useParams } from "react-router-dom";
 import { TasksForm } from "@/features/tasks/components/TasksForm";
 import { useTask } from "@/features/tasks/hooks/useTasksQuery";
 
-export default function TaskEditPage({ onCancel }) {
-  const { id: taskId } = useParams();
-
-  // Extract projectId from URL
-  const currentPath = window.location.pathname;
-  const pathMatch = currentPath.match(/\/project\/(\d+)/);
-  const projectId = pathMatch ? pathMatch[1] : null;
-
+export default function TaskEditPage({ taskId, projectId, onCancel }) {
   const { data: task, isLoading } = useTask(projectId, taskId);
 
   if (isLoading) return <div>Loading...</div>;

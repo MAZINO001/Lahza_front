@@ -22,6 +22,8 @@ export default function DisplayComments({ comments, handleDelete }) {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
+  console.log(comments);
+
   return (
     <div className="w-full mt-4">
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">

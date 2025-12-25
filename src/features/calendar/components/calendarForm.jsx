@@ -43,6 +43,7 @@ export default function CalendarForm({ EventID, onSuccess }) {
     control,
     reset,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: event || {
@@ -92,37 +93,26 @@ export default function CalendarForm({ EventID, onSuccess }) {
     }
   }, [formColor, formTags]);
 
-  // useEffect(() => {
-  //   if (formTags?.length > 0) {
-  //     const firstTag = formTags[0];
-  //     const matchingColor = eventColors.find((c) => c.name === firstTag);
-
-  //     if (matchingColor) {
-  //       setEventColor(firstTag);
-
-  //       setValue("category", firstTag);
-  //     }
-  //   } else {
-  //     setValue("category", "Other");
-  //   }
-  // }, [formTags, setValue]);
-
-  // useEffect(() => {
-  //   if (event?.color) {
-  //     setEventColor(event.color);
-  //   }
-  // }, [event]);
-
-  const selectedCategory = watch("category");
-
-  // Derive color from category or first tag
   useEffect(() => {
     if (formTags?.length > 0) {
-      setEventColor(formTags[0]);
+      const firstTag = formTags[0];
+      const matchingColor = eventColors.find((c) => c.name === firstTag);
+
+      if (matchingColor) {
+        setEventColor(firstTag);
+
+        setValue("category", firstTag);
+      }
     } else {
-      setEventColor(selectedCategory || "Agency");
+      setValue("category", "Other");
     }
-  }, [formTags, selectedCategory]);
+  }, [formTags, setValue]);
+
+  useEffect(() => {
+    if (event?.color) {
+      setEventColor(event.color);
+    }
+  }, [event]);
 
   const createMutation = useCreateEvent();
   const updateMutation = useUpdateEvent();
@@ -345,6 +335,7 @@ export default function CalendarForm({ EventID, onSuccess }) {
                 { label: "Daily", value: "daily" },
                 { label: "Weekly", value: "weekly" },
                 { label: "Monthly", value: "monthly" },
+                { label: "Yearly", value: "yearly" },
               ]}
             />
           )}

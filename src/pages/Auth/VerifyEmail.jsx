@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Mail, ArrowRight, CheckCircle } from "lucide-react";
 import FormField from "@/components/Form/FormField";
 import { Link } from "react-router-dom";
@@ -18,17 +23,14 @@ export default function VerifyEmail() {
     watch,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      verificationCode: "",
-    },
+    defaultValues: { verificationCode: "" },
   });
 
   const verificationCode = watch("verificationCode");
 
   const handleVerify = async (data) => {
     setIsLoading(true);
-    
-    // Simulate verification process
+    console.log(data);
     setTimeout(() => {
       setIsVerified(true);
       setIsLoading(false);
@@ -41,27 +43,22 @@ export default function VerifyEmail() {
 
   if (isVerified) {
     return (
-      <div className="min-h-screen flex items-center justify-center  p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  Email Verified!
-                </h2>
-                <p className="text-gray-600 mt-2">
-                  Your email has been successfully verified. You can now access
-                  your account.
-                </p>
-              </div>
-              <Button className="w-full">
-                Continue to Dashboard
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+          <CardContent className="pt-6 text-center space-y-4">
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Email Verified!
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Your email has been successfully verified. You can now access your
+              account.
+            </p>
+            <Button className="w-full">
+              Continue to Dashboard <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -69,7 +66,7 @@ export default function VerifyEmail() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center  p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center space-y-2">
           <div className="mx-auto w-12 h-12 bg-background rounded-full flex items-center justify-center">
@@ -80,46 +77,42 @@ export default function VerifyEmail() {
             We've sent a verification code to your email. Please enter it below.
           </CardDescription>
         </CardHeader>
+
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit(handleVerify)} className="space-y-4">
             <Controller
               name="verificationCode"
               control={control}
-              rules={{ 
+              rules={{
                 required: "Verification code is required",
                 pattern: {
                   value: /^\d{6}$/,
-                  message: "Please enter a valid 6-digit code"
-                }
+                  message: "Please enter a valid 6-digit code",
+                },
               }}
               render={({ field }) => (
-                <div className="space-y-2">
-                  <label htmlFor="verificationCode" className="text-sm font-medium text-gray-700">
-                    Verification Code
-                  </label>
-                  <Input
-                    id="verificationCode"
-                    type="text"
-                    placeholder="Enter 6-digit code"
-                    className="text-center text-lg tracking-widest"
-                    maxLength={6}
-                    {...field}
-                  />
-                  {errors.verificationCode && (
-                    <p className="text-sm text-red-600">{errors.verificationCode.message}</p>
-                  )}
-                </div>
+                <FormField
+                  id="verificationCode"
+                  label="Verification Code"
+                  placeholder="Enter 6-digit code"
+                  className="text-center text-lg tracking-widest"
+                  maxLength={6}
+                  error={errors.verificationCode?.message}
+                  {...field}
+                />
               )}
             />
+
             <Button
               type="submit"
               className="w-full"
               disabled={isLoading || verificationCode?.length !== 6}
             >
-              {isLoading ? "Verifying..." : "Verify Email"}
+              {isLoading ? "Verifying..." : "Verify Email"}{" "}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </form>
+
           <div className="text-center space-y-2">
             <p className="text-sm text-gray-600">Didn't receive the code?</p>
             <Button
@@ -130,14 +123,16 @@ export default function VerifyEmail() {
               Resend Code
             </Button>
           </div>
-          Go back to{" "}
-          <Link
-            to={`/auth/login`}
-            variant="link"
-            className="p-0 h-auto text-blue-600 hover:text-blue-800"
-          >
-            Login
-          </Link>
+
+          <p className="text-center text-sm text-gray-600">
+            Go back to{" "}
+            <Link
+              to="/auth/login"
+              className="text-blue-600 hover:text-blue-800"
+            >
+              Login
+            </Link>
+          </p>
         </CardContent>
       </Card>
     </div>

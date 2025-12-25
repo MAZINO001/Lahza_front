@@ -147,7 +147,9 @@ export default function Client_Page({ currentId }) {
         {activeTab === "overview" && (
           <OverView data={client} currentId={currentId} />
         )}
-        {activeTab === "comments" && <Comments data={client} />}
+        {activeTab === "comments" && (
+          <Comments type={"clients"} currentId={currentId} data={client} />
+        )}
         {activeTab === "transactions" && <Transactions currentId={currentId} />}
         {activeTab === "mails" && <Mails currentId={currentId} />}
       </div>

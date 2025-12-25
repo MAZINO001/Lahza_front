@@ -1226,18 +1226,70 @@ export function DocumentForm({ type, onSuccess }) {
   const calculateTotal = () =>
     items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
 
+  // const onSubmit = async (data, status) => {
+  //   if (isSubmitting || !startSubmit()) return;
+
+  //   const payload = {
+  //     client_id: Number(data.customerName),
+  //     ...(isInvoice
+  //       ? {
+  //           invoice_date: data.invoice_date,
+  //           due_date: data.due_date,
+  //           status: status || "unpaid",
+  //           balance_due: Number(calculateTotal().toFixed(2)),
+  //           // Add quote reference if converting
+  //           ...(isConvertMode && { quote_id: quoteId }),
+  //         }
+  //       : {
+  //           quotation_date: data.quoteDate,
+  //           status: status || "draft",
+  //           description: data.description,
+  //         }),
+
+  //     total_amount: Number(calculateTotal().toFixed(2)),
+  //     notes: data.notes || "",
+  //     terms: data.terms || terms,
+  //     has_projects: JSON.stringify({
+  //       title: data.has_projects?.title || [],
+  //     }),
+  //     old_projects: data.old_projects,
+  //     payment_percentage: Number(data.payment_percentage),
+  //     payment_status: data.payment_status,
+  //     payment_type: data.payment_type,
+
+  //     services: data.items.map((item) => ({
+  //       service_id: Number(item.serviceId),
+  //       quantity: Number(item.quantity),
+  //       rate: Number(item.rate),
+  //       tax: Number(item.tax),
+  //       discount: Number(item.discount || 0),
+  //       individual_total: Number(item.amount),
+  //     })),
+  //   };
+
+  //   console.log("the payload:", payload);
+
+  //   mutation.mutate(isEditMode ? { id: id, data: payload } : payload, {
+  //     onSuccess: () => {
+  //       onSuccess?.();
+  //       if (!isEditMode) reset();
+  //     },
+  //     onSettled: () => endSubmit(),
+  //   });
+  // };
+
   const onSubmit = async (data, status) => {
     if (isSubmitting || !startSubmit()) return;
 
     const payload = {
       client_id: Number(data.customerName),
+
       ...(isInvoice
         ? {
             invoice_date: data.invoice_date,
             due_date: data.due_date,
             status: status || "unpaid",
             balance_due: Number(calculateTotal().toFixed(2)),
-            // Add quote reference if converting
             ...(isConvertMode && { quote_id: quoteId }),
           }
         : {
@@ -1249,10 +1301,11 @@ export function DocumentForm({ type, onSuccess }) {
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
       terms: data.terms || terms,
+
       has_projects: JSON.stringify({
         title: data.has_projects?.title || [],
       }),
-      old_projects: data.old_projects,
+
       payment_percentage: Number(data.payment_percentage),
       payment_status: data.payment_status,
       payment_type: data.payment_type,
@@ -1267,9 +1320,13 @@ export function DocumentForm({ type, onSuccess }) {
       })),
     };
 
+    if (isInvoice || (!isInvoice && !isEditMode)) {
+      payload.old_projects = data.old_projects;
+    }
+
     console.log("the payload:", payload);
 
-    mutation.mutate(isEditMode ? { id: id, data: payload } : payload, {
+    mutation.mutate(isEditMode ? { id, data: payload } : payload, {
       onSuccess: () => {
         onSuccess?.();
         if (!isEditMode) reset();
@@ -1694,9 +1751,11 @@ export function DocumentForm({ type, onSuccess }) {
         </div>
 
         <div className="flex gap-4 w-full items-start space-between">
-          {isInvoice && (
+          {(type === "invoices" || (type === "quotes" && !isEditMode)) && (
             <div
-              className={`flex gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"}`}
+              className={`flex gap-4 items-end justify-between ${
+                !isInvoice ? "w-full" : "w-[50%]"
+              }`}
             >
               <div className="w-full">
                 <Controller
