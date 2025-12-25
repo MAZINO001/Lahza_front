@@ -8,12 +8,34 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { globalFnStore } from "@/hooks/GlobalFnStore";
+import PaymentPercentage from "@/components/Invoice_Quotes/paymentPercentage";
 
-export default function WhatsNextBanner({ type, action, content, clientId }) {
+export default function WhatsNextBanner({
+  type,
+  action,
+  content,
+  clientId,
+  currentSection,
+  totalAmount,
+  balanceDue,
+}) {
   const [isVisible, setIsVisible] = useState(true);
+  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const { role } = useAuthContext();
+  const navigate = useNavigate();
+  const { cloneQuoteOrInvoice } = globalFnStore();
+
   if (!isVisible) return null;
+
+  const handleActionClick = () => {
+    if (action === "Generate Payment") {
+      setIsPaymentDialogOpen(true);
+    } else if (action === "Clone Quote") {
+      cloneQuoteOrInvoice(clientId, type, role, currentSection, navigate);
+    }
+  };
 
   return (
     <div className="bg-background border border-border rounded-lg px-4 py-4 w-full">
@@ -35,12 +57,10 @@ export default function WhatsNextBanner({ type, action, content, clientId }) {
 
           {/* Buttons */}
           <div className="flex gap-2 items-center flex-wrap">
-            <Link to={`/${role}/${type}/new`} state={{ clientId }}>
-              <Button size="sm">
-                <Plus className="h-4 w-4" />
-                {action}
-              </Button>
-            </Link>
+            <Button size="sm" onClick={handleActionClick}>
+              <Plus className="h-4 w-4" />
+              {action}
+            </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -66,6 +86,20 @@ export default function WhatsNextBanner({ type, action, content, clientId }) {
           <X className="h-4 w-4 text-muted-foreground" />
         </Button>
       </div>
+
+      {/* PaymentPercentage Dialog */}
+      {action === "Generate Payment" &&
+        type === "invoice" &&
+        role === "admin" && (
+          <PaymentPercentage
+            InvoiceId={clientId}
+            totalAmount={totalAmount}
+            balanceDue={balanceDue}
+            isOpen={isPaymentDialogOpen}
+            onOpenChange={setIsPaymentDialogOpen}
+            icon={false}
+          />
+        )}
     </div>
   );
 }

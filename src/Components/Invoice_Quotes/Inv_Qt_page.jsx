@@ -169,12 +169,25 @@ export default function Inv_Qt_page({ type, currentId }) {
       </div>
       <div className="flex flex-col h-full p-4 gap-4 overflow-auto">
         <div className="shrink-0">
-          <DocumentBanner
-            type="quote"
-            action="New Quote"
-            content="Prepare a quote for your customer."
-            clientId={currentId}
-          />
+          {type === "quotes" ? (
+            <DocumentBanner
+              type="quote"
+              action="Clone Quote"
+              content="Create a duplicate of this quote for easy editing"
+              clientId={currentId}
+              currentSection={currentSection}
+            />
+          ) : (
+            <DocumentBanner
+              type="invoice"
+              action="Generate Payment"
+              content="Create a duplicate of this quote for easy editing"
+              clientId={currentId}
+              currentSection={currentSection}
+              totalAmount={document?.total_amount}
+              balanceDue={document?.balance_due}
+            />
+          )}
         </div>
 
         <div className="flex-1 min-h-0">

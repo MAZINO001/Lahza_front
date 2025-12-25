@@ -104,6 +104,7 @@ export default function GanttComponent({ tasks, projectId }) {
   const handleTaskEdit = (task) => {
     setEditingTask(task);
     setIsEditDialogOpen(true);
+    console.log(task);
   };
 
   const handleTaskAdd = () => {
@@ -223,17 +224,20 @@ export default function GanttComponent({ tasks, projectId }) {
       {isEditDialogOpen && (
         <Dialog
           open={!!isEditDialogOpen}
-          onOpenChange={() => setEditingTask(null)}
+          onOpenChange={(open) => !open && setIsEditDialogOpen(false)}
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Task: {editingTask?.title}</DialogTitle>
-              <TaskEditPage
-                task={editingTask}
-                projectId={projectId}
-                onCancel={() => setIsEditDialogOpen(false)}
-              />
+              <DialogTitle>Edit Task: {editingTask?.id}</DialogTitle>
+              <DialogDescription>
+                Edit the task details below.
+              </DialogDescription>
             </DialogHeader>
+            <TaskEditPage
+              taskId={editingTask?.id}
+              projectId={projectId}
+              onCancel={() => setIsEditDialogOpen(false)}
+            />
           </DialogContent>
         </Dialog>
       )}

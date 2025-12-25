@@ -25,6 +25,7 @@ export default function PaymentPercentage({
   isOpen: controlledOpen,
   onOpenChange,
   InvoiceId,
+  icon,
 }) {
   const { data: payments = [] } = useDocumentPayments(InvoiceId);
   const lastPayment = payments.at(-1)?.payment_type || "stripe";
@@ -92,15 +93,17 @@ export default function PaymentPercentage({
 
   return (
     <Dialog open={controlledOpen} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="icon"
-          title="Generate Partial Payment Link"
-        >
-          <LinkIcon className="h-4 w-4" />
-        </Button>
-      </DialogTrigger>
+      {icon && (
+        <DialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="icon"
+            title="Generate Partial Payment Link"
+          >
+            <LinkIcon className="h-4 w-4" />
+          </Button>
+        </DialogTrigger>
+      )}
 
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>

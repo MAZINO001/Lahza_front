@@ -3,6 +3,7 @@ import Header from "@/Components/layout/Header";
 import { AppSidebar } from "../../Components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "../../Components/ui/sidebar";
 import { LoadingProvider } from "@/hooks/LoadingContext";
+import ContactWidget from "../ContactWidget";
 
 export default function AppLayout() {
   return (
@@ -25,6 +26,7 @@ export default function AppLayout() {
               </div>
             </LoadingProvider>
           </main>
+          <ContactWidget />
         </div>
       </SidebarInset>
     </SidebarProvider>

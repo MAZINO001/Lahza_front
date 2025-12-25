@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import api from "@/lib/utils/axios";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { create } from "zustand";
 
 export const globalFnStore = create((set) => ({
@@ -111,4 +112,10 @@ export const globalFnStore = create((set) => ({
         }
     },
 
+
+    cloneQuoteOrInvoice: (id, type, role, currentSection, navigate) => {
+        navigate(`/${role}/${currentSection}/new`, {
+            state: { cloneFromId: id },
+        });
+    }
 }))
