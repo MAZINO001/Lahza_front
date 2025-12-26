@@ -1,27 +1,17 @@
-"use client";
-
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-
 const eventColors = [
   { name: "Meeting", color: "bg-blue-500" },
-  // { name: "Deadline", color: "bg-red-500" },
   { name: "Reminder", color: "bg-yellow-500" },
-  // { name: "Workshop", color: "bg-purple-500" },
   { name: "Agency", color: "bg-indigo-500" },
-  // { name: "Travel", color: "bg-teal-500" },
-  // { name: "Urgent", color: "bg-orange-500" },
   { name: "Holiday", color: "bg-pink-500" },
   { name: "Other", color: "bg-green-500" },
   { name: "Weekend", color: "bg-gray-400" },
 ];
-
 export default function EventColorPicker({ value, onChange }) {
   console.log(value);
-
   const selectedColor =
     eventColors.find((c) => c.name === value) || eventColors[0];
-
   return (
     <div className="grid grid-cols-2 gap-3">
       {eventColors.map((color) => (

@@ -1,0 +1,292 @@
+/* Minimal FullCalendar dark theme overrides */
+.fc-dark-theme {
+    --fc-border-color: #374151;
+    --fc-today-bg-color: #1f2937;
+    --fc-event-bg-color: #3b82f6;
+    --fc-event-border-color: #2563eb;
+    --fc-event-text-color: #ffffff;
+}
+
+.fc-dark-theme .fc-theme-standard .fc-scrollgrid {
+    border: 1px solid var(--border);
+}
+
+.fc-dark-theme .fc-theme-standard td,
+.fc-dark-theme .fc-theme-standard th {
+    border: 1px solid var(--border);
+}
+
+.fc-dark-theme .fc-daygrid-day.fc-day-today {
+    background-color: #1f2937 !important;
+}
+
+.fc-dark-theme .fc-daygrid-day-number {
+    color: #ffffff;
+}
+
+.fc-dark-theme .fc-col-header-cell {
+    background-color: #374151;
+    color: #ffffff;
+}
+
+.fc-dark-theme .fc-toolbar-title {
+    color: #ffffff;
+}
+
+.fc-dark-theme .fc-button {
+    background-color: #374151;
+    color: #ffffff;
+    border: 1px solid var(--border);
+}
+
+.fc-dark-theme .fc-button:hover {
+    border: 1px solid var(--border);
+}
+
+.fc-dark-theme .fc-button-active {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.calendar-view-buttons {
+    display: flex;
+    background-color: #374151;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+.calendar-view-buttons button {
+    background: transparent;
+    color: #9ca3af;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.calendar-view-buttons button.active {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
+
+.calendar-view-buttons button:hover:not(.active) {
+    background-color: #4b5563;
+    color: #ffffff;
+}
+
+
+.calendar-container .fc {
+    background-color: var(--background) !important;
+    color: var(--foreground);
+}
+
+.calendar-container .fc-toolbar {
+    background-color: var(--background) !important;
+    border: none;
+    position: relative;
+    top: 8px;
+}
+
+.calendar-container .fc-toolbar-title {
+    color: var(--foreground) !important;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.calendar-container .fc-button {
+    margin-right: 10px;
+    border: 1px solid var(--border) !important;
+    padding: 8px 15px !important;
+    border-radius: 6px !important;
+    font-size: 15px !important;
+    text-transform: capitalize;
+    background-color: var(--background) !important;
+    color: var(--secondary-foreground) !important;
+}
+
+.calendar-container .fc-button:last-child {
+    margin-right: 0;
+}
+
+
+.calendar-container .fc-button-active {
+    background-color: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+}
+
+.calendar-container .fc-today-button {
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+    border: 1px solid var(--border) !important;
+}
+
+.calendar-container .fc-today-button:hover {
+    color: var(--muted-foreground) !important;
+}
+
+.calendar-container .fc-daygrid {
+    background-color: var(--card);
+    border: 1px solid var(--card);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.calendar-container .fc-col-header {
+    background-color: var(--muted);
+    border: none;
+}
+
+.calendar-container .fc-col-header-cell {
+    background-color: var(--muted);
+    border: none;
+    border-right: 1px solid var(--border);
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--muted-foreground);
+    font-size: 14px;
+
+}
+
+.calendar-container .fc-col-header-cell:last-child {
+    border-right: none;
+}
+
+.calendar-container .fc-daygrid-day-frame {
+    background-color: var(--card);
+    border: none;
+    min-height: 100px;
+}
+
+.calendar-container .fc-day-today {
+    background-color: transparent !important;
+}
+
+.calendar-container .fc-daygrid-day-number {
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+.calendar-container .fc-day-other .fc-daygrid-day-number {
+    color: var(--muted-foreground);
+}
+
+.calendar-container .fc-event {
+    /* border: none !important; */
+    border-radius: 5px !important;
+    padding: 2px 6px !important;
+    margin: 2px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+}
+
+.calendar-container .fc-event-title {
+    color: var(--text-foreground) !important;
+}
+
+.calendar-container .fc-event-time {
+    color: var(--text-foreground) !important;
+    font-weight: 400 !important;
+}
+
+/* Event category colors */
+.calendar-container .fc-event[data-category="Holiday"] {
+    background-color: #8b5cf6 !important;
+}
+
+.calendar-container .fc-event[data-category="Agency"] {
+    background-color: #ef4444 !important;
+}
+
+.calendar-container .fc-event[data-category="Other"] {
+    background-color: #f59e0b !important;
+}
+
+.calendar-container .fc-event[data-category="Meeting"] {
+    background-color: #3b82f6 !important;
+}
+
+.calendar-container .fc-event[data-category="Work"] {
+    background-color: #10b981 !important;
+}
+
+.calendar-container .fc-event:hover {
+    opacity: 0.8;
+    transform: translateY(-1px);
+    transition: all 0.2s;
+}
+
+.calendar-container .fc-more-link {
+    color: #3b82f6 !important;
+    font-weight: 500 !important;
+}
+
+.calendar-container .fc-more-link:hover {
+    color: #60a5fa !important;
+}
+
+/* Dark theme for modal */
+.calendar-dialog {
+    background-color: #1f2937;
+    color: #ffffff;
+    border: 1px solid #374151;
+}
+
+.calendar-dialog .dialog-content {
+    background-color: #1f2937;
+    color: #ffffff;
+}
+
+.calendar-dialog .dialog-title {
+    color: #ffffff;
+}
+
+.calendar-dialog .dialog-header {
+    border-bottom: 1px solid #374151;
+}
+
+.calendar-dialog .dialog-footer {
+    border-top: 1px solid #374151;
+}
+
+/* Form styling for dark theme */
+
+.calendar-form input,
+.calendar-form textarea,
+.calendar-form select {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+    border: 1px solid #4b5563 !important;
+}
+
+.calendar-form input::placeholder,
+.calendar-form textarea::placeholder {
+    color: #9ca3af !important;
+}
+
+.calendar-form label {
+    color: #e5e7eb !important;
+}
+
+.calendar-form .select-trigger {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+    border: 1px solid #4b5563 !important;
+}
+
+.calendar-form .select-content {
+    background-color: #374151 !important;
+    color: #ffffff !important;
+    border: 1px solid #4b5563 !important;
+}
+
+.calendar-form .select-item {
+    color: #ffffff !important;
+}
+
+.calendar-form .select-item:hover {
+    background-color: #4b5563 !important;
+}

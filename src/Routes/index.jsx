@@ -151,7 +151,8 @@ export default function AppRoutes() {
             <Route path="log/:id" element={<ActivityLogViewPage />} />
 
             {/* logs */}
-            <Route path="settings" element={<SettingsPage />} />
+            {/* <Route path="settings" element={<SettingsPage />} /> */}
+            <Route path="settings/:id" element={<SettingsPage />} />
             {/* calendar */}
             <Route path="calendar" element={<CalendarPage />} />
             {/* tasks */}

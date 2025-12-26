@@ -15,7 +15,6 @@ export default function Notifications() {
     defaultValues: {
       email_notifications: true,
       in_app_notifications: true,
-
       new_client: true,
       new_project: true,
       project_deadline: true,

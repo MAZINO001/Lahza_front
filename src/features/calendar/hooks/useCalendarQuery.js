@@ -24,10 +24,9 @@ export function useEvents() {
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Failed to create event");
+            toast.error(error?.response?.data?.message || "Failed to fetch events");
         },
     });
-
 }
 
 export function useEventById(id) {
