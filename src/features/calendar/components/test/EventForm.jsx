@@ -15,13 +15,11 @@ import "./calendar.css";
 import FormField from "@/components/Form/FormField";
 import SelectField from "@/components/Form/SelectField";
 import TextareaField from "@/components/Form/TextareaField";
+import { useCreateEvent } from "../../hooks/useCalendarQuery";
 
 function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
   const [guestInput, setGuestInput] = useState("");
-
-  const now = new Date();
-  const today = now.toISOString().split("T")[0];
-  const currentTime = now.toTimeString().slice(0, 5);
+  const createMutation = useCreateEvent();
 
   const {
     handleSubmit,
@@ -51,9 +49,7 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
   const formColor = watch("color");
   const formType = watch("type");
   const formAllDay = watch("allDay");
-  const formGuests = watch("guests");
 
-  // Capture selected color
   const [selectedColor, setSelectedColor] = useState("#3b82f6");
 
   useEffect(() => {
@@ -75,7 +71,6 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
     { name: "Weekend", color: "#6b7280" },
   ];
 
-  // Reset form with selected date when modal opens
   useEffect(() => {
     if (open && selectedDate) {
       const dateStr = selectedDate.toLocaleDateString("en-CA");
@@ -130,18 +125,22 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
     }
   }, [open, selectedDate, reset]);
 
-
   const onSubmit = (formData) => {
     if (!formData.title || !formData.startDate) {
       alert("Please fill in at least title and start date");
       return;
     }
 
-    const createEvent = (date, baseId) => ({
-      id: baseId || Date.now(),
+    const baseDate = new Date(formData.startDate);
+    const baseId = Date.now();
+
+    // Create main event
+    const createEvent = (date, eventId) => ({
       title: formData.title,
-      start: formData.allDay ? date : `${date}T${formData.startTime}`,
-      end: formData.allDay ? date : `${date}T${formData.endTime}`,
+      start_date: date, // Convert to snake_case for backend
+      end_date: formData.endDate || date, // Convert to snake_case for backend
+      start_hour: formData.startTime, // Convert to snake_case for backend
+      end_hour: formData.endTime, // Convert to snake_case for backend
       description: formData.description,
       category: formData.category,
       status: formData.status,
@@ -150,57 +149,55 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
       color: formData.color,
       allDay: formData.allDay,
       guests: formData.guests,
-      url: formData.type === "online" ? formData.url : null,
+      url: formData.type === "online" ? formData.url : "",
+      baseId: eventId,
     });
 
-    const events = [];
-    const baseDate = new Date(formData.startDate);
-    const baseId = Date.now();
+    // Send main event to backend
+    createMutation.mutate(createEvent(formData.startDate, baseId), {
+      onSuccess: () => {
+        // Handle repeating events
+        if (formData.repeatedly !== "none") {
+          const maxEvents = 50;
+          let currentDate = new Date(baseDate);
 
-    // Create main event
-    events.push(createEvent(formData.startDate, baseId));
+          for (let i = 1; i < maxEvents; i++) {
+            switch (formData.repeatedly) {
+              case "daily":
+                currentDate.setDate(currentDate.getDate() + 1);
+                break;
+              case "weekly":
+                currentDate.setDate(currentDate.getDate() + 7);
+                break;
+              case "monthly":
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                break;
+              case "yearly":
+                currentDate.setFullYear(currentDate.getFullYear() + 1);
+                break;
+              default:
+                break;
+            }
 
-    // Create repeating events
-    if (formData.repeatedly !== "none") {
-      const maxEvents = 50;
-      let currentDate = new Date(baseDate);
+            const dateStr = currentDate.toLocaleDateString("en-CA");
+            const repeatingEvent = createEvent(dateStr, baseId + i);
 
-      for (let i = 1; i < maxEvents; i++) {
-        switch (formData.repeatedly) {
-          case "daily":
-            currentDate.setDate(currentDate.getDate() + 1);
-            break;
+            // Send each repeating event to backend
+            createMutation.mutate(repeatingEvent);
 
-          case "weekly":
-            currentDate.setDate(currentDate.getDate() + 7);
-            break;
-
-          case "monthly":
-            currentDate.setMonth(currentDate.getMonth() + 1);
-            break;
-
-          case "yearly":
-            currentDate.setFullYear(currentDate.getFullYear() + 1);
-            break;
-
-          default:
-            break;
+            if (
+              currentDate >
+              new Date(baseDate.getTime() + 365 * 24 * 60 * 60 * 1000)
+            ) {
+              break;
+            }
+          }
         }
 
-        const dateStr = currentDate.toLocaleDateString("en-CA");
-        events.push(createEvent(dateStr, baseId + i));
-
-        if (
-          currentDate > new Date(baseDate.getTime() + 365 * 24 * 60 * 60 * 1000)
-        ) {
-          break;
-        }
-      }
-    }
-
-    onEventCreate(events);
-    setGuestInput("");
-    onOpenChange(false);
+        setGuestInput("");
+        onOpenChange(false);
+      },
+    });
   };
 
   const handleCancel = () => {
@@ -228,10 +225,7 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
             New Event {selectedDate?.toLocaleDateString()}
           </DialogTitle>
         </DialogHeader>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-6 py-4 bg-background text-foreground"
-        >
+        <div className="space-y-6 py-4 bg-background text-foreground">
           <div className="space-y-2">
             <Controller
               name="title"
@@ -358,29 +352,6 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
               Event Color
             </Label>
             <div className="space-y-3">
-              {/* <div className="flex items-center space-x-2">
-                <Controller
-                  name="color"
-                  control={control}
-                  render={({ field }) => (
-                    <>
-                      <input
-                        {...field}
-                        id="color"
-                        type="color"
-                        className="w-10 h-10 border border-border rounded cursor-pointer"
-                      />
-                      <Input
-                        value={field.value}
-                        onChange={field.onChange}
-                        type="text"
-                        placeholder="#3b82f6"
-                        className="h-10 w-24"
-                      />
-                    </>
-                  )}
-                />
-              </div> */}
               <div className="w-full">
                 <Controller
                   name="color"
@@ -483,6 +454,7 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
               control={control}
               render={({ field }) => (
                 <TextareaField
+                  {...field}
                   label="Description"
                   id="description"
                   placeholder="Enter event description"
@@ -526,7 +498,9 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
                   <SelectField
                     label="Repeat"
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onChange={(val) => {
+                      field.onChange(val);
+                    }}
                     options={[
                       { value: "none", label: "None" },
                       { value: "daily", label: "Daily" },
@@ -534,7 +508,7 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
                       { value: "monthly", label: "Monthly" },
                       { value: "yearly", label: "Yearly" },
                     ]}
-                    error={errors?.type?.message}
+                    error={errors?.repeatedly?.message}
                   />
                 )}
               />
@@ -552,7 +526,7 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
                     onChange={(val) => {
                       field.onChange(val);
                     }}
-                    error={errors.department?.message}
+                    error={errors.type?.message}
                     options={[
                       {
                         value: "online",
@@ -592,9 +566,14 @@ function EventForm({ open, onOpenChange, selectedDate, onEventCreate }) {
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit">Create Event</Button>
+            <Button
+              onClick={handleSubmit(onSubmit)}
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending ? "Creating..." : "Create Event"}
+            </Button>
           </DialogFooter>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

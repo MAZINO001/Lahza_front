@@ -16,9 +16,7 @@ const sidebarItems = [
     ],
   },
 
-  { section: "Notifications", items: ["Profile", "General", "Snippets"] },
-  { section: "Preferences", items: ["Profile", "General", "Snippets"] },
-  { section: "Security", items: ["Profile", "General", "Snippets"] },
+  { section: "Preferences", items: ["notifications", "General", "Snippets"] },
   {
     section: "User Team Management",
     items: ["Profile", "General", "Snippets"],
@@ -33,7 +31,7 @@ export default function SettingsSideBar() {
   const currentSection = location.pathname.split("/").pop();
 
   return (
-    <aside className="w-64 flex-shrink-0 border border-border rounded-lg h-screen overflow-auto">
+    <aside className="w-64 shrink-0 border border-border rounded-lg h-screen overflow-auto">
       <div className="rounded-2xl bg-background backdrop-blur-sm ">
         <div className="p-4">
           <h2 className="mb-4 text-lg font-semibold text-foreground">

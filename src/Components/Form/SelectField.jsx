@@ -17,7 +17,6 @@ export default function SelectField({
   placeholder,
   error,
 }) {
-  console.log(options);
   return (
     <div>
       <Label htmlFor={id} className="text-foreground">

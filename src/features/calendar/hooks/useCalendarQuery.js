@@ -24,6 +24,7 @@ export function useEvents() {
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
         onError: (error) => {
+            console.log(error)
             toast.error(error?.response?.data?.message || "Failed to fetch events");
         },
     });
@@ -37,6 +38,7 @@ export function useEventById(id) {
         staleTime: 5 * 60 * 1000,
         refetchOnWindowFocus: true,
         onError: (error) => {
+            console.log(error)
             toast.error(error?.response?.data?.message || "Failed to fetch event");
         },
     });
@@ -53,6 +55,7 @@ export function useCreateEvent() {
         },
         refetchOnWindowFocus: true,
         onError: (error) => {
+            console.log(error)
             toast.error(error?.response?.data?.message || "Failed to create event");
         },
     });
@@ -70,6 +73,7 @@ export function useUpdateEvent() {
         },
         refetchOnWindowFocus: true,
         onError: (error) => {
+            console.log(error)
             toast.error(error?.response?.data?.message || "Failed to update event");
         },
     });
@@ -86,6 +90,7 @@ export function useDeleteEvent() {
         },
         refetchOnWindowFocus: true,
         onError: (error) => {
+            console.log(error)
             toast.error(error?.response?.data?.message || "Failed to delete event");
         },
     });
