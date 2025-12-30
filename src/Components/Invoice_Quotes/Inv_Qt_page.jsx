@@ -192,7 +192,7 @@ export default function Inv_Qt_page({ type, currentId }) {
 
         <div className="flex-1 min-h-0">
           <PdfPreview
-            src={`http://127.0.0.1:8000/pdf/${currentSection}/${currentId}`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}`}
           />
         </div>
       </div>

@@ -1,6 +1,5 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/utils/axios";  // ← Use your configured instance!
 import { Document, Page, pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -20,12 +19,14 @@ export default function PdfPreview({ src }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(src, { responseType: "blob" });
+        const res = await api.get(src, {  // ← Changed from axios to api
+          responseType: "blob"
+        });
         const url = URL.createObjectURL(res.data);
         setBlobUrl(url);
         revoke = () => URL.revokeObjectURL(url);
       } catch (e) {
-        setError("Failed to load PDF");
+        console.error("PDF Error:", e.response || e);
       } finally {
         setLoading(false);
       }
