@@ -43,7 +43,6 @@ const statusConfig = {
     label: "Inactive",
     color: "bg-background text-foreground border-border",
   },
-
   pending: {
     label: "Pending",
     color: "bg-purple-100 text-purple-800 border-border",
@@ -59,6 +58,10 @@ const statusConfig = {
   cancelled: {
     label: "Cancelled",
     color: "bg-red-100 text-red-800 border-border",
+  },
+  "waiting-confirmation": {
+    label: "Waiting Confirmation",
+    color: "bg-cyan-100 text-cyan-800 border-border",
   },
 };
 

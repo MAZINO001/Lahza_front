@@ -3,16 +3,17 @@
 import React from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import AgencyInfo from "../agency_info";
 import Notifications from "../preferences/notifications";
 import Preferences from "../preferences/general";
 import Security from "../preferences/security";
-import User_team_management from "../user_team_management";
 import { CompanyBasicsSection } from "../agency_info/CompanyBasicsSection";
 import { BrandingAssetsSection } from "../agency_info/BrandingAssetsSection";
 import { ContactAddressSection } from "../agency_info/ContactAddressSection";
 import { LegalTaxBankingSection } from "../agency_info/LegalTaxBankingSection";
 import { Button } from "@/components/ui/button";
+import Team_management from "../management/team_management";
+import Projects_management from "../management/projects_management";
+import User_management from "../management/user_management";
 
 export default function SettingsMainContent() {
   const { id } = useParams();
@@ -111,12 +112,14 @@ export default function SettingsMainContent() {
         return <Preferences />;
       case "security":
         return <Security />;
-      case "user_team_management":
-        return <User_team_management />;
-      case "agency_info":
-        return <AgencyInfo />;
+      case "team_management":
+        return <Team_management />;
+      case "projects_management":
+        return <Projects_management />;
+      case "users_management":
+        return <User_management />;
       default:
-        return <Navigate to="/admin/settings/Company Basics" replace />;
+        return <Navigate to="/admin/settings/company_basics" replace />;
     }
   };
 

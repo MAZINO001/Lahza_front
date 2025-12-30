@@ -4,7 +4,11 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import {
   Bell,
   Building,
+  ClipboardList,
   Contact,
+  Folder,
+  FolderKanban,
+  Layers,
   Lock,
   Palette,
   Scale,
@@ -70,8 +74,13 @@ const sidebarItems = [
         icon: <Building className="w-5 h-5" />,
       },
       {
-        name: "User Management",
-        value: "user_management",
+        name: "Projects Management",
+        value: "projects_management",
+        icon: <FolderKanban className="w-5 h-5" />,
+      },
+      {
+        name: "Users Management",
+        value: "users_management",
         icon: <User className="w-5 h-5" />,
       },
     ],

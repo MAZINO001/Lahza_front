@@ -62,7 +62,7 @@ function EventForm({
       status: "pending",
       type: "offline",
       repeatedly: "none",
-      color: "#3b82f6",
+      color: "#6366f1",
       allDay: false,
       guests: [],
       url: "",
@@ -74,7 +74,7 @@ function EventForm({
   const formType = watch("type");
   const formAllDay = watch("allDay");
 
-  const [selectedColor, setSelectedColor] = useState("#3b82f6");
+  const [selectedColor, setSelectedColor] = useState("#6366f1");
   const isUpdatingFromColor = useRef(false);
   const isUpdatingFromCategory = useRef(false);
 
@@ -174,7 +174,7 @@ function EventForm({
         status: selectedEvent.status || "pending",
         type: selectedEvent.type || "offline",
         repeatedly: selectedEvent.repeatedly || "none",
-        color: selectedEvent.color || "#3b82f6",
+        color: selectedEvent.color || "#6366f1",
         allDay:
           selectedEvent.allDay === true || selectedEvent.all_day === 1
             ? true
@@ -183,7 +183,7 @@ function EventForm({
         url: selectedEvent.url || "",
       });
 
-      setSelectedColor(selectedEvent.color || "#3b82f6");
+      setSelectedColor(selectedEvent.color || "#6366f1");
     } else if (open && selectedDate && !editMode) {
       // New event mode
       const dateStr = selectedDate.toLocaleDateString("en-CA");
@@ -214,13 +214,13 @@ function EventForm({
         status: "pending",
         type: "offline",
         repeatedly: "none",
-        color: "#3b82f6",
+        color: "#6366f1",
         allDay: false,
         guests: [],
         url: "",
       });
 
-      setSelectedColor("#3b82f6");
+      setSelectedColor("#6366f1");
     } else if (open && !editMode && !selectedDate) {
       // New event without selected date
       reset({
@@ -235,13 +235,13 @@ function EventForm({
         status: "pending",
         type: "offline",
         repeatedly: "none",
-        color: "#3b82f6",
+        color: "#6366f1",
         allDay: false,
         guests: [],
         url: "",
       });
 
-      setSelectedColor("#3b82f6");
+      setSelectedColor("#6366f1");
     }
   }, [open, selectedDate, editMode, selectedEvent, reset]);
 
@@ -328,14 +328,14 @@ function EventForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-background text-foreground">
+      <DialogContent className="bg-background text-foreground ">
         <DialogHeader>
           <DialogTitle>
             {editMode ? "Edit Event" : "New Event"}{" "}
             {selectedDate?.toLocaleDateString()}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-6 py-4 bg-background text-foreground">
+        <div className="space-y-4 py-4 bg-background text-foreground">
           <div className="space-y-2">
             <Controller
               name="title"
@@ -587,7 +587,6 @@ function EventForm({
                   {...field}
                   id="other_notes"
                   placeholder="Enter event notes"
-                  rows={1}
                   error={errors?.other_notes?.message}
                 />
               )}
@@ -595,52 +594,54 @@ function EventForm({
           </div>
 
           <div className="flex flex-col w-full gap-4">
-            <div className="space-y-2 w-full">
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <SelectField
-                    id="category"
-                    label="category"
-                    value={field.value || ""}
-                    onChange={(val) => {
-                      field.onChange(val);
-                    }}
-                    error={errors.category?.message}
-                    options={[
-                      { value: "agency", label: "Agency" },
-                      { value: "holiday", label: "Holiday" },
-                      { value: "other", label: "Other" },
-                      { value: "meeting", label: "Meeting" },
-                      { value: "work", label: "Work" },
-                    ]}
-                  />
-                )}
-              />
-            </div>
-            <div className="space-y-2 w-full">
-              <Controller
-                name="repeatedly"
-                control={control}
-                render={({ field }) => (
-                  <SelectField
-                    label="Repeat"
-                    value={field.value}
-                    onChange={(val) => {
-                      field.onChange(val);
-                    }}
-                    options={[
-                      { value: "none", label: "None" },
-                      { value: "daily", label: "Daily" },
-                      { value: "weekly", label: "Weekly" },
-                      { value: "monthly", label: "Monthly" },
-                      { value: "yearly", label: "Yearly" },
-                    ]}
-                    error={errors?.repeatedly?.message}
-                  />
-                )}
-              />
+            <div className=" flex gap-4">
+              <div className="space-y-2 w-full">
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectField
+                      id="category"
+                      label="category"
+                      value={field.value || ""}
+                      onChange={(val) => {
+                        field.onChange(val);
+                      }}
+                      error={errors.category?.message}
+                      options={[
+                        { value: "agency", label: "Agency" },
+                        { value: "holiday", label: "Holiday" },
+                        { value: "other", label: "Other" },
+                        { value: "meeting", label: "Meeting" },
+                        { value: "work", label: "Work" },
+                      ]}
+                    />
+                  )}
+                />
+              </div>
+              <div className="space-y-2 w-full">
+                <Controller
+                  name="repeatedly"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectField
+                      label="Repeat"
+                      value={field.value}
+                      onChange={(val) => {
+                        field.onChange(val);
+                      }}
+                      options={[
+                        { value: "none", label: "None" },
+                        { value: "daily", label: "Daily" },
+                        { value: "weekly", label: "Weekly" },
+                        { value: "monthly", label: "Monthly" },
+                        { value: "yearly", label: "Yearly" },
+                      ]}
+                      error={errors?.repeatedly?.message}
+                    />
+                  )}
+                />
+              </div>
             </div>
 
             <div className="space-y-2 w-full">

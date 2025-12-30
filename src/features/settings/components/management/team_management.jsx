@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import FormSection from "@/components/Form/FormSection";
@@ -13,7 +14,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
-export default function UserTeamManagement() {
+export default function Team_management() {
   const { control, handleSubmit, reset } = useForm({
     defaultValues: {
       email: "",
