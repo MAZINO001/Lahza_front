@@ -189,7 +189,7 @@ export default function Inv_Qt_page({ type, currentId }) {
             />
           )}
         </div>
-
+{/* test */}
         <div className="flex-1 min-h-0">
           <PdfPreview
             src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}`}
