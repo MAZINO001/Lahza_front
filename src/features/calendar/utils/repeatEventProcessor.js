@@ -1,22 +1,25 @@
-/**
- * Process repeating events and generate recurring instances
- * @param {Array} events - Array of events with potentially repeating patterns
- * @returns {Array} - Array of events with all recurring instances expanded
- */
-export function processRepeatingEvents(events) {
-    if (!events || !Array.isArray(events)) return [];
+/* eslint-disable no-unused-vars */
+export function processRepeatingEvents(eventsData) {
+    if (!eventsData) return [];
+
+
+    const events = eventsData.events || eventsData;
+
+    if (!Array.isArray(events)) return [];
 
     const processedEvents = [];
     const today = new Date();
 
     events.forEach((event) => {
-        // Add the original event
+
         const convertedEvent = convertEventFormat(event);
         processedEvents.push(convertedEvent);
 
-        // Generate repeating events if repeatedly is not "none"
+
         if (event.repeatedly && event.repeatedly !== "none") {
+            console.log(`🔄 Processing repeat for event: "${event.title}" with pattern: ${event.repeatedly}`);
             const repeatingInstances = generateRepeatingInstances(event, today);
+            console.log(`📊 Generated ${repeatingInstances.length} repeating instances`);
             processedEvents.push(...repeatingInstances);
         }
     });
@@ -24,29 +27,42 @@ export function processRepeatingEvents(events) {
     return processedEvents;
 }
 
-/**
- * Convert event from new format to FullCalendar format
- * @param {Object} event - Event in either old or new format
- * @returns {Object} - Event in FullCalendar format
- */
+
+function isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+}
+
 function convertEventFormat(event) {
-    // Handle new format with snake_case fields (start_date, end_date, start_hour, end_hour)
+
     if (event.start_date || event.startDate) {
         const startDate = event.start_date || event.startDate;
         const endDate = event.end_date || event.endDate;
         const startTime = event.start_hour || event.startTime;
         const endTime = event.end_hour || event.endTime;
 
-        // Build start and end datetime strings
+
+        const isAllDay = Boolean(event.all_day);
+
+
         let start, end;
 
-        if (event.allDay) {
+        if (isAllDay) {
             start = startDate;
             end = endDate || startDate;
         } else {
-            start = startTime ? `${startDate}T${startTime}` : startDate;
-            end = endTime ? `${endDate || startDate}T${endTime}` : startDate;
+
+            start = startTime ? `${startDate}T${startTime}` : `${startDate}T00:00:00`;
+            end = endTime ? `${endDate || startDate}T${endTime}` : `${endDate || startDate}T23:59:59`;
         }
+
+
+        const isMultiDay = !isAllDay && start && end &&
+            new Date(start).toDateString() !== new Date(end).toDateString();
+
+
+        const normalizedCategory = event.category
+            ? event.category.charAt(0).toUpperCase() + event.category.slice(1).toLowerCase()
+            : "Agency";
 
         return {
             id: event.id?.toString() || Date.now().toString(),
@@ -54,59 +70,67 @@ function convertEventFormat(event) {
             start,
             end,
             description: event.description || "",
-            category: event.category || "Agency",
+            category: normalizedCategory,
             status: event.status || "pending",
             type: event.type || "offline",
             repeatedly: event.repeatedly || "none",
             color: event.color || "#3b82f6",
-            allDay: event.allDay || false,
-            guests: event.guests || [],
+            allDay: isAllDay,
+
+            guests: event.guests && Array.isArray(event.guests) ? event.guests : [],
             url: event.url || "",
-            className: `fc-event-${(event.category || "default").toLowerCase()}`,
-            "data-category": event.category || "default",
+            className: `fc-event-${(event.category || "default").toLowerCase()}${isAllDay ? " fc-event-all-day" : ""}${isMultiDay ? " fc-event-multi-day" : ""}`,
+            "data-category": normalizedCategory,
+            "style": { "--event-color": event.color || "#3b82f6" }
         };
     }
 
-    // Handle old format with start/end
+
+
+    const isMultiDay = event.start && event.end &&
+        !event.allDay &&
+        new Date(event.start).toDateString() !== new Date(event.end).toDateString();
+
+
+    const normalizedCategory = event.category
+        ? event.category.charAt(0).toUpperCase() + event.category.slice(1).toLowerCase()
+        : "Agency";
+
     return {
         id: event.id?.toString() || Date.now().toString(),
         title: event.title || "",
         start: event.start,
         end: event.end,
         description: event.description || "",
-        category: event.category || "Agency",
+        category: normalizedCategory,
         status: event.status || "pending",
         type: event.type || "offline",
         repeatedly: event.repeatedly || "none",
         color: event.color || "#3b82f6",
         allDay: event.allDay || false,
-        guests: event.guests || [],
+
+        guests: event.guests && Array.isArray(event.guests) ? event.guests : [],
         url: event.url || "",
-        className: `fc-event-${(event.category || "default").toLowerCase()}`,
-        "data-category": event.category || "default",
+        className: `fc-event-${(event.category || "default").toLowerCase()}${event.allDay ? " fc-event-all-day" : ""}${isMultiDay ? " fc-event-multi-day" : ""}`,
+        "data-category": normalizedCategory,
+        "style": { "--event-color": event.color || "#3b82f6" }
     };
 }
 
-/**
- * Generate repeating instances of an event
- * @param {Object} event - Base event to repeat
- * @param {Date} currentDate - Current date for limit calculation
- * @returns {Array} - Array of repeating event instances
- */
 function generateRepeatingInstances(event, currentDate) {
     const instances = [];
-    const maxEvents = 50; // Limit to prevent infinite loops
+    const maxEvents = 700;
     const maxDate = new Date();
-    maxDate.setFullYear(maxDate.getFullYear() + 2); // Generate events up to 2 years from now
+    maxDate.setFullYear(maxDate.getFullYear() + 5);
 
-    // Get base date from event
+
     const baseDate = new Date(event.startDate || event.start_date || event.start);
     const baseId = parseInt(event.id) || Date.now();
 
     let currentDateCopy = new Date(baseDate);
 
     for (let i = 1; i < maxEvents; i++) {
-        // Advance date based on repeat pattern
+
         switch (event.repeatedly) {
             case "daily":
                 currentDateCopy.setDate(currentDateCopy.getDate() + 1);
@@ -121,19 +145,21 @@ function generateRepeatingInstances(event, currentDate) {
                 break;
 
             case "yearly":
+
                 currentDateCopy.setFullYear(currentDateCopy.getFullYear() + 1);
+                console.log(`🗓️ Yearly repeat: New date: ${currentDateCopy.toDateString()}`);
                 break;
 
             default:
                 break;
         }
 
-        // Stop if we've gone beyond the max date
+
         if (currentDateCopy > maxDate) {
             break;
         }
 
-        // Create instance
+
         const instance = createEventInstance(event, currentDateCopy, baseId + i);
         instances.push(instance);
     }
@@ -141,47 +167,53 @@ function generateRepeatingInstances(event, currentDate) {
     return instances;
 }
 
-/**
- * Create a single instance of a repeating event
- * @param {Object} baseEvent - Base event template
- * @param {Date} instanceDate - Date for this instance
- * @param {Number} instanceId - Unique ID for this instance
- * @returns {Object} - Event instance
- */
 function createEventInstance(baseEvent, instanceDate, instanceId) {
-    const dateStr = instanceDate.toLocaleDateString("en-CA"); // YYYY-MM-DD format
+    const dateStr = instanceDate.toLocaleDateString("en-CA");
 
-    // Handle time based on event format
+
+    const isAllDay = Boolean(baseEvent.all_day);
+
+
     let start, end;
 
     if (baseEvent.start_date || baseEvent.startDate) {
-        // New format - prioritize snake_case fields
+
         const startTime = baseEvent.start_hour || baseEvent.startTime;
         const endTime = baseEvent.end_hour || baseEvent.endTime;
 
-        if (baseEvent.allDay) {
+        if (isAllDay) {
             start = dateStr;
             end = dateStr;
         } else {
-            start = startTime ? `${dateStr}T${startTime}` : dateStr;
-            end = endTime ? `${dateStr}T${endTime}` : dateStr;
+
+            start = startTime ? `${dateStr}T${startTime}` : `${dateStr}T00:00:00`;
+            end = endTime ? `${dateStr}T${endTime}` : `${dateStr}T23:59:59`;
         }
     } else {
-        // Old format - extract time from start/end if available
+
         const originalStart = new Date(baseEvent.start);
         const originalEnd = new Date(baseEvent.end);
 
-        if (baseEvent.allDay) {
+        if (isAllDay) {
             start = dateStr;
             end = dateStr;
         } else {
-            // Preserve original times
-            const timeStart = originalStart.toTimeString().slice(0, 5);
-            const timeEnd = originalEnd.toTimeString().slice(0, 5);
+
+            const timeStart = originalStart.toTimeString().slice(0, 8);
+            const timeEnd = originalEnd.toTimeString().slice(0, 8);
             start = `${dateStr}T${timeStart}`;
             end = `${dateStr}T${timeEnd}`;
         }
     }
+
+
+    const isMultiDay = !isAllDay && start && end &&
+        new Date(start).toDateString() !== new Date(end).toDateString();
+
+
+    const normalizedCategory = baseEvent.category
+        ? baseEvent.category.charAt(0).toUpperCase() + baseEvent.category.slice(1).toLowerCase()
+        : "Agency";
 
     return {
         id: instanceId.toString(),
@@ -189,15 +221,17 @@ function createEventInstance(baseEvent, instanceDate, instanceId) {
         start,
         end,
         description: baseEvent.description || "",
-        category: baseEvent.category || "Agency",
+        category: normalizedCategory,
         status: baseEvent.status || "pending",
         type: baseEvent.type || "offline",
         repeatedly: baseEvent.repeatedly,
         color: baseEvent.color || "#3b82f6",
-        allDay: baseEvent.allDay || false,
-        guests: baseEvent.guests || [],
+        allDay: isAllDay,
+
+        guests: baseEvent.guests && Array.isArray(baseEvent.guests) ? baseEvent.guests : [],
         url: baseEvent.url || "",
-        className: `fc-event-${(baseEvent.category || "default").toLowerCase()}`,
-        "data-category": baseEvent.category || "default",
+        className: `fc-event-${(baseEvent.category || "default").toLowerCase()}${isAllDay ? " fc-event-all-day" : ""}${isMultiDay ? " fc-event-multi-day" : ""}`,
+        "data-category": normalizedCategory,
+        "style": { "--event-color": baseEvent.color || "#3b82f6" }
     };
 }

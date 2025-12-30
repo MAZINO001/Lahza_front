@@ -9,9 +9,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Lock, Eye, EyeOff, ArrowRight, CheckCircle } from "lucide-react";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import FormField from "@/components/Form/FormField";
+import { Link } from "react-router-dom";
 
 export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
@@ -45,20 +45,20 @@ export default function ResetPassword() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background w-full">
+        <Card className="w-full max-w-md shadow-lg">
           <CardContent className="pt-6 text-center space-y-4">
             <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-foreground">
               Password Reset!
             </h2>
-            <p className="text-gray-600 mt-2">
+            <p className="text-foreground mt-2">
               Your password has been successfully reset. You can now login with
               your new password.
             </p>
-            <Button className="w-full">
+            <Button className="w-full ">
               Continue to Login <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </CardContent>
@@ -68,10 +68,10 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-2">
-          <div className="mx-auto w-12 h-12 bg-background rounded-full flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background w-full">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center space-y-2 ">
+          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
             <Lock className="w-6 h-6 text-blue-600" />
           </div>
           <CardTitle className="text-2xl">Reset Password</CardTitle>
@@ -80,8 +80,8 @@ export default function ResetPassword() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit(handleReset)} className="space-y-4">
+        <CardContent className="space-y-4 pt-6">
+          <div className="space-y-4">
             <Controller
               name="password"
               control={control}
@@ -93,27 +93,27 @@ export default function ResetPassword() {
                 },
               }}
               render={({ field }) => (
-                <FormField
-                  id="password"
-                  label="New Password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter new password"
-                  error={errors.password?.message}
-                  rightElement={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  }
-                  {...field}
-                />
+                <div className="space-y-2 relative">
+                  <FormField
+                    {...field}
+                    id="password"
+                    label="New Password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter new password"
+                    error={errors.password?.message}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 bottom-2.5 text-muted-foreground focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               )}
             />
 
@@ -125,43 +125,45 @@ export default function ResetPassword() {
                 validate: validatePasswordMatch,
               }}
               render={({ field }) => (
-                <FormField
-                  id="confirmPassword"
-                  label="Confirm New Password"
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="Confirm new password"
-                  error={errors.confirmPassword?.message}
-                  rightElement={
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  }
-                  {...field}
-                />
+                <div className="space-y-2 relative">
+                  <FormField
+                    {...field}
+                    id="confirmPassword"
+                    label="Confirm New Password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm new password"
+                    error={errors.confirmPassword?.message}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 bottom-2.5 text-muted-foreground focus:outline-none"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Resetting..." : "Reset Password"}{" "}
+            <Button
+              onClick={handleSubmit(handleReset)}
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? "Resetting..." : "Reset Password"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-          </form>
+          </div>
 
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm text-muted-foreground">
             Remember your password?{" "}
             <Link
               to="/auth/login"
-              className="text-blue-600 hover:text-blue-800"
+              className="text-blue-600 hover:text-blue-800 font-medium"
             >
               Back to Login
             </Link>

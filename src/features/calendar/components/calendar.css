@@ -183,8 +183,79 @@
     cursor: pointer !important;
 }
 
+.calendar-container .fc-event.fc-event-all-day {
+    font-weight: 400 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.calendar-container .fc-event.fc-event-multi-day {
+    font-weight: 400 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.calendar-container .fc-event:not(.fc-event-all-day):not(.fc-event-multi-day) {
+    background: transparent !important;
+    border: none !important;
+    font-size: 11px !important;
+    position: relative;
+}
+
+
+/* Week and day view specific styling */
+.calendar-container .fc-timegrid-slot {
+    border-color: var(--border) !important;
+}
+
+/* week end styling */
+/* .calendar-container .fc-day-sat,
+.calendar-container .fc-day-sun {
+    background-color: #1a1a1a !important;
+    opacity: 0.5 !important;
+}
+
+.calendar-container .fc-day-sat .fc-daygrid-day-frame,
+.calendar-container .fc-day-sun .fc-daygrid-day-frame {
+    background-color: #1a1a1a !important;
+}
+
+.calendar-container .fc-day-sat .fc-event,
+.calendar-container .fc-day-sun .fc-event {
+    display: none !important;
+}
+
+.calendar-container .fc-col-header-cell.fc-day-sat,
+.calendar-container .fc-col-header-cell.fc-day-sun {
+    background-color: #374151 !important;
+    color: white !important;
+} */
+
+/* week end styling */
+
+
+
+.calendar-container .fc-timegrid-axis {
+    background-color: var(--muted) !important;
+    color: var(--muted-foreground) !important;
+
+}
+
+.calendar-container .fc-timegrid-now-indicator {
+    background-color: #ef4444 !important;
+    z-index: 10 !important;
+}
+
+.calendar-container .fc-timegrid-event {
+    border-radius: 3px !important;
+    margin: 1px !important;
+}
+
 .calendar-container .fc-event-title {
     color: var(--text-foreground) !important;
+
 }
 
 .calendar-container .fc-event-time {
@@ -192,25 +263,29 @@
     font-weight: 400 !important;
 }
 
-/* Event category colors */
 .calendar-container .fc-event[data-category="Holiday"] {
-    background-color: #8b5cf6 !important;
+    --fc-event-bg-color: #8b5cf6;
+    --fc-event-border-color: #7c3aed;
 }
 
 .calendar-container .fc-event[data-category="Agency"] {
-    background-color: #ef4444 !important;
+    --fc-event-bg-color: #ef4444;
+    --fc-event-border-color: #dc2626;
 }
 
 .calendar-container .fc-event[data-category="Other"] {
-    background-color: #f59e0b !important;
+    --fc-event-bg-color: #f59e0b;
+    --fc-event-border-color: #d97706;
 }
 
 .calendar-container .fc-event[data-category="Meeting"] {
-    background-color: #3b82f6 !important;
+    --fc-event-bg-color: #3b82f6;
+    --fc-event-border-color: #2563eb;
 }
 
 .calendar-container .fc-event[data-category="Work"] {
-    background-color: #10b981 !important;
+    --fc-event-bg-color: #10b981;
+    --fc-event-border-color: #059669;
 }
 
 .calendar-container .fc-event:hover {
@@ -228,11 +303,11 @@
     color: #60a5fa !important;
 }
 
-/* Dark theme for modal */
 .calendar-dialog {
     background-color: #1f2937;
     color: #ffffff;
     border: 1px solid #374151;
+
 }
 
 .calendar-dialog .dialog-content {

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import { Button } from "@/Components/ui/button";
@@ -9,6 +10,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import api from "@/lib/utils/axios";
+import FormField from "@/components/Form/FormField";
+import { toast } from "sonner";
 export default function Login({ status, canResetPassword }) {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -44,25 +47,28 @@ export default function Login({ status, canResetPassword }) {
 
       const token = res.data.token;
       localStorage.setItem("token", token);
-
       await verifyAuth();
-
       const nextRole = res.data.user?.role || "client";
       navigate(`/${nextRole}/dashboard`, { replace: true });
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || "Login failed");
+      toast.error(error.response?.data?.message || "Login failed");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Card className="bg-card p-4 border border-stale-900 flex flex-col md:flex-row text-foreground border-none">
-      <div className="bg-background flex flex-col  h-full w-full md:w-1/2 rounded-md p-6 justify-center items-center">
-        <div className="w-full max-w-md">
-          <CardTitle className="mb-6 text-center text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-primary to-primary-gradient-end">
-            {t("login.title")}
+    <Card className="bg-background border border-border flex flex-col md:flex-row text-foreground w-full h-screen p-0 gap-0">
+      <div className="bg-background flex flex-col  md:w-1/2 p-4 justify-center items-center">
+        <div className="w-full max-w-md ">
+          <CardTitle className="mb-12">
+            <h1 className="mb-4 text-center text-3xl font-extrabold  text-foreground">
+              {t("login.title")}
+            </h1>
+            <p className="text-center text-sm text-muted-foreground">
+              {t("login.description")}
+            </p>
           </CardTitle>
 
           {status && (
@@ -71,11 +77,11 @@ export default function Login({ status, canResetPassword }) {
             </div>
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
-              <InputLabel htmlFor="email" value={t("login.email")} />
-              <Input
+              <FormField
                 id="email"
+                label={t("login.email")}
                 type="email"
                 {...register("email", {
                   required: t("validation.email_required"),
@@ -87,6 +93,7 @@ export default function Login({ status, canResetPassword }) {
                 value={watch("email")}
                 onChange={(e) => setValue("email", e.target.value)}
                 className="mt-1 block w-full"
+                placeholder="examle@example.com"
                 autoComplete="email"
                 isFocused
               />
@@ -94,8 +101,13 @@ export default function Login({ status, canResetPassword }) {
             </div>
 
             <div>
-              <InputLabel htmlFor="password" value={t("login.password")} />
-              <Input
+              <div className="flex items-center justify-between">
+                <InputLabel htmlFor="password" value={t("login.password")} />
+                <Link to={"/forgot-password"} className="text-sm underline">
+                  Forgot Password?
+                </Link>
+              </div>
+              <FormField
                 id="password"
                 type="password"
                 {...register("password", {
@@ -125,23 +137,6 @@ export default function Login({ status, canResetPassword }) {
                   {t("login.remember")}
                 </span>
               </label>
-
-              <div className="flex flex-col space-y-2 sm:flex-row sm:justify-between sm:space-y-0">
-                {canResetPassword && (
-                  <Link
-                    to="/auth/forgot-password"
-                    className="text-muted-foreground hover:text-foreground text-sm underline"
-                  >
-                    {t("login.forgot_password")}
-                  </Link>
-                )}
-                <Link
-                  to="/auth/register"
-                  className="text-muted-foreground hover:text-foreground text-sm underline"
-                >
-                  {t("login.no_account")}
-                </Link>
-              </div>
             </div>
 
             <div className="flex justify-center">
@@ -153,6 +148,19 @@ export default function Login({ status, canResetPassword }) {
                 {submitting ? t("login.submitting") : t("login.submit")}
               </Button>
             </div>
+            {/* <div className="flex items-center gap-1 w-full">
+              <div className="flex-1 h-[0.4px] bg-border"></div>
+              <p className="text-muted-foreground text-sm whitespace-nowrap">
+                Or continue with
+              </p>
+              <div className="flex-1 h-[0.4px] bg-border"></div>
+            </div> */}
+            <Link
+              to="/auth/register"
+              className="text-muted-foreground hover:text-foreground text-sm underline"
+            >
+              {t("login.no_account")}
+            </Link>
           </form>
         </div>
       </div>
@@ -161,7 +169,7 @@ export default function Login({ status, canResetPassword }) {
         <img
           src="https://picsum.photos/800/800"
           alt="login img"
-          className="w-full h-full object-cover rounded-md"
+          className="w-full h-full object-cover"
         />
       </div>
     </Card>

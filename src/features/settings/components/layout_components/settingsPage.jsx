@@ -4,15 +4,14 @@ import React from "react";
 import { useParams, Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import AgencyInfo from "../agency_info";
-import Notifications from "../notifications";
-import Preferences from "../preferences";
-import Security from "../security";
+import Notifications from "../preferences/notifications";
+import Preferences from "../preferences/general";
+import Security from "../preferences/security";
 import User_team_management from "../user_team_management";
 import { CompanyBasicsSection } from "../agency_info/CompanyBasicsSection";
 import { BrandingAssetsSection } from "../agency_info/BrandingAssetsSection";
 import { ContactAddressSection } from "../agency_info/ContactAddressSection";
 import { LegalTaxBankingSection } from "../agency_info/LegalTaxBankingSection";
-import FormSection from "@/components/Form/FormSection";
 import { Button } from "@/components/ui/button";
 
 export default function SettingsMainContent() {
@@ -70,7 +69,7 @@ export default function SettingsMainContent() {
   // Render component based on the URL parameter
   const renderContent = () => {
     switch (id) {
-      case "Company Basics":
+      case "company_basics":
         return (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <CompanyBasicsSection control={control} errors={errors} />
@@ -79,7 +78,7 @@ export default function SettingsMainContent() {
             </div>
           </form>
         );
-      case "Branding & Assets":
+      case "branding_assets":
         return (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <BrandingAssetsSection control={control} />
@@ -88,7 +87,7 @@ export default function SettingsMainContent() {
             </div>
           </form>
         );
-      case "Contact & Address":
+      case "contact_address":
         return (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <ContactAddressSection control={control} errors={errors} />
@@ -97,7 +96,7 @@ export default function SettingsMainContent() {
             </div>
           </form>
         );
-      case "Legal, Tax & Banking":
+      case "legal_tax_banking":
         return (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             <LegalTaxBankingSection control={control} errors={errors} />

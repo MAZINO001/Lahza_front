@@ -1,6 +1,7 @@
 {
   "login": {
-    "title": "Connexion",
+    "title": "Connexion à votre compte",
+    "description": "Entrez votre email ci-dessous pour vous connecter à votre compte",
     "email": "Adresse email",
     "password": "Mot de passe",
     "remember": "Se souvenir de moi",

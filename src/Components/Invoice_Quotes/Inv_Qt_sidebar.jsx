@@ -70,7 +70,7 @@ export default function Inv_Qt_sidebar({ type }) {
           .get(`${import.meta.env.VITE_BACKEND_URL}/${type}/${id}`)
           .then((res) => res.data?.quote ?? res.data?.invoice ?? {})
           .catch(() => ({})),
-      staleTime: 5 * 60 * 1000,
+      staleTime: 0,
     });
   };
 

@@ -24,7 +24,7 @@ export function useServices() {
     return useQuery({
         queryKey: ["services"],
         queryFn: apiService.getAll,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch services");
@@ -37,7 +37,8 @@ export function useService(id) {
         queryKey: ["services", id],
         queryFn: () => apiService.getById(id),
         enabled: !!id,
-        staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch service");
         },
@@ -50,7 +51,8 @@ export function useDocsByService(id, type) {
         queryKey: ["services", id, type],
         queryFn: () => apiService.getByDocsId(id, type),
         enabled: !!id && !!type,
-        staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch documents by service");
         },

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -9,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Eye, EyeOff, ArrowRight, CheckCircle, Shield } from "lucide-react";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import FormField from "@/components/Form/FormField";
 
 export default function ConfirmPassword() {
@@ -43,16 +44,6 @@ export default function ConfirmPassword() {
     password !== currentPassword ||
     "New password must be different from current password";
 
-  const handleConfirmPassword = async (data) => {
-    setIsLoading(true);
-    console.log(data);
-    setTimeout(() => {
-      setIsSuccess(true);
-      setIsLoading(false);
-      toast.success("Password updated successfully!");
-    }, 2000);
-  };
-
   const getPasswordStrength = (password) => {
     if (!password) return { strength: 0, text: "", color: "" };
     let strength = 0;
@@ -76,18 +67,27 @@ export default function ConfirmPassword() {
 
   const passwordStrength = getPasswordStrength(newPassword);
 
+  const handleConfirmPassword = async (data) => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsSuccess(true);
+      setIsLoading(false);
+      toast.success("Password updated successfully!");
+    }, 2000);
+  };
+
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background w-full">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center space-y-4">
-            <div className="mx-auto w-16 h-16 bg-background rounded-full flex items-center justify-center">
+            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-foreground">
               Password Updated!
             </h2>
-            <p className="text-gray-600">
+            <p className="text-foreground">
               Your password has been successfully updated. You can continue
               using your account with the new password.
             </p>
@@ -100,69 +100,11 @@ export default function ConfirmPassword() {
     );
   }
 
-  const renderPasswordField = (name, label, show, setShow, rules) => (
-    <Controller
-      name={name}
-      control={control}
-      rules={rules}
-      render={({ field }) => (
-        <div className="space-y-2 relative">
-          <FormField
-            id={name}
-            label={label}
-            type={show ? "text" : "password"}
-            placeholder={`Enter ${label.toLowerCase()}`}
-            {...field}
-            error={errors?.name?.message}
-          />
-          <button
-            type="button"
-            onClick={() => setShow((prev) => !prev)}
-            className="absolute right-3 top-7 text-gray-500 hover:text-gray-700"
-          >
-            {show ? (
-              <EyeOff className="w-4 h-4" />
-            ) : (
-              <Eye className="w-4 h-4" />
-            )}
-          </button>
-          {errors[name] && (
-            <p className="text-sm text-red-600">{errors[name].message}</p>
-          )}
-          {name === "newPassword" && newPassword && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-600">Password strength:</span>
-                <span
-                  className={`font-medium ${
-                    passwordStrength.strength <= 2
-                      ? "text-orange-600"
-                      : passwordStrength.strength <= 3
-                        ? "text-yellow-600"
-                        : "text-green-600"
-                  }`}
-                >
-                  {passwordStrength.text}
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.color}`}
-                  style={{ width: `${(passwordStrength.strength / 5) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    />
-  );
-
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background w-full">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto w-12 h-12 bg-background rounded-full flex items-center justify-center">
+          <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
             <Shield className="w-6 h-6 text-blue-600" />
           </div>
           <CardTitle className="text-2xl">Change Password</CardTitle>
@@ -171,55 +113,150 @@ export default function ConfirmPassword() {
             your account.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <form
-            onSubmit={handleSubmit(handleConfirmPassword)}
-            className="space-y-4"
-          >
-            {renderPasswordField(
-              "currentPassword",
-              "Current Password",
-              showCurrentPassword,
-              setShowCurrentPassword,
-              { required: "Current password is required" }
-            )}
-            {renderPasswordField(
-              "newPassword",
-              "New Password",
-              showNewPassword,
-              setShowNewPassword,
-              {
+        <CardContent className="space-y-4 pt-6">
+          <div className="space-y-4">
+            <Controller
+              name="currentPassword"
+              control={control}
+              rules={{ required: "Current password is required" }}
+              render={({ field }) => (
+                <div className="space-y-2 relative">
+                  <FormField
+                    {...field}
+                    id="currentPassword"
+                    label="Current Password"
+                    type={showCurrentPassword ? "text" : "password"}
+                    placeholder="Enter your current password"
+                    error={errors.currentPassword?.message}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    className="absolute right-3 bottom-3.5 text-muted-foreground hover:text-gray-700 focus:outline-none"
+                  >
+                    {showCurrentPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              )}
+            />
+
+            {/* New Password */}
+            <Controller
+              name="newPassword"
+              control={control}
+              rules={{
                 required: "New password is required",
                 minLength: {
                   value: 8,
                   message: "Password must be at least 8 characters",
                 },
                 validate: validateNewPasswordDifferent,
-              }
-            )}
-            {renderPasswordField(
-              "confirmPassword",
-              "Confirm New Password",
-              showConfirmPassword,
-              setShowConfirmPassword,
-              {
+              }}
+              render={({ field }) => (
+                <div className="space-y-2 relative">
+                  <FormField
+                    {...field}
+                    id="newPassword"
+                    label="New Password"
+                    type={showNewPassword ? "text" : "password"}
+                    placeholder="Enter your new password"
+                    error={errors.newPassword?.message}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-10.5 text-muted-foreground "
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                  {newPassword && (
+                    <div className="space-y-2 mt-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-foreground">
+                          Password strength:
+                        </span>
+                        <span
+                          className={`font-medium ${
+                            passwordStrength.strength <= 2
+                              ? "text-orange-600"
+                              : passwordStrength.strength <= 3
+                                ? "text-yellow-600"
+                                : "text-green-600"
+                          }`}
+                        >
+                          {passwordStrength.text}
+                        </span>
+                      </div>
+                      <div className="w-full bg-background rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.color}`}
+                          style={{
+                            width: `${(passwordStrength.strength / 5) * 100}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            />
+
+            <Controller
+              name="confirmPassword"
+              control={control}
+              rules={{
                 required: "Please confirm your new password",
                 validate: validatePasswordMatch,
-              }
-            )}
+              }}
+              render={({ field }) => (
+                <div className="space-y-2 relative">
+                  <FormField
+                    {...field}
+                    id="confirmPassword"
+                    label="Confirm New Password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your new password"
+                    error={errors.confirmPassword?.message}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 bottom-3.5 text-muted-foreground"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+              )}
+            />
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Updating..." : "Update Password"}{" "}
+            <Button
+              onClick={handleSubmit(handleConfirmPassword)}
+              className="w-full cursor-pointer"
+              disabled={isLoading}
+            >
+              {isLoading ? "Updating..." : "Update Password"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
-          </form>
-          <p className="text-center text-sm text-gray-600">
-            Cancel and return to{" "}
+          </div>
+
+          <p className="text-center text-sm text-foreground">
             <Link
-              to="/client/settings"
-              className="text-blue-600 hover:text-blue-800"
+              to="#"
+              className="text-blue-600 hover:text-blue-800 font-medium"
             >
-              Account Settings
+              Back to Account Settings
             </Link>
           </p>
         </CardContent>

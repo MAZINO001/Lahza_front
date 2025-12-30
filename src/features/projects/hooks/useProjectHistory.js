@@ -13,7 +13,7 @@ export function useProjectHistory(clientId) {
         queryKey: ["projectsHistory", clientId],
         queryFn: () => apiProjectHistory.getHistory(clientId),
         enabled: !!clientId,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
     });
 }

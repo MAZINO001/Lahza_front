@@ -3,9 +3,6 @@ import { useForm, Controller } from "react-hook-form";
 import FormSection from "@/components/Form/FormSection";
 import FormField from "@/components/Form/FormField";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Label } from "@/components/ui/label";
 
 export default function Security() {
   /* ---------------- Password ---------------- */
@@ -42,8 +39,8 @@ export default function Security() {
   };
 
   return (
-    <div className="w-full max-w-3xl space-y-4">
-      {/* Reset Password */}
+    <div className="w-full">
+      <h1 className="font-semibold text-lg">Security</h1>
       <FormSection title="Password">
         <form
           onSubmit={handlePasswordSubmit(onPasswordSubmit)}
@@ -57,6 +54,7 @@ export default function Security() {
               <FormField
                 label="Current Password"
                 type="password"
+                placeholder="Enter current password"
                 error={passwordErrors.current_password?.message}
                 {...field}
               />
@@ -71,6 +69,7 @@ export default function Security() {
               <FormField
                 label="New Password"
                 type="password"
+                placeholder="Enter new password"
                 error={passwordErrors.new_password?.message}
                 {...field}
               />
@@ -88,6 +87,7 @@ export default function Security() {
               <FormField
                 label="Confirm Password"
                 type="password"
+                placeholder="Confirm new password"
                 error={passwordErrors.confirm_password?.message}
                 {...field}
               />
@@ -100,7 +100,6 @@ export default function Security() {
         </form>
       </FormSection>
 
-      {/* Change Email */}
       <FormSection title="Email Address">
         <form onSubmit={handleEmailSubmit(onEmailSubmit)} className="space-y-4">
           <Controller
@@ -110,7 +109,7 @@ export default function Security() {
             render={({ field }) => (
               <FormField
                 label="New Email"
-                placeholder="you@company.com"
+                placeholder="Enter new email address"
                 error={emailErrors.email?.message}
                 {...field}
               />
@@ -125,6 +124,7 @@ export default function Security() {
               <FormField
                 label="Current Password"
                 type="password"
+                placeholder="Enter your current password"
                 error={emailErrors.password?.message}
                 {...field}
               />
@@ -136,7 +136,6 @@ export default function Security() {
         </form>
       </FormSection>
 
-      {/* Danger Zone */}
       <FormSection title="Danger Zone">
         <div className="rounded-lg border border-destructive p-4">
           <p className="text-sm text-muted-foreground mb-4">
@@ -146,29 +145,6 @@ export default function Security() {
           <Button variant="destructive">Delete Account</Button>
         </div>
       </FormSection>
-    </div>
-  );
-}
-
-/* ----------------------------- */
-/* Reusable Toggle */
-/* ----------------------------- */
-
-function Setting({ label, description, name, control }) {
-  return (
-    <div className="flex items-center justify-between rounded-lg border p-4">
-      <div>
-        <Label className="text-sm font-medium">{label}</Label>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
-
-      <Controller
-        name={name}
-        control={control}
-        render={({ field }) => (
-          <Switch checked={field.value} onCheckedChange={field.onChange} />
-        )}
-      />
     </div>
   );
 }

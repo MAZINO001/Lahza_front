@@ -19,12 +19,15 @@ export function NavSecondary({ items, ...props }) {
           {items.map((item) => (
             <SidebarMenuItem
               key={item.title}
-              className={`flex items-center gap-3 px-0 py-2 rounded-lg text-[15px] font-medium
-  ${
-    location.pathname === item.url
-      ? "bg-primary text-white"
-      : "text-muted-foreground hover:text-foreground hover:bg-primary/70"
-  }`}
+              className={`
+    flex items-center gap-3  py-2 rounded-lg text-[15px] font-medium
+    transition-colors duration-200 cursor-pointer
+    ${
+      location.pathname === item.url
+        ? "bg-primary text-background shadow-sm"
+        : "text-muted-foreground hover:text-foreground hover:bg-accent"
+    }
+  `}
             >
               <SidebarMenuButton asChild>
                 <Link to={item.url}>

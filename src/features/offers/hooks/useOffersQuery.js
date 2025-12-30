@@ -17,7 +17,7 @@ export function useOffers() {
     return useQuery({
         queryKey: ["offers"],
         queryFn: apiOffer.getAll,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch offers");
@@ -30,7 +30,7 @@ export function useOffer(id) {
         queryKey: ["offers", id],
         queryFn: () => apiOffer.getById(id),
         enabled: !!id,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch offer");

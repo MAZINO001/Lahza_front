@@ -33,7 +33,8 @@ export function useAllTasks() {
     return useQuery({
         queryKey: ["tasks"],
         queryFn: () => apiTask.getAllTasks(),
-        staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch tasks");
         },
@@ -46,7 +47,8 @@ export function useTasks(projectId) {
         queryKey: ["tasks", projectId],
         queryFn: () => apiTask.getByProject(projectId),
         enabled: !!projectId,
-        staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch tasks");
         },
@@ -62,7 +64,8 @@ export function useTask(projectId, taskId) {
             return tasks.find(task => task.id === parseInt(taskId)) || null;
         },
         enabled: !!(projectId && taskId),
-        staleTime: 5 * 60 * 1000, refetchOnWindowFocus: true,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch task");
         },

@@ -81,7 +81,7 @@
 //         queryKey: ["additional-data", projectId],
 //         queryFn: () => apiAdditionalData.getByProject(projectId),
 //         enabled: !!projectId,
-//         staleTime: 5 * 60 * 1000,
+//         staleTime: 0,
 //         refetchOnWindowFocus: true,
 //         onError: (error) => {
 //             toast.error(error?.response?.data?.message || "Failed to fetch additional data");
@@ -252,7 +252,7 @@ export function useAdditionalData(projectId) {
         queryKey: ["additional-data", projectId],
         queryFn: () => apiAdditionalData.getByProject(projectId),
         enabled: !!projectId,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch additional data");

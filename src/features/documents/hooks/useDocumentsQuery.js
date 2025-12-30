@@ -38,7 +38,7 @@ export function useDocuments(type) {
   return useQuery({
     queryKey: ["documents", type],
     queryFn: () => apiDocuments.getAll(type),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 }
 
@@ -48,7 +48,7 @@ export function useDocument(id, type) {
     queryKey: ["documents", type, id],
     queryFn: () => apiDocuments.getById(id, type),
     enabled: !!id,
-    staleTime: 10 * 60 * 1000,
+    staleTime: 0,
     refetchOnWindowFocus: true,
     onError: (error) => {
       toast.error(error?.response?.data?.message || "Failed to fetch document");

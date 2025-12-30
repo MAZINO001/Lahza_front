@@ -18,7 +18,7 @@ export function NavMain({ items }) {
             <Link to="/client/dashboard" className="flex items-center">
               <img
                 src="/images/logo.png"
-                alt=""
+                alt="lahza agency logo"
                 className="w-auto h-9 md:h-12 lg:h-15"
               />
             </Link>
@@ -39,15 +39,20 @@ export function NavMain({ items }) {
         </SidebarMenu>
         <SidebarMenu>
           {items.map((item) => (
-            <Link key={item.title} to={item.url} className="cursor-pointer">
-              <SidebarMenuItem
-                className={`flex items-center gap-3 px-0 py-2 rounded-lg text-[15px] font-medium
-                  ${
-                    location.pathname === item.url
-                      ? "bg-primary text-white"
-                      : "text-muted-foreground hover:text-foreground hover:bg-primary/70"
-                  }`}
-              >
+            <Link
+              key={item.title}
+              to={item.url}
+              className={`
+            flex items-center gap-3  py-2 rounded-lg text-[15px] font-medium
+            transition-colors duration-100 cursor-pointer
+            ${
+              location.pathname === item.url
+                ? "bg-primary text-background shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+            }
+          `}
+            >
+              <SidebarMenuItem key={item.url}>
                 <SidebarMenuButton tooltip={item.title}>
                   <span>{item.icon && <item.icon className="w-5 h-5" />}</span>
                   <span>{item.title}</span>

@@ -1,5 +1,5 @@
 import CalendarTable from "@/features/calendar/components/calendarTable.jsx";
-import NewCalendar from "@/features/calendar/components/test/calendarPage.jsx";
+import NewCalendar from "@/features/calendar/components/calendarPage.jsx";
 import { useState } from "react";
 import {
   DropdownMenu,

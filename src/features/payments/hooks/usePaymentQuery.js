@@ -31,7 +31,7 @@ export function usePayments() {
     return useQuery({
         queryKey: ["payments"],
         queryFn: apiPayments.getAll,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch payments");
@@ -44,7 +44,7 @@ export function usePayment(id) {
         queryKey: ["payments", id],
         queryFn: () => apiPayments.getById(id),
         enabled: !!id,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch payment");

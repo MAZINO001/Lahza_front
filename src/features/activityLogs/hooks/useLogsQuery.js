@@ -32,7 +32,7 @@ export function useLogs() {
     return useQuery({
         queryKey: ["logs"],
         queryFn: apiLog.getAll,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch logs");
@@ -45,7 +45,7 @@ export function useLog(id) {
         queryKey: ["logs", id],
         queryFn: () => apiLog.getById(id),
         enabled: !!id,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch log");

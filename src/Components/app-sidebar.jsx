@@ -31,39 +31,39 @@ import { Button } from "./ui/button";
 import { Outline } from "react-pdf";
 export function AppSidebar(props) {
   const { role, logout } = useAuthContext();
-  const currentRole = role || "client";
+  // const currentRole = role || "client";
 
   const sidebarData = {
     client: {
       navMain: [
         {
           title: "Dashboard",
-          url: `/${currentRole}/dashboard`,
+          url: `/${role}/dashboard`,
           icon: HomeIcon,
         },
         {
           title: "Projects",
-          url: `/${currentRole}/projects`,
+          url: `/${role}/projects`,
           icon: BriefcaseIcon,
         },
         {
           title: "Invoices",
-          url: `/${currentRole}/invoices`,
+          url: `/${role}/invoices`,
           icon: IconFileInvoice,
         },
-        { title: "Quotes", url: `/${currentRole}/quotes`, icon: FileText },
+        { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
         {
           title: "Payments",
-          url: `/${currentRole}/payments`,
+          url: `/${role}/payments`,
           icon: DollarSign,
         },
-        { title: "Offers", url: `/${currentRole}/offers`, icon: PercentSquare },
+        { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
       ],
       navSecondary: [
-        { title: "Tickets", url: `/${currentRole}/tickets`, icon: IconInvoice },
+        { title: "Tickets", url: `/${role}/tickets`, icon: IconInvoice },
         {
           title: "Settings",
-          url: `/${currentRole}/settings`,
+          url: `/${role}/settings`,
           icon: IconSettings,
         },
       ],
@@ -72,42 +72,42 @@ export function AppSidebar(props) {
       navMain: [
         {
           title: "Dashboard",
-          url: `/${currentRole}/dashboard`,
+          url: `/${role}/dashboard`,
           icon: HomeIcon,
         },
         {
           title: "Calendar",
-          url: `/${currentRole}/calendar`,
+          url: `/${role}/calendar`,
           icon: Calendar1,
         },
         {
           title: "Projects",
-          url: `/${currentRole}/projects`,
+          url: `/${role}/projects`,
           icon: BriefcaseIcon,
         },
         {
           title: "Invoices",
-          url: `/${currentRole}/invoices`,
+          url: `/${role}/invoices`,
           icon: IconFileInvoice,
         },
-        { title: "Quotes", url: `/${currentRole}/quotes`, icon: FileText },
+        { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
         {
           title: "Payments",
-          url: `/${currentRole}/payments`,
+          url: `/${role}/payments`,
           icon: DollarSign,
         },
-        { title: "Offers", url: `/${currentRole}/offers`, icon: PercentSquare },
-        { title: "Clients", url: `/${currentRole}/clients`, icon: User },
-        { title: "Services", url: `/${currentRole}/services`, icon: Package },
+        { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
+        { title: "Clients", url: `/${role}/clients`, icon: User },
+        { title: "Services", url: `/${role}/services`, icon: Package },
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },
-        { title: "Settings", url: "/admin/settings", icon: IconSettings },
+        { title: "Settings", url: "/admin/settings/company_basics", icon: IconSettings },
       ],
     },
   };
 
-  const roleData = sidebarData[currentRole];
+  const roleData = sidebarData[role];
 
   return (
     <Sidebar collapsible="offcanvas" {...props} className="p-0 border-r">
@@ -126,9 +126,9 @@ export function AppSidebar(props) {
 
       <SidebarFooter>
         <Button
-          variant="Outline"
+          variant="outline"
           onClick={() => logout()}
-          className=" cursor-pointer flex items-center justify-center gap-2 text-red text-md"
+          className=" cursor-pointer"
         >
           <LogOutIcon />
           LogOut

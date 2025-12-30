@@ -49,7 +49,7 @@ export default function ServicesSidebar({ type, currentId }) {
         api
           .get(`${import.meta.env.VITE_BACKEND_URL}/${type}s/${currentId}`)
           .then((res) => res.data ?? {}),
-      staleTime: 5 * 60 * 1000,
+      staleTime: 0,
     });
   };
 

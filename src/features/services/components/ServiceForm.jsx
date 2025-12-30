@@ -33,6 +33,7 @@ export function ServiceForm({ service, onSuccess }) {
       description: "",
       base_price: "",
       tax_rate: "0",
+      time: "1",
       status: "active",
     },
   });
@@ -44,17 +45,15 @@ export function ServiceForm({ service, onSuccess }) {
       base_price: Number(data.base_price).toFixed(2),
       tax_rate: Number(data.tax_rate),
     };
+    console.log(payload);
 
-    mutation.mutate(
-      isEditMode ? { id: service.id, data: payload } : payload,
-      {
-        onSuccess: () => {
-          onSuccess?.();
-          if (!isEditMode) reset();
-        },
-        onSettled: () => endSubmit(),
-      }
-    );
+    mutation.mutate(isEditMode ? { id: service.id, data: payload } : payload, {
+      onSuccess: () => {
+        onSuccess?.();
+        if (!isEditMode) reset();
+      },
+      onSettled: () => endSubmit(),
+    });
   };
 
   const isLoading = mutation.isPending;
@@ -66,7 +65,12 @@ export function ServiceForm({ service, onSuccess }) {
         control={control}
         rules={{ required: "Name is required" }}
         render={({ field }) => (
-          <FormField label="Service Name" placeholder="e.g., Premium Web Development" error={errors.name?.message} {...field} />
+          <FormField
+            label="Service Name"
+            placeholder="e.g., Premium Web Development"
+            error={errors.name?.message}
+            {...field}
+          />
         )}
       />
 
@@ -75,7 +79,12 @@ export function ServiceForm({ service, onSuccess }) {
         control={control}
         rules={{ required: "Description is required" }}
         render={({ field }) => (
-          <TextareaField label="Description" placeholder="Describe your service..." error={errors.description?.message} {...field} />
+          <TextareaField
+            label="Description"
+            placeholder="Describe your service..."
+            error={errors.description?.message}
+            {...field}
+          />
         )}
       />
 
@@ -84,7 +93,13 @@ export function ServiceForm({ service, onSuccess }) {
         control={control}
         rules={{ required: "Price is required" }}
         render={({ field }) => (
-          <FormField label="Base Price (MAD)" type="number" step="0.01" error={errors.base_price?.message} {...field} />
+          <FormField
+            label="Base Price (MAD)"
+            type="number"
+            step="0.01"
+            error={errors.base_price?.message}
+            {...field}
+          />
         )}
       />
 
@@ -98,6 +113,21 @@ export function ServiceForm({ service, onSuccess }) {
               { value: "20", label: "20%" },
               { value: "0", label: "0% (No Tax)" },
             ]}
+            {...field}
+          />
+        )}
+      />
+      <Controller
+        name="time"
+        control={control}
+        render={({ field }) => (
+          <FormField
+            label="Service Duration"
+            type="number"
+            placeholder="e.g., 3 (days)"
+            error={errors.time?.message}
+            value={field.value}
+            onChange={field.onChange}
             {...field}
           />
         )}
@@ -121,7 +151,11 @@ export function ServiceForm({ service, onSuccess }) {
       )}
 
       <div className="flex justify-end gap-3 pt-6">
-        <Button type="button" variant="outline" onClick={() => navigate(`/${role}/services`)}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => navigate(`/${role}/services`)}
+        >
           Cancel
         </Button>
 

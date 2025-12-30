@@ -21,7 +21,7 @@ export function useEvents() {
     return useQuery({
         queryKey: ["events"],
         queryFn: eventsApi.getAll,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             console.log(error)
@@ -35,7 +35,7 @@ export function useEventById(id) {
         queryKey: ["events", id],
         queryFn: () => eventsApi.getById(id),
         enabled: !!id,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             console.log(error)

@@ -13,7 +13,7 @@ export function useClientHistory(clientId) {
         queryKey: ["clientHistory", clientId],
         queryFn: () => apiClientHistory.getHistory(clientId),
         enabled: !!clientId,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
     });
 }

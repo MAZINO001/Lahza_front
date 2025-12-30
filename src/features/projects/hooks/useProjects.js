@@ -19,7 +19,7 @@ export function useProjects() {
     return useQuery({
         queryKey: ["projects"],
         queryFn: apiProject.getAll,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch projects");
@@ -32,7 +32,7 @@ export function useProject(id) {
         queryKey: ["project", id],
         queryFn: () => apiProject.getById(id),
         enabled: !!id,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch project");
@@ -46,7 +46,7 @@ export function useProjectProgress(id) {
         queryFn: () => apiProject.getProgress(id),
         enabled: !!id,
         retry: false,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch project progress");

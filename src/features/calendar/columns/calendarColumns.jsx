@@ -9,6 +9,20 @@ export default function calendarColumns() {
     },
 
     {
+      header: "Color",
+      accessorFn: (row) => row.color ?? "#3b82f6",
+      cell: ({ getValue }) => (
+        <div className="flex items-center gap-2">
+          <div
+            className="w-4 h-4 rounded-full border border-gray-300"
+            style={{ backgroundColor: getValue() }}
+          />
+          <span className="text-xs text-muted-foreground">{getValue()}</span>
+        </div>
+      ),
+    },
+
+    {
       header: "Date",
       accessorFn: (row) =>
         row.start_date && row.end_date
@@ -52,9 +66,8 @@ export default function calendarColumns() {
       accessorFn: (row) => row.status ?? "-",
       cell: ({ getValue }) => (
         <span
-          className={`font-medium ${
-            getValue() === "confirmed" ? "text-green-600" : "text-yellow-600"
-          }`}
+          className={`font-medium ${getValue() === "confirmed" ? "text-green-600" : "text-yellow-600"
+            }`}
         >
           {getValue()}
         </span>

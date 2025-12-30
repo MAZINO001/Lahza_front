@@ -14,7 +14,7 @@ export function useEmailsById(id) {
         queryKey: ["comments", id],
         queryFn: () => emailsApi.getById(id),
         enabled: !!id,
-             refetchOnWindowFocus: true,
-        staleTime: 5 * 60 * 1000,
+        refetchOnWindowFocus: true,
+        staleTime: 0,
     });
 }

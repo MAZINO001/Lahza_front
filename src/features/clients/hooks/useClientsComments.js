@@ -15,17 +15,17 @@ const commentApi = {
 };
 
 export function useAllCommentsByType(type, id) {
-  return useQuery({
-    queryKey: ["comments", type, id],
-    queryFn: () => commentApi.getByType(type, id),
-    enabled: !!type && !!id,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
-    onError: (error) => {
-      console.log(error);
-      toast.error(error?.response?.data?.message || "Failed to fetch comments");
-    },
-  });
+    return useQuery({
+        queryKey: ["comments", type, id],
+        queryFn: () => commentApi.getByType(type, id),
+        enabled: !!type && !!id,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Failed to fetch comments");
+        },
+    });
 }
 
 
@@ -36,7 +36,7 @@ export function useCommentsByType(type, id) {
         queryFn: () => commentApi.getByType(type, id),
         enabled: !!type && !!id,
         refetchOnWindowFocus: true,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         onError: (error) => {
             console.log(error)
 
@@ -50,7 +50,7 @@ export function useCommentsByUser(userId) {
         queryKey: ["comments", "user", userId],
         queryFn: () => commentApi.getByUser(userId),
         enabled: !!userId,
-        staleTime: 5 * 60 * 1000,
+        staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => {
             console.log(error)
