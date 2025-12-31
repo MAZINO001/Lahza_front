@@ -29,6 +29,7 @@ export function DataTable({
   filterColumn = "name",
   isLoading = false,
   isInvoiceTable = false,
+  onRowClick,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -62,9 +63,9 @@ export function DataTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -91,7 +92,10 @@ export function DataTable({
                   )}
 
                   {!isInvoiceTable && (
-                    <TableRow className="hover:bg-muted/50 transition-colors">
+                    <TableRow
+                      className="hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => onRowClick && onRowClick(row.original)}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
                           {flexRender(

@@ -50,7 +50,7 @@ function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete }) {
   if (!event) return null;
 
   console.log(event);
-  
+
   const formatDate = (dateStr) => {
     if (!dateStr) return "N/A";
     // Handle both ISO datetime strings and date strings
@@ -74,6 +74,48 @@ function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete }) {
     });
   };
 
+  // Handle both FullCalendar format and database format
+  const getEventStart = () => {
+    if (event.start) {
+      return event.start; // FullCalendar format
+    }
+    // Database format
+    if (event.start_date && event.start_hour) {
+      return `${event.start_date}T${event.start_hour}`;
+    }
+    if (event.start_date) {
+      return event.start_date;
+    }
+    return null;
+  };
+
+  const getEventEnd = () => {
+    if (event.end) {
+      return event.end; // FullCalendar format
+    }
+    // Database format
+    if (event.end_date && event.end_hour) {
+      return `${event.end_date}T${event.end_hour}`;
+    }
+    if (event.end_date) {
+      return event.end_date;
+    }
+    if (event.start_date) {
+      return event.start_date; // Fallback to start date
+    }
+    return null;
+  };
+
+  const isAllDay = () => {
+    if (event.allDay !== undefined) {
+      return event.allDay; // FullCalendar format
+    }
+    return Boolean(event.all_day); // Database format
+  };
+
+  const eventStart = getEventStart();
+  const eventEnd = getEventEnd();
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-background text-foreground max-w-md">
@@ -95,10 +137,10 @@ function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete }) {
             <div>
               <span className="text-foreground">Start:</span>
               <p className="text-muted-foreground font-medium">
-                {formatDate(event.start)}
-                {!event.allDay && (
+                {formatDate(eventStart)}
+                {!isAllDay() && eventStart && (
                   <span className="block text-xs">
-                    {formatTime(event.start)}
+                    {formatTime(eventStart)}
                   </span>
                 )}
               </p>
@@ -106,9 +148,9 @@ function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete }) {
             <div>
               <span className="text-foreground">End:</span>
               <p className="text-muted-foreground font-medium">
-                {formatDate(event.end)}
-                {!event.allDay && (
-                  <span className="block text-xs">{formatTime(event.end)}</span>
+                {formatDate(eventEnd)}
+                {!isAllDay() && eventEnd && (
+                  <span className="block text-xs">{formatTime(eventEnd)}</span>
                 )}
               </p>
             </div>

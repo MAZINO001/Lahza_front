@@ -200,6 +200,8 @@ export default function CalendarPage() {
     setOpen(true);
   };
 
+
+
   const handleEventCreate = (newEventOrEvents) => {
     const eventsToCreate = Array.isArray(newEventOrEvents)
       ? newEventOrEvents
