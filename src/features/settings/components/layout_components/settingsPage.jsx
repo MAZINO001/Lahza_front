@@ -14,12 +14,13 @@ export default function SettingsMainContent() {
         "branding_assets",
         "contact_address",
         "legal_tax_banking",
+        "certifications",
       ].includes(id)
     ) {
       return <AgencyInfo section={id} />;
     }
 
-    if (["notifications", "preferences", "security", "certifications"].includes(id)) {
+    if (["notifications", "preferences", "security"].includes(id)) {
       return <PreferencesSection section={id} />;
     }
 

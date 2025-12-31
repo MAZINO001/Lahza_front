@@ -200,8 +200,6 @@ export default function CalendarPage() {
     setOpen(true);
   };
 
-
-
   const handleEventCreate = (newEventOrEvents) => {
     const eventsToCreate = Array.isArray(newEventOrEvents)
       ? newEventOrEvents
@@ -314,17 +312,26 @@ export default function CalendarPage() {
             displayEventEnd={true}
             viewDidMount={(viewInfo) => {
               console.log("🔍 View mounted:", viewInfo.view.type);
-              console.log("📅 View date range:", viewInfo.view.currentStart, "to", viewInfo.view.currentEnd);
+              console.log(
+                "📅 View date range:",
+                viewInfo.view.currentStart,
+                "to",
+                viewInfo.view.currentEnd
+              );
             }}
             viewClassNames={(viewInfo) => {
-              console.log("🎨 View classes:", viewInfo.view.type, viewInfo.view.classNames);
+              console.log(
+                "🎨 View classes:",
+                viewInfo.view.type,
+                viewInfo.view.classNames
+              );
             }}
             loading={(bool) => {
               console.log("⏳ Calendar loading:", bool);
             }}
           />
         </div>
-        <div className="w-[30%]">
+        <div className="w-[30%] mt-2">
           <EventsSummary />
         </div>
       </div>

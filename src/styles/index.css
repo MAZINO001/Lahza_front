@@ -166,6 +166,22 @@
     }
 }
 
+@layer components {
+
+    /* shadcn sidebar base styles */
+    [data-sidebar="sidebar"] {
+        @apply bg-sidebar text-sidebar-foreground;
+    }
+
+    [data-sidebar="menu-button"] {
+        @apply hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+    }
+
+    [data-sidebar="menu-button"][data-active="true"] {
+        @apply bg-sidebar-accent text-sidebar-accent-foreground;
+    }
+}
+
 ::-webkit-scrollbar {
     width: 6px;
 }

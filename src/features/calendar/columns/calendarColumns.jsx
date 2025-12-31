@@ -7,23 +7,8 @@ export default function calendarColumns() {
         <span className="font-medium text-foreground">{getValue()}</span>
       ),
     },
-
     {
-      header: "Color",
-      accessorFn: (row) => row.color ?? "#3b82f6",
-      cell: ({ getValue }) => (
-        <div className="flex items-center gap-2">
-          <div
-            className="w-4 h-4 rounded-full border border-gray-300"
-            style={{ backgroundColor: getValue() }}
-          />
-          <span className="text-xs text-muted-foreground">{getValue()}</span>
-        </div>
-      ),
-    },
-
-    {
-      header: "Date",
+      header: "Date (From-To)",
       accessorFn: (row) =>
         row.start_date && row.end_date
           ? `${row.start_date} → ${row.end_date}`
@@ -38,7 +23,7 @@ export default function calendarColumns() {
       accessorFn: (row) =>
         row.start_hour && row.end_hour
           ? `${row.start_hour} - ${row.end_hour}`
-          : "-",
+          : "All Day Event",
     },
 
     {

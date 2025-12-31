@@ -1,5 +1,6 @@
 import { useAuthContext } from "@/hooks/AuthContext";
 import {
+  AwardIcon,
   Bell,
   Building,
   Contact,
@@ -35,6 +36,11 @@ const sidebarItems = [
         name: "Legal, Tax & Banking",
         value: "legal_tax_banking",
         icon: <Scale className="w-5 h-5" />,
+      },
+      {
+        name: "Certifications",
+        value: "certifications",
+        icon: <AwardIcon className="w-5 h-5" />,
       },
     ],
   },

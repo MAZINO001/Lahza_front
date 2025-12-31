@@ -4,8 +4,6 @@ import React from "react";
 import Notifications from "./preferences/notifications";
 import Preferences from "./preferences/general";
 import Security from "./preferences/security";
-import CertificationsSection from "./certifications";
-
 export default function PreferencesSection({ section }) {
   const renderSection = () => {
     switch (section) {
@@ -15,8 +13,6 @@ export default function PreferencesSection({ section }) {
         return <Preferences />;
       case "security":
         return <Security />;
-      case "certifications":
-        return <CertificationsSection />;
       default:
         return null;
     }

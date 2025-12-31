@@ -74,60 +74,37 @@ export default function SideBar() {
         side="left"
         variant="sidebar"
         collapsible="offcanvas"
-        // className="bg-red-500"
+      // className="bg-red-500"
       >
         {/* Main Menu */}
         <SidebarContent className="lg:mt-28 mt-4 px-2">
           <SidebarMenu className="flex flex-col gap-2">
-            {menuItems.map((item, index) => {
-              const isActive = location.pathname === item.to;
-
-              return (
-                <SidebarMenuItem key={index} className="mb-2 lg:mb-4">
-                  <SidebarMenuButton asChild>
-                    <Link
-                      to={item.to}
-                      className={`flex items-center gap-4 px-2 py-6 rounded-md transition-colors duration-100 ${
-                        isActive
-                          ? "bg-primary text-white"
-                          : "hover:bg-primary/70 text-primary hover:text-white"
-                      }`}
-                    >
-                      {item.icon}
-                      <span className="text-lg font-semibold">
-                        {item.label}
-                      </span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              );
-            })}
+            {menuItems.map((item, index) => (
+              <SidebarMenuItem key={index}>
+                <SidebarMenuButton asChild isActive={location.pathname === item.to}>
+                  <Link to={item.to} className="flex items-center gap-4">
+                    {item.icon}
+                    <span className="text-lg font-semibold">{item.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarContent>
 
-        <SidebarFooter className="flex justify-center  py-2">
-          <Link
-            to="/client/Tickets"
-            className={`flex items-center gap-2 px-2 py-2 rounded-md transition-colors duration-100 ${
-              isTicketsActive
-                ? "bg-primary text-white"
-                : "hover:bg-primary/70  text-primary hover:text-white"
-            }`}
-          >
-            <IconInvoice size={20} />
-            <span className="text-lg font-semibold">Tickets</span>
-          </Link>
-          <Link
-            to="/client/settings"
-            className={`flex items-center gap-2 px-2 py-2 rounded-md transition-colors duration-100 ${
-              isSettingsActive
-                ? "bg-primary text-white"
-                : "hover:bg-primary/70  text-primary hover:text-white"
-            }`}
-          >
-            <SettingsIcon size={20} />
-            <span className="text-lg font-semibold">Settings</span>
-          </Link>
+        <SidebarFooter className="flex flex-col gap-2 py-2">
+          <SidebarMenuButton asChild isActive={isTicketsActive}>
+            <Link to="/client/Tickets" className="flex items-center gap-2">
+              <IconInvoice size={20} />
+              <span className="text-lg font-semibold">Tickets</span>
+            </Link>
+          </SidebarMenuButton>
+          <SidebarMenuButton asChild isActive={isSettingsActive}>
+            <Link to="/client/settings" className="flex items-center gap-2">
+              <SettingsIcon size={20} />
+              <span className="text-lg font-semibold">Settings</span>
+            </Link>
+          </SidebarMenuButton>
         </SidebarFooter>
       </Sidebar>
     </SidebarProvider>

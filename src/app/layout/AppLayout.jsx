@@ -21,7 +21,7 @@ export default function AppLayout() {
           </header>
           <main>
             <LoadingProvider>
-              <div className="max-w-7xl">
+              <div className="max-w-9xl">
                 <Outlet />
               </div>
             </LoadingProvider>

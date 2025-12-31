@@ -7,7 +7,11 @@ import { BrandingAssetsSection } from "./agency_info/BrandingAssetsSection";
 import { ContactAddressSection } from "./agency_info/ContactAddressSection";
 import { LegalTaxBankingSection } from "./agency_info/LegalTaxBankingSection";
 import { Button } from "@/components/ui/button";
-import { useCompanyInfo, useUpdateCompanyInfo } from "../hooks/useSettingsQuery";
+import {
+  useCompanyInfo,
+  useUpdateCompanyInfo,
+} from "../hooks/useSettingsQuery";
+import CertificationsSection from "./agency_info/certifications";
 
 export default function AgencyInfo({ section }) {
   const { data: companyInfo, isLoading, error } = useCompanyInfo();
@@ -90,11 +94,15 @@ export default function AgencyInfo({ section }) {
 
     // Handle file uploads
     const fileFields = [
-      'logo_path', 'logo_dark_path', 'signature_path',
-      'stamp_path', 'agency_contract', 'preview_image'
+      "logo_path",
+      "logo_dark_path",
+      "signature_path",
+      "stamp_path",
+      "agency_contract",
+      "preview_image",
     ];
 
-    fileFields.forEach(field => {
+    fileFields.forEach((field) => {
       if (values[field] && values[field] instanceof File) {
         formData.append(field, values[field]);
       }
@@ -109,7 +117,7 @@ export default function AgencyInfo({ section }) {
     // Update company info
     updateCompanyInfo.mutate({
       id: companyInfo?.id || 1,
-      data: formData
+      data: formData,
     });
   };
 
@@ -125,13 +133,14 @@ export default function AgencyInfo({ section }) {
     switch (section) {
       case "company_basics":
         return (
-          <form key="company_basics" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            key="company_basics"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
             <CompanyBasicsSection control={control} errors={errors} />
             <div className="flex justify-end">
-              <Button
-                type="submit"
-                disabled={updateCompanyInfo.isPending}
-              >
+              <Button type="submit" disabled={updateCompanyInfo.isPending}>
                 {updateCompanyInfo.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
@@ -139,13 +148,14 @@ export default function AgencyInfo({ section }) {
         );
       case "branding_assets":
         return (
-          <form key="branding_assets" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            key="branding_assets"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
             <BrandingAssetsSection control={control} />
             <div className="flex justify-end">
-              <Button
-                type="submit"
-                disabled={updateCompanyInfo.isPending}
-              >
+              <Button type="submit" disabled={updateCompanyInfo.isPending}>
                 {updateCompanyInfo.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
@@ -153,13 +163,14 @@ export default function AgencyInfo({ section }) {
         );
       case "contact_address":
         return (
-          <form key="contact_address" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            key="contact_address"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
             <ContactAddressSection control={control} errors={errors} />
             <div className="flex justify-end">
-              <Button
-                type="submit"
-                disabled={updateCompanyInfo.isPending}
-              >
+              <Button type="submit" disabled={updateCompanyInfo.isPending}>
                 {updateCompanyInfo.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
@@ -167,18 +178,36 @@ export default function AgencyInfo({ section }) {
         );
       case "legal_tax_banking":
         return (
-          <form key="legal_tax_banking" onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form
+            key="legal_tax_banking"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
             <LegalTaxBankingSection control={control} errors={errors} />
             <div className="flex justify-end">
-              <Button
-                type="submit"
-                disabled={updateCompanyInfo.isPending}
-              >
+              <Button type="submit" disabled={updateCompanyInfo.isPending}>
                 {updateCompanyInfo.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </form>
         );
+
+      case "certifications":
+        return (
+          <form
+            key="certifications"
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
+            <CertificationsSection control={control} errors={errors} />
+            <div className="flex justify-end">
+              <Button type="submit" disabled={updateCompanyInfo.isPending}>
+                {updateCompanyInfo.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </form>
+        );
+
       default:
         return null;
     }
