@@ -22,19 +22,6 @@ export function NavMain({ items }) {
                 className="w-auto h-9 md:h-12 lg:h-15"
               />
             </Link>
-            {/* <SidebarMenuButton
-              tooltip="Quick Create"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground min-w-8 duration-200 ease-linear">
-              <IconCirclePlusFilled />
-              <span>Quick Create</span>
-            </SidebarMenuButton> */}
-            {/* <Button
-              size="icon"
-              className="size-8 group-data-[collapsible=icon]:opacity-0"
-              variant="outline">
-              <IconMail />
-              <span className="sr-only">Inbox</span>
-            </Button> */}
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
@@ -45,17 +32,21 @@ export function NavMain({ items }) {
               className={`
             flex items-center gap-3  py-2 rounded-lg text-[15px] font-medium
             transition-colors duration-100 cursor-pointer
-            ${
-              location.pathname === item.url
-                ? "bg-indigo-100 text-indigo-700"
-                : "text-foreground hover:bg-gray-100"
-            }
+            hover:text-primary/80
+            ${location.pathname === item.url
+                  ? "bg-primary/20 text-primary/80"
+                  : "text-gray-700 hover:bg-gray-100"
+                }
           `}
             >
               <SidebarMenuItem key={item.url}>
                 <SidebarMenuButton
                   tooltip={item.title}
-                  className="text-foreground hover:bg-transparent hover:text-foreground cursor-pointer"
+                  className={`${location.pathname === item.url
+                    ? "text-primary/80"
+                    : "text-foreground"
+
+                    } hover:bg-transparent hover:text-primary/80 cursor-pointer`}
                 >
                   <span>{item.icon && <item.icon className="w-5 h-5" />}</span>
                   <span>{item.title}</span>

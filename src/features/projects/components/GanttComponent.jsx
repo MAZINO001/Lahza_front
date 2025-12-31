@@ -49,35 +49,35 @@ export default function GanttComponent({ tasks, projectId }) {
   const transformedTasks =
     tasks?.length > 0
       ? tasks.map((task) => {
-          const startDate = task.start_date
-            ? new Date(task.start_date)
-            : task.startAt || new Date();
-          const endDate = task.end_date
-            ? new Date(task.end_date)
-            : task.endAt ||
-              new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const startDate = task.start_date
+          ? new Date(task.start_date)
+          : task.startAt || new Date();
+        const endDate = task.end_date
+          ? new Date(task.end_date)
+          : task.endAt ||
+          new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-          return {
-            id: task.id,
-            name: task.title || task.name || `Task ${task.id}`,
-            startAt: startDate,
-            endAt: endDate,
-            status: {
-              color:
-                task.status === "completed"
-                  ? "#10b981"
-                  : task.status === "in_progress"
-                    ? "#3b82f6"
-                    : task.status === "pending"
-                      ? "#f59e0b"
-                      : task.status?.color || "#6b7280",
-            },
-            lane: task.lane || task.id,
-            metadata: {
-              group: { name: task.group || "Tasks" },
-            },
-          };
-        })
+        return {
+          id: task.id,
+          name: task.title || task.name || `Task ${task.id}`,
+          startAt: startDate,
+          endAt: endDate,
+          status: {
+            color:
+              task.status === "completed"
+                ? "#10b981"
+                : task.status === "in_progress"
+                  ? "#3b82f6"
+                  : task.status === "pending"
+                    ? "#f59e0b"
+                    : task.status?.color || "#6b7280",
+          },
+          lane: task.lane || task.id,
+          metadata: {
+            group: { name: task.group || "Tasks" },
+          },
+        };
+      })
       : [];
   const groupedTasks = groupBy(transformedTasks, "metadata.group.name");
   const laneGroupedTasks = Object.fromEntries(

@@ -457,7 +457,7 @@ function EventForm({
               </div>
             )}
           />
-
+{/* 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Event Color
@@ -500,7 +500,7 @@ function EventForm({
                 />
               </div>
             </div>
-          </div>
+          </div> */}
 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">

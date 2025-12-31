@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 "use client";
 
 import React from "react";
@@ -63,36 +64,25 @@ export default function AgencyInfo({ section }) {
     },
   });
 
-  // Watch form values for debugging
   const formValues = watch();
-  console.log("Current form values:", formValues);
 
-  // Reset form with fetched data
   React.useEffect(() => {
     if (companyInfo && !isLoading) {
-      console.log("Resetting form with company info:", companyInfo);
       reset(companyInfo);
     }
   }, [companyInfo, isLoading, reset]);
 
   const onSubmit = (values) => {
-    console.log("Form values submitted:", values);
-    console.log("Company info data:", companyInfo);
-
-    // Handle file uploads separately from regular form data
     const formData = new FormData();
 
-    // Add all non-file fields
     Object.entries(values).forEach(([key, value]) => {
       if (value !== null && value !== "" && value !== undefined) {
-        // Skip file objects for now, they'll be handled separately
         if (!(value instanceof File) && !(value instanceof FileList)) {
           formData.append(key, value);
         }
       }
     });
 
-    // Handle file uploads
     const fileFields = [
       "logo_path",
       "logo_dark_path",
@@ -108,13 +98,11 @@ export default function AgencyInfo({ section }) {
       }
     });
 
-    // Log FormData contents for debugging
-    console.log("FormData contents:");
     for (let [key, value] of formData.entries()) {
-      console.log(key, value);
+      console.log(key);
+      console.log(value);
     }
 
-    // Update company info
     updateCompanyInfo.mutate({
       id: companyInfo?.id || 1,
       data: formData,

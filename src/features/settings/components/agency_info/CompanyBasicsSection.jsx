@@ -2,15 +2,15 @@ import React from "react";
 import { Controller } from "react-hook-form";
 import FormField from "@/components/Form/FormField";
 import TextareaField from "@/components/Form/TextareaField";
-import FileUpLoader from "@/components/Form/FileUploader";
 
 export function CompanyBasicsSection({ control, errors }) {
   return (
-    <form className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <h1 className="font-semibold text-lg">Company Basics</h1>
       <div className="space-y-2">
         <Controller
           name="company_name"
+          rules={{ required: "Company name is required" }}
           control={control}
           render={({ field }) => (
             <FormField
@@ -73,6 +73,6 @@ export function CompanyBasicsSection({ control, errors }) {
           )}
         />
       </div>
-    </form>
+    </div>
   );
 }

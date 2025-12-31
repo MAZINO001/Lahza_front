@@ -23,7 +23,7 @@ export default function User_management() {
   });
 
   const onInvite = (values) => {
-    console.log("INVITE USER", values);
+    // Invite user logic
     reset();
   };
 

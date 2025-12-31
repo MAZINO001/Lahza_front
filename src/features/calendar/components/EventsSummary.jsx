@@ -14,12 +14,6 @@ export default function EventsSummary() {
       ],
     },
     {
-      label: "Require Attendees",
-      value: 320,
-      icon: <Users className="h-5 w-5" />,
-      items: ["Ahmed (12 events)", "Sara (9 events)", "Youssef (7 events)"],
-    },
-    {
       label: "Urgent Today",
       value: 3,
       icon: <AlertTriangle className="h-5 w-5 text-orange-500" />,

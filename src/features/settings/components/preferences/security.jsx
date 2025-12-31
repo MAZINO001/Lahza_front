@@ -31,11 +31,11 @@ export default function Security() {
   });
 
   const onPasswordSubmit = (values) => {
-    console.log("PASSWORD UPDATE", values);
+    // Password update logic
   };
 
   const onEmailSubmit = (values) => {
-    console.log("EMAIL UPDATE", values);
+    // Email update logic
   };
 
   return (

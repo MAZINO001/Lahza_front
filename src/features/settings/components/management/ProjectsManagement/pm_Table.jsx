@@ -120,7 +120,6 @@ export default function ProjectsTable() {
           const next = prev.map((p) =>
             p.id === projectId ? { ...p, date: nextDate } : p
           );
-          console.log("PROJECTS AFTER DATE UPDATE", next);
           return next;
         });
       },
@@ -129,7 +128,6 @@ export default function ProjectsTable() {
           const next = prev.map((p) =>
             p.id === projectId ? { ...p, access: nextAccess } : p
           );
-          console.log("PROJECTS AFTER ACCESS UPDATE", next);
           return next;
         });
       },
@@ -138,7 +136,6 @@ export default function ProjectsTable() {
           const next = prev.map((p) =>
             p.id === projectId ? { ...p, members: nextMembers } : p
           );
-          console.log("PROJECTS AFTER MEMBERS UPDATE", next);
           return next;
         });
       },
@@ -147,7 +144,6 @@ export default function ProjectsTable() {
           const next = prev.map((p) =>
             p.id === projectId ? { ...p, status: nextStatus } : p
           );
-          console.log("PROJECTS AFTER STATUS UPDATE", next);
           return next;
         });
       },

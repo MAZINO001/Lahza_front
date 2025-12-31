@@ -190,10 +190,6 @@ export default function CalendarPage() {
 
   const processedEvents = processRepeatingEvents(events);
 
-  // Debug: Log processed events
-  console.log("🗓️ Processed Events:", processedEvents);
-  console.log("📊 Events count:", processedEvents?.length || 0);
-
   const handleDateClick = (arg) => {
     setSelectedDate(arg.date);
     setEditMode(false);
@@ -211,8 +207,12 @@ export default function CalendarPage() {
   };
 
   const handleEventClick = (info) => {
-    // Find the original base event, not the repeating instance
     const event = processedEvents?.find((e) => e.id === info.event.id);
+    // to differentiate between the events and the other objectives nad task of the projects
+    if (!event.color) {
+      return;
+    }
+
     if (event) {
       setSelectedEvent(event);
       setDetailsOpen(true);
@@ -220,7 +220,6 @@ export default function CalendarPage() {
   };
 
   const handleEditClick = () => {
-    // Open the form in edit mode with selected event data
     setEditMode(true);
     setDetailsOpen(false);
     setOpen(true);

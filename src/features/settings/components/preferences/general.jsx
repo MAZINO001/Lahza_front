@@ -24,7 +24,7 @@ export default function Preferences() {
       },
     };
 
-    console.log("NOTIFICATIONS SETTINGS", formattedData);
+    // Process general settings
   };
 
   return (

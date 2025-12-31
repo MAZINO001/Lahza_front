@@ -23,7 +23,7 @@ export default function Team_management() {
   });
 
   const onInvite = (values) => {
-    console.log("INVITE USER", values);
+    // Invite user logic
     reset();
   };
 

@@ -118,7 +118,7 @@ export default function SettingsSideBar() {
                         <div
                           className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                             isActive
-                              ? "bg-indigo-100 text-indigo-700"
+                              ? "bg-primary/20 text-primary/80"
                               : "text-gray-700 hover:bg-gray-100"
                           }`}
                         >

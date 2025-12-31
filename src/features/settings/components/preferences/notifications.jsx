@@ -106,7 +106,7 @@ export default function Notifications() {
       },
     };
 
-    console.log("NOTIFICATIONS SETTINGS", formattedData);
+    // Process notifications settings
   };
 
   function Setting({ label, description, name, control }) {

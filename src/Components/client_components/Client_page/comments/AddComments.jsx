@@ -45,35 +45,8 @@ export default function AddComments({
         </div>
       </div>
 
-      <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 w-9 p-0"
-            title="Add image"
-          >
-            <Image className="h-4 w-4 text-muted-foreground" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 w-9 p-0"
-            title="Add emoji"
-          >
-            <Smile className="h-4 w-4 text-muted-foreground" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 w-9 p-0"
-            title="Mention someone"
-          >
-            <AtSign className="h-4 w-4 text-muted-foreground" />
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-3">
+      <div className="flex items-center p-4 w-full">
+        <div className="flex items-center justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
             <span
               className={`text-xs font-medium transition-colors ${
