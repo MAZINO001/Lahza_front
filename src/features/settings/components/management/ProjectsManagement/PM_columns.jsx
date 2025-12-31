@@ -139,90 +139,9 @@ function DeliveryDateCell({ row, table }) {
   );
 }
 
-function AccessCell({ row, table }) {
+function AccessCell({ row }) {
   const accessObj = row.getValue("access");
-  const { updateProjectAccess } = table.options.meta;
-  const projectId = row.id;
-
   const [openPopover, setOpenPopover] = React.useState(null);
-  const [editingValue, setEditingValue] = React.useState("");
-  const [editingKey, setEditingKey] = React.useState(null);
-
-  const formatDisplayValue = (key, jsonString) => {
-    if (!jsonString) return "";
-
-    try {
-      const parsed = JSON.parse(jsonString);
-
-      if (key === "social_media" && Array.isArray(parsed)) {
-        return parsed
-          .map(
-            (item) =>
-              `link: ${item.link || ""}\nemail: ${item.email || ""}\npassword: ${item.password || ""}`
-          )
-          .join("\n\n");
-      } else {
-        return `email: ${parsed.email || ""}\npassword: ${parsed.password || ""}`;
-      }
-    } catch {
-      return jsonString;
-    }
-  };
-
-  const formatForSave = (key, displayValue) => {
-    if (!displayValue.trim()) return "";
-
-    try {
-      if (key === "social_media") {
-        const sections = displayValue.split("\n\n").filter((s) => s.trim());
-        const items = sections.map((section) => {
-          const lines = section.split("\n");
-          const item = {};
-          lines.forEach((line) => {
-            const [key, ...valueParts] = line.split(":");
-            if (key && valueParts.length) {
-              item[key.trim()] = valueParts.join(":").trim();
-            }
-          });
-          return item;
-        });
-        return JSON.stringify(items);
-      } else {
-        const lines = displayValue.split("\n");
-        const obj = {};
-        lines.forEach((line) => {
-          const [key, ...valueParts] = line.split(":");
-          if (key && valueParts.length) {
-            obj[key.trim()] = valueParts.join(":").trim();
-          }
-        });
-        return JSON.stringify(obj);
-      }
-    } catch {
-      return displayValue;
-    }
-  };
-
-  const handleEdit = (key, value) => {
-    setEditingKey(key);
-    setEditingValue(formatDisplayValue(key, value));
-    setOpenPopover(key);
-  };
-
-  const handleSave = () => {
-    if (editingKey !== null) {
-      const jsonValue = formatForSave(editingKey, editingValue);
-      const updatedAccess = { ...accessObj, [editingKey]: jsonValue };
-      updateProjectAccess(projectId, updatedAccess);
-      setOpenPopover(null);
-      setEditingKey(null);
-      setEditingValue("");
-    }
-  };
-
-  const handleCopy = (value) => {
-    copyToClipboard(value);
-  };
 
   const formatLabel = (key) => {
     switch (key) {
@@ -236,48 +155,153 @@ function AccessCell({ row, table }) {
         return key;
     }
   };
-
   return (
     <div className="space-y-1">
       {Object.entries(accessObj).map(([key, value]) => (
         <div key={key} className="flex items-center gap-1">
           <Popover
             open={openPopover === key}
-            onOpenChange={(open) => !open && setOpenPopover(null)}
+            onOpenChange={(open) => setOpenPopover(open ? key : null)}
           >
             <PopoverTrigger asChild>
-              <button
-                onClick={() => handleEdit(key, value)}
-                className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors text-left flex-1"
-              >
-                <div className="font-medium text-gray-600">
+              <button className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors text-left flex-1">
+                <div className="font-medium text-foreground">
                   {formatLabel(key)}
                 </div>
               </button>
             </PopoverTrigger>
             <PopoverContent className="w-80" align="start">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <div className="font-medium text-sm">
                   {formatLabel(key)} Credentials
                 </div>
-                <Textarea
-                  value={editingValue}
-                  onChange={(e) => setEditingValue(e.target.value)}
-                  placeholder={`email: example@email.com\npassword: yourpassword${editingKey === "social_media" ? "\n\nlink: profile_url\nemail: social@email.com\npassword: socialpass" : ""}`}
-                  className="min-h-20 text-xs font-mono"
-                />
-                <div className="flex gap-2">
-                  <Button size="sm" onClick={handleSave}>
-                    Save
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleCopy(editingValue)}
-                  >
-                    Copy
-                  </Button>
-                </div>
+                {(() => {
+                  try {
+                    const parsed = JSON.parse(value);
+                    if (key === "social_media" && Array.isArray(parsed)) {
+                      return parsed.map((item, index) => (
+                        <div
+                          key={index}
+                          className="space-y-2 border-b pb-2 last:border-b-0"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-foreground w-12">
+                              link:
+                            </span>
+                            <span className="text-xs flex-1 text-center">
+                              {item.link || "Not set"}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 px-2 text-xs"
+                              onClick={() =>
+                                copyToClipboard(item.link || "", "Link copied")
+                              }
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-foreground w-12">
+                              email:
+                            </span>
+                            <span className="text-xs flex-1 text-center">
+                              {item.email || "Not set"}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 px-2 text-xs"
+                              onClick={() =>
+                                copyToClipboard(
+                                  item.email || "",
+                                  "Email copied"
+                                )
+                              }
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-foreground w-12">
+                              password:
+                            </span>
+                            <span className="text-xs flex-1 text-center">
+                              {item.password || "Not set"}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 px-2 text-xs"
+                              onClick={() =>
+                                copyToClipboard(
+                                  item.password || "",
+                                  "Password copied"
+                                )
+                              }
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                        </div>
+                      ));
+                    } else {
+                      return (
+                        <>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-foreground w-12">
+                              email:
+                            </span>
+                            <span className="text-xs flex-1 text-center">
+                              {parsed.email || "Not set"}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 px-2 text-xs"
+                              onClick={() =>
+                                copyToClipboard(
+                                  parsed.email || "",
+                                  "Email copied"
+                                )
+                              }
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-medium text-foreground w-12">
+                              password:
+                            </span>
+                            <span className="text-xs flex-1 text-center">
+                              {parsed.password || "Not set"}
+                            </span>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 px-2 text-xs"
+                              onClick={() =>
+                                copyToClipboard(
+                                  parsed.password || "",
+                                  "Password copied"
+                                )
+                              }
+                            >
+                              Copy
+                            </Button>
+                          </div>
+                        </>
+                      );
+                    }
+                  } catch {
+                    return (
+                      <div className="text-xs text-gray-500">
+                        Invalid credentials format
+                      </div>
+                    );
+                  }
+                })()}
               </div>
             </PopoverContent>
           </Popover>

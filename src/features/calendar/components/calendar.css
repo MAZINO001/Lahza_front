@@ -204,6 +204,27 @@
     position: relative;
 }
 
+/* Debug: Ensure timegrid views are visible */
+.calendar-container .fc-timegrid {
+    display: block !important;
+    visibility: visible !important;
+}
+
+.calendar-container .fc-timegrid-view {
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Debug: Ensure list view is visible */
+.calendar-container .fc-list {
+    display: block !important;
+    visibility: visible !important;
+}
+
+.calendar-container .fc-list-view {
+    display: block !important;
+    visibility: visible !important;
+}
 
 /* Week and day view specific styling */
 .calendar-container .fc-timegrid-slot {

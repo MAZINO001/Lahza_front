@@ -66,6 +66,7 @@ function EventForm({
       allDay: false,
       guests: [],
       url: "",
+      priority: "low",
     },
   });
 
@@ -328,14 +329,14 @@ function EventForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-background text-foreground ">
+      <DialogContent className="bg-background text-foreground max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
             {editMode ? "Edit Event" : "New Event"}{" "}
             {selectedDate?.toLocaleDateString()}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-4 bg-background text-foreground">
+        <div className="space-y-4 py-4 bg-background text-foreground overflow-y-auto flex-1">
           <div className="space-y-2">
             <Controller
               name="title"
@@ -603,7 +604,7 @@ function EventForm({
                     <SelectField
                       id="category"
                       label="category"
-                      value={field.value || ""}
+                      value={field.value || "agency"}
                       onChange={(val) => {
                         field.onChange(val);
                       }}
@@ -636,6 +637,27 @@ function EventForm({
                         { value: "weekly", label: "Weekly" },
                         { value: "monthly", label: "Monthly" },
                         { value: "yearly", label: "Yearly" },
+                      ]}
+                      error={errors?.repeatedly?.message}
+                    />
+                  )}
+                />
+              </div>
+              <div className="space-y-2 w-full">
+                <Controller
+                  name="priority"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectField
+                      label="Priority"
+                      value={field.value || "low"}
+                      onChange={(val) => {
+                        field.onChange(val);
+                      }}
+                      options={[
+                        { value: "low", label: "Low" },
+                        { value: "medium", label: "Medium" },
+                        { value: "high", label: "High" },
                       ]}
                       error={errors?.repeatedly?.message}
                     />

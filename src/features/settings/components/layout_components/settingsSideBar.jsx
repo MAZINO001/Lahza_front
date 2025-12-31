@@ -1,14 +1,9 @@
-"use client";
-
 import { useAuthContext } from "@/hooks/AuthContext";
 import {
   Bell,
   Building,
-  ClipboardList,
   Contact,
-  Folder,
   FolderKanban,
-  Layers,
   Lock,
   Palette,
   Scale,

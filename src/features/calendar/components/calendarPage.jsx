@@ -174,6 +174,7 @@ import {
   useUpdateEvent,
 } from "../hooks/useCalendarQuery";
 import { processRepeatingEvents } from "../utils/repeatEventProcessor";
+import EventsSummary from "./EventsSummary";
 
 export default function CalendarPage() {
   const { data: events } = useEvents();
@@ -188,6 +189,10 @@ export default function CalendarPage() {
   const [editMode, setEditMode] = useState(false);
 
   const processedEvents = processRepeatingEvents(events);
+
+  // Debug: Log processed events
+  console.log("🗓️ Processed Events:", processedEvents);
+  console.log("📊 Events count:", processedEvents?.length || 0);
 
   const handleDateClick = (arg) => {
     setSelectedDate(arg.date);
@@ -275,36 +280,51 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      <div className="calendar-container">
-        <FullCalendar
-          plugins={[
-            dayGridPlugin,
-            timeGridPlugin,
-            listPlugin,
-            interactionPlugin,
-          ]}
-          initialView="dayGridMonth"
-          firstDay={1}
-          headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
-          }}
-          events={processedEvents}
-          dateClick={handleDateClick}
-          eventClick={handleEventClick}
-          height="auto"
-          slotMinTime="06:00:00"
-          slotMaxTime="24:00:00"
-          allDaySlot={true}
-          scrollTime="08:00:00"
-          eventTimeFormat={{
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-          }}
-          displayEventEnd={true}
-        />
+      <div className="calendar-container flex gap-4">
+        <div className="w-[70%]">
+          <FullCalendar
+            plugins={[
+              dayGridPlugin,
+              timeGridPlugin,
+              listPlugin,
+              interactionPlugin,
+            ]}
+            initialView="dayGridMonth"
+            firstDay={1}
+            headerToolbar={{
+              left: "prev,next today",
+              center: "title",
+              right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+            }}
+            events={processedEvents}
+            dateClick={handleDateClick}
+            eventClick={handleEventClick}
+            height="auto"
+            slotMinTime="06:00:00"
+            slotMaxTime="24:00:00"
+            allDaySlot={true}
+            scrollTime="08:00:00"
+            eventTimeFormat={{
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            }}
+            displayEventEnd={true}
+            viewDidMount={(viewInfo) => {
+              console.log("🔍 View mounted:", viewInfo.view.type);
+              console.log("📅 View date range:", viewInfo.view.currentStart, "to", viewInfo.view.currentEnd);
+            }}
+            viewClassNames={(viewInfo) => {
+              console.log("🎨 View classes:", viewInfo.view.type, viewInfo.view.classNames);
+            }}
+            loading={(bool) => {
+              console.log("⏳ Calendar loading:", bool);
+            }}
+          />
+        </div>
+        <div className="w-[30%]">
+          <EventsSummary />
+        </div>
       </div>
 
       <EventForm

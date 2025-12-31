@@ -93,6 +93,46 @@ export function ContactAddressSection({ control, errors }) {
           />
         </div>
 
+        <div className="space-y-2">
+          <Controller
+            name="instagram"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                type="text"
+                value={field.value}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                }}
+                label="Instagram"
+                id="instagram"
+                placeholder="Enter instagram account url"
+                error={errors.website?.message}
+              />
+            )}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Controller
+            name="linkedIn"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                type="text"
+                value={field.value}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                }}
+                label="LinkedIn"
+                id="linkedIn"
+                placeholder="Enter LinkedIn account url"
+                error={errors.website?.message}
+              />
+            )}
+          />
+        </div>
+
         {/* Address */}
         <div className="space-y-2">
           <Controller
