@@ -47,13 +47,16 @@ export function NavMain({ items }) {
             transition-colors duration-100 cursor-pointer
             ${
               location.pathname === item.url
-                ? "bg-primary text-background shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                ? "bg-indigo-100 text-indigo-700"
+                : "text-gray-700 hover:bg-gray-100"
             }
           `}
             >
               <SidebarMenuItem key={item.url}>
-                <SidebarMenuButton tooltip={item.title}>
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  className="text-gray-700 hover:bg-transparent hover:text-gray-700"
+                >
                   <span>{item.icon && <item.icon className="w-5 h-5" />}</span>
                   <span>{item.title}</span>
                 </SidebarMenuButton>

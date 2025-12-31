@@ -22,14 +22,13 @@ export function NavSecondary({ items, ...props }) {
               className={`
     flex items-center gap-3  py-2 rounded-lg text-[15px] font-medium
     transition-colors duration-200 cursor-pointer
-    ${
-      location.pathname === item.url
-        ? "bg-primary text-background shadow-sm"
-        : "text-muted-foreground hover:text-foreground hover:bg-accent"
-    }
+    ${location.pathname === item.url
+                  ? "bg-indigo-100 text-indigo-700"
+                  : "text-gray-700 hover:bg-gray-100"
+                }
   `}
             >
-              <SidebarMenuButton asChild>
+              <SidebarMenuButton asChild className="text-gray-700 hover:bg-transparent hover:text-gray-700">
                 <Link to={item.url}>
                   <>
                     <span>
