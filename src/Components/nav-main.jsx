@@ -48,14 +48,14 @@ export function NavMain({ items }) {
             ${
               location.pathname === item.url
                 ? "bg-indigo-100 text-indigo-700"
-                : "text-gray-700 hover:bg-gray-100"
+                : "text-foreground hover:bg-gray-100"
             }
           `}
             >
               <SidebarMenuItem key={item.url}>
                 <SidebarMenuButton
                   tooltip={item.title}
-                  className="text-gray-700 hover:bg-transparent hover:text-gray-700"
+                  className="text-foreground hover:bg-transparent hover:text-foreground cursor-pointer"
                 >
                   <span>{item.icon && <item.icon className="w-5 h-5" />}</span>
                   <span>{item.title}</span>
