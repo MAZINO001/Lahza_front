@@ -281,8 +281,10 @@ export default function CertificationsSection() {
                       <h3 className="font-semibold text-lg">{cert.title}</h3>
                       <StatusBadge status={cert.status} />
                     </div>
-                    <p className="text-gray-600 mt-1">{cert.description}</p>
-                    <div className="mt-2 text-sm text-gray-500">
+                    <p className="text-muted-foreground mt-1">
+                      {cert.description}
+                    </p>
+                    <div className="mt-2 text-sm text-muted-foreground">
                       <p>Issued by: {cert.issued_by}</p>
                       <p>
                         Issued: {new Date(cert.issued_at).toLocaleDateString()}
@@ -321,7 +323,7 @@ export default function CertificationsSection() {
           ))}
 
           {certifications?.length === 0 && (
-            <div className="text-center py-8 text-gray-500 border rounded-lg">
+            <div className="text-center py-8 text-muted-foreground border rounded-lg">
               No certifications found. Add your first certification above.
             </div>
           )}

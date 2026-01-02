@@ -67,13 +67,6 @@ export default function allTeamColumns() {
       ),
     },
     {
-      header: "Certifications",
-      accessorFn: (row) => row.certifications ?? "-",
-      cell: ({ getValue }) => (
-        <span className="text-sm text-muted-foreground">{getValue()}</span>
-      ),
-    },
-    {
       header: "Emergency Contact",
       accessorFn: (row) => row.emergencyContactName ?? "-",
       cell: ({ getValue }) => (

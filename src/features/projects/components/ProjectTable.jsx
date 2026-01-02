@@ -47,7 +47,6 @@ export function ProjectsTable() {
 
   return (
     <div className="w-full p-4 bg-background min-h-screen">
-      <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-4">
           <FormField
             placeholder="Filter by name..."
@@ -73,6 +72,5 @@ export function ProjectsTable() {
           isLoading={isLoading}
         />
       </div>
-    </div>
   );
 }

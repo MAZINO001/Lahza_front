@@ -158,51 +158,47 @@ export default function ProjectsTable() {
 
   return (
     <div className="w-full bg-background min-h-screen">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between mb-4">
-          <div className="flex gap-3 items-end">
-            <FormField
-              placeholder="Filter projects by title..."
-              value={table.getColumn("title")?.getFilterValue() ?? ""}
-              onChange={(e) =>
-                table.getColumn("title")?.setFilterValue(e.target.value)
-              }
-            />
+      <div className="flex justify-between mb-4">
+        <div className="flex gap-3 items-end">
+          <FormField
+            placeholder="Filter projects by title..."
+            value={table.getColumn("title")?.getFilterValue() ?? ""}
+            onChange={(e) =>
+              table.getColumn("title")?.setFilterValue(e.target.value)
+            }
+          />
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="rounded-md flex items-center gap-2 border border-border px-2 py-[4.3px] capitalize">
-                  Status: {statusFilter}
-                  <ChevronDown className="w-4 h-4" />
-                </button>
-              </DropdownMenuTrigger>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="rounded-md flex items-center gap-2 border border-border px-2 py-[4.3px] capitalize">
+                Status: {statusFilter}
+                <ChevronDown className="w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="start" className="w-48">
-                <DropdownMenuRadioGroup
-                  value={statusFilter}
-                  onValueChange={setStatusFilter}
-                >
-                  {["all", "not-started", "in-progress", "done"].map(
-                    (status) => (
-                      <DropdownMenuRadioItem key={status} value={status}>
-                        {status.replace("-", " ")}
-                      </DropdownMenuRadioItem>
-                    )
-                  )}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <Link to={`/${role}/project/new`}>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
-              New Project
-            </Button>
-          </Link>
+            <DropdownMenuContent align="start" className="w-48">
+              <DropdownMenuRadioGroup
+                value={statusFilter}
+                onValueChange={setStatusFilter}
+              >
+                {["all", "not-started", "in-progress", "done"].map((status) => (
+                  <DropdownMenuRadioItem key={status} value={status}>
+                    {status.replace("-", " ")}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-
-        <DataTable table={table} columns={columns} />
+        <Link to={`/${role}/project/new`}>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            New Project
+          </Button>
+        </Link>
       </div>
+
+      <DataTable table={table} columns={columns} />
     </div>
   );
 }

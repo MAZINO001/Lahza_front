@@ -60,7 +60,7 @@ export default function CountDownComponent({ startDate, endDate }) {
       <div className={`text-3xl font-bold ${textColor}`}>
         {formatTime(timeRemaining)}
       </div>
-      <p className="text-xs text-gray-500 mt-2">
+      <p className="text-xs text-muted-foreground mt-2">
         {timeRemaining === 0
           ? "Project has ended!"
           : timeRemaining > 0

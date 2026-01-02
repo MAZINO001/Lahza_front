@@ -22,7 +22,7 @@ export default function overview({ data }) {
             <p className="text-sm font-medium text-muted-foreground mb-2">
               Description
             </p>
-            <p className="text-md text-gray-800 whitespace-pre-wrap">
+            <p className="text-md text-foreground whitespace-pre-wrap">
               {data?.description || (
                 <span className="text-muted-foreground italic">
                   No description provided
@@ -45,7 +45,7 @@ export default function overview({ data }) {
               <p className="text-sm font-medium text-muted-foreground mb-1">
                 Tax Rate
               </p>
-              <p className="text-3xl font-bold text-gray-700">
+              <p className="text-3xl font-bold text-foreground">
                 {data?.tax_rate ? `${data.tax_rate}%` : "0%"}
               </p>
             </div>

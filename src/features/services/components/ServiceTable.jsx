@@ -49,39 +49,37 @@ export function ServiceTable() {
 
   return (
     <div className="w-full p-4 bg-background min-h-screen">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <FormField
-            placeholder="Filter by name..."
-            value={table.getColumn("name")?.getFilterValue() ?? ""}
-            onChange={(e) =>
-              table.getColumn("name")?.setFilterValue(e.target.value)
-            }
-            className="max-w-sm"
-          />
-          <div className="flex gap-2">
-            <Button onClick={() => setShowUploadModal(true)} variant="outline">
-              <Upload className="mr-2 h-4 w-4" /> Upload CSV
-            </Button>
-            <Link to={`/${role}/service/new`}>
-              <Button>Add New Service</Button>
-            </Link>
-          </div>
+      <div className="flex items-center justify-between mb-4">
+        <FormField
+          placeholder="Filter by name..."
+          value={table.getColumn("name")?.getFilterValue() ?? ""}
+          onChange={(e) =>
+            table.getColumn("name")?.setFilterValue(e.target.value)
+          }
+          className="max-w-sm"
+        />
+        <div className="flex gap-2">
+          <Button onClick={() => setShowUploadModal(true)} variant="outline">
+            <Upload className="mr-2 h-4 w-4" /> Upload CSV
+          </Button>
+          <Link to={`/${role}/service/new`}>
+            <Button>Add New Service</Button>
+          </Link>
         </div>
-
-        <DataTable
-          table={table}
-          columns={columns}
-          isInvoiceTable={false}
-          isLoading={isLoading}
-        />
-
-        <CsvUploadModal
-          open={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadServices`}
-        />
       </div>
+
+      <DataTable
+        table={table}
+        columns={columns}
+        isInvoiceTable={false}
+        isLoading={isLoading}
+      />
+
+      <CsvUploadModal
+        open={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadServices`}
+      />
     </div>
   );
 }

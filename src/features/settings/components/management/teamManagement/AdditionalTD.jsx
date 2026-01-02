@@ -60,7 +60,7 @@ export default function TeamUserForm() {
         </div>
 
         <div className="border-t pt-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
             Banking Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -118,7 +118,7 @@ export default function TeamUserForm() {
         </div>
 
         <div className="border-t pt-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
             Contract Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -230,7 +230,7 @@ export default function TeamUserForm() {
         </div>
 
         <div className="border-t pt-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
             Emergency Contact
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -271,7 +271,7 @@ export default function TeamUserForm() {
         </div>
 
         <div className="border-t pt-4">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
+          <h2 className="text-lg font-semibold text-foreground mb-2">
             Professional Information
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -387,7 +387,7 @@ export default function TeamUserForm() {
           </button>
           <button
             onClick={() => reset()}
-            className="px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-md hover:bg-gray-300 transition-colors"
+            className="px-6 py-2 bg-gray-200 text-foreground font-medium rounded-md hover:bg-gray-300 transition-colors"
           >
             Reset
           </button>

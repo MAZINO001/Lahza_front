@@ -43,7 +43,7 @@ export default function DisplayComments({ comments, handleDelete }) {
       <div className="space-y-0">
         {comments?.length === 0 ? (
           <div className="text-center py-16 bg-background rounded-lg border-2 border-dashed border-border">
-            <MessageSquare className="h-16 w-16 mx-auto mb-4 text-gray-300" />
+            <MessageSquare className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
             <p className="text-muted-foreground font-medium mb-1">
               No comments yet
             </p>

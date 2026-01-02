@@ -164,7 +164,7 @@ function AccessCell({ row }) {
             onOpenChange={(open) => setOpenPopover(open ? key : null)}
           >
             <PopoverTrigger asChild>
-              <button className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors text-left flex-1">
+              <button className="text-xs bg-background hover:bg-background/90 px-2 py-1 rounded transition-colors text-left flex-1 border border-border">
                 <div className="font-medium text-foreground">
                   {formatLabel(key)}
                 </div>
@@ -296,7 +296,7 @@ function AccessCell({ row }) {
                     }
                   } catch {
                     return (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-muted-foreground">
                         Invalid credentials format
                       </div>
                     );

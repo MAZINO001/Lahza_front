@@ -56,7 +56,6 @@ export function OfferTable() {
 
   return (
     <div className="w-full p-4 bg-background min-h-screen">
-      <div className="max-w-7xl mx-auto">
         <div className="flex justify-between mb-4">
           <FormField
             placeholder="Filter offers..."
@@ -88,6 +87,5 @@ export function OfferTable() {
           uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadOffers`}
         />
       </div>
-    </div>
   );
 }

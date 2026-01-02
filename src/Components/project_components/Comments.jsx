@@ -93,7 +93,7 @@ export default function Comments() {
             <div
               className={`
           max-w-[70%] p-3 rounded-xl 
-          ${comment.user === "You" ? "bg-blue-500 text-white rounded-br-none" : "bg-gray-200 text-gray-800 rounded-bl-none"}
+          ${comment.user === "You" ? "bg-blue-500 text-white rounded-br-none" : "bg-gray-200 text-foreground rounded-bl-none"}
         `}
             >
               <div className="text-xs opacity-70 mb-1 flex justify-between">

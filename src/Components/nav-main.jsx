@@ -45,9 +45,10 @@ export function NavMain({ items }) {
                   tooltip={item.title}
                   className={`${
                     location.pathname === item.url
-                      ? "text-primary/80"
+                      ? "text-foreground"
                       : "text-foreground"
-                  } hover:bg-transparent hover:text-primary/80 cursor-pointer`}
+                  } hover:bg-transparent 
+                  hover:text-foreground cursor-pointer`}
                 >
                   <span>{item.icon && <item.icon className="w-5 h-5" />}</span>
                   <span>{item.title}</span>

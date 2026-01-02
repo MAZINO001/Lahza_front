@@ -483,7 +483,7 @@
 //         )}
 
 //         <div className="mt-4">
-//           <span className="text-sm font-medium  text-gray-800 mb-4">
+//           <span className="text-sm font-medium  text-foreground mb-4">
 //             Item Table
 //           </span>
 //           <div className="overflow-x-auto border rounded-md rounded-br-none">
@@ -716,8 +716,8 @@
 
 //             <div className="border-border md:w-[50%] w-full px-2 rounded-bl-lg rounded-br-lg border-b border-x">
 //               <div className="flex justify-between py-3 text-lg font-semibold">
-//                 <span className="text-gray-800">Total ( $ )</span>
-//                 <span className="text-gray-800">
+//                 <span className="text-foreground">Total ( $ )</span>
+//                 <span className="text-foreground">
 //                   {calculateTotal().toFixed(2)}
 //                 </span>
 //               </div>
@@ -1508,7 +1508,7 @@ export function DocumentForm({ type, onSuccess }) {
         )}
 
         <div className="mt-4">
-          <span className="text-sm font-medium  text-gray-800 mb-4">
+          <span className="text-sm font-medium  text-foreground mb-4">
             Item Table
           </span>
           <div className="overflow-x-auto border rounded-md rounded-br-none">
@@ -1741,8 +1741,8 @@ export function DocumentForm({ type, onSuccess }) {
 
             <div className="border-border md:w-[50%] w-full px-2 rounded-bl-lg rounded-br-lg border-b border-x">
               <div className="flex justify-between py-3 text-lg font-semibold">
-                <span className="text-gray-800">Total ( $ )</span>
-                <span className="text-gray-800">
+                <span className="text-foreground">Total ( $ )</span>
+                <span className="text-foreground">
                   {calculateTotal().toFixed(2)}
                 </span>
               </div>

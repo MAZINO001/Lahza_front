@@ -132,7 +132,7 @@ export default function ConfirmPassword() {
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 bottom-3.5 text-muted-foreground hover:text-gray-700 focus:outline-none"
+                    className="absolute right-3 bottom-3.5 text-muted-foreground hover:text-foreground focus:outline-none"
                   >
                     {showCurrentPassword ? (
                       <EyeOff className="w-4 h-4" />

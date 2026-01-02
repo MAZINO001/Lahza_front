@@ -7,8 +7,8 @@ const LoadingContext = createContext(undefined);
 export function LoadingProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState("Loading...");
-  const [loaderType, setLoaderType] = useState("fullscreen"); // 'fullscreen' | 'content'
-  const [loaderPosition, setLoaderPosition] = useState("center"); // 'center' | 'top' | 'bottom'
+  const [loaderType, setLoaderType] = useState("fullscreen"); 
+  const [loaderPosition, setLoaderPosition] = useState("center");
 
   const show = (msg = "Loading...", options = {}) => {
     setText(msg);

@@ -34,10 +34,10 @@ export function NavSecondary({ items, ...props }) {
                 asChild
                 className={`${
                   location.pathname === item.url
-                    ? "text-primary/80"
+                    ? "text-foreground"
                     : "text-foreground"
                 } hover:bg-transparent 
-                  hover:text-primary/80
+                  hover:text-foreground
                   
                   cursor-pointer`}
               >

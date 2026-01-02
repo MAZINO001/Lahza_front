@@ -154,39 +154,37 @@ export default function TeamMemberTable() {
   };
 
   return (
-    <div className="w-full p-4 bg-background min-h-screen">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between mb-4">
-          <FormField
-            placeholder="Filter offers..."
-            value={table.getColumn("title")?.getFilterValue() ?? ""}
-            onChange={(e) =>
-              table.getColumn("title")?.setFilterValue(e.target.value)
-            }
-            className="max-w-sm"
-          />
-          <div className="flex gap-2">
-            <Button onClick={() => setShowUploadModal(true)} variant="outline">
-              <Upload className="mr-2 h-4 w-4" /> Upload CSV
-            </Button>
-            <Link to={`/${role}/offer/new`}>
-              <Button>Add New Offer</Button>
-            </Link>
-          </div>
+    <div className=" p-4 bg-background min-h-screen">
+      <div className="flex justify-between mb-4">
+        <FormField
+          placeholder="Filter offers..."
+          value={table.getColumn("title")?.getFilterValue() ?? ""}
+          onChange={(e) =>
+            table.getColumn("title")?.setFilterValue(e.target.value)
+          }
+          className="max-w-sm"
+        />
+        <div className="flex gap-2">
+          <Button onClick={() => setShowUploadModal(true)} variant="outline">
+            <Upload className="mr-2 h-4 w-4" /> Upload CSV
+          </Button>
+          <Link to={`/${role}/offer/new`}>
+            <Button>Add New Offer</Button>
+          </Link>
         </div>
-
-        <DataTable
-          table={table}
-          columns={columns}
-          isInvoiceTable={false}
-          //   isLoading={isLoading}
-        />
-        <CSVUploadModal
-          open={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadOffers`}
-        />
       </div>
+
+      <DataTable
+        table={table}
+        columns={columns}
+        isInvoiceTable={false}
+        //   isLoading={isLoading}
+      />
+      <CSVUploadModal
+        open={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadOffers`}
+      />
     </div>
   );
 }

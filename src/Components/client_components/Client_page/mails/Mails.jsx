@@ -146,7 +146,7 @@ export default function Mails({ currentId = 1 }) {
           })
         ) : (
           <div className="p-12 text-center">
-            <Mail className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+            <Mail className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground text-sm">No emails found</p>
           </div>
         )}

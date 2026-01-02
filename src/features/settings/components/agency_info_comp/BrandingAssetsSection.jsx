@@ -7,7 +7,7 @@ export function BrandingAssetsSection({ control }) {
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="font-semibold text-lg mb-4">Branding & Assets</h2>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-muted-foreground">
           Upload your company logos, signatures, and stamps for use across
           documents.
         </p>

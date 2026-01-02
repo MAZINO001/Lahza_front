@@ -50,7 +50,7 @@ export default function CSVUploadModal({
             setMessage("");
             onClose();
           }}
-          className="absolute top-4 right-4 text-muted-foreground hover:text-gray-800"
+          className="absolute top-4 right-4 text-muted-foreground hover:text-foreground"
         >
           <X />
         </button>
