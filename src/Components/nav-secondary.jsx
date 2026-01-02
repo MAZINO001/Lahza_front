@@ -23,18 +23,20 @@ export function NavSecondary({ items, ...props }) {
     flex items-center gap-3  py-2 rounded-lg text-[15px] font-medium
     transition-colors duration-200 cursor-pointer
     hover:text-primary/80
-    ${location.pathname === item.url
-                  ? "bg-primary/20 text-primary/80"
-                  : "text-gray-700 hover:bg-gray-100"
-                }
+    ${
+      location.pathname === item.url
+        ? "bg-primary/20 text-primary/80"
+        : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
+    }
   `}
             >
               <SidebarMenuButton
                 asChild
-                className={`${location.pathname === item.url
-                  ? "text-primary/80"
-                  : "text-foreground"
-                  } hover:bg-transparent 
+                className={`${
+                  location.pathname === item.url
+                    ? "text-primary/80"
+                    : "text-foreground"
+                } hover:bg-transparent 
                   hover:text-primary/80
                   
                   cursor-pointer`}

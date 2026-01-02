@@ -119,7 +119,7 @@ export default function SettingsSideBar() {
                           className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                             isActive
                               ? "bg-primary/20 text-primary/80"
-                              : "text-gray-700 hover:bg-gray-100"
+                              : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
                           }`}
                         >
                           <span className="flex gap-2">
