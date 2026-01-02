@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import FormSection from "@/components/Form/FormSection";

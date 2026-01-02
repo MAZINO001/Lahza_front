@@ -3,31 +3,37 @@ import { Link } from "react-router-dom";
 import SearchBar from "@/Components/comp-25";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+
 export default function Header() {
   const { role, user } = useAuthContext();
+
   return (
-    <header className="bg-accent-foreground text-primary w-full">
-      <div className="w-full flex items-center justify-between px-2 py-2 lg:px-4 ">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+      <div className="flex items-center justify-between px-4 py-3 lg:px-6">
         <SearchBar />
 
-        <div className="flex items-center gap-4 ml-4">
+        <div className="flex items-center gap-3 ml-auto">
           <ThemeToggle />
-          <button className="relative p-2 rounded-md cursor-pointer">
+
+          <button className="relative inline-flex items-center justify-center h-10 w-10 rounded-md hover:bg-accent transition-colors">
             <BellIcon size={20} />
-            <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
           </button>
+
           <Link
             to={`/${role}/profile`}
-            className="flex gap-2 items-center p-1 rounded-full"
+            className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-accent transition-colors"
           >
             <img
               src="https://picsum.photos/600/400"
               alt="Profile"
-              className="h-10 w-10 rounded-full object-cover "
+              className="h-9 w-9 rounded-full object-cover"
             />
-            <div className="md:flex flex-col gap-1 hidden">
-              <span className="text-sm font-bold">{user.name}</span>
-              <span className="text-xs opacity-30">{user.email}</span>
+            <div className="hidden flex-col gap-0.5 md:flex">
+              <span className="text-sm font-semibold">{user.name}</span>
+              <span className="text-xs text-muted-foreground">
+                {user.email}
+              </span>
             </div>
           </Link>
         </div>

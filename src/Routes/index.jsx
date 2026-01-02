@@ -67,6 +67,7 @@ import TaskEditPage from "@/pages/tasks/TaskEditPage";
 import AdditionalDataViewPage from "@/pages/additional_data/AdditionalDataViewPage";
 import AdditionalDataCreatePage from "@/pages/additional_data/AdditionalDataCreatePage";
 import AdditionalDataEditPage from "@/pages/additional_data/AdditionalDataEditPage";
+import TeamUserViewPage from "@/features/settings/management/team_userViewPage";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -151,6 +152,10 @@ export default function AppRoutes() {
             {/* logs */}
             {/* <Route path="settings" element={<SettingsPage />} /> */}
             <Route path="settings/:id" element={<SettingsPage />} />
+            <Route
+              path="settings/team_management/:id"
+              element={<TeamUserViewPage />}
+            />
             {/* calendar */}
             <Route path="calendar" element={<CalendarPage />} />
             {/* tasks */}

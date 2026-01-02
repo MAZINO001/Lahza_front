@@ -1,8 +1,8 @@
 import React from "react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AdditionalTD from "./teamManagement/additionalTD";
-import All_team from "./teamManagement/all_team";
+import AdditionalTD from "./additionalTD";
+import All_team from "./All_teamPage";
 export default function team_management() {
   return (
     <div>

@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Team_management from "./management/team_management";
-import Projects_management from "./management/projects_management";
-import User_management from "./management/user_management";
+import Team_management from "../components/management/teamManagement/team_management";
+import Projects_management from "../components/management/ProjectsManagement/projects_managementPage";
+import User_management from "../components/management/usermanagement/user_management";
 
 export default function ManagementSection({ section }) {
   const renderSection = () => {

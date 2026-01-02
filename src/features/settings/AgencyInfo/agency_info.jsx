@@ -1,15 +1,15 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { CompanyBasicsSection } from "./agency_info/CompanyBasicsSection";
-import { BrandingAssetsSection } from "./agency_info/BrandingAssetsSection";
-import { ContactAddressSection } from "./agency_info/ContactAddressSection";
-import { LegalTaxBankingSection } from "./agency_info/LegalTaxBankingSection";
 import { Button } from "@/components/ui/button";
 import {
   useCompanyInfo,
   useUpdateCompanyInfo,
 } from "../hooks/useSettingsQuery";
-import CertificationsSection from "./agency_info/certifications";
+import { CompanyBasicsSection } from "../components/agency_info_comp/CompanyBasicsSection";
+import { BrandingAssetsSection } from "../components/agency_info_comp/BrandingAssetsSection";
+import { ContactAddressSection } from "../components/agency_info_comp/ContactAddressSection";
+import { LegalTaxBankingSection } from "../components/agency_info_comp/LegalTaxBankingSection";
+import CertificationsSection from "../components/agency_info_comp/certifications";
 
 export default function AgencyInfo({ section }) {
   const { data: companyInfo, isLoading, error } = useCompanyInfo();
@@ -38,11 +38,6 @@ export default function AgencyInfo({ section }) {
       address_line2: "",
       instagram: "",
       linkedIn: "",
-      issued_at: "",
-      certification_description: "",
-      url: "",
-      preview_image: null,
-      title: "",
       city: "",
       state: "",
       country: "",
@@ -157,12 +152,7 @@ export default function AgencyInfo({ section }) {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-8"
           >
-            <CertificationsSection control={control} errors={errors} />
-            <div className="flex justify-end">
-              <Button type="submit" disabled={updateCompanyInfo.isPending}>
-                {updateCompanyInfo.isPending ? "Saving..." : "Save Changes"}
-              </Button>
-            </div>
+            <CertificationsSection />
           </form>
         );
 

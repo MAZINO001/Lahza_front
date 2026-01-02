@@ -1,8 +1,8 @@
 import React from "react";
 import { useParams, Navigate } from "react-router-dom";
-import AgencyInfo from "../agency_info";
-import PreferencesSection from "../preferences";
-import ManagementSection from "../management";
+import AgencyInfo from "../AgencyInfo/agency_info";
+import PreferencesSection from "../preferences/preferences";
+import ManagementSection from "../management/management";
 
 export default function SettingsMainContent() {
   const { id } = useParams();
