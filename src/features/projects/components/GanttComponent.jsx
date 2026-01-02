@@ -162,7 +162,7 @@ export default function GanttComponent({ tasks, projectId }) {
                   };
 
                   return (
-                    <div key={laneId} className="relative">
+                    <div key={laneId} className="relative ">
                       <ContextMenu>
                         <ContextMenuTrigger asChild>
                           <div>

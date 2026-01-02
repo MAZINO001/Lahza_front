@@ -465,7 +465,7 @@ export const GanttSidebarGroup = ({ children, name, className }) => (
 export const GanttSidebar = ({ children, className }) => (
   <div
     className={cn(
-      "sticky left-0 z-30 h-max min-h-full overflow-clip border-border/50 border-r bg-background/90 backdrop-blur-md",
+      "sticky left-0 z-30 h-max min-h-full overflow-clip border-border/50 border-r bg-background backdrop-blur-md",
       className
     )}
     data-roadmap-ui="gantt-sidebar"
@@ -524,8 +524,8 @@ export const GanttColumn = ({ index, isColumnSecondary }) => {
 
   const top = useThrottle(
     mousePosition.y -
-      (mouseRef.current?.getBoundingClientRect().y ?? 0) -
-      (windowScroll.y ?? 0),
+    (mouseRef.current?.getBoundingClientRect().y ?? 0) -
+    (windowScroll.y ?? 0),
     10
   );
 
@@ -575,8 +575,8 @@ export const GanttCreateMarkerTrigger = ({ onCreateMarker, className }) => {
   const [windowScroll] = useWindowScroll();
   const x = useThrottle(
     mousePosition.x -
-      (mouseRef.current?.getBoundingClientRect().x ?? 0) -
-      (windowScroll.x ?? 0),
+    (mouseRef.current?.getBoundingClientRect().x ?? 0) -
+    (windowScroll.x ?? 0),
     10
   );
 

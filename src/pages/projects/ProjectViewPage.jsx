@@ -23,6 +23,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Users, FileText, Paperclip, DollarSign, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CountDownComponent from "@/features/projects/components/CountDownComponent";
+import { StatusBadge } from "@/components/StatusBadge";
 
 export default function ProjectViewPage() {
   const { id } = useParams();
@@ -200,26 +202,34 @@ export default function ProjectViewPage() {
         <div className="w-[60%] h-full flex flex-col gap-4">
           <Card className="flex items-center justify-center p-2 h-[10%]">
             <CardContent className="flex items-center justify-between w-full p-2">
-              <div className="flex gap-2 items-center">
-                <div>
-                  <img
-                    src="https://picsum.photos/800/800"
-                    alt="Profile"
-                    className="h-10 w-10 rounded-full object-cover "
-                  />
-                </div>
+              <div className="flex items-center gap-3">
+                <img
+                  src="https://picsum.photos/800/800"
+                  alt="Profile"
+                  className="h-11 w-11 rounded-full object-cover"
+                />
                 <div className="flex flex-col">
-                  <span>project name</span>
-                  <span>client name</span>
+                  <span className="font-semibold text-sm text-foreground">
+                    Project Name
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Client Name
+                  </span>
                 </div>
               </div>
-              <div className="flex gap-2 flex-col">
-                <span>Created</span>
-                <span>10/12/2025</span>
+
+              <div className="flex flex-col text-sm">
+                <span className="text-muted-foreground text-xs uppercase tracking-wide">
+                  Started at
+                </span>
+                <span className="font-medium text-foreground">10/12/2025</span>
               </div>
-              <div className="flex gap-2 flex-col">
-                <span>Created</span>
-                <span>10/12/2025</span>
+
+              <div className="flex flex-col text-sm">
+                <span className="text-muted-foreground text-xs uppercase tracking-wide">
+                  Ends at
+                </span>
+                <span className="font-medium text-foreground">10/12/2025</span>
               </div>
             </CardContent>
           </Card>
@@ -227,7 +237,7 @@ export default function ProjectViewPage() {
           <Card className="w-full p-2 flex-1  h-[40%]">
             <CardContent className="h-full p-2">
               <Tabs defaultValue="overview" className="h-full flex flex-col">
-                <TabsList className="mb-4 grid w-full grid-cols-6">
+                <TabsList className="mb-2 grid w-full grid-cols-6">
                   <TabsTrigger value="overview">Overview</TabsTrigger>
                   <TabsTrigger value="description">Description</TabsTrigger>
                   <TabsTrigger value="members">Members</TabsTrigger>
@@ -236,65 +246,65 @@ export default function ProjectViewPage() {
                   <TabsTrigger value="history">History</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview" className="h-full overflow-auto">
-                  <div className="p-4 space-y-4">
+                  <div className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 bg-linear-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
                         <div className="flex items-center gap-2 mb-2">
-                          <CalendarIcon className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm font-medium text-gray-600">
+                          <CalendarIcon className="w-4 h-4 text-primary" />
+                          <span className="text-sm font-medium text-muted-foreground">
                             Timeline
                           </span>
                         </div>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-foreground">
                           Jan 1 - Mar 31, 2025
                         </p>
                       </div>
                       <div className="p-4 bg-linear-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
                         <div className="flex items-center gap-2 mb-2">
-                          <Users className="w-4 h-4 text-green-600" />
-                          <span className="text-sm font-medium text-gray-600">
+                          <Users className="w-4 h-4 text-success" />
+                          <span className="text-sm font-medium text-muted-foreground">
                             Team Size
                           </span>
                         </div>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-foreground">
                           {demoMembers?.length} Members
                         </p>
                       </div>
                       <div className="p-4 bg-linear-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
                         <div className="flex items-center gap-2 mb-2">
-                          <DollarSign className="w-4 h-4 text-purple-600" />
-                          <span className="text-sm font-medium text-gray-600">
+                          <DollarSign className="w-4 h-4 text-accent" />
+                          <span className="text-sm font-medium text-muted-foreground">
                             Budget
                           </span>
                         </div>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-foreground">
                           {demoProject?.budget}
                         </p>
                       </div>
                       <div className="p-4 bg-linear-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
                         <div className="flex items-center gap-2 mb-2">
-                          <Clock className="w-4 h-4 text-orange-600" />
-                          <span className="text-sm font-medium text-gray-600">
+                          <Clock className="w-4 h-4 text-warning" />
+                          <span className="text-sm font-medium text-muted-foreground">
                             Spent
                           </span>
                         </div>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-foreground">
                           {demoProject?.spent}
                         </p>
                       </div>
                     </div>
-                    <div className="p-4 bg-gray-50 rounded-lg border">
-                      <p className="text-sm font-medium mb-3 text-gray-700">
+                    <div className="p-4 bg-secondary rounded-lg border">
+                      <p className="text-sm font-medium mb-3 text-foreground">
                         Progress
                       </p>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-secondary rounded-full h-2">
                         <div
-                          className="bg-blue-600 h-2 rounded-full transition-all"
-                          style={{ width: `${demoProject?.progress}%` }}
+                          className="bg-primary h-2 rounded-full transition-all"
+                          style={{ width: `${completionPercentage}%` }}
                         />
                       </div>
-                      <p className="text-xs text-gray-600 mt-2">
-                        {demoProject?.progress}% Complete
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {completionPercentage || 0}% Complete
                       </p>
                     </div>
                   </div>
@@ -304,47 +314,46 @@ export default function ProjectViewPage() {
                   className="h-full overflow-auto"
                 >
                   <div className="p-4 space-y-3">
-                    <div className="flex items-center gap-2 mb-3">
-                      <FileText className="w-5 h-5 text-gray-400" />
-                      <h3 className="font-semibold text-gray-700">
-                        Project Description
-                      </h3>
+                    <div className="flex items-center gap-4 mb-3">
+                      <div className="flex items-center gap-2 ">
+                        <FileText className="w-5 h-5 text-muted-foreground" />
+                        <h3 className="font-semibold text-foreground">
+                          Project Description
+                        </h3>
+                      </div>
+                      <div>
+                        <StatusBadge status={demoProject?.status}>
+                          {demoProject?.status}
+                        </StatusBadge>
+                      </div>
                     </div>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-muted-foreground leading-relaxed">
                       {demoProject?.description}
                     </p>
-                    <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm font-medium text-blue-900 mb-1">
-                        Status
-                      </p>
-                      <Badge className="bg-blue-600">
-                        {demoProject?.status}
-                      </Badge>
-                    </div>
                   </div>
                 </TabsContent>
                 <TabsContent value="members" className="h-full overflow-auto">
                   <div className="p-4 space-y-3">
-                    <h3 className="font-semibold text-gray-700 mb-4">
+                    <h3 className="font-semibold text-foreground mb-4">
                       Team Members ({demoMembers?.length})
                     </h3>
                     <div className="space-y-3">
                       {demoMembers?.map((member) => (
                         <div
                           key={member?.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors"
+                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border hover:bg-accent transition-colors"
                         >
                           <div className="flex items-center gap-3">
                             <Avatar className="w-9 h-9">
-                              <AvatarFallback className="bg-blue-600 text-white">
+                              <AvatarFallback className="bg-primary text-primary-foreground">
                                 {member?.avatar}
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="text-sm font-medium text-gray-900">
+                              <p className="text-sm font-medium text-foreground">
                                 {member?.name}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-muted-foreground">
                                 {member?.role}
                               </p>
                             </div>
@@ -359,23 +368,25 @@ export default function ProjectViewPage() {
                   className="h-full overflow-auto"
                 >
                   <div className="p-4 space-y-3">
-                    <h3 className="font-semibold text-gray-700 mb-4">
+                    <h3 className="font-semibold text-foreground mb-4">
                       Transactions
                     </h3>
                     <div className="space-y-2">
                       {demoTransactions.map((tx) => (
                         <div
                           key={tx?.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors"
+                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border hover:bg-accent transition-colors"
                         >
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-foreground">
                               {tx?.description}
                             </p>
-                            <p className="text-xs text-gray-500">{tx?.date}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {tx?.date}
+                            </p>
                           </div>
                           <span
-                            className={`text-sm font-semibold ${tx?.type === "payment" ? "text-green-600" : "text-red-600"}`}
+                            className={`text-sm font-semibold ${tx?.type === "payment" ? "text-success" : "text-destructive"}`}
                           >
                             {tx?.type === "payment" ? "+" : "-"} {tx?.amount}
                           </span>
@@ -389,7 +400,7 @@ export default function ProjectViewPage() {
                   className="h-full overflow-auto"
                 >
                   <div className="p-4 space-y-3">
-                    <h3 className="font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                       <Paperclip className="w-5 h-5" /> Files (
                       {demoAttachments.length})
                     </h3>
@@ -397,17 +408,17 @@ export default function ProjectViewPage() {
                       {demoAttachments.map((file) => (
                         <div
                           key={file?.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border hover:bg-gray-100 transition-colors cursor-pointer"
+                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border hover:bg-accent transition-colors cursor-pointer"
                         >
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-gray-900">
+                            <p className="text-sm font-medium text-foreground">
                               {file?.name}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                               {file?.size} • {file?.date}
                             </p>
                           </div>
-                          <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">
+                          <span className="text-xs bg-secondary text-foreground px-2 py-1 rounded">
                             Download
                           </span>
                         </div>
@@ -422,7 +433,7 @@ export default function ProjectViewPage() {
             </CardContent>
           </Card>
 
-          <Card className="p-2 h-[40%]">
+          <Card className="p-2 h-[40%] ">
             <CardContent value="gantt" className="h-full  p-2">
               <GanttComponent tasks={tasks} projectId={id} />
             </CardContent>
@@ -432,19 +443,19 @@ export default function ProjectViewPage() {
         <div className="w-[40%] flex flex-col gap-4">
           <div className="flex gap-4 w-full">
             <Card className="p-2 w-full">
-              <CardContent>
-                <div className="text-2xl font-bold text-gray-900 font-mono">
-                  12:59:48
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Hours:Minutes:Seconds
-                </p>
+              <CardContent className="p-2">
+                <CountDownComponent
+                  startDate={project?.start_date}
+                  endDate={project?.estimated_end_date}
+                />
               </CardContent>
             </Card>
             <Card className="p-2 w-full">
               <CardContent className="p-2">
-                <div className="text-3xl font-bold text-gray-900">16/30</div>
-                <p className="text-xs text-gray-500 mt-2">
+                <div className="text-3xl font-bold text-foreground">
+                  {progress?.done_tasks_count || 0}/{progress?.tasks_count || 0}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
                   Tasks completed this month
                 </p>
               </CardContent>
@@ -457,6 +468,7 @@ export default function ProjectViewPage() {
                 defaultMonth={dateRange?.from}
                 selected={dateRange}
                 onSelect={setDateRange}
+                disabled={() => true}
                 numberOfMonths={2}
                 className="w-full h-full rounded-lg border shadow-sm"
               />
