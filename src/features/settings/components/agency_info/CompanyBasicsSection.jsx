@@ -60,15 +60,15 @@ export function CompanyBasicsSection({ control, errors }) {
 
       <div className="space-y-2">
         <Controller
-          name="terms_conditions"
+          name="terms_and_conditions"
           control={control}
           render={({ field }) => (
             <TextareaField
-              {...field}
-              label="Terms And Conditions"
-              id="terms_conditions"
-              placeholder="Terms And Conditions"
-              error={errors.terms_conditions?.message}
+            label="Terms And Conditions"
+            id="terms_and_conditions"
+            placeholder="Terms And Conditions"
+            error={errors.terms_and_conditions?.message}
+            {...field}
             />
           )}
         />

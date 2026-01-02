@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 export function processRepeatingEvents(eventsData) {
     if (!eventsData) return [];
 
@@ -13,11 +12,8 @@ export function processRepeatingEvents(eventsData) {
         const convertedEvent = convertEventFormat(event);
         processedEvents.push(convertedEvent);
 
-        // Generate repeating instances for each base event independently
         if (event.repeatedly && event.repeatedly !== "none") {
-            console.log(`🔄 Processing repeat for event: "${event.title}" with pattern: ${event.repeatedly}`);
             const repeatingInstances = generateRepeatingInstances(event, today);
-            console.log(`📊 Generated ${repeatingInstances.length} repeating instances`);
             processedEvents.push(...repeatingInstances);
         }
     });
@@ -25,13 +21,7 @@ export function processRepeatingEvents(eventsData) {
     return processedEvents;
 }
 
-function isLeapYear(year) {
-    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-}
-
 function convertEventFormat(event) {
-    console.log(" Converting event:", event);
-
     if (event.start_date || event.startDate) {
         const startDate = event.start_date || event.startDate;
         const endDate = event.end_date || event.endDate;
@@ -76,7 +66,6 @@ function convertEventFormat(event) {
             "style": { "--event-color": event.color || "#3b82f6" }
         };
 
-        console.log(" Converted event (database format):", convertedEvent);
         return convertedEvent;
     }
 
@@ -108,7 +97,7 @@ function convertEventFormat(event) {
     };
 }
 
-function generateRepeatingInstances(event, currentDate) {
+function generateRepeatingInstances(event) {
     const instances = [];
     const maxEvents = 700;
     const maxDate = new Date();
@@ -135,7 +124,6 @@ function generateRepeatingInstances(event, currentDate) {
 
             case "yearly":
                 currentDateCopy.setFullYear(currentDateCopy.getFullYear() + 1);
-                console.log(`🗓️ Yearly repeat: New date: ${currentDateCopy.toDateString()}`);
                 break;
 
             default:
@@ -146,7 +134,6 @@ function generateRepeatingInstances(event, currentDate) {
             break;
         }
 
-        // Create instance with unique ID based on base event ID and pattern
         const instance = createEventInstance(event, currentDateCopy, baseId, i);
         instances.push(instance);
     }
@@ -194,7 +181,6 @@ function createEventInstance(baseEvent, instanceDate, baseId, instanceIndex) {
         ? baseEvent.category.charAt(0).toUpperCase() + baseEvent.category.slice(1).toLowerCase()
         : "Agency";
 
-    // Create unique ID: baseId-pattern-index (e.g., 123-daily-1, 123-daily-2)
     const uniqueId = `${baseId}-${baseEvent.repeatedly}-${instanceIndex}`;
 
     return {

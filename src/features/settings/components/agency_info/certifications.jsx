@@ -10,13 +10,11 @@ import {
   useDeleteCertification,
 } from "../../hooks/useSettingsQuery";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Trash2, Edit2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import FormField from "@/components/Form/FormField";
 import TextareaField from "@/components/Form/TextareaField";
+import FileUploader from "@/components/Form/FileUploader";
 
 export default function CertificationsSection({ control, errors }) {
   const { data: certifications, isLoading, error } = useCertifications();
@@ -67,35 +65,49 @@ export default function CertificationsSection({ control, errors }) {
         </CardHeader>
         <CardContent className="px-4">
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Controller
+                name="preview_image"
+                control={control}
+                render={({ field }) => (
+                  <FileUploader
+                    {...field}
+                    label="Stamp"
+                    id="preview_image"
+                    accept="image/*"
+                  />
+                )}
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Controller
-                  name="name"
+                  name="title"
                   control={control}
                   render={({ field }) => (
                     <FormField
                       {...field}
                       type="text"
                       label="Certification Name"
-                      id="name"
+                      id="title"
                       placeholder="e.g., PMP, AWS Certified"
-                      error={errors.name?.message}
+                      error={errors.title?.message}
                     />
                   )}
                 />
               </div>
               <div>
                 <Controller
-                  name="issued_date"
+                  name="issued_at"
                   control={control}
                   render={({ field }) => (
                     <FormField
                       {...field}
                       type="text"
                       label="Issuing date"
-                      id="issued_date"
+                      id="issued_at"
                       placeholder="e.g., Project Management Institute"
-                      error={errors.issued_date?.message}
+                      error={errors.issued_at?.message}
                     />
                   )}
                 />
@@ -119,31 +131,31 @@ export default function CertificationsSection({ control, errors }) {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Controller
-                  name="expiry_date"
+                  name="expires_at"
                   control={control}
                   render={({ field }) => (
                     <FormField
                       {...field}
                       type="date"
                       label="Expiry Date (Optional)"
-                      id="expiry_date"
-                      error={errors.expiry_date?.message}
+                      id="expires_at"
+                      error={errors.expires_at?.message}
                     />
                   )}
                 />
               </div>
               <div>
                 <Controller
-                  name="certificate_url"
+                  name="url"
                   control={control}
                   render={({ field }) => (
                     <FormField
                       {...field}
                       type="url"
                       label="Certificate URL"
-                      id="certificate_url"
+                      id="url"
                       placeholder="https://example.com/certificate"
-                      error={errors.certificate_url?.message}
+                      error={errors.url?.message}
                     />
                   )}
                 />
@@ -175,18 +187,18 @@ export default function CertificationsSection({ control, errors }) {
                   <p className="text-gray-600 mt-1">{cert.description}</p>
                   <div className="mt-2 text-sm text-gray-500">
                     <p>
-                      Issued: {new Date(cert.issued_date).toLocaleDateString()}
+                      Issued: {new Date(cert.issued_at).toLocaleDateString()}
                     </p>
-                    {cert.expiry_date && (
+                    {cert.expires_at && (
                       <p>
                         Expires:{" "}
-                        {new Date(cert.expiry_date).toLocaleDateString()}
+                        {new Date(cert.expires_at).toLocaleDateString()}
                       </p>
                     )}
                   </div>
-                  {cert.certificate_url && (
+                  {cert.url && (
                     <a
-                      href={cert.certificate_url}
+                      href={cert.url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 hover:underline text-sm mt-2 inline-block"

@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-"use client";
-
 import React from "react";
 import { useForm } from "react-hook-form";
 import { CompanyBasicsSection } from "./agency_info/CompanyBasicsSection";
@@ -23,18 +20,16 @@ export default function AgencyInfo({ section }) {
     handleSubmit,
     formState: { errors },
     reset,
-    watch,
   } = useForm({
     defaultValues: {
       company_name: "",
       tagline: "",
       description: "",
-      terms_conditions: "",
+      terms_and_conditions: "",
       logo_path: null,
       logo_dark_path: null,
       signature_path: null,
       stamp_path: null,
-      agency_contract: null,
       email: "",
       phone: "",
       phone2: "",
@@ -43,10 +38,11 @@ export default function AgencyInfo({ section }) {
       address_line2: "",
       instagram: "",
       linkedIn: "",
+      issued_at: "",
       certification_description: "",
+      url: "",
       preview_image: null,
       title: "",
-      url: "",
       city: "",
       state: "",
       country: "",
@@ -64,8 +60,6 @@ export default function AgencyInfo({ section }) {
     },
   });
 
-  const formValues = watch();
-
   React.useEffect(() => {
     if (companyInfo && !isLoading) {
       reset(companyInfo);
@@ -73,48 +67,25 @@ export default function AgencyInfo({ section }) {
   }, [companyInfo, isLoading, reset]);
 
   const onSubmit = (values) => {
-    const formData = new FormData();
-
-    Object.entries(values).forEach(([key, value]) => {
-      if (value !== null && value !== "" && value !== undefined) {
-        if (!(value instanceof File) && !(value instanceof FileList)) {
-          formData.append(key, value);
-        }
-      }
-    });
-
-    const fileFields = [
-      "logo_path",
-      "logo_dark_path",
-      "signature_path",
-      "stamp_path",
-      "agency_contract",
-      "preview_image",
-    ];
-
-    fileFields.forEach((field) => {
-      if (values[field] && values[field] instanceof File) {
-        formData.append(field, values[field]);
-      }
-    });
-
-    for (let [key, value] of formData.entries()) {
-      console.log(key);
-      console.log(value);
-    }
-
+    console.log(values);
     updateCompanyInfo.mutate({
       id: companyInfo?.id || 1,
-      data: formData,
+      data: values,
     });
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center p-8">Loading...</div>
+    );
   }
 
   if (error) {
-    return <div>Error loading company information</div>;
+    return (
+      <div className="flex items-center justify-center p-8 text-red-600">
+        Error loading company information
+      </div>
+    );
   }
 
   const renderSection = () => {
@@ -179,7 +150,6 @@ export default function AgencyInfo({ section }) {
             </div>
           </form>
         );
-
       case "certifications":
         return (
           <form

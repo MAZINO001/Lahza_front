@@ -1,25 +1,29 @@
-// BrandingAssetsSection.jsx
 import React from "react";
 import { Controller } from "react-hook-form";
-import FormField from "@/components/Form/FormField";
-import FormSection from "@/components/Form/FormSection";
+import FileUploader from "@/components/Form/FileUploader";
 
 export function BrandingAssetsSection({ control }) {
   return (
-    <form className="flex flex-col gap-4">
-      <h1 className="font-semibold text-lg">Branding & Assets</h1>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h2 className="font-semibold text-lg mb-4">Branding & Assets</h2>
+        <p className="text-sm text-gray-600">
+          Upload your company logos, signatures, and stamps for use across
+          documents.
+        </p>
+      </div>
+
       <div className="space-y-2">
         <Controller
           name="logo_path"
           control={control}
           render={({ field }) => (
-            <FormField
+            <FileUploader
               {...field}
-              type="file"
               label="Logo"
               id="logo_path"
               accept="image/*"
-              onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+              description="Your primary company logo (light version)"
             />
           )}
         />
@@ -30,13 +34,12 @@ export function BrandingAssetsSection({ control }) {
           name="logo_dark_path"
           control={control}
           render={({ field }) => (
-            <FormField
+            <FileUploader
               {...field}
-              type="file"
               label="Logo Dark"
               id="logo_dark_path"
               accept="image/*"
-              onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+              description="Your company logo for dark backgrounds"
             />
           )}
         />
@@ -47,13 +50,12 @@ export function BrandingAssetsSection({ control }) {
           name="signature_path"
           control={control}
           render={({ field }) => (
-            <FormField
+            <FileUploader
               {...field}
-              type="file"
               label="Signature"
               id="signature_path"
               accept="image/*"
-              onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+              description="Digital signature image for documents"
             />
           )}
         />
@@ -64,34 +66,16 @@ export function BrandingAssetsSection({ control }) {
           name="stamp_path"
           control={control}
           render={({ field }) => (
-            <FormField
+            <FileUploader
               {...field}
-              type="file"
               label="Stamp"
               id="stamp_path"
               accept="image/*"
-              onChange={(e) => field.onChange(e.target.files?.[0] || null)}
+              description="Company stamp or seal image"
             />
           )}
         />
       </div>
-
-      <div className="space-y-2">
-        <Controller
-          name="agency_contract"
-          control={control}
-          render={({ field }) => (
-            <FormField
-              {...field}
-              type="file"
-              label="Agency Contract"
-              id="agency_contract"
-              accept="*"
-              onChange={(e) => field.onChange(e.target.files[0])}
-            />
-          )}
-        />
-      </div>
-    </form>
+    </div>
   );
 }
