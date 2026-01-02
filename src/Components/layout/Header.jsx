@@ -8,7 +8,7 @@ export default function Header() {
   const { role, user } = useAuthContext();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-accent-foreground backdrop-blur">
       <div className="flex items-center justify-between px-4 py-3 lg:px-6">
         <SearchBar />
 
