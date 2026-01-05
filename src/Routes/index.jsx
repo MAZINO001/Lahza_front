@@ -97,13 +97,10 @@ const AdditionalDataEditPage = lazy(
   () => import("@/pages/additional_data/AdditionalDataEditPage")
 );
 const TeamUserViewPage = lazy(
-  () => import("@/features/settings_old/management/Team_userViewPage")
+  () => import("@/features/settings/team-management/TeamManagement")
 );
 const UserManagementView = lazy(
-  () =>
-    import(
-      "@/features/settings/user-management/views/UserManagementView"
-    )
+  () => import("@/features/settings/user-management/views/UserManagementView")
 );
 
 import AuthLayout from "@/app/layout/AuthLayout";

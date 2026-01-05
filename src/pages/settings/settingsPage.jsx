@@ -1,5 +1,5 @@
-import SettingsSideBar from "@/features/settings_old/layout_components/settingsSideBar";
-import SettingsMainContent from "@/features/settings_old/layout_components/settingsPage";
+import SettingsSideBar from "@/features/settings/layout_components/settingsSideBar";
+import SettingsMainContent from "@/features/settings/layout_components/settingsPage";
 
 export default function SettingsLayout() {
   return (

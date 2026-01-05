@@ -132,14 +132,29 @@ const getDateByMousePosition = (context, mouseX) => {
   return actualDate;
 };
 
-const createInitialTimelineData = (today) => {
+const createInitialTimelineData = (today, tasks = []) => {
   const data = [];
+  const currentYear = today.getFullYear();
+  const previousYear = currentYear - 1;
 
-  data.push(
-    { year: today.getFullYear() - 1, quarters: new Array(4).fill(null) },
-    { year: today.getFullYear(), quarters: new Array(4).fill(null) },
-    { year: today.getFullYear() + 1, quarters: new Array(4).fill(null) }
-  );
+  // Check if any tasks are in the previous year
+  const hasPreviousYearTasks = tasks.some(task => {
+    const taskStart = task.startAt || task.start_date;
+    const taskEnd = task.endAt || task.end_date;
+
+    if (taskStart && new Date(taskStart).getFullYear() === previousYear) return true;
+    if (taskEnd && new Date(taskEnd).getFullYear() === previousYear) return true;
+
+    return false;
+  });
+
+  // Always include current year
+  data.push({ year: currentYear, quarters: new Array(4).fill(null) });
+
+  // Include previous year only if there are tasks in that year
+  if (hasPreviousYearTasks) {
+    data.unshift({ year: previousYear, quarters: new Array(4).fill(null) });
+  }
 
   for (const yearObj of data) {
     yearObj.quarters = new Array(4).fill(null).map((_, quarterIndex) => ({
@@ -973,10 +988,11 @@ export const GanttProvider = ({
   onAddItem,
   children,
   className,
+  tasks = [],
 }) => {
   const scrollRef = useRef(null);
   const [timelineData, setTimelineData] = useState(
-    createInitialTimelineData(new Date())
+    createInitialTimelineData(new Date(), tasks)
   );
   const [, setScrollX] = useGanttScrollX();
   const [sidebarWidth, setSidebarWidth] = useState(0);
@@ -1010,6 +1026,11 @@ export const GanttProvider = ({
       setScrollX(scrollRef.current.scrollLeft);
     }
   }, [setScrollX]);
+
+  // Update timeline data when tasks change
+  useEffect(() => {
+    setTimelineData(createInitialTimelineData(new Date(), tasks));
+  }, [tasks]);
 
   // Update sidebar width when DOM is ready
   useEffect(() => {
@@ -1049,60 +1070,61 @@ export const GanttProvider = ({
       const { scrollLeft, scrollWidth, clientWidth } = scrollElement;
       setScrollX(scrollLeft);
 
-      if (scrollLeft === 0) {
-        // Extend timelineData to the past
-        const firstYear = timelineData[0]?.year;
+      // Timeline extension disabled to limit to current year only
+      // if (scrollLeft === 0) {
+      //   // Extend timelineData to the past
+      //   const firstYear = timelineData[0]?.year;
 
-        if (!firstYear) {
-          return;
-        }
+      //   if (!firstYear) {
+      //     return;
+      //   }
 
-        const newTimelineData = [...timelineData];
-        newTimelineData.unshift({
-          year: firstYear - 1,
-          quarters: new Array(4).fill(null).map((_, quarterIndex) => ({
-            months: new Array(3).fill(null).map((_, monthIndex) => {
-              const month = quarterIndex * 3 + monthIndex;
-              return {
-                days: getDaysInMonth(new Date(firstYear, month, 1)),
-              };
-            }),
-          })),
-        });
+      //   const newTimelineData = [...timelineData];
+      //   newTimelineData.unshift({
+      //     year: firstYear - 1,
+      //     quarters: new Array(4).fill(null).map((_, quarterIndex) => ({
+      //       months: new Array(3).fill(null).map((_, monthIndex) => {
+      //         const month = quarterIndex * 3 + monthIndex;
+      //         return {
+      //           days: getDaysInMonth(new Date(firstYear, month, 1)),
+      //         };
+      //       }),
+      //     })),
+      //   });
 
-        setTimelineData(newTimelineData);
+      //   setTimelineData(newTimelineData);
 
-        // Scroll a bit forward so it's not at the very start
-        scrollElement.scrollLeft = scrollElement.clientWidth;
-        setScrollX(scrollElement.scrollLeft);
-      } else if (scrollLeft + clientWidth >= scrollWidth) {
-        // Extend timelineData to the future
-        const lastYear = timelineData.at(-1)?.year;
+      //   // Scroll a bit forward so it's not at the very start
+      //   scrollElement.scrollLeft = scrollElement.clientWidth;
+      //   setScrollX(scrollElement.scrollLeft);
+      // } else if (scrollLeft + clientWidth >= scrollWidth) {
+      //   // Extend timelineData to the future
+      //   const lastYear = timelineData.at(-1)?.year;
 
-        if (!lastYear) {
-          return;
-        }
+      //   if (!lastYear) {
+      //     return;
+      //   }
 
-        const newTimelineData = [...timelineData];
-        newTimelineData.push({
-          year: lastYear + 1,
-          quarters: new Array(4).fill(null).map((_, quarterIndex) => ({
-            months: new Array(3).fill(null).map((_, monthIndex) => {
-              const month = quarterIndex * 3 + monthIndex;
-              return {
-                days: getDaysInMonth(new Date(lastYear, month, 1)),
-              };
-            }),
-          })),
-        });
+      //   const newTimelineData = [...timelineData];
+      //   newTimelineData.push({
+      //     year: lastYear + 1,
+      //     quarters: new Array(4).fill(null).map((_, quarterIndex) => ({
+      //       months: new Array(3).fill(null).map((_, monthIndex) => {
+      //         const month = quarterIndex * 3 + monthIndex;
+      //         return {
+      //           days: getDaysInMonth(new Date(lastYear, month, 1)),
+      //         };
+      //       }),
+      //     })),
+      //   });
 
-        setTimelineData(newTimelineData);
+      //   setTimelineData(newTimelineData);
 
-        // Scroll a bit back so it's not at the very end
-        scrollElement.scrollLeft =
-          scrollElement.scrollWidth - scrollElement.clientWidth;
-        setScrollX(scrollElement.scrollLeft);
-      }
+      //   // Scroll a bit back so it's not at the very end
+      //   scrollElement.scrollLeft =
+      //     scrollElement.scrollWidth - scrollElement.clientWidth;
+      //   setScrollX(scrollElement.scrollLeft);
+      // }
     }, 100),
     []
   );

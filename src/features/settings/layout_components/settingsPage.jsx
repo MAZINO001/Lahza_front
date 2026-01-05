@@ -1,9 +1,9 @@
 import React, { Suspense, lazy } from "react";
 import { useParams, Navigate } from "react-router-dom";
 
-const AgencyInfo = lazy(() => import("../AgencyInfo/agency_info"));
-const PreferencesSection = lazy(() => import("../preferences/preferences"));
-const ManagementSection = lazy(() => import("../management/management"));
+const AgencyInfo = lazy(() => import("../agency-info/AgencyInfo"));
+const PreferencesSection = lazy(() => import("../preferences/PreferencesPanel"));
+const ManagementSection = lazy(() => import("../management/ManagementSection"));
 
 export default function SettingsMainContent() {
   const { id } = useParams();

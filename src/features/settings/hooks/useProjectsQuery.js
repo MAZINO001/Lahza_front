@@ -1,0 +1,83 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import api from "@/lib/utils/axios";
+import { toast } from "sonner";
+
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
+const handleApiError = (error, fallbackMsg) => {
+    console.error(error);
+    toast.error(error?.response?.data?.message || fallbackMsg);
+};
+
+const projectsApi = {
+    getAll: () =>
+        api.get(`${API_URL}/projects`).then((res) => res.data ?? []),
+
+    getById: (id) =>
+        api.get(`${API_URL}/projects/${id}`).then((res) => res.data),
+
+    create: (data) =>
+        api.post(`${API_URL}/projects`, data).then((res) => res.data),
+
+    update: (id, data) =>
+        api.put(`${API_URL}/projects/${id}`, data).then((res) => res.data),
+
+    delete: (id) => api.delete(`${API_URL}/projects/${id}`),
+};
+
+export function useProjects() {
+    return useQuery({
+        queryKey: ["projects"],
+        queryFn: projectsApi.getAll,
+        staleTime: 0,
+        onError: (error) => handleApiError(error, "Failed to fetch projects"),
+    });
+}
+
+export function useProject(id) {
+    return useQuery({
+        queryKey: ["projects", id],
+        queryFn: () => projectsApi.getById(id),
+        enabled: !!id,
+        onError: (error) => handleApiError(error, "Failed to fetch project"),
+    });
+}
+
+export function useCreateProject() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: projectsApi.create,
+        onSuccess: () => {
+            toast.success("Project created successfully!");
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+        },
+        onError: (error) => handleApiError(error, "Failed to create project"),
+    });
+}
+
+export function useUpdateProject() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, data }) => projectsApi.update(id, data),
+        onSuccess: () => {
+            toast.success("Project updated successfully!");
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+        },
+        onError: (error) => handleApiError(error, "Failed to update project"),
+    });
+}
+
+export function useDeleteProject() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: projectsApi.delete,
+        onSuccess: () => {
+            toast.success("Project deleted successfully!");
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+        },
+        onError: (error) => handleApiError(error, "Failed to delete project"),
+    });
+}

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import {
   useCompanyInfo,
   useUpdateCompanyInfo,
-} from "../hooks/useSettingsQuery";
+} from "../hooks/useSettingsAgencyInfoQuery";
 import { CompanyBasicsSection } from "./components/CompanyBasicsSection";
 import { BrandingAssetsSection } from "./components/BrandingAssetsSection";
 import { ContactAddressSection } from "./components/ContactAddressSection";

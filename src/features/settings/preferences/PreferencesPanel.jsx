@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import Notifications from "../components/preferences_comp/notifications";
-import Preferences from "../components/preferences_comp/general";
-import Security from "../components/preferences_comp/security";
+import Notifications from "../preferences/components/NotificationPreferences";
+import Preferences from "../preferences/components/GeneralPreferences";
+import Security from "../preferences/components/SecurityPreferences";
 export default function PreferencesSection({ section }) {
   const renderSection = () => {
     switch (section) {
