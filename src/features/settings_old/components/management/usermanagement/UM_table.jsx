@@ -18,7 +18,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { getUserManagementColumns } from "./UM_columns";
 import { DataTable } from "@/components/table/DataTable";
 import { Upload, UserPlus } from "lucide-react";
-import { useUsers } from "@/features/settings/hooks/useUsersQuery";
+import { useUsers } from "@/features/settings_old/hooks/useUsersQuery";
 
 export default function UserManagementTable() {
   const [showUploadModal, setShowUploadModal] = useState(false);

@@ -59,7 +59,7 @@ export default function TeamUserForm() {
           />
         </div>
 
-        <div className="border-t pt-4">
+        <div className="">
           <h2 className="text-lg font-semibold text-foreground mb-2">
             Banking Information
           </h2>
@@ -117,7 +117,7 @@ export default function TeamUserForm() {
           </div>
         </div>
 
-        <div className="border-t pt-4">
+        <div className="">
           <h2 className="text-lg font-semibold text-foreground mb-2">
             Contract Information
           </h2>
@@ -229,7 +229,7 @@ export default function TeamUserForm() {
           </div>
         </div>
 
-        <div className="border-t pt-4">
+        <div className="">
           <h2 className="text-lg font-semibold text-foreground mb-2">
             Emergency Contact
           </h2>
@@ -270,7 +270,7 @@ export default function TeamUserForm() {
           </div>
         </div>
 
-        <div className="border-t pt-4">
+        <div className="">
           <h2 className="text-lg font-semibold text-foreground mb-2">
             Professional Information
           </h2>
@@ -357,10 +357,12 @@ export default function TeamUserForm() {
                 )}
               />
             </div>
+
+
           </div>
         </div>
 
-        <div className="border-t pt-4">
+        <div className="">
           <div className="space-y-2">
             <Controller
               name="notes"
@@ -378,7 +380,7 @@ export default function TeamUserForm() {
           </div>
         </div>
 
-        <div className="border-t pt-4 flex gap-4">
+        <div className=" flex gap-4">
           <button
             onClick={handleSubmit(onSubmit)}
             className="px-6 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 transition-colors"
