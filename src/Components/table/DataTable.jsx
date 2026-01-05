@@ -22,7 +22,77 @@ import { TablePagination } from "./TablePagination";
 import { DataTableSkeleton } from "./TableSkeleton";
 import PaymentDetails from "@/features/documents/components/PaymentDetails";
 
-export function DataTable({
+// Memoized table row component for invoice tables
+const InvoiceTableRow = React.memo(({ row, onRowClick }) => (
+  <TableRow
+    className="hover:bg-muted/50 transition-colors cursor-pointer"
+    onClick={() => row.toggleExpanded()}
+  >
+    {row.getVisibleCells().map((cell) => (
+      <TableCell key={cell.id}>
+        {flexRender(
+          cell.column.columnDef.cell,
+          cell.getContext()
+        )}
+      </TableCell>
+    ))}
+  </TableRow>
+));
+
+InvoiceTableRow.displayName = 'InvoiceTableRow';
+
+// Memoized table row component for regular tables
+const RegularTableRow = React.memo(({ row, onRowClick }) => (
+  <TableRow
+    className="hover:bg-muted/50 transition-colors cursor-pointer"
+    onClick={() => onRowClick && onRowClick(row.original)}
+  >
+    {row.getVisibleCells().map((cell) => (
+      <TableCell key={cell.id}>
+        {flexRender(
+          cell.column.columnDef.cell,
+          cell.getContext()
+        )}
+      </TableCell>
+    ))}
+  </TableRow>
+));
+
+RegularTableRow.displayName = 'RegularTableRow';
+
+// Memoized expanded row component
+const ExpandedRow = React.memo(({ row, columns }) => (
+  <React.Fragment key={`${row.id}-expanded`}>
+    <TableRow>
+      <TableCell
+        colSpan={columns.length + 1}
+        className="p-0 bg-muted/30"
+      >
+        <div className="p-4">
+          <PaymentDetails invoiceId={row.original.id} />
+        </div>
+      </TableCell>
+    </TableRow>
+  </React.Fragment>
+));
+
+ExpandedRow.displayName = 'ExpandedRow';
+
+// Memoized no data row component
+const NoDataRow = React.memo(({ columns, table }) => (
+  <TableRow>
+    <TableCell
+      colSpan={columns?.length ?? table.getAllColumns().length}
+      className="h-32 text-center text-muted-foreground"
+    >
+      No data found.
+    </TableCell>
+  </TableRow>
+));
+
+NoDataRow.displayName = 'NoDataRow';
+
+export const DataTable = React.memo(({
   data,
   columns,
   table: externalTable,
@@ -30,7 +100,7 @@ export function DataTable({
   isLoading = false,
   isInvoiceTable = false,
   onRowClick,
-}) {
+}) => {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
 
@@ -51,6 +121,7 @@ export function DataTable({
   if (isLoading) {
     return <DataTableSkeleton rowCount={10} />;
   }
+
   return (
     <div>
       <div className="rounded-md border bg-background overflow-hidden">
@@ -75,63 +146,19 @@ export function DataTable({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <React.Fragment key={row.id}>
-                  {isInvoiceTable && (
-                    <TableRow
-                      className="hover:bg-muted/50 transition-colors cursor-pointer"
-                      onClick={() => row.toggleExpanded()}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  )}
-
-                  {!isInvoiceTable && (
-                    <TableRow
-                      className="hover:bg-muted/50 transition-colors cursor-pointer"
-                      onClick={() => onRowClick && onRowClick(row.original)}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
+                  {isInvoiceTable ? (
+                    <InvoiceTableRow row={row} />
+                  ) : (
+                    <RegularTableRow row={row} onRowClick={onRowClick} />
                   )}
 
                   {isInvoiceTable && row.getIsExpanded() && (
-                    <React.Fragment key={`${row.id}-expanded`}>
-                      <TableRow>
-                        <TableCell
-                          colSpan={columns.length + 1}
-                          className="p-0 bg-muted/30"
-                        >
-                          <div className="p-4">
-                            <PaymentDetails invoiceId={row.original.id} />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    </React.Fragment>
+                    <ExpandedRow row={row} columns={columns} />
                   )}
                 </React.Fragment>
               ))
             ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns?.length ?? table.getAllColumns().length}
-                  className="h-32 text-center text-muted-foreground"
-                >
-                  No data found.
-                </TableCell>
-              </TableRow>
+              <NoDataRow columns={columns} table={table} />
             )}
           </TableBody>
         </Table>
@@ -139,4 +166,6 @@ export function DataTable({
       <TablePagination table={table} />
     </div>
   );
-}
+});
+
+DataTable.displayName = 'DataTable';

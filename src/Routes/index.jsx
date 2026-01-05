@@ -107,6 +107,7 @@ import AuthLayout from "@/app/layout/AuthLayout";
 import AppLayout from "@/app/layout/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuthContext } from "@/hooks/AuthContext";
+import ErrorBoundary from "./ErrorBoundary";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -121,508 +122,576 @@ export default function AppRoutes() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<GuestRoute />}>
-          <Route path="/auth" element={<AuthLayout />}>
-            <Route
-              path="login"
-              element={
-                <Suspense fallback={<div>Loading login...</div>}>
-                  <Login />
-                </Suspense>
-              }
-            />
-            <Route
-              path="register"
-              element={
-                <Suspense fallback={<div>Loading register...</div>}>
-                  <Register />
-                </Suspense>
-              }
-            />
-            <Route
-              path="reset-password"
-              element={
-                <Suspense fallback={<div>Loading reset password...</div>}>
-                  <ResetPassword />
-                </Suspense>
-              }
-            />
-            <Route
-              path="forgot-password"
-              element={
-                <Suspense fallback={<div>Loading forgot password...</div>}>
-                  <ForgotPassword />
-                </Suspense>
-              }
-            />
-            <Route
-              path="confirm-password"
-              element={
-                <Suspense fallback={<div>Loading confirm password...</div>}>
-                  <ConfirmPassword />
-                </Suspense>
-              }
-            />
+      <ErrorBoundary>
+        <Routes>
+          <Route element={<GuestRoute />}>
+            <Route path="/auth" element={<AuthLayout />}>
+              <Route
+                path="login"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading login...</div>}>
+                      <Login />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="register"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading register...</div>}>
+                      <Register />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="reset-password"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading reset password...</div>}>
+                      <ResetPassword />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="forgot-password"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading forgot password...</div>}>
+                      <ForgotPassword />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="confirm-password"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading confirm password...</div>}>
+                      <ConfirmPassword />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+            </Route>
           </Route>
-        </Route>
 
-        <Route
-          path="/"
-          element={
-            user ? (
-              <Navigate to={`/${basePath}/dashboard`} replace />
-            ) : (
-              <Navigate to="/auth/login" replace />
-            )
-          }
-        />
+          <Route
+            path="/"
+            element={
+              user ? (
+                <Navigate to={`/${basePath}/dashboard`} replace />
+              ) : (
+                <Navigate to="/auth/login" replace />
+              )
+            }
+          />
 
-        <Route
-          element={
-            <ProtectedRoute allowedRoles={["admin", "team_member", "client"]} />
-          }
-        >
-          <Route path="/:role" element={<AppLayout />}>
-            {/* Dashboard */}
-            <Route
-              path="dashboard"
-              element={
-                <Suspense fallback={<div>Loading dashboard...</div>}>
-                  <DashboardPage />
-                </Suspense>
-              }
-            />
+          <Route
+            element={
+              <ProtectedRoute
+                allowedRoles={["admin", "team_member", "client"]}
+              />
+            }
+          >
+            <Route path="/:role" element={<AppLayout />}>
+              {/* Dashboard */}
+              <Route
+                path="dashboard"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading dashboard...</div>}>
+                      <DashboardPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
 
-            {/* Projects */}
-            <Route
-              path="projects"
-              element={
-                <Suspense fallback={<div>Loading projects...</div>}>
-                  <ProjectsPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="project/:id"
-              element={
-                <Suspense fallback={<div>Loading project details...</div>}>
-                  <ProjectViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* Quotes */}
-            <Route
-              path="quotes"
-              element={
-                <Suspense fallback={<div>Loading quotes...</div>}>
-                  <QuotesPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="quote/:id"
-              element={
-                <Suspense fallback={<div>Loading quote details...</div>}>
-                  <QuoteViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* Tickets */}
-            <Route
-              path="tickets"
-              element={
-                <Suspense fallback={<div>Loading tickets...</div>}>
-                  <TicketsPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="ticket/:id"
-              element={
-                <Suspense fallback={<div>Loading ticket details...</div>}>
-                  <TicketViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* Invoices */}
-            <Route
-              path="invoices"
-              element={
-                <Suspense fallback={<div>Loading invoices...</div>}>
-                  <InvoicesPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="invoice/:id"
-              element={
-                <Suspense fallback={<div>Loading invoice details...</div>}>
-                  <InvoiceViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* Clients */}
-            <Route
-              path="clients"
-              element={
-                <Suspense fallback={<div>Loading clients...</div>}>
-                  <ClientsPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="client/:id"
-              element={
-                <Suspense fallback={<div>Loading client details...</div>}>
-                  <ClientViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* Payments */}
-            <Route
-              path="payments"
-              element={
-                <Suspense fallback={<div>Loading payments...</div>}>
-                  <PaymentsPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="payment/:id"
-              element={
-                <Suspense fallback={<div>Loading payment details...</div>}>
-                  <PaymentViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* Offers */}
-            <Route
-              path="offers"
-              element={
-                <Suspense fallback={<div>Loading offers...</div>}>
-                  <OffersPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="offer/:id"
-              element={
-                <Suspense fallback={<div>Loading offer details...</div>}>
-                  <OfferViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* Services */}
-            <Route
-              path="services"
-              element={
-                <Suspense fallback={<div>Loading services...</div>}>
-                  <ServicesPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="service/:id"
-              element={
-                <Suspense fallback={<div>Loading service details...</div>}>
-                  <ServiceViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* logs */}
-            <Route
-              path="logs"
-              element={
-                <Suspense fallback={<div>Loading activity logs...</div>}>
-                  <ActivityLogsPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="log/:id"
-              element={
-                <Suspense fallback={<div>Loading activity log details...</div>}>
-                  <ActivityLogViewPage />
-                </Suspense>
-              }
-            />
-
-            {/* logs */}
-            {/* <Route path="settings" element={<SettingsPage />} /> */}
-            <Route
-              path="settings/:id"
-              element={
-                <Suspense fallback={<div>Loading settings...</div>}>
-                  <SettingsPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="settings/team_management/:id"
-              element={
-                <Suspense fallback={<div>Loading team management...</div>}>
-                  <TeamUserViewPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="settings/users_management/:id"
-              element={
-                <Suspense fallback={<div>Loading user management...</div>}>
-                  <UserManagementView />
-                </Suspense>
-              }
-            />
-            {/* calendar */}
-            <Route
-              path="calendar"
-              element={
-                <Suspense fallback={<div>Loading calendar...</div>}>
-                  <CalendarPage />
-                </Suspense>
-              }
-            />
-            {/* tasks */}
-            <Route
-              path="project/:id/tasks"
-              element={
-                <Suspense fallback={<div>Loading tasks...</div>}>
-                  <TasksPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="project/:id/task/new"
-              element={
-                <Suspense fallback={<div>Loading task creation...</div>}>
-                  <TaskCreatePage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="project/:id/task/:id/edit"
-              element={
-                <Suspense fallback={<div>Loading task editor...</div>}>
-                  <TaskEditPage />
-                </Suspense>
-              }
-            />
-
-            {/* additional data */}
-            <Route
-              path="project/:id/additional-data"
-              element={
-                <Suspense fallback={<div>Loading additional data...</div>}>
-                  <AdditionalDataViewPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="project/:id/additional-data/new"
-              element={
-                <Suspense
-                  fallback={<div>Loading additional data creation...</div>}
-                >
-                  <AdditionalDataCreatePage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="project/:id/additional-data/edit"
-              element={
-                <Suspense
-                  fallback={<div>Loading additional data editor...</div>}
-                >
-                  <AdditionalDataEditPage />
-                </Suspense>
-              }
-            />
-
-            {/* Admin-only create/edit routes */}
-            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               {/* Projects */}
               <Route
-                path="project/new"
+                path="projects"
                 element={
-                  <Suspense fallback={<div>Loading project creation...</div>}>
-                    <ProjectCreatePage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading projects...</div>}>
+                      <ProjectsPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
               <Route
-                path="project/:id/edit"
+                path="project/:id"
                 element={
-                  <Suspense fallback={<div>Loading project editor...</div>}>
-                    <ProjectEditPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="project/:id/tasks"
-                element={
-                  <Suspense fallback={<div>Loading tasks...</div>}>
-                    <TasksPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="project/:id/task/new"
-                element={
-                  <Suspense fallback={<div>Loading task creation...</div>}>
-                    <TaskCreatePage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="project/:id/task/:id/edit"
-                element={
-                  <Suspense fallback={<div>Loading task editor...</div>}>
-                    <TaskEditPage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading project details...</div>}>
+                      <ProjectViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
 
               {/* Quotes */}
               <Route
-                path="quote/new"
+                path="quotes"
                 element={
-                  <Suspense fallback={<div>Loading quote creation...</div>}>
-                    <QuoteCreatePage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading quotes...</div>}>
+                      <QuotesPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
               <Route
-                path="quote/:id/edit"
+                path="quote/:id"
                 element={
-                  <Suspense fallback={<div>Loading quote editor...</div>}>
-                    <QuoteEditPage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading quote details...</div>}>
+                      <QuoteViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
 
               {/* Tickets */}
               <Route
-                path="ticket/new"
+                path="tickets"
                 element={
-                  <Suspense fallback={<div>Loading ticket creation...</div>}>
-                    <TicketCreatePage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading tickets...</div>}>
+                      <TicketsPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
               <Route
-                path="ticket/:id/edit"
+                path="ticket/:id"
                 element={
-                  <Suspense fallback={<div>Loading ticket editor...</div>}>
-                    <TicketEditPage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading ticket details...</div>}>
+                      <TicketViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
 
               {/* Invoices */}
               <Route
-                path="invoice/new"
+                path="invoices"
                 element={
-                  <Suspense fallback={<div>Loading invoice creation...</div>}>
-                    <InvoiceCreatePage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading invoices...</div>}>
+                      <InvoicesPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
               <Route
-                path="invoice/:id/edit"
+                path="invoice/:id"
                 element={
-                  <Suspense fallback={<div>Loading invoice editor...</div>}>
-                    <InvoiceEditPage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading invoice details...</div>}>
+                      <InvoiceViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* Clients */}
+              <Route
+                path="clients"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading clients...</div>}>
+                      <ClientsPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="client/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading client details...</div>}>
+                      <ClientViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* Payments */}
+              <Route
+                path="payments"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading payments...</div>}>
+                      <PaymentsPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="payment/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading payment details...</div>}>
+                      <PaymentViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
 
               {/* Offers */}
               <Route
-                path="offer/new"
+                path="offers"
                 element={
-                  <Suspense fallback={<div>Loading offer creation...</div>}>
-                    <OfferCreatePage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading offers...</div>}>
+                      <OffersPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
               <Route
-                path="offer/:id/edit"
+                path="offer/:id"
                 element={
-                  <Suspense fallback={<div>Loading offer editor...</div>}>
-                    <OfferEditPage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading offer details...</div>}>
+                      <OfferViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
 
               {/* Services */}
               <Route
-                path="service/new"
+                path="services"
                 element={
-                  <Suspense fallback={<div>Loading service creation...</div>}>
-                    <ServiceCreatePage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading services...</div>}>
+                      <ServicesPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
               <Route
-                path="service/:id/edit"
+                path="service/:id"
                 element={
-                  <Suspense fallback={<div>Loading service editor...</div>}>
-                    <ServiceEditPage />
-                  </Suspense>
-                }
-              />
-              {/* Clients */}
-              <Route
-                path="client/new"
-                element={
-                  <Suspense fallback={<div>Loading client creation...</div>}>
-                    <ClientCreatePage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="client/:id/edit"
-                element={
-                  <Suspense fallback={<div>Loading client editor...</div>}>
-                    <ClientEditPage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading service details...</div>}>
+                      <ServiceViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
 
-              {/* Additional Data */}
+              {/* logs */}
+              <Route
+                path="logs"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading activity logs...</div>}>
+                      <ActivityLogsPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="log/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense
+                      fallback={<div>Loading activity log details...</div>}
+                    >
+                      <ActivityLogViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* settings */}
+              <Route
+                path="settings/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading settings...</div>}>
+                      <SettingsPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="settings/team_management/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading team management...</div>}>
+                      <TeamUserViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="settings/users_management/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading user management...</div>}>
+                      <UserManagementView />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* calendar */}
+              <Route
+                path="calendar"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading calendar...</div>}>
+                      <CalendarPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* tasks */}
+              <Route
+                path="project/:id/tasks"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading tasks...</div>}>
+                      <TasksPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="project/:id/task/new"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading task creation...</div>}>
+                      <TaskCreatePage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="project/:id/task/:id/edit"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading task editor...</div>}>
+                      <TaskEditPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* additional data */}
+              <Route
+                path="project/:id/additional-data"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading additional data...</div>}>
+                      <AdditionalDataViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
               <Route
                 path="project/:id/additional-data/new"
                 element={
-                  <Suspense
-                    fallback={<div>Loading additional data creation...</div>}
-                  >
-                    <AdditionalDataCreatePage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense
+                      fallback={<div>Loading additional data creation...</div>}
+                    >
+                      <AdditionalDataCreatePage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
               <Route
                 path="project/:id/additional-data/edit"
                 element={
-                  <Suspense
-                    fallback={<div>Loading additional data editor...</div>}
-                  >
-                    <AdditionalDataEditPage />
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense
+                      fallback={<div>Loading additional data editor...</div>}
+                    >
+                      <AdditionalDataEditPage />
+                    </Suspense>
+                  </ErrorBoundary>
                 }
               />
+
+              {/* Admin-only create/edit routes */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                {/* Projects */}
+                <Route
+                  path="project/new"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading project creation...</div>}
+                      >
+                        <ProjectCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="project/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading project editor...</div>}>
+                        <ProjectEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+
+                {/* Quotes */}
+                <Route
+                  path="quote/new"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading quote creation...</div>}>
+                        <QuoteCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="quote/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading quote editor...</div>}>
+                        <QuoteEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+
+                {/* Tickets */}
+                <Route
+                  path="ticket/new"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading ticket creation...</div>}
+                      >
+                        <TicketCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="ticket/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading ticket editor...</div>}>
+                        <TicketEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+
+                {/* Invoices */}
+                <Route
+                  path="invoice/new"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading invoice creation...</div>}
+                      >
+                        <InvoiceCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="invoice/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading invoice editor...</div>}>
+                        <InvoiceEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+
+                {/* Offers */}
+                <Route
+                  path="offer/new"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading offer creation...</div>}>
+                        <OfferCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="offer/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading offer editor...</div>}>
+                        <OfferEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+
+                {/* Services */}
+                <Route
+                  path="service/new"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading service creation...</div>}
+                      >
+                        <ServiceCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="service/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading service editor...</div>}>
+                        <ServiceEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                {/* Clients */}
+                <Route
+                  path="client/new"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading client creation...</div>}
+                      >
+                        <ClientCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="client/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading client editor...</div>}>
+                        <ClientEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+
+              </Route>
             </Route>
           </Route>
-        </Route>
-      </Routes>
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

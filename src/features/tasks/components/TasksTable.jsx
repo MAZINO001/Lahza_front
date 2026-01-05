@@ -27,7 +27,7 @@ import { DataTable } from "@/components/table/DataTable";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useAuthContext } from "@/hooks/AuthContext";
 
-export function TasksTable() {
+export const TasksTable = React.memo(function TasksTable() {
   const { id: projectId } = useParams();
   const { data: tasks = [], isLoading } = useTasks(projectId);
   const navigate = useNavigate();
@@ -89,4 +89,6 @@ export function TasksTable() {
       />
     </div>
   );
-}
+});
+
+TasksTable.displayName = 'TasksTable';

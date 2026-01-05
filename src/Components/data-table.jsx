@@ -103,7 +103,7 @@ export const schema = z.object({
 });
 
 // Create a separate component for the drag handle
-function DragHandle({ id }) {
+const DragHandle = React.memo(({ id }) => {
   const { attributes, listeners } = useSortable({
     id,
   });
@@ -120,7 +120,9 @@ function DragHandle({ id }) {
       <span className="sr-only">Drag to reorder</span>
     </Button>
   );
-}
+});
+
+DragHandle.displayName = 'DragHandle';
 
 const columns = [
   {
@@ -297,7 +299,7 @@ const columns = [
   },
 ];
 
-function DraggableRow({ row }) {
+const DraggableRow = React.memo(({ row }) => {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
     id: row.original.id,
   });
@@ -320,7 +322,9 @@ function DraggableRow({ row }) {
       ))}
     </TableRow>
   );
-}
+});
+
+DraggableRow.displayName = 'DraggableRow';
 
 export function DataTable({ data: initialData }) {
   const [data, setData] = React.useState(() => initialData);
@@ -473,9 +477,9 @@ export function DataTable({ data: initialData }) {
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                         </TableHead>
                       );
                     })}
@@ -624,7 +628,7 @@ const chartConfig = {
   },
 };
 
-function TableCellViewer({ item }) {
+const TableCellViewer = React.memo(({ item }) => {
   const isMobile = useIsMobile();
 
   return (
@@ -781,4 +785,6 @@ function TableCellViewer({ item }) {
       </DrawerContent>
     </Drawer>
   );
-}
+});
+
+TableCellViewer.displayName = 'TableCellViewer';

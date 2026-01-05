@@ -15,7 +15,7 @@ import { toast } from "sonner";
 export default function Login({ status, canResetPassword }) {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
-  const { user, role, verifyAuth } = useAuthContext();
+  const { role, login } = useAuthContext();
 
   const {
     register,
@@ -47,9 +47,8 @@ export default function Login({ status, canResetPassword }) {
 
       const token = res.data.token;
       localStorage.setItem("token", token);
-      await verifyAuth();
-      const nextRole = res.data.user?.role || "client";
-      navigate(`/${nextRole}/dashboard`, { replace: true });
+      login(res.data.user);
+      navigate(`/${role}/dashboard`, { replace: true });
     } catch (error) {
       console.error(error);
       toast.error(error.response?.data?.message || "Login failed");
