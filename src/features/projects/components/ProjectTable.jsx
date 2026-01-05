@@ -1,4 +1,3 @@
-// src/features/services/components/ServiceTable.jsx
 import * as React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -47,30 +46,30 @@ export function ProjectsTable() {
 
   return (
     <div className="w-full p-4 bg-background min-h-screen">
-        <div className="flex items-center justify-between mb-4">
-          <FormField
-            placeholder="Filter by name..."
-            value={table.getColumn("name")?.getFilterValue() ?? ""}
-            onChange={(e) =>
-              table.getColumn("name")?.setFilterValue(e.target.value)
-            }
-            className="max-w-sm"
-          />
-          <div className="flex gap-2">
-            <Link to={`../project/new`} relative="path">
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Add New Project
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <DataTable
-          table={table}
-          columns={columns}
-          isInvoiceTable={false}
-          isLoading={isLoading}
+      <div className="flex items-center justify-between mb-4">
+        <FormField
+          placeholder="Filter by name..."
+          value={table.getColumn("name")?.getFilterValue() ?? ""}
+          onChange={(e) =>
+            table.getColumn("name")?.setFilterValue(e.target.value)
+          }
+          className="max-w-sm"
         />
+        <div className="flex gap-2">
+          <Link to={`../project/new`} relative="path">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" /> Add New Project
+            </Button>
+          </Link>
+        </div>
       </div>
+
+      <DataTable
+        table={table}
+        columns={columns}
+        isInvoiceTable={false}
+        isLoading={isLoading}
+      />
+    </div>
   );
 }

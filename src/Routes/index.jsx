@@ -68,6 +68,7 @@ import AdditionalDataViewPage from "@/pages/additional_data/AdditionalDataViewPa
 import AdditionalDataCreatePage from "@/pages/additional_data/AdditionalDataCreatePage";
 import AdditionalDataEditPage from "@/pages/additional_data/AdditionalDataEditPage";
 import TeamUserViewPage from "@/features/settings/management/team_userViewPage";
+import UserManagementView from "@/features/settings/components/management/usermanagement/user_management_view";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -155,6 +156,10 @@ export default function AppRoutes() {
             <Route
               path="settings/team_management/:id"
               element={<TeamUserViewPage />}
+            />
+            <Route
+              path="settings/users_management/:id"
+              element={<UserManagementView />}
             />
             {/* calendar */}
             <Route path="calendar" element={<CalendarPage />} />

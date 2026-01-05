@@ -54,7 +54,7 @@ export function getServiceColumns(role, navigate) {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="text-sm text-slate-600 truncate max-w-40">
+        <div className="text-sm text-muted-foreground truncate max-w-40">
           {row.getValue("description")}
         </div>
       ),

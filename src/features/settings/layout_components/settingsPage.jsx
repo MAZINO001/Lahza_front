@@ -1,8 +1,9 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import AgencyInfo from "../AgencyInfo/agency_info";
-import PreferencesSection from "../preferences/preferences";
-import ManagementSection from "../management/management";
+
+const AgencyInfo = lazy(() => import("../AgencyInfo/agency_info"));
+const PreferencesSection = lazy(() => import("../preferences/preferences"));
+const ManagementSection = lazy(() => import("../management/management"));
 
 export default function SettingsMainContent() {
   const { id } = useParams();
@@ -25,7 +26,7 @@ export default function SettingsMainContent() {
     }
 
     if (
-      ["team_management", "projects_management", "users_management"].includes(
+      ["team_management", "projects_management", "users_management", "agency_objectives"].includes(
         id
       )
     ) {
@@ -37,7 +38,14 @@ export default function SettingsMainContent() {
 
   return (
     <main className="flex-1 border border-border rounded-lg p-4">
-      {renderContent()}
+      <Suspense fallback={
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <span className="ml-2 text-gray-600">Loading settings...</span>
+        </div>
+      }>
+        {renderContent()}
+      </Suspense>
     </main>
   );
 }

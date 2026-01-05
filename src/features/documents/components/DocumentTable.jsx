@@ -39,22 +39,6 @@ export function DocumentTable({ type }) {
     [role, navigate]
   );
 
-  // const table = useReactTable({
-  //   data: documents,
-  //   columns,
-  //   state: {
-  //     sorting,
-  //     columnFilters,
-  //     rowSelection,
-  //   },
-  //   onSortingChange: setSorting,
-  //   onColumnFiltersChange: setColumnFilters,
-  //   onRowSelectionChange: setRowSelection,
-  //   getCoreRowModel: getCoreRowModel(),
-  //   getSortedRowModel: getSortedRowModel(),
-  //   getFilteredRowModel: getFilteredRowModel(),
-  //   getPaginationRowModel: getPaginationRowModel(),
-  // });
   const [globalFilter, setGlobalFilter] = useState("");
   const table = useReactTable({
     data: documents,
@@ -89,40 +73,37 @@ export function DocumentTable({ type }) {
 
   return (
     <div className="w-full p-4">
-        <div className="flex items-center justify-between mb-4">
-          <FormField
-            placeholder={`Search by ID or Status...`}
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="max-w-sm"
-          />
+      <div className="flex items-center justify-between mb-4">
+        <FormField
+          placeholder={`Search by ID or Status...`}
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+          className="max-w-sm"
+        />
 
-          {role === "admin" && (
-            <div className="flex gap-3">
-              <Button
-                onClick={() => setShowUploadModal(true)}
-                variant="outline"
-              >
-                <Upload className="mr-2 h-4 w-4" /> Upload CSV
-              </Button>
-              <Link to={`/${role}/${currentSection}/new`}>
-                <Button>Add New {currentSection}</Button>
-              </Link>
-            </div>
-          )}
-        </div>
-        <DataTable
-          table={table}
-          columns={columns}
-          isInvoiceTable={type === "invoices"}
-          isLoading={isLoading}
-        />
-        <CsvUploadModal
-          open={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
-          onSuccess={() => window.location.reload()}
-        />
+        {role === "admin" && (
+          <div className="flex gap-3">
+            <Button onClick={() => setShowUploadModal(true)} variant="outline">
+              <Upload className="mr-2 h-4 w-4" /> Upload CSV
+            </Button>
+            <Link to={`/${role}/${currentSection}/new`}>
+              <Button>Add New {currentSection}</Button>
+            </Link>
+          </div>
+        )}
       </div>
+      <DataTable
+        table={table}
+        columns={columns}
+        isInvoiceTable={type === "invoices"}
+        isLoading={isLoading}
+      />
+      <CsvUploadModal
+        open={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
+        onSuccess={() => window.location.reload()}
+      />
+    </div>
   );
 }

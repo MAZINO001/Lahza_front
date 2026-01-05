@@ -54,7 +54,7 @@ export default function TeamUserViewPage() {
               to={`/${role}/settings/team_management`}
               className="p-2 -ml-2 flex items-center gap-4  hover:bg-slate-100 rounded transition-colors"
             >
-              <ChevronLeft className="w-5 h-5 text-slate-600" />
+              <ChevronLeft className="w-5 h-5 text-muted-foreground" />
               <span>return</span>
             </Link>
             <button
@@ -107,7 +107,7 @@ export default function TeamUserViewPage() {
                   <Mail className="w-4 h-4 text-slate-400" />
                   <a
                     href={`mailto:${teamMemberData.email}`}
-                    className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                    className="text-sm text-muted-foreground hover:text-slate-900 transition-colors"
                   >
                     {teamMemberData.email}
                   </a>
@@ -116,7 +116,7 @@ export default function TeamUserViewPage() {
                   <Phone className="w-4 h-4 text-slate-400" />
                   <a
                     href={`tel:${teamMemberData.phone}`}
-                    className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                    className="text-sm text-muted-foreground hover:text-slate-900 transition-colors"
                   >
                     {teamMemberData.phone}
                   </a>
@@ -136,7 +136,7 @@ export default function TeamUserViewPage() {
                     rel="noopener noreferrer"
                     className="p-2 hover:bg-slate-100 rounded transition-colors"
                   >
-                    <Github className="w-4 h-4 text-slate-600" />
+                    <Github className="w-4 h-4 text-muted-foreground" />
                   </a>
                 )}
                 {teamMemberData.linkedin && (
@@ -146,7 +146,7 @@ export default function TeamUserViewPage() {
                     rel="noopener noreferrer"
                     className="p-2 hover:bg-slate-100 rounded transition-colors"
                   >
-                    <Linkedin className="w-4 h-4 text-slate-600" />
+                    <Linkedin className="w-4 h-4 text-muted-foreground" />
                   </a>
                 )}
                 {teamMemberData.portfolio && (
@@ -154,7 +154,7 @@ export default function TeamUserViewPage() {
                     href={teamMemberData.portfolio}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                    className="text-xs font-medium text-muted-foreground hover:text-slate-900 transition-colors"
                   >
                     Portfolio
                   </a>
@@ -166,7 +166,7 @@ export default function TeamUserViewPage() {
               <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wide mb-4">
                 Certifications
               </h2>
-              <p className="text-sm text-slate-600">
+              <p className="text-sm text-muted-foreground">
                 {teamMemberData.certifications}
               </p>
             </div>
@@ -247,7 +247,7 @@ export default function TeamUserViewPage() {
                   <p className="text-xs text-slate-500 mb-1">Phone</p>
                   <a
                     href={`tel:${teamMemberData.emergencyContactPhone}`}
-                    className="text-sm text-slate-600 hover:text-slate-900 transition-colors"
+                    className="text-sm text-muted-foreground hover:text-slate-900 transition-colors"
                   >
                     {teamMemberData.emergencyContactPhone}
                   </a>

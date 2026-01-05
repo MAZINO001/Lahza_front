@@ -19,7 +19,7 @@ export default function AuthenticatedLayout({ header, children }) {
             <div className="flex">
               <div className="flex shrink-0 items-center">
                 <Link href="/">
-                  <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800" />
+                  <ApplicationLogo className="block h-9 w-auto fill-current text-foreground" />
                 </Link>
               </div>
 
@@ -131,7 +131,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
           <div className="border-t border-border pb-1 pt-4">
             <div className="px-4">
-              <div className="text-base font-medium text-gray-800">
+              <div className="text-base font-medium text-foreground">
                 {user.name}
               </div>
               <div className="text-sm font-medium text-muted-foreground">

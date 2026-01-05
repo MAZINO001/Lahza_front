@@ -4,6 +4,7 @@ import React from "react";
 import Team_management from "../components/management/teamManagement/team_management";
 import Projects_management from "../components/management/ProjectsManagement/projects_managementPage";
 import User_management from "../components/management/usermanagement/user_management";
+import Agency_objectives from "../components/management/AgencyObjectives/Agency_objectives";
 
 export default function ManagementSection({ section }) {
   const renderSection = () => {
@@ -14,6 +15,8 @@ export default function ManagementSection({ section }) {
         return <Projects_management />;
       case "users_management":
         return <User_management />;
+      case "agency_objectives":
+        return <Agency_objectives />;
       default:
         return null;
     }

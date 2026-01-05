@@ -8,6 +8,7 @@ import {
   Lock,
   Palette,
   Scale,
+  Target,
   User,
 } from "lucide-react";
 import React from "react";
@@ -83,6 +84,11 @@ const sidebarItems = [
         name: "Users Management",
         value: "users_management",
         icon: <User className="w-5 h-5" />,
+      },
+      {
+        name: "Agency Objectives",
+        value: "agency_objectives",
+        icon: <Target className="w-5 h-5" />,
       },
     ],
   },
