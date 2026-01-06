@@ -30,23 +30,22 @@ import { ChartBarDefault } from "@/features/projects/components/overViewChart";
 export default function ProjectViewPage() {
   const { id } = useParams();
   const { role } = useAuthContext();
+
   const { data: project, isLoading } = useProject(id);
   const { data: additionalData } = useAdditionalData(id);
   const { data: history } = useProjectHistory(id);
   const { data: tasks } = useTasks(id);
 
-  console.log("additionalData", additionalData);
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      // year: "numeric",
       month: "numeric",
       day: "numeric",
     });
   };
 
-  const doneTasks = tasks.filter((task) => task.status === "done").length || 0;
+  const doneTasks = tasks?.filter((task) => task.status === "done").length || 0;
 
   const clientId = project?.client_id;
 
@@ -92,7 +91,6 @@ export default function ProjectViewPage() {
       const startDate = new Date(project.start_date);
       const endDate = new Date(project.estimated_end_date);
 
-      // Only update if dates are valid
       if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
         setDateRange({
           from: startDate,
@@ -435,11 +433,11 @@ export default function ProjectViewPage() {
               </CardContent>
             </Card>
             <Card className="p-2 w-full">
-              <CardContent className="p-2 flex">
+              <CardContent className="p-2 flex gap-3">
                 <div className="text-3xl font-bold text-foreground">
-                  {doneTasks || 0}/{tasks.length || 0}
+                  {doneTasks || 0}/{tasks?.length || 0}
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className="text-md font-semibold text-muted-foreground mt-2">
                   Tasks completed this month
                 </p>
               </CardContent>
