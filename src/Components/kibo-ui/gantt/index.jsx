@@ -138,12 +138,14 @@ const createInitialTimelineData = (today, tasks = []) => {
   const previousYear = currentYear - 1;
 
   // Check if any tasks are in the previous year
-  const hasPreviousYearTasks = tasks.some(task => {
+  const hasPreviousYearTasks = tasks.some((task) => {
     const taskStart = task.startAt || task.start_date;
     const taskEnd = task.endAt || task.end_date;
 
-    if (taskStart && new Date(taskStart).getFullYear() === previousYear) return true;
-    if (taskEnd && new Date(taskEnd).getFullYear() === previousYear) return true;
+    if (taskStart && new Date(taskStart).getFullYear() === previousYear)
+      return true;
+    if (taskEnd && new Date(taskEnd).getFullYear() === previousYear)
+      return true;
 
     return false;
   });
@@ -539,8 +541,8 @@ export const GanttColumn = ({ index, isColumnSecondary }) => {
 
   const top = useThrottle(
     mousePosition.y -
-    (mouseRef.current?.getBoundingClientRect().y ?? 0) -
-    (windowScroll.y ?? 0),
+      (mouseRef.current?.getBoundingClientRect().y ?? 0) -
+      (windowScroll.y ?? 0),
     10
   );
 
@@ -590,8 +592,8 @@ export const GanttCreateMarkerTrigger = ({ onCreateMarker, className }) => {
   const [windowScroll] = useWindowScroll();
   const x = useThrottle(
     mousePosition.x -
-    (mouseRef.current?.getBoundingClientRect().x ?? 0) -
-    (windowScroll.x ?? 0),
+      (mouseRef.current?.getBoundingClientRect().x ?? 0) -
+      (windowScroll.x ?? 0),
     10
   );
 

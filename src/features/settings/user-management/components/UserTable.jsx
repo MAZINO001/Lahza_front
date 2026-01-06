@@ -21,9 +21,10 @@ import { useUsers } from "@/features/settings/hooks/useUsersQuery";
 
 export default function UserTable() {
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const { data: users = [], isLoading } = useUsers();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: users = { data: [] }, isLoading } = useUsers(currentPage);
 
-  console.log("users", users.data);
+  console.log("users", users);
   {
     const { role } = useAuthContext();
     const navigate = useNavigate();
@@ -45,7 +46,8 @@ export default function UserTable() {
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
+      manualPagination: true,
+      pageCount: users.last_page || 1,
     });
 
     return (
@@ -77,6 +79,8 @@ export default function UserTable() {
           columns={columns}
           isInvoiceTable={false}
           isLoading={isLoading}
+          paginationData={users}
+          onPageChange={setCurrentPage}
         />
       </div>
     );

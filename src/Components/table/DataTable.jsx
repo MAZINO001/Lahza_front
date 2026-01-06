@@ -93,6 +93,8 @@ export const DataTable = React.memo(
     isLoading = false,
     isInvoiceTable = false,
     onRowClick,
+    paginationData,
+    onPageChange,
   }) => {
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
@@ -127,9 +129,9 @@ export const DataTable = React.memo(
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   ))}
                 </TableRow>
@@ -156,7 +158,11 @@ export const DataTable = React.memo(
             </TableBody>
           </Table>
         </div>
-        <TablePagination table={table} />
+        <TablePagination
+          table={table}
+          paginationData={paginationData}
+          onPageChange={onPageChange}
+        />
       </div>
     );
   }

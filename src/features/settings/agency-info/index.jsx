@@ -4,3 +4,8 @@ export { BrandingAssetsSection } from './components/BrandingAssetsSection';
 export { ContactAddressSection } from './components/ContactAddressSection';
 export { LegalTaxBankingSection } from './components/LegalTaxBankingSection';
 export { default as CertificationsSection } from './components/CertificationsSection';
+export { AgencyInfoView } from './views/AgencyInfoView';
+export { CompanyBasicsView } from './views/CompanyBasicsView';
+export { ContactAddressView } from './views/ContactAddressView';
+export { LegalTaxBankingView } from './views/LegalTaxBankingView';
+export { CertificationsView } from './views/CertificationsView';

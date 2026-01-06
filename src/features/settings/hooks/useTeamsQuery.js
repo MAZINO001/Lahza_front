@@ -12,8 +12,8 @@ const handleApiError = (error, fallbackMsg) => {
 
 
 const teamsApi = {
-    getAll: () =>
-        api.get(`${API_URL}/get-team-users`).then((res) => res.data ?? []),
+    getAll: (page = 1) =>
+        api.get(`${API_URL}/get-team-users?page=${page}`).then((res) => res.data ?? []),
 
     getById: (id) =>
         api.get(`${API_URL}/teams/${id}`).then((res) => res.data),
@@ -27,10 +27,10 @@ const teamsApi = {
     delete: (id) => api.delete(`${API_URL}/teams/${id}`),
 };
 
-export function useTeams() {
+export function useTeams(page = 1) {
     return useQuery({
-        queryKey: ["teams"],
-        queryFn: teamsApi.getAll,
+        queryKey: ["teams", page],
+        queryFn: () => teamsApi.getAll(page),
         staleTime: 0,
         onError: (error) => handleApiError(error, "Failed to fetch teams"),
     });

@@ -17,22 +17,26 @@ export default function AddComments({
 
   return (
     <div className="bg-background rounded-xl border border-border">
-      <div className="flex items-start gap-4 p-5 border-b border-border">
-        <Avatar className="w-11 h-11 border-2 border-border ring-2 ring-blue-50">
-          <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" />
-          <AvatarFallback className="bg-linear-to-br from-purple-400 to-purple-600 text-white font-semibold">
-            U
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="font-semibold text-sm text-foreground">
-              Your Name
-            </span>
-            <span className="text-xs text-muted-foreground bg-background px-2 py-0.5 rounded-full">
-              @username
-            </span>
+      <div className="flex flex-col items-start gap-2 p-4 border-b border-border">
+        <div className="w-full flex items-center justify-center gap-2">
+          <Avatar className="w-10 h-10 border-2 border-border ring-2 ring-blue-50">
+            <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=User" />
+            <AvatarFallback className="bg-linear-to-br from-purple-400 to-purple-600 text-white font-semibold">
+              U
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="font-semibold text-sm text-foreground">
+                Your Name
+              </span>
+              <span className="text-xs text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border">
+                @username
+              </span>
+            </div>
           </div>
+        </div>
+        <div className="w-full">
           <TextareaField
             placeholder="Share your thoughts... (Markdown supported)"
             value={commentText}
@@ -45,7 +49,7 @@ export default function AddComments({
         </div>
       </div>
 
-      <div className="flex items-center p-4 w-full">
+      <div className="flex items-center p-2 w-full">
         <div className="flex items-center justify-between gap-4 w-full">
           <div className="flex items-center gap-2">
             <span

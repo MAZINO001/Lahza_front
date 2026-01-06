@@ -1,20 +1,34 @@
 /* eslint-disable no-unused-vars */
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import FormSection from "@/components/Form/FormSection";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import SelectField from "@/components/Form/SelectField";
+import { usePreferences, useUpdatePreferences } from "../../hooks/usePreferencesQuery";
 
 export default function GeneralPreferences() {
-    const { control, handleSubmit } = useForm({
+    const { data: preferences, isLoading } = usePreferences();
+    const updatePreferences = useUpdatePreferences();
+
+    const { control, handleSubmit, reset } = useForm({
         defaultValues: {
             dark_mode: false,
             language: "en",
             timezone: "Africa/Casablanca",
         },
     });
+
+    useEffect(() => {
+        if (preferences?.ui) {
+            reset({
+                dark_mode: preferences.ui.dark_mode || false,
+                language: preferences.ui.language || "en",
+                timezone: preferences.ui.timezone || "Africa/Casablanca",
+            });
+        }
+    }, [preferences, reset]);
 
     const onSubmit = (values) => {
         const formattedData = {
@@ -25,7 +39,7 @@ export default function GeneralPreferences() {
             },
         };
 
-        // Process general settings
+        updatePreferences.mutate(formattedData);
     };
 
     return (
@@ -99,7 +113,9 @@ export default function GeneralPreferences() {
                 </div>
             </FormSection>
             <div className="mt-4 flex justify-end">
-                <Button type="submit">Save Preferences</Button>
+                <Button type="submit" disabled={updatePreferences.isPending}>
+                    {updatePreferences.isPending ? "Saving..." : "Save Preferences"}
+                </Button>
             </div>
         </form>
     );

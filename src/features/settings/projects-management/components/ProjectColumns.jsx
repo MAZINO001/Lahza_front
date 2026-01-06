@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/popover";
 import * as React from "react";
 import { format, isValid } from "date-fns";
+import { formatId } from "@/lib/utils/formatId";
 
 function copyToClipboard(text, label = "Copied") {
     navigator.clipboard.writeText(text);
@@ -93,7 +94,7 @@ function StatusCell({ row, table }) {
 }
 
 function DeliveryDateCell({ row, table }) {
-    const value = row.getValue("date");
+    const value = row.getValue("estimated_end_date");
     const parsed = React.useMemo(() => {
         const d = new Date(value);
         return isValid(d) ? d : undefined;
@@ -129,7 +130,7 @@ function DeliveryDateCell({ row, table }) {
                         setDate(d);
                         table?.options?.meta?.updateProjectDate?.(
                             row.original.id,
-                            format(d, "MMMM d, yyyy")
+                            format(d, "yyyy-MM-dd")
                         );
                         setOpen(false);
                     }}
@@ -142,6 +143,15 @@ function DeliveryDateCell({ row, table }) {
 function AccessCell({ row }) {
     const accessObj = row.getValue("access");
     const [openPopover, setOpenPopover] = React.useState(null);
+
+    // Handle case where access data doesn't exist
+    if (!accessObj || typeof accessObj !== 'object') {
+        return (
+            <span className="text-sm text-muted-foreground">
+                No access data
+            </span>
+        );
+    }
 
     const formatLabel = (key) => {
         switch (key) {
@@ -320,15 +330,29 @@ function MembersCell({ row, table }) {
         table?.options?.meta?.updateProjectMembers?.(row.original.id, next);
     };
 
-    const toggle = (name) => {
-        const next = selected.includes(name)
-            ? selected.filter((m) => m !== name)
-            : [...selected, name];
+    const addAssignment = (member) => {
+        table?.options?.meta?.addProjectAssignment?.(row.original.id, member.id);
+        const next = [...selected, member];
         update(next);
     };
 
-    const remove = (name) => {
-        update(selected.filter((m) => m !== name));
+    const removeAssignment = (member) => {
+        table?.options?.meta?.removeProjectAssignment?.(row.original.id, member.id);
+        const next = selected.filter((m) => m.id !== member.id);
+        update(next);
+    };
+
+    const toggle = (member) => {
+        const isSelected = selected.some(m => m.id === member.id);
+        if (isSelected) {
+            removeAssignment(member);
+        } else {
+            addAssignment(member);
+        }
+    };
+
+    const remove = (member) => {
+        removeAssignment(member);
     };
 
     return (
@@ -337,26 +361,26 @@ function MembersCell({ row, table }) {
                 <button type="button" className="min-h-8 w-full text-left">
                     {selected.length > 0 ? (
                         <div className="flex flex-wrap gap-1">
-                            {selected.map((name) => (
-                                <Badge key={name} variant="outline" className="gap-1">
+                            {selected.map((member) => (
+                                <Badge key={member.id} variant="outline" className="gap-1">
                                     <button
                                         type="button"
                                         className="-ml-1 inline-flex items-center justify-center"
                                         onClick={(e) => {
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            remove(name);
+                                            remove(member);
                                         }}
                                     >
                                         <X className="h-3 w-3" />
                                     </button>
-                                    <span className="truncate max-w-32">{name}</span>
+                                    <span className="truncate max-w-32">{member.name}</span>
                                 </Badge>
                             ))}
                         </div>
                     ) : (
                         <span className="text-sm text-muted-foreground hover:underline">
-                            Add members
+                            Add team members
                         </span>
                     )}
                 </button>
@@ -364,17 +388,17 @@ function MembersCell({ row, table }) {
 
             <PopoverContent align="start" className="w-72 p-0">
                 <Command>
-                    <CommandInput placeholder="Search members..." />
+                    <CommandInput placeholder="Search team members..." />
                     <CommandList>
-                        <CommandEmpty>No members found.</CommandEmpty>
+                        <CommandEmpty>No team members found.</CommandEmpty>
                         <CommandGroup>
-                            {members.map((name) => {
-                                const isSelected = selected.includes(name);
+                            {members.map((member) => {
+                                const isSelected = selected.some(m => m.id === member.id);
                                 return (
                                     <CommandItem
-                                        key={name}
-                                        value={name}
-                                        onSelect={() => toggle(name)}
+                                        key={member.id}
+                                        value={member.name}
+                                        onSelect={() => toggle(member)}
                                     >
                                         <Check
                                             className={cn(
@@ -382,7 +406,9 @@ function MembersCell({ row, table }) {
                                                 isSelected ? "opacity-100" : "opacity-0"
                                             )}
                                         />
-                                        <span className="ml-2">{name}</span>
+                                        <div className="ml-2">
+                                            <div className="font-medium">{member.name}</div>
+                                        </div>
                                     </CommandItem>
                                 );
                             })}
@@ -411,36 +437,34 @@ export function projectColumns() {
         },
 
         {
-            accessorKey: "title",
+            accessorKey: "name",
             header: "Project Name",
             cell: ({ row }) => (
-                <div className="font-medium">{row.getValue("title")}</div>
+                <div className="font-medium">{row.getValue("name")}</div>
             ),
         },
 
         {
-            accessorKey: "category",
-            header: "Category",
+            accessorKey: "description",
+            header: "Description",
             cell: ({ row }) => (
-                <Badge variant="secondary" className="bg-amber-900/50 text-amber-200">
-                    {row.getValue("category")?.[0]}
-                </Badge>
+                <div className="text-sm text-muted-foreground max-w-xs truncate">
+                    {row.getValue("description")}
+                </div>
             ),
         },
-
         {
-            accessorKey: "invoice",
-            header: "Invoice",
+            accessorKey: "invoices",
+            header: "Invoices",
             cell: ({ row }) => {
-                const url = row.getValue("invoice");
+                const invoicesId = row.getValue("invoices.id") || [];
                 return (
-                    <div className="flex items-center gap-2 max-w-xs">
-                        <div>{url}</div>
+                    <div className="flex items-center gap-2">
+                        {formatId(invoicesId , "INVOICE")}
                     </div>
                 );
             },
         },
-
         {
             accessorKey: "access",
             header: "Access",
@@ -448,7 +472,7 @@ export function projectColumns() {
         },
 
         {
-            accessorKey: "date",
+            accessorKey: "estimated_end_date",
             header: ({ column }) => (
                 <Button
                     variant="ghost"

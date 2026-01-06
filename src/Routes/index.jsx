@@ -20,7 +20,9 @@ const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
 // Lazy load project pages
 const ProjectsPage = lazy(() => import("../pages/projects/ProjectsPage"));
 const ProjectViewPage = lazy(() => import("../pages/projects/ProjectViewPage"));
-const ProjectEditPage = lazy(() => import("../pages/projects/ProjectEditPage"));
+const ProjectEditPage = lazy(
+  () => import("../pages/projects/ProjectSettingsPage")
+);
 const ProjectCreatePage = lazy(
   () => import("../pages/projects/ProjectCreatePage")
 );
@@ -111,6 +113,7 @@ import AppLayout from "@/app/layout/AppLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuthContext } from "@/hooks/AuthContext";
 import ErrorBoundary from "./ErrorBoundary";
+import ProjectSettingsPage from "@/pages/projects/ProjectSettingsPage";
 
 function GuestRoute() {
   const { user, role, loading } = useAuthContext();
@@ -424,46 +427,70 @@ export default function AppRoutes() {
                   </ErrorBoundary>
                 }
               />
-              <Route
-                path="settings/team_management/:id"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading team management...</div>}>
-                      <TeamUserViewPage />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="settings/users_management/:id"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading user management...</div>}>
-                      <UserManagementView />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="settings/users_management/create"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading user creation...</div>}>
-                      <UserManagementForm />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="settings/users_management/edit/:id"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading user editing...</div>}>
-                      <UserManagementForm />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
+
+              {/* Admin-only branding assets route */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route
+                  path="settings/branding_assets"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading branding assets...</div>}
+                      >
+                        <SettingsPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+              </Route>
+
+              {/* Admin-only management routes */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route
+                  path="settings/team_management/:id"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading team management...</div>}
+                      >
+                        <TeamUserViewPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="settings/users_management/:id"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading user management...</div>}
+                      >
+                        <UserManagementView />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="settings/users_management/create"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading user creation...</div>}>
+                        <UserManagementForm />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="settings/users_management/edit/:id"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading user editing...</div>}>
+                        <UserManagementForm />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+              </Route>
 
               {/* calendar */}
               <Route
@@ -561,11 +588,11 @@ export default function AppRoutes() {
                   }
                 />
                 <Route
-                  path="project/:id/edit"
+                  path="project/:id/settings"
                   element={
                     <ErrorBoundary>
                       <Suspense fallback={<div>Loading project editor...</div>}>
-                        <ProjectEditPage />
+                        <ProjectSettingsPage />
                       </Suspense>
                     </ErrorBoundary>
                   }
@@ -709,7 +736,6 @@ export default function AppRoutes() {
                     </ErrorBoundary>
                   }
                 />
-
               </Route>
             </Route>
           </Route>

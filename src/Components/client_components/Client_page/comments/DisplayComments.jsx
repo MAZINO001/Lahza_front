@@ -26,7 +26,7 @@ export default function DisplayComments({ comments, handleDelete }) {
 
   return (
     <div className="w-full mt-4">
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
+      <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
             <MessageSquare className="h-5 w-5 text-blue-600" />
@@ -71,9 +71,6 @@ export default function DisplayComments({ comments, handleDelete }) {
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-sm text-foreground">
-                      {comment.user_id}
-                    </span>
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
                       Member
                     </span>

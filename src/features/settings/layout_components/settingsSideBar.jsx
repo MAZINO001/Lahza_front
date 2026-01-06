@@ -108,37 +108,48 @@ export default function SettingsSideBar() {
             Settings
           </h2>
           <nav className="space-y-4">
-            {sidebarItems.map((group) => (
-              <div key={group.section}>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                  {group.section}
-                </p>
-                <ul className="space-y-1">
-                  {group.items.map((item) => {
-                    const isActive = currentSection === item.value;
-                    return (
-                      <Link
-                        to={`/${role}/settings/${item.value}`}
-                        key={item.value}
-                      >
-                        <div
-                          className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            isActive
-                              ? "bg-primary/20 text-primary/80"
-                              : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
-                          }`}
+            {sidebarItems.map((group) => {
+              // Hide entire Management section from non-admin users
+              if (group.section === "Management" && role !== "admin") {
+                return null;
+              }
+
+              return (
+                <div key={group.section}>
+                  <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                    {group.section}
+                  </p>
+                  <ul className="space-y-1">
+                    {group.items.map((item) => {
+                      // Hide branding & assets from non-admin users
+                      if (item.value === "branding_assets" && role !== "admin") {
+                        return null;
+                      }
+
+                      const isActive = currentSection === item.value;
+                      return (
+                        <Link
+                          to={`/${role}/settings/${item.value}`}
+                          key={item.value}
                         >
-                          <span className="flex gap-2">
-                            {item.icon}
-                            {item.name}
-                          </span>
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))}
+                          <div
+                            className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                                ? "bg-primary/20 text-primary/80"
+                                : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
+                              }`}
+                          >
+                            <span className="flex gap-2">
+                              {item.icon}
+                              {item.name}
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
           </nav>
         </div>
       </div>

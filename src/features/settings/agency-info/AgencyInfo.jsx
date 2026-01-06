@@ -10,8 +10,11 @@ import { BrandingAssetsSection } from "./components/BrandingAssetsSection";
 import { ContactAddressSection } from "./components/ContactAddressSection";
 import { LegalTaxBankingSection } from "./components/LegalTaxBankingSection";
 import CertificationsSection from "./components/CertificationsSection";
+import { useAuth } from "@/hooks/useAuth";
+import { AgencyInfoView } from "./views/AgencyInfoView";
 
 export default function AgencyInfo({ section }) {
+  const { role, loading: authLoading } = useAuth();
   const { data: companyInfo, isLoading, error } = useCompanyInfo();
   const updateCompanyInfo = useUpdateCompanyInfo();
 
@@ -69,7 +72,12 @@ export default function AgencyInfo({ section }) {
     });
   };
 
-  if (isLoading) {
+  // Show client read-only view for non-admin users
+  if (!authLoading && role !== 'admin') {
+    return <AgencyInfoView section={section} />;
+  }
+
+  if (isLoading || authLoading) {
     return (
       <div className="flex items-center justify-center p-8">Loading...</div>
     );

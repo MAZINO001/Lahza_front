@@ -23,6 +23,13 @@ const projectsApi = {
         api.put(`${API_URL}/projects/${id}`, data).then((res) => res.data),
 
     delete: (id) => api.delete(`${API_URL}/projects/${id}`),
+
+    // Project assignments
+    addAssignment: (data) =>
+        api.post(`${API_URL}/addAssignment`, data).then((res) => res.data),
+
+    deleteAssignment: (data) =>
+        api.delete(`${API_URL}/deleteAssignment`, { data }),
 };
 
 export function useProjects() {
@@ -79,5 +86,31 @@ export function useDeleteProject() {
             queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
         onError: (error) => handleApiError(error, "Failed to delete project"),
+    });
+}
+
+export function useAddProjectAssignment() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: projectsApi.addAssignment,
+        onSuccess: () => {
+            toast.success("Project assigned successfully!");
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+        },
+        onError: (error) => handleApiError(error, "Failed to assign project"),
+    });
+}
+
+export function useDeleteProjectAssignment() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: projectsApi.deleteAssignment,
+        onSuccess: () => {
+            toast.success("Project assignment removed successfully!");
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
+        },
+        onError: (error) => handleApiError(error, "Failed to remove project assignment"),
     });
 }

@@ -68,7 +68,7 @@ export const globalFnStore = create((set) => ({
         });
     },
     HandleEditProject: async (id, navigate, role) => {
-        navigate(`/${role}/project/${id}/edit`, {
+        navigate(`/${role}/project/${id}/settings`, {
             state: { editId: id },
             replace: true
         });

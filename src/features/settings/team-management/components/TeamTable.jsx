@@ -16,7 +16,8 @@ import { DataTable } from "@/components/table/DataTable";
 import { useTeams } from "../../hooks/useTeamsQuery";
 
 export default function TeamTable() {
-  const { data: teamMembers, isLoading } = useTeams();
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data: teamMembers = { data: [] }, isLoading } = useTeams(currentPage);
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -39,7 +40,8 @@ export default function TeamTable() {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    pageCount: teamMembers?.last_page || 1,
   });
 
   const handleFilterChange = (e) => {
@@ -73,6 +75,8 @@ export default function TeamTable() {
           columns={columns}
           isInvoiceTable={false}
           isLoading={isLoading}
+          paginationData={teamMembers}
+          onPageChange={setCurrentPage}
         />
       </div>
     </div>

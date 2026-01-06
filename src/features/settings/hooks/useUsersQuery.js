@@ -10,8 +10,8 @@ const handleApiError = (error, fallbackMsg) => {
 };
 
 const usersApi = {
-    getAll: () =>
-        api.get(`${API_URL}/users-all`).then((res) => res.data ?? []),
+    getAll: (page = 1) =>
+        api.get(`${API_URL}/users-all?page=${page}`).then((res) => res.data ?? []),
 
     getById: (id) =>
         api.get(`${API_URL}/users/${id}`).then((res) => res.data ?? null),
@@ -25,10 +25,10 @@ const usersApi = {
     delete: (id) => api.delete(`${API_URL}/users/${id}`),
 };
 
-export function useUsers() {
+export function useUsers(page = 1) {
     return useQuery({
-        queryKey: ["users"],
-        queryFn: usersApi.getAll,
+        queryKey: ["users", page],
+        queryFn: () => usersApi.getAll(page),
         staleTime: 0,
         refetchOnWindowFocus: true,
         onError: (error) => handleApiError(error, "Failed to fetch users"),

@@ -4,13 +4,18 @@ import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { usePreferences, useUpdatePreferences } from "../../hooks/usePreferencesQuery";
 
 export default function NotificationPreferences() {
+    const { data: preferences, isLoading } = usePreferences();
+    const updatePreferences = useUpdatePreferences();
+
     const {
         control,
         handleSubmit,
         watch,
         setValue,
+        reset,
         formState: { errors },
     } = useForm({
         defaultValues: {
@@ -26,6 +31,23 @@ export default function NotificationPreferences() {
             in_app_offers: true,
         },
     });
+
+    useEffect(() => {
+        if (preferences) {
+            reset({
+                email_projects: preferences.mail?.projects ?? true,
+                email_invoices: preferences.mail?.invoices ?? true,
+                email_quotes: preferences.mail?.quotes ?? true,
+                email_payments: preferences.mail?.payments ?? true,
+                email_offers: preferences.mail?.offers ?? true,
+                in_app_projects: preferences.browser?.projects ?? true,
+                in_app_invoices: preferences.browser?.invoices ?? true,
+                in_app_quotes: preferences.browser?.quotes ?? true,
+                in_app_payments: preferences.browser?.payments ?? true,
+                in_app_offers: preferences.browser?.offers ?? true,
+            });
+        }
+    }, [preferences, reset]);
 
     const emailNotifications = watch("email_notifications");
     const inAppNotifications = watch("in_app_notifications");
@@ -93,20 +115,22 @@ export default function NotificationPreferences() {
     const onSubmit = (values) => {
         const formattedData = {
             mail: {
-                payments: values.email_payments,
+                projects: values.email_projects,
                 invoices: values.email_invoices,
                 quotes: values.email_quotes,
+                payments: values.email_payments,
                 offers: values.email_offers,
             },
-            app: {
-                payments: values.in_app_payments,
+            browser: {
+                projects: values.in_app_projects,
                 invoices: values.in_app_invoices,
                 quotes: values.in_app_quotes,
+                payments: values.in_app_payments,
                 offers: values.in_app_offers,
             },
         };
 
-        // Process notifications settings
+        updatePreferences.mutate(formattedData);
     };
 
     function Setting({ label, description, name, control }) {
@@ -232,7 +256,9 @@ export default function NotificationPreferences() {
             </div>
 
             <div className="mt-6 flex justify-end">
-                <Button onClick={handleSubmit(onSubmit)}>Save Preferences</Button>
+                <Button onClick={handleSubmit(onSubmit)} disabled={updatePreferences.isPending}>
+                    {updatePreferences.isPending ? "Saving..." : "Save Preferences"}
+                </Button>
             </div>
         </div>
     );

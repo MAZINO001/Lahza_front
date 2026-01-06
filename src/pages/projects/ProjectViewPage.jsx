@@ -25,6 +25,7 @@ import { Users, FileText, Paperclip, DollarSign, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CountDownComponent from "@/features/projects/components/CountDownComponent";
 import { StatusBadge } from "@/components/StatusBadge";
+import { ChartBarDefault } from "@/features/projects/components/overViewChart";
 
 export default function ProjectViewPage() {
   const { id } = useParams();
@@ -32,8 +33,9 @@ export default function ProjectViewPage() {
   const { data: project, isLoading } = useProject(id);
   const { data: additionalData } = useAdditionalData(id);
   const { data: history } = useProjectHistory(id);
-  console.log(history);
   const { data: tasks } = useTasks(id);
+
+  console.log("additionalData", additionalData);
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -43,6 +45,8 @@ export default function ProjectViewPage() {
       day: "numeric",
     });
   };
+
+  const doneTasks = tasks.filter((task) => task.status === "done").length || 0;
 
   const clientId = project?.client_id;
 
@@ -170,6 +174,28 @@ export default function ProjectViewPage() {
   };
 
   // *********************************
+  const categories = [
+    {
+      label: "Design",
+      icon: "✨",
+      color: "bg-blue-100 text-blue-700 border-blue-200",
+    },
+    {
+      label: "Development",
+      icon: "⚙️",
+      color: "bg-purple-100 text-purple-700 border-purple-200",
+    },
+    {
+      label: "Marketing",
+      icon: "📢",
+      color: "bg-green-100 text-green-700 border-green-200",
+    },
+    {
+      label: "Analytics",
+      icon: "📊",
+      color: "bg-orange-100 text-orange-700 border-orange-200",
+    },
+  ];
 
   return (
     <div className="p-4">
@@ -199,9 +225,16 @@ export default function ProjectViewPage() {
         </div>
       </div>
       <div className="flex gap-4 w-full">
-        <div className="w-[60%] h-full flex flex-col gap-4">
-          <Card className="flex items-center justify-center p-2 h-[10%]">
-            <CardContent className="flex items-center justify-between w-full p-2">
+        <div className="w-[75%] h-full flex flex-col gap-4">
+          <div className="flex items-end justify-end p-2 h-60 bg-background rounded-lg border border-border relative overflow-hidden">
+            <div
+              className="absolute inset-0 bg-cover bg-center opacity-70"
+              style={{
+                backgroundImage: "url(https://picsum.photos/800/800)",
+              }}
+            />
+
+            <div className=" bg-background/40 rounded-md flex items-center justify-between w-full p-2 relative z-10">
               <div className="flex items-center gap-3">
                 <img
                   src="https://picsum.photos/800/800"
@@ -209,11 +242,16 @@ export default function ProjectViewPage() {
                   className="h-11 w-11 rounded-full object-cover"
                 />
                 <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-foreground">
+                  <div className="flex items-center gap-4">
+                    <span className="text-lg font-bold text-foreground">
+                      Client Name
+                    </span>
+                    <span className="inline-flex px-2 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700 border border-blue-200">
+                      Development
+                    </span>
+                  </div>
+                  <span className="font-semibold text-sm text-muted-foreground">
                     Project Name
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    Client Name
                   </span>
                 </div>
               </div>
@@ -231,8 +269,8 @@ export default function ProjectViewPage() {
                 </span>
                 <span className="font-medium text-foreground">10/12/2025</span>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           <Card className="w-full p-2 flex-1  h-[40%]">
             <CardContent className="h-full p-2">
@@ -242,79 +280,24 @@ export default function ProjectViewPage() {
                   <TabsTrigger value="description">Description</TabsTrigger>
                   <TabsTrigger value="members">Members</TabsTrigger>
                   <TabsTrigger value="transactions">Transactions</TabsTrigger>
-                  <TabsTrigger value="category">Category</TabsTrigger>
                   <TabsTrigger value="attachments">Attachments</TabsTrigger>
                   <TabsTrigger value="history">History</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview" className="h-full overflow-auto">
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-linear-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
-                        <div className="flex items-center gap-2 mb-2">
-                          <CalendarIcon className="w-4 h-4 text-primary" />
-                          <span className="text-sm font-medium text-muted-foreground">
-                            Timeline
-                          </span>
-                        </div>
-                        <p className="text-sm text-foreground">
-                          Jan 1 - Mar 31, 2025
-                        </p>
-                      </div>
-                      <div className="p-4 bg-linear-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Users className="w-4 h-4 text-success" />
-                          <span className="text-sm font-medium text-muted-foreground">
-                            Team Size
-                          </span>
-                        </div>
-                        <p className="text-sm text-foreground">
-                          {demoMembers?.length} Members
-                        </p>
-                      </div>
-                      <div className="p-4 bg-linear-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
-                        <div className="flex items-center gap-2 mb-2">
-                          <DollarSign className="w-4 h-4 text-accent" />
-                          <span className="text-sm font-medium text-muted-foreground">
-                            Budget
-                          </span>
-                        </div>
-                        <p className="text-sm text-foreground">
-                          {demoProject?.budget}
-                        </p>
-                      </div>
-                      <div className="p-4 bg-linear-to-br from-orange-50 to-orange-100 rounded-lg border border-orange-200">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Clock className="w-4 h-4 text-warning" />
-                          <span className="text-sm font-medium text-muted-foreground">
-                            Spent
-                          </span>
-                        </div>
-                        <p className="text-sm text-foreground">
-                          {demoProject?.spent}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="p-4 bg-secondary rounded-lg border">
-                      <p className="text-sm font-medium mb-3 text-foreground">
-                        Progress
-                      </p>
-                      <div className="w-full bg-secondary rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full transition-all"
-                          style={{ width: `${completionPercentage}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {completionPercentage || 0}% Complete
-                      </p>
-                    </div>
+                    <ChartBarDefault
+                      startDate={project.start_date}
+                      endDate={project.estimated_end_date}
+                      projectId={id}
+                      tasks={tasks}
+                    />
                   </div>
                 </TabsContent>
                 <TabsContent
                   value="description"
                   className="h-full overflow-auto"
                 >
-                  <div className="p-4 space-y-3">
+                  <div className="space-y-3">
                     <div className="flex items-center gap-4 mb-3">
                       <div className="flex items-center gap-2 ">
                         <FileText className="w-5 h-5 text-muted-foreground" />
@@ -323,18 +306,18 @@ export default function ProjectViewPage() {
                         </h3>
                       </div>
                       <div>
-                        <StatusBadge status={demoProject?.status}>
-                          {demoProject?.status}
+                        <StatusBadge status={project?.status}>
+                          {project?.status}
                         </StatusBadge>
                       </div>
                     </div>
                     <p className="text-muted-foreground leading-relaxed">
-                      {demoProject?.description}
+                      {project?.description}
                     </p>
                   </div>
                 </TabsContent>
                 <TabsContent value="members" className="h-full overflow-auto">
-                  <div className="p-4 space-y-3">
+                  <div className="space-y-3">
                     <h3 className="font-semibold text-foreground mb-4">
                       Team Members ({demoMembers?.length})
                     </h3>
@@ -368,7 +351,7 @@ export default function ProjectViewPage() {
                   value="transactions"
                   className="h-full overflow-auto"
                 >
-                  <div className="p-4 space-y-3">
+                  <div className="space-y-3">
                     <h3 className="font-semibold text-foreground mb-4">
                       Transactions
                     </h3>
@@ -400,7 +383,7 @@ export default function ProjectViewPage() {
                   value="attachments"
                   className="h-full overflow-auto"
                 >
-                  <div className="p-4 space-y-3">
+                  <div className="space-y-3">
                     <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                       <Paperclip className="w-5 h-5" /> Files (
                       {demoAttachments.length})
@@ -434,15 +417,15 @@ export default function ProjectViewPage() {
             </CardContent>
           </Card>
 
-          <Card className="p-2 h-[40%] ">
+          <Card className="p-2 h-[40%]">
             <CardContent value="gantt" className="h-full  p-2">
               <GanttComponent tasks={tasks} projectId={id} />
             </CardContent>
           </Card>
         </div>
 
-        <div className="w-[40%] flex flex-col gap-4">
-          <div className="flex gap-4 w-full">
+        <div className="w-[25%] flex flex-col gap-4">
+          <div className="flex flex-col gap-4 w-full">
             <Card className="p-2 w-full">
               <CardContent className="p-2">
                 <CountDownComponent
@@ -452,9 +435,9 @@ export default function ProjectViewPage() {
               </CardContent>
             </Card>
             <Card className="p-2 w-full">
-              <CardContent className="p-2">
+              <CardContent className="p-2 flex">
                 <div className="text-3xl font-bold text-foreground">
-                  {progress?.done_tasks_count || 0}/{progress?.tasks_count || 0}
+                  {doneTasks || 0}/{tasks.length || 0}
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
                   Tasks completed this month
@@ -470,8 +453,8 @@ export default function ProjectViewPage() {
                 selected={dateRange}
                 onSelect={setDateRange}
                 disabled={() => true}
-                numberOfMonths={2}
-                className="w-full h-full rounded-lg border shadow-sm"
+                numberOfMonths={1}
+                className="w-full! flex justify-center rounded-lg border shadow-sm"
               />
             </CardContent>
           </Card>
