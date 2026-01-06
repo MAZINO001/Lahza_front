@@ -11,7 +11,7 @@ const handleApiError = (error, fallbackMsg) => {
 
 const usersApi = {
     getAll: () =>
-        api.get(`${API_URL}/users`).then((res) => res.data ?? []),
+        api.get(`${API_URL}/users-all`).then((res) => res.data ?? []),
 
     getById: (id) =>
         api.get(`${API_URL}/users/${id}`).then((res) => res.data ?? null),

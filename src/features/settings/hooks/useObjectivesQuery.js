@@ -23,6 +23,9 @@ const objectivesApi = {
         api.put(`${API_URL}/objectives/${id}`, data).then((res) => res.data),
 
     delete: (id) => api.delete(`${API_URL}/objectives/${id}`),
+
+    convertToEvent: (id) =>
+        api.post(`${API_URL}/objectives/${id}/convert-to-event`).then((res) => res.data),
 };
 
 export function useObjectives() {
@@ -85,5 +88,18 @@ export function useDeleteObjective() {
             queryClient.invalidateQueries({ queryKey: ["objectives"] });
         },
         onError: (error) => handleApiError(error, "Failed to delete objective"),
+    });
+}
+
+export function useConvertObjectiveToEvent() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: objectivesApi.convertToEvent,
+        onSuccess: () => {
+            toast.success("Objective converted to event successfully!");
+            queryClient.invalidateQueries({ queryKey: ["objectives"] });
+        },
+        onError: (error) => handleApiError(error, "Failed to convert objective to event"),
     });
 }

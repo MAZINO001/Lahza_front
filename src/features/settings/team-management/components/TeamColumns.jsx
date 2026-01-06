@@ -1,77 +1,51 @@
+import { useAuthContext } from "@/hooks/AuthContext";
+import { formatId } from "@/lib/utils/formatId";
+import { Link } from "react-router-dom";
+
 export default function TeamColumns() {
-    return [
-        {
-            header: "Name",
-            accessorFn: (row) => row.name ?? "-",
-            cell: ({ getValue }) => (
-                <span className="font-medium text-foreground">{getValue()}</span>
-            ),
-        },
-        {
-            header: "Job Title",
-            accessorFn: (row) => row.jobTitle ?? "-",
-            cell: ({ getValue }) => (
-                <span className="text-muted-foreground">{getValue()}</span>
-            ),
-        },
-        {
-            header: "Email",
-            accessorFn: (row) => row.email ?? "-",
-            cell: ({ getValue }) => (
-                <a
-                    href={`mailto:${getValue()}`}
-                    className="text-foreground hover:underline"
-                >
-                    {getValue()}
-                </a>
-            ),
-        },
-        {
-            header: "Phone",
-            accessorFn: (row) => row.phone ?? "-",
-            cell: ({ getValue }) => (
-                <span className="text-muted-foreground">{getValue()}</span>
-            ),
-        },
-        {
-            header: "Contract Type",
-            accessorFn: (row) => row.contractType ?? "-",
-            cell: ({ getValue }) => (
-                <span className="capitalize font-medium">{getValue()}</span>
-            ),
-        },
-        {
-            header: "Contract Period",
-            accessorFn: (row) =>
-                row.contractStartDate && row.contractEndDate
-                    ? `${row.contractStartDate} → ${row.contractEndDate}`
-                    : row.contractStartDate
-                        ? `${row.contractStartDate} → Present`
-                        : "-",
-            cell: ({ getValue }) => (
-                <span className="text-muted-foreground text-sm">{getValue()}</span>
-            ),
-        },
-        {
-            header: "Salary",
-            accessorFn: (row) => row.salary ?? "-",
-            cell: ({ getValue }) => (
-                <span className="font-medium">${getValue().toLocaleString()}</span>
-            ),
-        },
-        {
-            header: "Bank",
-            accessorFn: (row) => row.bankName ?? "-",
-            cell: ({ getValue }) => (
-                <span className="text-muted-foreground">{getValue()}</span>
-            ),
-        },
-        {
-            header: "Emergency Contact",
-            accessorFn: (row) => row.emergencyContactName ?? "-",
-            cell: ({ getValue }) => (
-                <span className="text-muted-foreground">{getValue()}</span>
-            ),
-        },
-    ];
+  const { role } = useAuthContext();
+  return [
+    {
+      header: "User ID",
+      accessorFn: (row) => row.user?.id ?? "-",
+      cell: ({ getValue }) => (
+        <Link
+          to={`/${role}/settings/users_management/${getValue()}`}
+          className="font-medium text-foreground"
+        >
+          {formatId(getValue(), "USER")}
+        </Link>
+      ),
+    },
+    {
+      header: "Name",
+      accessorFn: (row) => row.user?.name ?? "-",
+      cell: ({ getValue }) => (
+        <span className="font-medium text-foreground">{getValue()}</span>
+      ),
+    },
+    {
+      header: "Email",
+      accessorFn: (row) => row.user?.email ?? "-",
+      cell: ({ getValue }) => (
+        <a href={`mailto:${getValue()}`} className="text-foreground">
+          {getValue()}
+        </a>
+      ),
+    },
+    {
+      header: "Job Title",
+      accessorFn: (row) => row.poste ?? "-",
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue()}</span>
+      ),
+    },
+    {
+      header: "Department",
+      accessorFn: (row) => row.department ?? "-",
+      cell: ({ getValue }) => (
+        <span className="text-muted-foreground">{getValue()}</span>
+      ),
+    },
+  ];
 }

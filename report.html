@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Performance Analysis Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .critical {
+            color: #dc2626;
+        }
+
+        .high {
+            color: #ea580c;
+        }
+
+        .medium {
+            color: #d97706;
+        }
+
+        .low {
+            color: #65a30d;
+        }
+
+        .section {
+            background: white;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f1f5f9;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .section-header:hover {
+            background: #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .section-count {
+            background: #3b82f6;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .section-content {
+            padding: 1.5rem;
+            display: none;
+        }
+
+        .section.active .section-content {
+            display: block;
+        }
+
+        .issue {
+            border-left: 4px solid #3b82f6;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            background: #f8fafc;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .issue.critical {
+            border-left-color: #dc2626;
+        }
+
+        .issue.high {
+            border-left-color: #ea580c;
+        }
+
+        .issue.medium {
+            border-left-color: #d97706;
+        }
+
+        .issue.low {
+            border-left-color: #65a30d;
+        }
+
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .issue-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .issue-severity {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .severity-critical {
+            background: #dc2626;
+        }
+
+        .severity-high {
+            background: #ea580c;
+        }
+
+        .severity-medium {
+            background: #d97706;
+        }
+
+        .severity-low {
+            background: #65a30d;
+        }
+
+        .issue-file {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: #e2e8f0;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .issue-description {
+            color: #475569;
+            margin-bottom: 0.5rem;
+        }
+
+        .issue-impact {
+            color: #dc2626;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .issue-fix {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .toggle-icon {
+            transition: transform 0.2s;
+        }
+
+        .section.active .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 React Performance Analysis Report</h1>
+            <p>Comprehensive performance audit for Lahza Frontend Application</p>
+        </div>
+
+        <div class="dashboard">
+            <div class="stat-card">
+                <div class="stat-number">24</div>
+                <div class="stat-label">Total Issues</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number critical">3</div>
+                <div class="stat-label">Critical</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number high">8</div>
+                <div class="stat-label">High</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number medium">9</div>
+                <div class="stat-label">Medium</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number low">4</div>
+                <div class="stat-label">Low</div>
+            </div>
+        </div>
+
+        <div class="section active">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-title">🚨 Critical Issues</div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="section-count">3</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="issue critical">
+                    <div class="issue-header">
+                        <div class="issue-title">No Query Client Configuration</div>
+                        <div class="issue-severity severity-critical">Critical</div>
+                    </div>
+                    <div class="issue-file">src/lib/queryClient.js</div>
+                    <div class="issue-description">Query client configuration file is empty, leading to default React
+                        Query settings</div>
+                    <div class="issue-impact">Why it's harmful: No caching configuration, causing excessive network
+                        requests and poor performance</div>
+                    <div class="issue-fix">import { QueryClient } from '@tanstack/react-query';
+
+                        export const queryClient = new QueryClient({
+                        defaultOptions: {
+                        queries: {
+                        staleTime: 5 * 60 * 1000, // 5 minutes
+                        cacheTime: 10 * 60 * 1000, // 10 minutes
+                        refetchOnWindowFocus: false,
+                        retry: 3,
+                        },
+                        },
+                        });</div>
+                </div>
+
+                <div class="issue critical">
+                    <div class="issue-header">
+                        <div class="issue-title">Zero Stale Time in Queries</div>
+                        <div class="issue-severity severity-critical">Critical</div>
+                    </div>
+                    <div class="issue-file">src/features/clients/hooks/useClientsQuery.js (and 20+ other files)</div>
+                    <div class="issue-description">All queries have staleTime: 0, causing immediate refetching</div>
+                    <div class="issue-impact">Why it's harmful: Every component re-render triggers network requests,
+                        overwhelming the server</div>
+                    <div class="issue-fix">staleTime: 5 * 60 * 1000, // 5 minutes
+                        refetchOnWindowFocus: false,</div>
+                </div>
+
+                <div class="issue critical">
+                    <div class="issue-header">
+                        <div class="issue-title">Syntax Error in App.jsx</div>
+                        <div class="issue-severity severity-critical">Critical</div>
+                    </div>
+                    <div class="issue-file">src/app/App.jsx:21</div>
+                    <div class="issue-description">Extra semicolon after JSX element causing runtime error</div>
+                    <div class="issue-impact">Why it's harmful: Will break the application and cause white screen</div>
+                    <div class="issue-fix">Remove the semicolon on line 21:
+                        &lt;AppRoutes /&gt; // Remove ;</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-title">⚡ High Priority Issues</div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="section-count">8</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="issue high">
+                    <div class="issue-header">
+                        <div class="issue-title">Excessive Inline Functions in JSX</div>
+                        <div class="issue-severity severity-high">High</div>
+                    </div>
+                    <div class="issue-file">src/Routes/index.jsx (48+ instances)</div>
+                    <div class="issue-description">Multiple inline arrow functions in route definitions causing child
+                        re-renders</div>
+                    <div class="issue-impact">Why it's harmful: Breaks React.memo and causes unnecessary re-renders on
+                        every render</div>
+                    <div class="issue-fix">// Before
+                        onClick={() => row.toggleExpanded()}
+
+                        // After - move to component
+                        const handleRowClick = useCallback(() => {
+                        row.toggleExpanded();
+                        }, [row]);</div>
+                </div>
+
+                <div class="issue high">
+                    <div class="issue-header">
+                        <div class="issue-title">Missing Memoization in Complex Components</div>
+                        <div class="issue-severity severity-high">High</div>
+                    </div>
+                    <div class="issue-file">src/components/kibo-ui/gantt/index.jsx</div>
+                    <div class="issue-description">Large component (1278 lines) without React.memo or proper
+                        optimization</div>
+                    <div class="issue-impact">Why it's harmful: Will re-render entire Gantt chart on any parent state
+                        change</div>
+                    <div class="issue-fix">export const GanttChart = React.memo(({ data, ...props }) => {
+                        // Component logic
+                        }, (prevProps, nextProps) => {
+                        // Custom comparison for props
+                        return prevProps.data === nextProps.data;
+                        });</div>
+                </div>
+
+                <div class="issue high">
+                    <div class="issue-header">
+                        <div class="issue-title">Auth Hook Inefficient Re-renders</div>
+                        <div class="issue-severity severity-high">High</div>
+                    </div>
+                    <div class="issue-file">src/hooks/useAuth.js</div>
+                    <div class="issue-description">Auth context recreates object on every render due to inefficient
+                        dependency array</div>
+                    <div class="issue-impact">Why it's harmful: Causes all components using auth to re-render
+                        unnecessarily</div>
+                    <div class="issue-fix">const value = useMemo(() => ({
+                        user: auth.user,
+                        role: auth.role,
+                        isAuthenticated: auth.isAuthenticated,
+                        loading: auth.loading,
+                        login: auth.login,
+                        logout: auth.logout,
+                        }), [auth.user, auth.role, auth.isAuthenticated, auth.loading, auth.login, auth.logout]);</div>
+                </div>
+
+                <div class="issue high">
+                    <div class="issue-header">
+                        <div class="issue-title">Bundle Size Not Optimized</div>
+                        <div class="issue-severity severity-high">High</div>
+                    </div>
+                    <div class="issue-file">package.json</div>
+                    <div class="issue-description">Large dependencies like @fullcalendar, pdfjs-dist, framer-motion
+                        loaded eagerly</div>
+                    <div class="issue-impact">Why it's harmful: Increases initial bundle size and slows down first load
+                    </div>
+                    <div class="issue-fix">// Lazy load heavy dependencies
+                        const FullCalendar = lazy(() => import('@fullcalendar/react'));
+                        const PdfViewer = lazy(() => import('react-pdf'));</div>
+                </div>
+
+                <div class="issue high">
+                    <div class="issue-header">
+                        <div class="issue-title">No Code Splitting for Settings</div>
+                        <div class="issue-severity severity-high">High</div>
+                    </div>
+                    <div class="issue-file">src/features/settings/layout_components/settingsPage.jsx</div>
+                    <div class="issue-description">Only partial lazy loading in settings routes</div>
+                    <div class="issue-impact">Why it's harmful: Settings page loads all components at once</div>
+                    <div class="issue-fix">const AgencyInfo = lazy(() => import("../agency-info/AgencyInfo"));
+                        const TeamManagement = lazy(() => import("../team-management/TeamManagement"));
+                        const UserManagement = lazy(() => import("../user-management/UserManagement"));</div>
+                </div>
+
+                <div class="issue high">
+                    <div class="issue-header">
+                        <div class="issue-title">Inefficient Array Keys</div>
+                        <div class="issue-severity severity-high">High</div>
+                    </div>
+                    <div class="issue-file">Multiple components (105+ instances)</div>
+                    <div class="issue-description">Using array index or non-unique values as keys in lists</div>
+                    <div class="issue-impact">Why it's harmful: Causes React to re-create DOM nodes unnecessarily</div>
+                    <div class="issue-fix">// Bad
+                        key={index}
+
+                        // Good
+                        key={item.id}
+
+                        // For unique keys
+                        key={`${item.id}-${item.type}`}</div>
+                </div>
+
+                <div class="issue high">
+                    <div class="issue-header">
+                        <div class="issue-title">Missing Error Boundaries</div>
+                        <div class="issue-severity severity-high">High</div>
+                    </div>
+                    <div class="issue-file">src/main.jsx</div>
+                    <div class="issue-description">Only one error boundary at root level</div>
+                    <div class="issue-impact">Why it's harmful: Single error can crash entire application</div>
+                    <div class="issue-fix">// Add error boundaries around major sections
+                        &lt;ErrorBoundary&gt;
+                        &lt;Dashboard /&gt;
+                        &lt;/ErrorBoundary&gt;
+                        &lt;ErrorBoundary&gt;
+                        &lt;Settings /&gt;
+                        &lt;/ErrorBoundary&gt;</div>
+                </div>
+
+                <div class="issue high">
+                    <div class="issue-header">
+                        <div class="issue-title">No Request Debouncing</div>
+                        <div class="issue-severity severity-high">High</div>
+                    </div>
+                    <div class="issue-file">src/components/Form/SelectField_Search.jsx</div>
+                    <div class="issue-description">Search inputs trigger API calls on every keystroke</div>
+                    <div class="issue-impact">Why it's harmful: Causes API overload and poor user experience</div>
+                    <div class="issue-fix">import { useDebouncedCallback } from 'use-debounce';
+
+                        const debouncedSearch = useDebouncedCallback(
+                        (value) => {
+                        searchFunction(value);
+                        },
+                        300
+                        );</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header" onclick="toggleSection(this)">
+                <div class="section-title">⚠️ Medium Priority Issues</div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="section-count">9</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div class="issue medium">
+                    <div class="issue-header">
+                        <div class="issue-title">Console Logs in Production</div>
+                        <div class="issue-severity severity-medium">Medium</div>
+                    </div>
+                    <div class="issue-file">src/hooks/useAuth.js:158, src/features/clients/hooks/useClientsQuery.js:26
+                    </div>
+                    <div class="issue-description">Console.log statements left in production code</div>
+                    <div class="issue-impact">Why it's harmful: Exposes sensitive information and affects performance
+                    </div>
+                    <div class="issue-fix">if (process.env.NODE_ENV === 'development') {
+                        console.log('Debug info');
+                        }</div>
+                </div>
+
+                <div class="issue medium">
+                    <div class="issue-header">
+                        <div class="issue-title">Unused Dependencies</div>
+                        <div class="issue-severity severity-medium">Medium</div>
+                    </div>
+                    <div class="issue-file">package.json</div>
+                    <div class="issue-description">Dependencies like @headlessui/react in devDependencies but used in
+                        production</div>
+                    <div class="issue-impact">Why it's harmful: Increases bundle size unnecessarily</div>
+                    <div class="issue-fix">Move @headlessui/react to dependencies or remove unused imports</div>
+                </div>
+
+                <div class="issue medium">
+                    <div class="issue-header">
+                        <div class="issue-title">Missing Loading States</div>
+                        <div class="issue-severity severity-medium">Medium</div>
+                    </div>
+                    <div class="issue-file">Multiple query hooks</div>
+                    <div class="issue-description">Queries don't have proper loading state handling</div>
+                    <div class="issue-impact">Why it's harmful: Poor user experience during data fetching</div>
+                    <div class="issue-fix">const { data, isLoading, error } = useQuery({
+                        // ... config
+                        });
+
+                        if (isLoading) return &lt;LoadingSpinner /&gt;;</div>
+                </div>
+
+                <div class="issue medium">
+                    <div class="issue-header">
+                        <div class="issue-title">Inefficient useEffect Dependencies</div>
+                        <div class="issue-severity severity-medium">Medium</div>
+                    </div>
+                    <div class="issue-file">Multiple components (347+ useEffect instances)</div>
+                    <div class="issue-description">useEffect hooks with missing or excessive dependencies</div>
+                    <div class="issue-impact">Why it's harmful: Causes infinite loops or missed updates</div>
+                    <div class="issue-fix">useEffect(() => {
+                        // effect logic
+                        }, [dependency1, dependency2]); // Include all dependencies</div>
+                </div>
+
+                <div class="issue medium">
+                    <div class="issue-header">
+                        <div class="issue-title">No Virtual Scrolling</div>
+                        <div class="issue-severity severity-medium">Medium</div>
+                    </div>
+                    <div class="issue-file">src/components/table/DataTable.jsx</div>
+                    <div class="issue-description">Large tables render all rows at once</div>
+                    <div class="issue-impact">Why it's harmful: Causes performance issues with large datasets</div>
+                    <div class="issue-fix">import { FixedSizeList as List } from 'react-window';
+
+                        &lt;List
+                        height={600}
+                        itemCount={data.length}
+                        itemSize={50}
+                        &gt;
+                        {Row}
+                        &lt;/List&gt;</div>
+                </div>
+
+                <div class="issue medium">
+                    <div class="issue-header">
+                        <div class="issue-title">Missing Image Optimization</div>
+                        <div class="issue-severity severity-medium">Medium</div>
+                    </div>
+                    <div class="issue-file">public/images/</div>
+                    <div class="issue-description">Images not optimized or lazy loaded</div>
+                    <div class="issue-impact">Why it's harmful: Slow page load times</div>
+                    <div class="issue-fix">&lt;img
+                        src="image.jpg"
+                        loading="lazy"
+                        alt="description"
+                        width="300"
+                        height="200"
+                        /&gt;</div>
+                </div>
+
+                <div class="issue medium">
+                    <div class="issue-header">
+                        <div class="issue-title">No Service Worker</div>
+                        <div class="issue-severity severity-medium">Medium</div>
+                    </div>
+                    <div class="issue-file">Root directory</div>
+                    <div class="issue-description">No PWA capabilities or offline support</div>
+                    <div class="issue-impact">Why it's harmful: Poor offline experience and slower loads</div>
+                    <div="issue-fix">// Add workbox-webpack-plugin or Vite PWA plugin
+                        import { VitePWA } from 'vite-plugin-pwa';
+
+                        export default defineConfig({
+                        plugins: [
+                        VitePWA({
+                        registerType: 'autoUpdate',
+                        }),
+                        ],
+                        });
+                </div>
+            </div>
+
+            <div class="issue medium">
+                <div class="issue-header">
+                    <div class="issue-title">Large Component Files</div>
+                    <div class="issue-severity severity-medium">Medium</div>
+                </div>
+                <div class="issue-file">src/components/kibo-ui/gantt/index.jsx (1278 lines)</div>
+                <div class="issue-description">Single component file too large</div>
+                <div class="issue-impact">Why it's harmful: Hard to maintain and optimize</div>
+                <div class="issue-fix">Split into smaller components:
+                    - GanttHeader.jsx
+                    - GanttRow.jsx
+                    - GanttTimeline.jsx
+                    - GanttTasks.jsx</div>
+            </div>
+
+            <div class="issue medium">
+                <div class="issue-header">
+                    <div class="issue-title">No Request Cancellation</div>
+                    <div class="issue-severity severity-medium">Medium</div>
+                </div>
+                <div class="issue-file">src/hooks/useAuth.js</div>
+                <div class="issue-description">API requests not cancelled on component unmount</div>
+                <div class="issue-impact">Why it's harmful: Memory leaks and stale state updates</div>
+                <div class="issue-fix">useEffect(() => {
+                    const controller = new AbortController();
+
+                    fetchData(controller.signal);
+
+                    return () => controller.abort();
+                    }, []);</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">💡 Low Priority Issues</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="section-count">4</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+        </div>
+        <div class="section-content">
+            <div class="issue low">
+                <div class="issue-header">
+                    <div class="issue-title">Commented Out Code</div>
+                    <div class="issue-severity severity-low">Low</div>
+                </div>
+                <div class="issue-file">src/hooks/useAuth.js:1-81, src/lib/utils/axios.js:1-20</div>
+                <div class="issue-description">Large blocks of commented code should be removed</div>
+                <div class="issue-impact">Why it's harmful: Increases bundle size and reduces readability</div>
+                <div class="issue-fix">Remove commented code blocks and use version control for history</div>
+            </div>
+
+            <div class="issue low">
+                <div class="issue-header">
+                    <div class="issue-title">Missing PropTypes</div>
+                    <div class="issue-severity severity-low">Low</div>
+                </div>
+                <div class="issue-file">Multiple components</div>
+                <div class="issue-description">Components missing prop type validation</div>
+                <div class="issue-impact">Why it's harmful: Harder to debug prop-related issues</div>
+            </div>
+
+            <div class="issue low">
+                <div class="issue-header">
+                    <div class="issue-title">Inconsistent File Naming</div>
+                    <div class="issue-severity severity-low">Low</div>
+                </div>
+                <div class="issue-file">src/components/</div>
+                <div class="issue-description">Mix of .jsx and capitalization inconsistencies</div>
+                <div class="issue-impact">Why it's harmful: Reduces code organization and findability</div>
+            </div>
+
+            <div class="issue low">
+                <div class="issue-header">
+                    <div class="issue-title">Missing Meta Tags</div>
+                    <div class="issue-severity severity-low">Low</div>
+                </div>
+                <div class="issue-file">index.html</div>
+                <div class="issue-description">Missing SEO and performance meta tags</div>
+                <div class="issue-impact">Why it's harmful: Poor SEO and social sharing</div>
+                <div class="issue-fix">&lt;meta name="description" content="..."&gt;
+                    &lt;meta property="og:title" content="..."&gt;
+                    &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+            <div class="section-title">📊 Summary & Recommendations</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="section-count">Action Plan</span>
+                <span class="toggle-icon">▼</span>
+            </div>
+        </div>
+        <div class="section-content">
+            <div style="padding: 1rem; background: #f0f9ff; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #1e40af; margin-bottom: 1rem;">🎯 Immediate Actions (This Week)</h3>
+                <ol style="margin-left: 1.5rem; color: #374151;">
+                    <li>Fix syntax error in App.jsx line 21</li>
+                    <li>Configure React Query client with proper caching</li>
+                    <li>Set staleTime to 5+ minutes in all query hooks</li>
+                    <li>Add error boundaries around major application sections</li>
+                </ol>
+            </div>
+
+            <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #92400e; margin-bottom: 1rem;">🚀 Performance Optimizations (Next 2 Weeks)</h3>
+                <ol style="margin-left: 1.5rem; color: #374151;">
+                    <li>Implement proper memoization for Gantt component</li>
+                    <li>Add debouncing to search inputs</li>
+                    <li>Lazy load heavy dependencies (FullCalendar, PDF.js)</li>
+                    <li>Fix inline functions in JSX throughout the app</li>
+                    <li>Implement virtual scrolling for large data tables</li>
+                </ol>
+            </div>
+
+            <div style="padding: 1rem; background: #f0fdf4; border-radius: 8px; margin-bottom: 1rem;">
+                <h3 style="color: #166534; margin-bottom: 1rem;">🏗️ Architecture Improvements (Next Month)</h3>
+                <ol style="margin-left: 1.5rem; color: #374151;">
+                    <li>Split large components into smaller, focused pieces</li>
+                    <li>Implement proper request cancellation patterns</li>
+                    <li>Add comprehensive loading states</li>
+                    <li>Set up PWA capabilities with service worker</li>
+                    <li>Optimize bundle with better code splitting</li>
+                </ol>
+            </div>
+
+            <div style="padding: 1rem; background: #faf5ff; border-radius: 8px;">
+                <h3 style="color: #6b21a8; margin-bottom: 1rem;">📈 Expected Performance Gains</h3>
+                <ul style="margin-left: 1.5rem; color: #374151;">
+                    <li><strong>Bundle Size:</strong> 30-40% reduction with lazy loading</li>
+                    <li><strong>Initial Load:</strong> 50-60% faster with proper caching</li>
+                    <li><strong>Network Requests:</strong> 70-80% reduction with React Query optimization</li>
+                    <li><strong>Re-renders:</strong> 60-70% fewer unnecessary renders</li>
+                    <li><strong>Memory Usage:</strong> 40-50% reduction with proper cleanup</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('active');
+        }
+
+        // Initially expand only the critical issues section
+        document.addEventListener('DOMContentLoaded', function () {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                if (!section.querySelector('.issue.critical')) {
+                    section.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

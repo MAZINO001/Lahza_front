@@ -63,9 +63,9 @@ export default function AdditionalTeamDetails() {
         job_title: existingData?.job_title,
         salary: existingData?.salary,
         notes: existingData?.notes,
-        portfolio: existingData?.portfolio, 
-        github: existingData?.github, 
-        linkedin: existingData?.linkedin, 
+        portfolio: existingData?.portfolio,
+        github: existingData?.github,
+        linkedin: existingData?.linkedin,
         cv: existingData?.cv,
       });
     }
@@ -86,7 +86,6 @@ export default function AdditionalTeamDetails() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="font-semibold text-lg">Team Member Details</h1>
       <div className="space-y-8">
         <div className="">
           <h2 className="text-md font-semibold text-foreground mb-2">

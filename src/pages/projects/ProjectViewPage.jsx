@@ -242,6 +242,7 @@ export default function ProjectViewPage() {
                   <TabsTrigger value="description">Description</TabsTrigger>
                   <TabsTrigger value="members">Members</TabsTrigger>
                   <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                  <TabsTrigger value="category">Category</TabsTrigger>
                   <TabsTrigger value="attachments">Attachments</TabsTrigger>
                   <TabsTrigger value="history">History</TabsTrigger>
                 </TabsList>

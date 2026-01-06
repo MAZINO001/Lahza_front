@@ -1,4 +1,4 @@
-import { ArrowUpDown, Pencil } from "lucide-react";
+import { ArrowUpDown, CopyPlus, Pencil, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { formatId } from "@/lib/utils/formatId";
@@ -93,7 +93,16 @@ export function ProjectColumns(role, navigate) {
                 HandleEditProject(row.getValue("id"), navigate, role)
               }
             >
-              <Pencil className="h-4 w-4" />
+              <Settings className="h-4 w-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() =>
+                HandleEditProject(row.getValue("id"), navigate, role)
+              }
+            >
+              <CopyPlus className="h-4 w-4" />
             </Button>
           </div>
         );

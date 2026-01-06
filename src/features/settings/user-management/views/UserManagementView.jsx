@@ -1,21 +1,9 @@
-/* eslint-disable no-unused-vars */
-import { ArrowLeft, Save } from "lucide-react";
-import { useForm, Controller } from "react-hook-form";
+import { ArrowLeft, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useParams } from "react-router-dom";
-import SelectField from "@/components/Form/SelectField";
-import FormField from "@/components/Form/FormField";
 
 export default function UserManagementView() {
     const { id } = useParams();
@@ -34,47 +22,48 @@ export default function UserManagementView() {
         { id: "approve_content", label: "Approve Content" },
     ];
 
-    const { control, handleSubmit, watch } = useForm({
-        defaultValues: {
-            name: "John Doe",
-            email: "john@example.com",
-            role: "Admin",
-            status: "Active",
-            joinDate: "2024-01-15",
-            permissions: {
-                create_content: true,
-                edit_content: true,
-                delete_content: false,
-                manage_users: true,
-                manage_roles: true,
-                view_analytics: true,
-                manage_settings: false,
-                export_data: true,
-                view_reports: true,
-                approve_content: false,
-            },
+    // Mock user data - in real app this would come from API
+    const userData = {
+        name: "John Doe",
+        email: "john@example.com",
+        role: "Admin",
+        status: "Active",
+        joinDate: "2024-01-15",
+        permissions: {
+            create_content: true,
+            edit_content: true,
+            delete_content: false,
+            manage_users: true,
+            manage_roles: true,
+            view_analytics: true,
+            manage_settings: false,
+            export_data: true,
+            view_reports: true,
+            approve_content: false,
         },
-    });
+    };
 
-    const permissions = watch("permissions");
-
-    const onSubmit = (data) => {
-        console.log("Form Data:", data);
-        alert("User updated successfully");
+    const handleEdit = () => {
+        navigate(`/admin/settings/users_management/edit/${id}`);
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
             <div className="p-4">
-                <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => navigate("/admin/settings/users_management")}
-                    className="mb-4"
-                >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back
-                </Button>
+                <div className="flex justify-between items-center mb-4">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => navigate("/admin/settings/users_management")}
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back
+                    </Button>
+                    <Button onClick={handleEdit} className="gap-2">
+                        <Edit className="w-4 h-4" />
+                        Edit User
+                    </Button>
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     {/* User Info */}
@@ -84,95 +73,28 @@ export default function UserManagementView() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <Controller
-                                    name="name"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <FormField
-                                            label="Name"
-                                            id="name"
-                                            type="text"
-                                            {...field}
-                                            className="mt-1"
-                                        />
-                                    )}
-                                />
+                                <label className="block text-sm font-medium mb-1">Name</label>
+                                <p className="text-sm text-gray-700 p-2 bg-gray-50 rounded">{userData.name}</p>
                             </div>
 
                             <div>
-                                <Controller
-                                    name="email"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <FormField
-                                            className="mt-1"
-                                            label="Email"
-                                            type="email"
-                                            id="email"
-                                            {...field}
-                                            disabled
-                                        />
-                                    )}
-                                />
+                                <label className="block text-sm font-medium mb-1">Email</label>
+                                <p className="text-sm text-gray-700 p-2 bg-gray-50 rounded">{userData.email}</p>
                             </div>
 
                             <div>
-                                <Controller
-                                    name="role"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <SelectField
-                                            id="role"
-                                            label="Role"
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                            placeholder="Select a role"
-                                            options={[
-                                                { value: "Admin", label: "Admin" },
-                                                { value: "Editor", label: "Editor" },
-                                                { value: "Viewer", label: "Viewer" },
-                                            ]}
-                                        />
-                                    )}
-                                />
+                                <label className="block text-sm font-medium mb-1">Role</label>
+                                <p className="text-sm text-gray-700 p-2 bg-gray-50 rounded">{userData.role}</p>
                             </div>
 
                             <div>
-                                <Controller
-                                    name="status"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <SelectField
-                                            id="status"
-                                            label="Status"
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                            placeholder="Select a status"
-                                            options={[
-                                                { value: "Active", label: "Active" },
-                                                { value: "Inactive", label: "Inactive" },
-                                                { value: "Suspended", label: "Suspended" },
-                                            ]}
-                                        />
-                                    )}
-                                />
+                                <label className="block text-sm font-medium mb-1">Status</label>
+                                <p className="text-sm text-gray-700 p-2 bg-gray-50 rounded">{userData.status}</p>
                             </div>
 
                             <div>
-                                <Controller
-                                    name="joinDate"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <FormField
-                                            label="Join Date"
-                                            id="joinDate"
-                                            {...field}
-                                            type="date"
-                                            value={field.value}
-                                            disabled
-                                        />
-                                    )}
-                                />
+                                <label className="block text-sm font-medium mb-1">Join Date</label>
+                                <p className="text-sm text-gray-700 p-2 bg-gray-50 rounded">{userData.joinDate}</p>
                             </div>
                         </CardContent>
                     </Card>
@@ -185,33 +107,19 @@ export default function UserManagementView() {
                         <CardContent>
                             <div className="space-y-3">
                                 {defaultPermissions.map((perm) => (
-                                    <Controller
-                                        key={perm.id}
-                                        name={`permissions.${perm.id}`}
-                                        control={control}
-                                        render={({ field }) => (
-                                            <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50">
-                                                <Checkbox
-                                                    checked={field.value}
-                                                    onCheckedChange={field.onChange}
-                                                />
-                                                <span className="text-sm flex-1">{perm.label}</span>
-                                            </div>
-                                        )}
-                                    />
+                                    <div key={perm.id} className="flex items-center gap-3 p-2 rounded hover:bg-gray-50">
+                                        <Checkbox
+                                            checked={userData.permissions[perm.id]}
+                                            disabled
+                                        />
+                                        <span className="text-sm flex-1">{perm.label}</span>
+                                    </div>
                                 ))}
                             </div>
                         </CardContent>
                     </Card>
                 </div>
-
-                <div className="mt-4 flex justify-end">
-                    <Button type="submit" className="gap-2">
-                        <Save className="w-4 h-4" />
-                        Save Changes
-                    </Button>
-                </div>
             </div>
-        </form>
+        </div>
     );
 }

@@ -102,6 +102,9 @@ const TeamUserViewPage = lazy(
 const UserManagementView = lazy(
   () => import("@/features/settings/user-management/views/UserManagementView")
 );
+const UserManagementForm = lazy(
+  () => import("@/features/settings/user-management/views/UserManagementForm")
+);
 
 import AuthLayout from "@/app/layout/AuthLayout";
 import AppLayout from "@/app/layout/AppLayout";
@@ -437,6 +440,26 @@ export default function AppRoutes() {
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading user management...</div>}>
                       <UserManagementView />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="settings/users_management/create"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading user creation...</div>}>
+                      <UserManagementForm />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="settings/users_management/edit/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading user editing...</div>}>
+                      <UserManagementForm />
                     </Suspense>
                   </ErrorBoundary>
                 }

@@ -9,9 +9,11 @@ const handleApiError = (error, fallbackMsg) => {
     toast.error(error?.response?.data?.message || fallbackMsg);
 };
 
+
+
 const teamsApi = {
     getAll: () =>
-        api.get(`${API_URL}/teams`).then((res) => res.data ?? []),
+        api.get(`${API_URL}/get-team-users`).then((res) => res.data ?? []),
 
     getById: (id) =>
         api.get(`${API_URL}/teams/${id}`).then((res) => res.data),

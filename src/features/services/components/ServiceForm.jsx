@@ -34,6 +34,7 @@ export function ServiceForm({ service, onSuccess }) {
       base_price: "",
       tax_rate: "0",
       time: "1",
+      category: "",
       status: "active",
     },
   });
@@ -87,52 +88,81 @@ export function ServiceForm({ service, onSuccess }) {
           />
         )}
       />
-
-      <Controller
-        name="base_price"
-        control={control}
-        rules={{ required: "Price is required" }}
-        render={({ field }) => (
-          <FormField
-            label="Base Price (MAD)"
-            type="number"
-            step="0.01"
-            error={errors.base_price?.message}
-            {...field}
+      <div className="flex gap-4 w-full">
+        <div className="w-full">
+          <Controller
+            name="base_price"
+            control={control}
+            rules={{ required: "Price is required" }}
+            render={({ field }) => (
+              <FormField
+                label="Base Price (MAD)"
+                type="number"
+                step="0.01"
+                error={errors.base_price?.message}
+                {...field}
+              />
+            )}
           />
-        )}
-      />
-
-      <Controller
-        name="tax_rate"
-        control={control}
-        render={({ field }) => (
-          <SelectField
-            label="Tax Rate"
-            options={[
-              { value: "20", label: "20%" },
-              { value: "0", label: "0% (No Tax)" },
-            ]}
-            {...field}
+        </div>
+        <div className="w-full">
+          <Controller
+            name="tax_rate"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label="Tax Rate"
+                options={[
+                  { value: "20", label: "20%" },
+                  { value: "0", label: "0% (No Tax)" },
+                ]}
+                {...field}
+              />
+            )}
           />
-        )}
-      />
-      <Controller
-        name="time"
-        control={control}
-        render={({ field }) => (
-          <FormField
-            label="Service Duration"
-            type="number"
-            placeholder="e.g., 3 (days)"
-            error={errors.time?.message}
-            value={field.value}
-            onChange={field.onChange}
-            {...field}
+        </div>
+      </div>
+      <div className="flex gap-4 w-full">
+        <div className="w-full">
+          <Controller
+            name="time"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                label="Service Duration"
+                type="number"
+                placeholder="e.g., 3 (days)"
+                error={errors.time?.message}
+                value={field.value}
+                onChange={field.onChange}
+                {...field}
+              />
+            )}
           />
-        )}
-      />
-
+        </div>
+        <div className="w-full">
+          <Controller
+            name="category"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label="Service Category"
+                placeholder=""
+                value={field.value}
+                onChange={field.onChange}
+                {...field}
+                options={[
+                  { value: "development", label: "Development" },
+                  { value: "design", label: "Design" },
+                  { value: "marketing", label: "Marketing" },
+                  { value: "management", label: "Management" },
+                ]}
+                error={errors.time?.message}
+              />
+            )}
+          />
+        </div>
+      </div>
       {service?.id && (
         <Controller
           name="status"
