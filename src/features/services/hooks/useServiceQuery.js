@@ -24,7 +24,7 @@ export function useServices() {
     return useQuery({
         queryKey: ["services"],
         queryFn: apiService.getAll,
-        staleTime: 0,
+        staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch services");

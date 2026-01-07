@@ -9,7 +9,7 @@ export default function AppLayout() {
   return (
     <SidebarProvider
       style={{
-        "--sidebar-width": "calc(var(--spacing) * 60)",
+        "--sidebar-width": "calc(var(--spacing) * 45)",
         "--header-height": "calc(var(--spacing) * 6)",
       }}
     >

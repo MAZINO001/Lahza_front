@@ -21,27 +21,27 @@ const sidebarItems = [
       {
         name: "Company Basics",
         value: "company_basics",
-        icon: <Building className="w-5 h-5" />,
+        icon: <Building className="w-4 h-4" />,
       },
       {
         name: "Branding & Assets",
         value: "branding_assets",
-        icon: <Palette className="w-5 h-5" />,
+        icon: <Palette className="w-4 h-4" />,
       },
       {
         name: "Contact & Address",
         value: "contact_address",
-        icon: <Contact className="w-5 h-5" />,
+        icon: <Contact className="w-4 h-4" />,
       },
       {
         name: "Legal, Tax & Banking",
         value: "legal_tax_banking",
-        icon: <Scale className="w-5 h-5" />,
+        icon: <Scale className="w-4 h-4" />,
       },
       {
         name: "Certifications",
         value: "certifications",
-        icon: <AwardIcon className="w-5 h-5" />,
+        icon: <AwardIcon className="w-4 h-4" />,
       },
     ],
   },
@@ -52,17 +52,17 @@ const sidebarItems = [
       {
         name: "Notifications",
         value: "notifications",
-        icon: <Bell className="w-5 h-5" />,
+        icon: <Bell className="w-4 h-4" />,
       },
       {
         name: "General",
         value: "preferences",
-        icon: <Palette className="w-5 h-5" />,
+        icon: <Palette className="w-4 h-4" />,
       },
       {
         name: "Security",
         value: "security",
-        icon: <Lock className="w-5 h-5" />,
+        icon: <Lock className="w-4 h-4" />,
       },
     ],
   },
@@ -73,22 +73,22 @@ const sidebarItems = [
       {
         name: "Team Management",
         value: "team_management",
-        icon: <Building className="w-5 h-5" />,
+        icon: <Building className="w-4 h-4" />,
       },
       {
         name: "Projects Management",
         value: "projects_management",
-        icon: <FolderKanban className="w-5 h-5" />,
+        icon: <FolderKanban className="w-4 h-4" />,
       },
       {
         name: "Users Management",
         value: "users_management",
-        icon: <User className="w-5 h-5" />,
+        icon: <User className="w-4 h-4" />,
       },
       {
         name: "Agency Objectives",
         value: "agency_objectives",
-        icon: <Target className="w-5 h-5" />,
+        icon: <Target className="w-4 h-4" />,
       },
     ],
   },
@@ -101,7 +101,7 @@ export default function SettingsSideBar() {
   // Get the current settings section from the URL
   const currentSection = location.pathname.split("/").pop() || "company_basics";
   return (
-    <aside className="w-64 shrink-0 border border-border rounded-lg h-screen overflow-auto">
+    <aside className="w-60 shrink-0 border border-border rounded-lg h-screen overflow-auto">
       <div className="rounded-2xl bg-background backdrop-blur-sm ">
         <div className="p-4">
           <h2 className="mb-4 text-lg font-semibold text-foreground">
@@ -122,7 +122,10 @@ export default function SettingsSideBar() {
                   <ul className="space-y-1">
                     {group.items.map((item) => {
                       // Hide branding & assets from non-admin users
-                      if (item.value === "branding_assets" && role !== "admin") {
+                      if (
+                        item.value === "branding_assets" &&
+                        role !== "admin"
+                      ) {
                         return null;
                       }
 
@@ -133,10 +136,11 @@ export default function SettingsSideBar() {
                           key={item.value}
                         >
                           <div
-                            className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-colors ${isActive
+                            className={`w-full text-left px-2 py-2 rounded-lg text-sm transition-colors ${
+                              isActive
                                 ? "bg-primary/20 text-primary/80"
                                 : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
-                              }`}
+                            }`}
                           >
                             <span className="flex gap-2">
                               {item.icon}

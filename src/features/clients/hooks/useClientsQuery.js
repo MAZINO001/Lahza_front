@@ -20,7 +20,7 @@ export function useClients() {
     return useQuery({
         queryKey: ["clients"],
         queryFn: apiClient.getAll,
-        staleTime: 0,
+        staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: true,
         onError: (error) => {
             console.log(error)

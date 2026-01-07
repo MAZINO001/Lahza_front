@@ -75,7 +75,7 @@ export default function Inv_Qt_sidebar({ type }) {
   };
 
   return (
-    <div className=" w-[260px] bg-background border-r flex flex-col ">
+    <div className=" w-[280px] bg-background border-r flex flex-col ">
       <div className="px-2 py-4 border-b flex items-center gap-3">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

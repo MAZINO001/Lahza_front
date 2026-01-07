@@ -661,7 +661,7 @@ export default function ProjectViewPage() {
             onSelect={setDateRange}
             disabled={() => true}
             numberOfMonths={1}
-            className="w-full! flex justify-center rounded-lg border shadow-sm"
+            // className="w-full! flex justify-center rounded-lg border shadow-sm"
           />
 
           <Card className="p-2">

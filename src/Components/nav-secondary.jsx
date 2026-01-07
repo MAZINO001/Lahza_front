@@ -20,8 +20,8 @@ export function NavSecondary({ items, ...props }) {
             <SidebarMenuItem
               key={item.title}
               className={`
-    flex items-center gap-3  py-2 rounded-lg text-[15px] font-medium
-    transition-colors duration-200 cursor-pointer
+    flex items-center gap-3  rounded-lg 
+     cursor-pointer
     hover:text-primary/80
     ${
       location.pathname === item.url
@@ -44,7 +44,7 @@ export function NavSecondary({ items, ...props }) {
                 <Link to={item.url}>
                   <>
                     <span>
-                      <item.icon className="w-5 h-5" />
+                      <item.icon className="w-4 h-4" />
                     </span>
                     <span>{item.title}</span>
                   </>

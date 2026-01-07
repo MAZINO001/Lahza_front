@@ -20,7 +20,6 @@ export default function PdfPreview({ src }) {
       setError(null);
       try {
         const res = await api.get(src, {
-          // ← Changed from axios to api
           responseType: "blob",
         });
         const url = URL.createObjectURL(res.data);
@@ -28,6 +27,7 @@ export default function PdfPreview({ src }) {
         revoke = () => URL.revokeObjectURL(url);
       } catch (e) {
         console.error("PDF Error:", e.response || e);
+        setError("Failed to load PDF");
       } finally {
         setLoading(false);
       }
@@ -50,19 +50,27 @@ export default function PdfPreview({ src }) {
   if (!blobUrl) return null;
 
   return (
-    <div className="flex items-start justify-between min-h-screen bg-background py-0 border border-border rounded-lg overflow-hidden">
+    <div className="flex flex-col items-center justify-start min-h-screen bg-background py-8 px-4 gap-4">
       <Document
         file={blobUrl}
         onLoadSuccess={onLoadSuccess}
         loading={null}
         error={null}
       >
-        <Page
-          pageNumber={1}
-          renderTextLayer={false}
-          renderAnnotationLayer={false}
-          scale={1.5}
-        />
+        {numPages &&
+          Array.from({ length: numPages }, (_, i) => i + 1).map((page) => (
+            <div
+              key={page}
+              className="border border-border rounded-lg overflow-hidden mb-4"
+            >
+              <Page
+                pageNumber={page}
+                renderTextLayer={false}
+                renderAnnotationLayer={false}
+                scale={1.5}
+              />
+            </div>
+          ))}
       </Document>
     </div>
   );

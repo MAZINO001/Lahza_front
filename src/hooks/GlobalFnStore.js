@@ -23,7 +23,7 @@ export const globalFnStore = create((set) => ({
     },
     handleDownloadInvoice_Quotes: async (id, type) => {
         try {
-            const response = await axios.get(`http://127.0.0.1:8000/pdf/${type}/${id}`, { responseType: 'blob', withCredentials: true });
+            const response = await api.get(`http://127.0.0.1:8000/api/pdf/${type}/${id}`, { responseType: 'blob', withCredentials: true });
 
             const blob = response.data;
 

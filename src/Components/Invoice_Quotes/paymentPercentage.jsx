@@ -170,7 +170,7 @@ export default function PaymentPercentage({
                       options={[
                         { value: "bank", label: "Bank" },
                         { value: "cash", label: "Cash" },
-                        { value: "espace", label: "Espace" },
+                        { value: "cheque", label: "Cheque" },
                         { value: "stripe", label: "Stripe" },
                       ]}
                       onChange={field.onChange}

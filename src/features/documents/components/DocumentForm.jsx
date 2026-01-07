@@ -10,7 +10,6 @@ import { useSubmitProtection } from "@/hooks/spamBlocker";
 import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
 import SelectField_Search from "@/Components/Form/SelectField_Search";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import FileUploader from "@/components/Form/FileUploader";
 import ServiceSelect from "@/Components/Invoice_Quotes/ServiceSelector";
@@ -624,7 +623,7 @@ export function DocumentForm({ type, onSuccess }) {
                           )}
                         />
                         {selectedService && (
-                          <Textarea
+                          <TextareaField
                             {...register(`items.${index}.description`)}
                             placeholder="Enter service description"
                             className="mt-2 w-full border border-border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
@@ -639,7 +638,6 @@ export function DocumentForm({ type, onSuccess }) {
                           />
                         )}
                       </td>
-
                       <td className="p-2">
                         <FormField
                           type="number"
@@ -688,7 +686,6 @@ export function DocumentForm({ type, onSuccess }) {
                             watch(`items.${index}.tax`)
                           }
                           {...register(`items.${index}.tax_rate`, {
-                            // required: "Tax is required",
                             min: {
                               value: 0,
                               message: "Tax cannot be negative",
@@ -818,7 +815,7 @@ export function DocumentForm({ type, onSuccess }) {
                         options={[
                           { value: "bank", label: "Bank" },
                           { value: "cash", label: "Cash" },
-                          { value: "espace", label: "Espace" },
+                          { value: "cheque", label: "Cheque" },
                           { value: "stripe", label: "Stripe" },
                         ]}
                         onChange={(e) => field.onChange(e)}
