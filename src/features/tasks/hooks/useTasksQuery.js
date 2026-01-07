@@ -24,6 +24,9 @@ const apiTask = {
     updateStatus: (taskId, data) =>
         api.put(`${API_URL}/task/${taskId}`, data).then((res) => res.data),
 
+    markComplete: (projectId, taskId) =>
+        api.put(`${API_URL}/projects/tasks/${projectId}/${taskId}`, { status: 'completed' }).then((res) => res.data),
+
     delete: (projectId, taskId) =>
         api.delete(`${API_URL}/projects/tasks/${projectId}/${taskId}`).then((res) => res.data),
 };
@@ -136,6 +139,22 @@ export function useDeleteTask() {
         }, refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to delete task");
+        },
+    });
+}
+
+// Mark task as complete
+export function useMarkTaskComplete() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ projectId, taskId }) => apiTask.markComplete(projectId, taskId),
+        onSuccess: (_, { projectId }) => {
+            toast.success("Task marked as complete!");
+            queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
+            queryClient.invalidateQueries({ queryKey: ["tasks"] });
+        }, refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to mark task as complete");
         },
     });
 }

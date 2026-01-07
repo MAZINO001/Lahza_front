@@ -1,10 +1,19 @@
 /* eslint-disable no-unused-vars */
-import { Edit3, CheckCircle, CalendarIcon, Database } from "lucide-react";
+import {
+  CheckCircle,
+  Database,
+  CreditCard,
+  Building2,
+  Wallet,
+  Copy,
+} from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { toast } from "sonner";
 import {
   useMarkAsComplete,
   useProject,
   useProjectProgress,
+  useProjectTeam,
 } from "@/features/projects/hooks/useProjects";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,22 +28,27 @@ import { useProjectHistory } from "@/features/projects/hooks/useProjectHistory";
 import { useClient } from "@/features/clients/hooks/useClientsQuery";
 import { Calendar } from "@/components/ui/calendar";
 
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Users, FileText, Paperclip, DollarSign, Clock } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { FileText, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CountDownComponent from "@/features/projects/components/CountDownComponent";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ChartBarDefault } from "@/features/projects/components/overViewChart";
+import { useTransActions } from "@/features/payments/hooks/usePaymentQuery";
+import { formatId } from "@/lib/utils/formatId";
 
 export default function ProjectViewPage() {
   const { id } = useParams();
   const { role } = useAuthContext();
 
   const { data: project, isLoading } = useProject(id);
+  const { data: projectTeam } = useProjectTeam(id);
   const { data: additionalData } = useAdditionalData(id);
   const { data: history } = useProjectHistory(id);
   const { data: tasks } = useTasks(id);
+  const { data: transactions } = useTransActions(id);
+
+  console.log(additionalData);
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -195,6 +209,103 @@ export default function ProjectViewPage() {
     },
   ];
 
+  // Helper functions to parse additionalData
+  const getAllFiles = () => {
+    if (!additionalData?.project_additional_data?.[0]) return [];
+
+    const data = additionalData.project_additional_data[0];
+    const files = [];
+
+    // Parse media_files
+    if (data.media_files) {
+      try {
+        const mediaFiles = JSON.parse(data.media_files);
+        mediaFiles.forEach((file, index) => {
+          files.push({
+            name: `Media File ${index + 1}`,
+            filename: file.split("/").pop(),
+            path: file,
+            type: "media",
+          });
+        });
+      } catch (e) {
+        console.error("Error parsing media_files:", e);
+      }
+    }
+
+    // Parse specification_file
+    if (data.specification_file) {
+      try {
+        const specFiles = JSON.parse(data.specification_file);
+        specFiles.forEach((file, index) => {
+          files.push({
+            name: `Specification File ${index + 1}`,
+            filename: file.split("/").pop(),
+            path: file,
+            type: "specification",
+          });
+        });
+      } catch (e) {
+        console.error("Error parsing specification_file:", e);
+      }
+    }
+
+    // Add logo if exists
+    if (data.logo) {
+      files.push({
+        name: "Logo",
+        filename: data.logo.split("/").pop(),
+        path: data.logo,
+        type: "logo",
+      });
+    }
+
+    // Parse other files
+    if (data.other) {
+      try {
+        const otherFiles = JSON.parse(data.other);
+        otherFiles.forEach((file, index) => {
+          files.push({
+            name: `Other File ${index + 1}`,
+            filename: file.split("/").pop(),
+            path: file,
+            type: "other",
+          });
+        });
+      } catch (e) {
+        console.error("Error parsing other files:", e);
+      }
+    }
+
+    return files;
+  };
+
+  const getAllFilesCount = () => {
+    return getAllFiles().length;
+  };
+
+  // Copy RIB function for bank payments
+  const copyRIB = () => {
+    const rib = "Your RIB Number Here"; // Replace with actual RIB
+    navigator.clipboard
+      .writeText(rib)
+      .then(() => {
+        toast.success("RIB copied to clipboard!");
+      })
+      .catch(() => {
+        toast.error("Failed to copy RIB");
+      });
+  };
+
+  // Handle Stripe payment redirect
+  const handleStripePayment = (paymentUrl) => {
+    if (paymentUrl) {
+      window.open(paymentUrl, "_blank");
+    } else {
+      toast.error("Payment URL not available");
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="mb-4 rounded-xl text-foreground flex w-full items-center justify-between">
@@ -242,14 +353,14 @@ export default function ProjectViewPage() {
                 <div className="flex flex-col">
                   <div className="flex items-center gap-4">
                     <span className="text-lg font-bold text-foreground">
-                      Client Name
+                      {client?.name || "Client Name"}
                     </span>
                     <span className="inline-flex px-2 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700 border border-blue-200">
                       Development
                     </span>
                   </div>
                   <span className="font-semibold text-sm text-muted-foreground">
-                    Project Name
+                    {project?.name || "Project Name"}
                   </span>
                 </div>
               </div>
@@ -317,31 +428,47 @@ export default function ProjectViewPage() {
                 <TabsContent value="members" className="h-full overflow-auto">
                   <div className="space-y-3">
                     <h3 className="font-semibold text-foreground mb-4">
-                      Team Members ({demoMembers?.length})
+                      Team Members ({projectTeam?.length || 0})
                     </h3>
                     <div className="space-y-3">
-                      {demoMembers?.map((member) => (
+                      {projectTeam?.map((teamMember) => (
                         <div
-                          key={member?.id}
-                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border hover:bg-accent transition-colors"
+                          key={teamMember?.id}
+                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border  transition-colors"
                         >
                           <div className="flex items-center gap-3">
                             <Avatar className="w-9 h-9">
                               <AvatarFallback className="bg-primary text-primary-foreground">
-                                {member?.avatar}
+                                {teamMember?.team_user?.name
+                                  ?.split(" ")
+                                  .map((n) => n[0])
+                                  .join("")
+                                  .toUpperCase()
+                                  .slice(0, 2) || "TM"}
                               </AvatarFallback>
                             </Avatar>
                             <div>
                               <p className="text-sm font-medium text-foreground">
-                                {member?.name}
+                                {teamMember?.team_user?.user?.name}
                               </p>
-                              <p className="text-xs text-muted-foreground">
-                                {member?.role}
+
+                              <p className="text-sm text-muted-foreground">
+                                {teamMember?.team_user?.poste}
                               </p>
                             </div>
                           </div>
+                          <div className="text-right">
+                            <p className="text-sm text-muted-foreground">
+                              {teamMember?.team_user?.department ||
+                                "Development"}
+                            </p>
+                          </div>
                         </div>
-                      ))}
+                      )) || (
+                        <p className="text-muted-foreground text-center py-4">
+                          No team members found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -354,26 +481,98 @@ export default function ProjectViewPage() {
                       Transactions
                     </h3>
                     <div className="space-y-2">
-                      {demoTransactions.map((tx) => (
+                      {transactions?.map((tx) => (
                         <div
                           key={tx?.id}
-                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border hover:bg-accent transition-colors"
+                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border transition-colors"
                         >
-                          <div className="flex-1">
+                          <div className="flex items-center gap-4">
+                            <div
+                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${
+                                tx?.payment_url
+                                  ? "hover:bg-blue-100"
+                                  : tx?.payment_method === "bank"
+                                    ? "hover:bg-green-100"
+                                    : "hover:bg-gray-100"
+                              }`}
+                              onClick={() => {
+                                if (tx?.payment_url) {
+                                  handleStripePayment(tx.payment_url);
+                                } else if (tx?.payment_method === "bank") {
+                                  copyRIB();
+                                }
+                              }}
+                              title={
+                                tx?.payment_url
+                                  ? "Go to payment"
+                                  : tx?.payment_method === "bank"
+                                    ? "Copy RIB"
+                                    : "Payment details"
+                              }
+                            >
+                              {tx?.payment_url ? (
+                                <CreditCard className="w-6 h-6 text-primary" />
+                              ) : tx?.payment_method === "bank" ? (
+                                <Building2 className="w-6 h-6 text-primary" />
+                              ) : (
+                                <Wallet className="w-6 h-6 text-primary" />
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-4">
+                              <p className="text-sm font-medium text-foreground">
+                                <Link
+                                  to={`/${role}/invoice/${tx?.invoice_id}`}
+                                  className="hover:underline"
+                                >
+                                  {formatId(tx?.invoice_id, "INVOICE")} -{" "}
+                                </Link>
+                                {tx?.percentage}% Payment
+                              </p>
+                              <p className="text-sm text-muted-foreground">
+                                {tx?.payment_method?.toUpperCase() || "OTHER"} •
+                                {tx?.payment_method === "bank" && (
+                                  <span
+                                    className="ml-2 text-blue-600 hover:text-blue-700 cursor-pointer items-center gap-1 inline-flex"
+                                    onClick={copyRIB}
+                                  >
+                                    <Copy className="w-3 h-3" />
+                                    Copy RIB
+                                  </span>
+                                )}
+                                {tx?.payment_url && (
+                                  <span
+                                    className="ml-2 text-blue-600 hover:text-blue-700 cursor-pointer inline-flex"
+                                    onClick={() =>
+                                      handleStripePayment(tx.payment_url)
+                                    }
+                                  >
+                                    Pay Now
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <span
+                              className={`text-sm font-semibold ${tx?.status === "paid" ? "text-green-600" : "text-red-600"}`}
+                            >
+                              {tx?.status === "paid" ? "Paid" : "Pending"}
+                            </span>
                             <p className="text-sm font-medium text-foreground">
-                              {tx?.description}
+                              {tx?.currency?.toUpperCase() || "MAD"}{" "}
+                              {tx?.amount || "0"}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {tx?.date}
+                              of {tx?.currency?.toUpperCase() || "MAD"}{" "}
+                              {tx?.total || "0"}
                             </p>
                           </div>
-                          <span
-                            className={`text-sm font-semibold ${tx?.type === "payment" ? "text-success" : "text-destructive"}`}
-                          >
-                            {tx?.type === "payment" ? "+" : "-"} {tx?.amount}
-                          </span>
                         </div>
-                      ))}
+                      )) || (
+                        <p className="text-muted-foreground text-center py-4">
+                          No transactions found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -384,27 +583,38 @@ export default function ProjectViewPage() {
                   <div className="space-y-3">
                     <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                       <Paperclip className="w-5 h-5" /> Files (
-                      {demoAttachments.length})
+                      {getAllFilesCount()})
                     </h3>
                     <div className="space-y-2">
-                      {demoAttachments.map((file) => (
+                      {getAllFiles().map((file, index) => (
                         <div
-                          key={file?.id}
-                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border hover:bg-accent transition-colors cursor-pointer"
+                          key={file?.id || index}
+                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border  transition-colors cursor-pointer"
                         >
                           <div className="flex-1">
                             <p className="text-sm font-medium text-foreground">
-                              {file?.name}
+                              {file?.name ||
+                                file?.filename ||
+                                `File ${index + 1}`}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {file?.size} • {file?.date}
+                              {file?.size &&
+                                `${(file.size / 1024 / 1024).toFixed(1)} MB`}{" "}
+                              •{" "}
+                              {file?.date || file?.created_at
+                                ? formatDate(file.date || file.created_at)
+                                : "N/A"}
                             </p>
                           </div>
                           <span className="text-xs bg-secondary text-foreground px-2 py-1 rounded">
                             Download
                           </span>
                         </div>
-                      ))}
+                      )) || (
+                        <p className="text-muted-foreground text-center py-4">
+                          No attachments found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -443,19 +653,16 @@ export default function ProjectViewPage() {
               </CardContent>
             </Card>
           </div>
-          <Card className="p-2 w-full h-full">
-            <CardContent className="p-2">
-              <Calendar
-                mode="range"
-                defaultMonth={dateRange?.from}
-                selected={dateRange}
-                onSelect={setDateRange}
-                disabled={() => true}
-                numberOfMonths={1}
-                className="w-full! flex justify-center rounded-lg border shadow-sm"
-              />
-            </CardContent>
-          </Card>
+
+          <Calendar
+            mode="range"
+            defaultMonth={dateRange?.from}
+            selected={dateRange}
+            onSelect={setDateRange}
+            disabled={() => true}
+            numberOfMonths={1}
+            className="w-full! flex justify-center rounded-lg border shadow-sm"
+          />
 
           <Card className="p-2">
             <CardContent className="p-2">

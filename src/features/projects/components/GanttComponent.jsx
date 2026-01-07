@@ -38,13 +38,15 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { useDeleteTask } from "@/features/tasks/hooks/useTasksQuery";
+import { useDeleteTask, useUpdateTask, useMarkTaskComplete } from "@/features/tasks/hooks/useTasksQuery";
 
 export default function GanttComponent({ tasks, projectId }) {
   const [editingTask, setEditingTask] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const deleteTaskMutation = useDeleteTask();
+  const updateTaskMutation = useUpdateTask();
+  const markTaskCompleteMutation = useMarkTaskComplete();
 
   const transformedTasks =
     tasks?.length > 0
@@ -89,7 +91,24 @@ export default function GanttComponent({ tasks, projectId }) {
 
   const handleMoveTask = (id, startAt, endAt) => {
     if (!endAt) return;
-    console.log(`Move task: ${id} from ${startAt} to ${endAt}`);
+
+    // Convert dates to ISO string format for API
+    const startDate = startAt instanceof Date ? startAt.toISOString().split('T')[0] : startAt;
+    const endDate = endAt instanceof Date ? endAt.toISOString().split('T')[0] : endAt;
+
+    updateTaskMutation.mutate(
+      {
+        projectId,
+        taskId: id,
+        data: {
+          start_date: startDate,
+          end_date: endDate
+        }
+      },
+      {
+        onError: (err) => console.error("Failed to update task dates:", err),
+      }
+    );
   };
 
   const handleTaskDelete = (taskId) => {
@@ -97,6 +116,15 @@ export default function GanttComponent({ tasks, projectId }) {
       { projectId, taskId },
       {
         onError: (err) => console.error("Delete failed:", err),
+      }
+    );
+  };
+
+  const handleMarkComplete = (taskId) => {
+    markTaskCompleteMutation.mutate(
+      { projectId, taskId },
+      {
+        onError: (err) => console.error("Mark complete failed:", err),
       }
     );
   };
@@ -175,6 +203,11 @@ export default function GanttComponent({ tasks, projectId }) {
                             onClick={() => handleTaskEdit(representativeTask)}
                           >
                             Edit
+                          </ContextMenuItem>
+                          <ContextMenuItem
+                            onClick={() => handleMarkComplete(laneId)}
+                          >
+                            Mark as Complete
                           </ContextMenuItem>
                           <ContextMenuItem
                             onClick={() => handleTaskDelete(laneId)}

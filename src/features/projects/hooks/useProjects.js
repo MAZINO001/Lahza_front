@@ -13,6 +13,7 @@ const apiProject = {
     update: (id, data) => api.put(`${API_URL}/projects/${id}`, data).then((res) => res.data),
     delete: (id) => api.delete(`${API_URL}/projects/${id}`).then((res) => res.data),
     getProgress: (id) => api.get(`${API_URL}/getProgress/${id}`).then((res) => res.data),
+    getProjectTeam: (id) => api.get(`${API_URL}/project/team/${id}`).then((res) => res.data),
 };
 
 export function useProjects() {
@@ -54,6 +55,20 @@ export function useProjectProgress(id) {
     });
 }
 
+export function useProjectTeam(id) {
+    return useQuery({
+        queryKey: ["projectTeam", id],
+        queryFn: () => apiProject.getProjectTeam(id),
+        enabled: !!id,
+        retry: false,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
+        onError: (error) => {
+            toast.error(error?.response?.data?.message || "Failed to fetch project team");
+        },
+    });
+}
+
 export function useCreateProject() {
     const queryClient = useQueryClient();
     return useMutation({
@@ -62,7 +77,6 @@ export function useCreateProject() {
             toast.success("Project created!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
-        refetchOnWindowFocus: true,
         onError: (error) => {
             const errorMessage = error?.response?.data?.message || "Failed to create project.";
             toast.error(errorMessage);
@@ -74,12 +88,12 @@ export function useCreateProject() {
 export function useMarkAsDone() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, data }) => api.put(`${API_URL}/projects/${id}`, data),
+        mutationFn: ({ id, data }) => apiProject.update(id, data),
         onSuccess: (response, { id }) => {
             toast.success("Project marked as done!");
             queryClient.invalidateQueries({ queryKey: ["project", id] });
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
-        refetchOnWindowFocus: true,
         onError: (error) => {
             const errorMessage = error?.response?.data?.message || "Failed to mark project as done.";
             toast.error(errorMessage);
@@ -95,10 +109,9 @@ export function useUpdateProject() {
         onSuccess: (response, { id }) => {
             toast.success("Project updated!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
-            queryClient.invalidateQueries({ queryKey: ["projects", id] });
+            queryClient.invalidateQueries({ queryKey: ["project", id] });
             queryClient.invalidateQueries({ queryKey: ["projectProgress", id] });
         },
-        refetchOnWindowFocus: true,
         onError: (error) => {
             const errorMessage = error?.response?.data?.message || "Failed to update project.";
             toast.error(errorMessage);
@@ -114,12 +127,11 @@ export function useDeleteProject() {
         onSuccess: (response, id) => {
             toast.success("Project deleted");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
-            queryClient.removeQueries({ queryKey: ["projects", id] });
+            queryClient.removeQueries({ queryKey: ["project", id] });
             queryClient.removeQueries({ queryKey: ["projectProgress", id] });
             queryClient.invalidateQueries({ queryKey: ["tasks", id] });
             queryClient.invalidateQueries({ queryKey: ["additional-data", id] });
         },
-        refetchOnWindowFocus: true,
         onError: (error) => {
             const errorMessage = error?.response?.data?.message || "Failed to delete project.";
             toast.error(errorMessage);
@@ -135,8 +147,8 @@ export function useMarkAsComplete() {
         onSuccess: (response, { id }) => {
             toast.success("Project marked as complete!");
             queryClient.invalidateQueries({ queryKey: ["project", id] });
+            queryClient.invalidateQueries({ queryKey: ["projects"] });
         },
-        refetchOnWindowFocus: true,
         onError: (error) => {
             const errorMessage = error?.response?.data?.message || "Failed to mark project as complete.";
             toast.error(errorMessage);

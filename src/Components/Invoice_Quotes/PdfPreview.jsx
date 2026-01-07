@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "@/lib/utils/axios";  // ← Use your configured instance!
+import api from "@/lib/utils/axios"; // ← Use your configured instance!
 import { Document, Page, pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -19,8 +19,9 @@ export default function PdfPreview({ src }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get(src, {  // ← Changed from axios to api
-          responseType: "blob"
+        const res = await api.get(src, {
+          // ← Changed from axios to api
+          responseType: "blob",
         });
         const url = URL.createObjectURL(res.data);
         setBlobUrl(url);

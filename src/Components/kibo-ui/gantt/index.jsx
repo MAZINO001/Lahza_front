@@ -1218,7 +1218,9 @@ export const GanttProvider = ({
 export const GanttTimeline = ({ children, className }) => (
   <div
     className={cn(
-      "relative flex h-full w-max flex-none overflow-clip",
+      // the mf error
+      // "relative flex h-full w-max flex-none overflow-clip",
+      "relative flex h-full flex-1 overflow-auto",
       className
     )}
   >
