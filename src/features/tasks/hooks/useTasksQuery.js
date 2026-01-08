@@ -24,8 +24,8 @@ const apiTask = {
     updateStatus: (taskId, data) =>
         api.put(`${API_URL}/task/${taskId}`, data).then((res) => res.data),
 
-    markComplete: (projectId, taskId) =>
-        api.put(`${API_URL}/projects/tasks/${projectId}/${taskId}`, { status: 'completed' }).then((res) => res.data),
+    markComplete: (taskId) =>
+        api.put(`${API_URL}/task/${taskId}`, { status: 'completed' }).then((res) => res.data),
 
     delete: (projectId, taskId) =>
         api.delete(`${API_URL}/projects/tasks/${projectId}/${taskId}`).then((res) => res.data),

@@ -12,7 +12,7 @@ import SelectField from "@/Components/Form/SelectField";
 import SelectField_Search from "@/Components/Form/SelectField_Search";
 import { Label } from "@/components/ui/label";
 import FileUploader from "@/components/Form/FileUploader";
-import ServiceSelect from "@/Components/Invoice_Quotes/ServiceSelector";
+import ServiceSelect from "@/features/documents/components/ServiceSelector";
 
 import { terms } from "@/lib/Terms_Conditions.json";
 import {
@@ -45,8 +45,6 @@ export function DocumentForm({ type, onSuccess }) {
   const documentType = quoteId ? "quotes" : type;
 
   const { data: document } = useDocument(documentId, documentType);
-
-  console.log(document);
 
   const isInvoice = type === "invoices";
   const { data: clients, isLoading: clientsLoading } = useClients();
@@ -122,6 +120,17 @@ export function DocumentForm({ type, onSuccess }) {
   });
 
   const items = watch("items");
+
+  const formatToBullets = (text) => {
+    if (!text.trim()) return text;
+
+    return text
+      .split(/[,\n]/)
+      .map((item) => item.trim())
+      .filter((item) => item.length > 0)
+      .map((item) => `- ${item}`)
+      .join("\n");
+  };
 
   useEffect(() => {
     if (document && (isEditMode || isCloneMode || isConvertMode)) {
@@ -454,6 +463,14 @@ export function DocumentForm({ type, onSuccess }) {
 
         {isInvoice ? (
           <>
+            <FormField
+              label="Invoice Id"
+              type="text"
+              value={"0001"}
+              placeholder="Type An Object"
+              disabled
+            />
+
             <Controller
               name="invoice_date"
               control={control}
@@ -623,19 +640,30 @@ export function DocumentForm({ type, onSuccess }) {
                           )}
                         />
                         {selectedService && (
-                          <TextareaField
-                            {...register(`items.${index}.description`)}
-                            placeholder="Enter service description"
-                            className="mt-2 w-full border border-border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-                            rows={2}
-                            value={watch(`items.${index}.description`) || ""}
-                            onChange={(e) =>
-                              setValue(
-                                `items.${index}.description`,
-                                e.target.value
-                              )
-                            }
-                          />
+                          <div className="mt-2">
+                            <TextareaField
+                              {...register(`items.${index}.description`)}
+                              placeholder="Enter service description (comma or line separated)"
+                              className="mt-2 w-full border border-border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 font-mono"
+                              rows={5}
+                              value={formatToBullets(
+                                watch(`items.${index}.description`) || ""
+                              )}
+                              onChange={(e) => {
+                                const cleanText = e.target.value
+                                  .split("\n")
+                                  .map((line) =>
+                                    line.replace(/^•\s*/, "").trim()
+                                  )
+                                  .filter((line) => line.length > 0)
+                                  .join(", ");
+                                setValue(
+                                  `items.${index}.description`,
+                                  cleanText
+                                );
+                              }}
+                            />
+                          </div>
                         )}
                       </td>
                       <td className="p-2">

@@ -6,6 +6,7 @@ import {
   Building2,
   Wallet,
   Copy,
+  Check,
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
@@ -47,17 +48,6 @@ export default function ProjectViewPage() {
   const { data: history } = useProjectHistory(id);
   const { data: tasks } = useTasks(id);
   const { data: transactions } = useTransActions(id);
-
-  console.log(additionalData);
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "numeric",
-      day: "numeric",
-    });
-  };
 
   const doneTasks = tasks?.filter((task) => task.status === "done").length || 0;
 
@@ -121,93 +111,6 @@ export default function ProjectViewPage() {
       </div>
     );
   }
-
-  // *********************************
-  const demoMembers = [
-    { id: 1, name: "Alice Johnson", role: "Project Manager", avatar: "AJ" },
-    { id: 2, name: "Bob Smith", role: "Developer", avatar: "BS" },
-    { id: 3, name: "Carol White", role: "Designer", avatar: "CW" },
-    { id: 4, name: "David Brown", role: "QA", avatar: "DB" },
-  ];
-
-  const demoTransactions = [
-    {
-      id: 1,
-      type: "expense",
-      description: "Software licenses",
-      amount: "$500",
-      date: "2025-01-15",
-    },
-    {
-      id: 2,
-      type: "payment",
-      description: "Team payment",
-      amount: "$2,500",
-      date: "2025-01-10",
-    },
-    {
-      id: 3,
-      type: "expense",
-      description: "Infrastructure costs",
-      amount: "$350",
-      date: "2025-01-05",
-    },
-    {
-      id: 4,
-      type: "payment",
-      description: "Contractor payment",
-      amount: "$1,200",
-      date: "2024-12-28",
-    },
-  ];
-
-  const demoAttachments = [
-    { id: 1, name: "Project_Proposal.pdf", size: "2.4 MB", date: "2025-01-20" },
-    { id: 2, name: "Design_Mockups.figma", size: "5.1 MB", date: "2025-01-18" },
-    {
-      id: 3,
-      name: "Budget_Spreadsheet.xlsx",
-      size: "1.2 MB",
-      date: "2025-01-15",
-    },
-    { id: 4, name: "Meeting_Notes.docx", size: "340 KB", date: "2025-01-10" },
-  ];
-
-  const demoProject = {
-    name: "Website Redesign",
-    description:
-      "Complete redesign of the company website including new UI/UX, improved performance, and enhanced mobile responsiveness. This project involves collaboration with design and development teams to deliver a modern, user-friendly interface.",
-    status: "In Progress",
-    progress: 65,
-    budget: "$15,000",
-    spent: "$9,750",
-    start_date: "2025-01-01",
-    estimated_end_date: "2025-03-31",
-  };
-
-  // *********************************
-  const categories = [
-    {
-      label: "Design",
-      icon: "✨",
-      color: "bg-blue-100 text-blue-700 border-blue-200",
-    },
-    {
-      label: "Development",
-      icon: "⚙️",
-      color: "bg-purple-100 text-purple-700 border-purple-200",
-    },
-    {
-      label: "Marketing",
-      icon: "📢",
-      color: "bg-green-100 text-green-700 border-green-200",
-    },
-    {
-      label: "Analytics",
-      icon: "📊",
-      color: "bg-orange-100 text-orange-700 border-orange-200",
-    },
-  ];
 
   // Helper functions to parse additionalData
   const getAllFiles = () => {
@@ -306,6 +209,22 @@ export default function ProjectViewPage() {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const formatted = date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+    return date ? formatted : "—";
+  };
+
+  const theTasks = new Array(tasks?.length);
+
+  const TheProgress = theTasks?.length
+    ? Math.round((doneTasks / tasks?.length) * 100)
+    : 0;
+
   return (
     <div className="p-4">
       <div className="mb-4 rounded-xl text-foreground flex w-full items-center justify-between">
@@ -343,7 +262,7 @@ export default function ProjectViewPage() {
               }}
             />
 
-            <div className=" bg-background/40 rounded-md flex items-center justify-between w-full p-2 relative z-10">
+            <div className=" bg-background/70 rounded-md flex items-center justify-between w-full p-2 relative z-10">
               <div className="flex items-center gap-3">
                 <img
                   src="https://picsum.photos/800/800"
@@ -369,19 +288,23 @@ export default function ProjectViewPage() {
                 <span className="text-muted-foreground text-xs uppercase tracking-wide">
                   Started at
                 </span>
-                <span className="font-medium text-foreground">10/12/2025</span>
+                <span className="font-medium text-foreground">
+                  {formatDate(project?.start_date)}
+                </span>
               </div>
 
               <div className="flex flex-col text-sm">
                 <span className="text-muted-foreground text-xs uppercase tracking-wide">
                   Ends at
                 </span>
-                <span className="font-medium text-foreground">10/12/2025</span>
+                <span className="font-medium text-foreground">
+                  {formatDate(project?.estimated_end_date)}
+                </span>
               </div>
             </div>
           </div>
 
-          <Card className="w-full p-2 flex-1  h-[40%]">
+          <Card className="w-full p-2 flex-1 h-[40%]">
             <CardContent className="h-full p-2">
               <Tabs defaultValue="overview" className="h-full flex flex-col">
                 <TabsList className="mb-2 grid w-full grid-cols-6">
@@ -642,14 +565,62 @@ export default function ProjectViewPage() {
                 />
               </CardContent>
             </Card>
-            <Card className="p-2 w-full">
-              <CardContent className="p-2 flex gap-3">
-                <div className="text-3xl font-bold text-foreground">
-                  {doneTasks || 0}/{tasks?.length || 0}
+            <Card className="w-full p-0 bg-background">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-24 h-24">
+                      <svg
+                        className="w-full h-full transform -rotate-90"
+                        viewBox="0 0 100 100"
+                      >
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="45"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          className="text-blue-100"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="45"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          strokeDasharray={`${2 * Math.PI * 45}`}
+                          strokeDashoffset={`${2 * Math.PI * 45 * (1 - TheProgress / 100)}`}
+                          className="text-blue-600 transition-all duration-500"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-sm font-bold text-blue-700">
+                          {TheProgress}%
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-3xl font-bold text-foreground">
+                          {doneTasks || 0}
+                        </span>
+                        <span className="text-lg text-muted-foreground">
+                          / {tasks?.length || 0}
+                        </span>
+                      </div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Tasks completed
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {tasks?.length - doneTasks || 0} remaining
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-md font-semibold text-muted-foreground mt-2">
-                  Tasks completed this month
-                </p>
               </CardContent>
             </Card>
           </div>
@@ -661,7 +632,7 @@ export default function ProjectViewPage() {
             onSelect={setDateRange}
             disabled={() => true}
             numberOfMonths={1}
-            // className="w-full! flex justify-center rounded-lg border shadow-sm"
+            className="w-full! flex justify-center rounded-lg border"
           />
 
           <Card className="p-2">

@@ -3,16 +3,13 @@ import { Download, Edit2, Filter, Printer, Send, X } from "lucide-react";
 import DocumentBanner from "@/components/DocumentBanner";
 import { Button } from "@/components/ui/button";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
-import PdfPreview from "./PdfPreview";
+import { Link, useNavigate } from "react-router-dom";
 import api from "@/lib/utils/axios";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
-import axios from "axios";
 import {
   useDocument,
   useCreateDocument,
 } from "@/features/documents/hooks/useDocumentsQuery";
-
 import { MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -20,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
+import PdfPreview from "./PdfPreview";
 
 export default function Inv_Qt_page({ type, currentId }) {
   const isInvoice = type === "invoices";
@@ -193,7 +190,7 @@ export default function Inv_Qt_page({ type, currentId }) {
           )}
         </div>
 
-        <div className="flex-1 min-h-0">
+        <div className="min-h-0 w-full">
           <PdfPreview
             src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}`}
           />

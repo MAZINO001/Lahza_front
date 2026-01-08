@@ -113,7 +113,7 @@ export function ProjectForm({ onSuccess }) {
   }));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="flex items-end justify-between gap-4">
         <div className="w-full">
           <Controller

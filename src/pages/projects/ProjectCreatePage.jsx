@@ -3,5 +3,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function ProjectCreatePage() {
   const navigate = useNavigate();
-  return <ProjectForm onSuccess={() => navigate(-1)} />;
+  return (
+    <div className="p-4">
+      <ProjectForm onSuccess={() => navigate(-1)} />;
+    </div>
+  );
 }

@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React, { useMemo, useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Menu, Plus, ChevronDown } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { StatusBadge } from "../StatusBadge";
+import { StatusBadge } from "@/components/StatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
 import {

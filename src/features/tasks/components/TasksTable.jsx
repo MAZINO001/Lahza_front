@@ -53,8 +53,8 @@ export const TasksTable = React.memo(function TasksTable() {
   });
 
   return (
-    <div className="w-full p-4 bg-background min-h-screen">
-      <div className="flex items-center justify-between mb-4">
+    <div className="w-full pt-4 bg-background">
+      {/* <div className="flex items-center justify-between mb-4">
         <div className="flex gap-4">
           <Link
             to={-1}
@@ -79,7 +79,7 @@ export const TasksTable = React.memo(function TasksTable() {
             </Button>
           </Link>
         </div>
-      </div>
+      </div> */}
 
       <DataTable
         table={table}
@@ -91,4 +91,4 @@ export const TasksTable = React.memo(function TasksTable() {
   );
 });
 
-TasksTable.displayName = 'TasksTable';
+TasksTable.displayName = "TasksTable";

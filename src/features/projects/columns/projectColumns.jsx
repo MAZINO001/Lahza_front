@@ -61,21 +61,29 @@ export function ProjectColumns(role, navigate) {
     {
       accessorKey: "start_date",
       header: "Start Date",
-      cell: ({ row }) => (
-        <span className="text-slate-700">
-          {new Date(row.getValue("start_date")).toLocaleDateString()}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const date = new Date(row.getValue("start_date"));
+        const formatted = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        return date ? formatted : "—";
+      },
     },
 
     {
       accessorKey: "estimated_end_date",
       header: "Est. End",
-      cell: ({ row }) => (
-        <span className="text-slate-700">
-          {new Date(row.getValue("estimated_end_date")).toLocaleDateString()}
-        </span>
-      ),
+      cell: ({ row }) => {
+        const date = new Date(row.getValue("estimated_end_date"));
+        const formatted = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        return date ? formatted : "—";
+      },
     },
 
     {

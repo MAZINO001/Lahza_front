@@ -61,16 +61,26 @@ export function getOfferColumns(role, navigate) {
       accessorKey: "start_date",
       header: "Start Date",
       cell: ({ row }) => {
-        const date = row.getValue("start_date");
-        return date ? new Date(date).toLocaleDateString() : "—";
+        const date = new Date(row.getValue("start_date"));
+        const formatted = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        return date ? formatted : "—";
       },
     },
     {
       accessorKey: "end_date",
       header: "End Date",
       cell: ({ row }) => {
-        const date = row.getValue("end_date");
-        return date ? new Date(date).toLocaleDateString() : "—";
+        const date = new Date(row.getValue("end_date"));
+        const formatted = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        return date ? formatted : "—";
       },
     },
     {

@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { usePayment, useUpdatePayment } from "../hooks/usePaymentQuery";
 import SelectField from "@/components/Form/SelectField";
+import { useDocument } from "@/features/documents/hooks/useDocumentsQuery";
 
 export default function EditPayment({ payment, onClose }) {
   const {
@@ -21,7 +22,7 @@ export default function EditPayment({ payment, onClose }) {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      percentage: payment?.percentage || 50,
+      percentage: payment?.percentage,
       payment_type: payment?.payment_method,
     },
   });
@@ -37,6 +38,16 @@ export default function EditPayment({ payment, onClose }) {
     });
     onClose();
   };
+
+  const { data: invoice, isLoading } = useDocument(
+    payment?.invoice_id,
+    "invoices"
+  );
+
+  const balanceDue = invoice?.balance_due;
+  const totalAmount = invoice?.total_amount;
+
+  const totalPercentageAmount = (balanceDue / totalAmount) * 100;
 
   return (
     <form onSubmit={handleSubmit(onValidSubmit)} className="space-y-4">
@@ -62,8 +73,8 @@ export default function EditPayment({ payment, onClose }) {
                 min="0"
                 max="100"
                 step="1"
-                placeholder="50"
-                value={field.value}
+                placeholder=""
+                value={payment?.percentage}
                 onChange={(e) => field.onChange(Number(e.target.value))}
                 error={error?.message}
               />
@@ -93,6 +104,11 @@ export default function EditPayment({ payment, onClose }) {
             )}
           />
         </div>
+      </div>
+      <div className="text-sm text-muted-foreground">
+        <strong>Total Amount:</strong> {totalAmount} DH <br />
+        <strong>Balance Due:</strong> {balanceDue} DH <br />
+        <strong>Max Payable (%):</strong> {totalPercentageAmount.toFixed(2)}%
       </div>
 
       <DialogFooter className="gap-2 sm:gap-0">

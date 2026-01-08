@@ -499,18 +499,12 @@ export function paymentColumns(role, { onEditPaidAt }) {
       ),
       cell: ({ row }) => {
         const date = new Date(row.getValue("created_at"));
-        return (
-          <div className="text-sm">
-            {isNaN(date)
-              ? "Invalid Date"
-              : date.toLocaleDateString("fr-MA", {
-                  month: "numeric",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-          </div>
-        );
+        const formatted = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        return <div className="text-sm">{formatted}</div>;
       },
     },
     {
@@ -527,20 +521,18 @@ export function paymentColumns(role, { onEditPaidAt }) {
       cell: ({ row }) => {
         const payment = row.original;
         const date = new Date(row.getValue("updated_at"));
+        const formatted = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
 
         return (
           <div
             className="text-sm cursor-pointer hover:underline"
             onDoubleClick={() => onEditPaidAt(payment)}
           >
-            {isNaN(date)
-              ? "Invalid Date"
-              : date.toLocaleDateString("fr-MA", {
-                  month: "numeric",
-                  day: "numeric",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+            {formatted}
           </div>
         );
       },

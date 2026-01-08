@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
-import FormField from "../Form/FormField";
+import FormField from "@/components/Form/FormField";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,7 +17,7 @@ import {
   useAddAdditionalPayment,
   useDocumentPayments,
 } from "@/features/documents/hooks/useDocumentPayments";
-import SelectField from "../Form/SelectField";
+import SelectField from "@/components/Form/SelectField";
 
 export default function PaymentPercentage({
   totalAmount,

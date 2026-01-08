@@ -116,7 +116,7 @@ export function NavMain({ items }) {
               key={item.title}
               to={item.url}
               className={`
-            flex items-center gap-3 rounded-lg 
+            flex items-center gap-3 rounded-sm
             cursor-pointer
             hover:text-primary/80
             ${

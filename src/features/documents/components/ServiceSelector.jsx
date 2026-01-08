@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import InputError from "../InputError";
+import InputError from "@/components/InputError";
 
 export default function ServiceSelect({
   services = [],
@@ -34,8 +34,8 @@ export default function ServiceSelect({
         disabled={disabled}
         onValueChange={(val) => onChange?.(val)}
       >
-        <SelectTrigger 
-          className={`mt-1 w-full border ${error ? 'border-destructive' : 'border-border'} bg-background text-foreground hover:border-primary focus:ring-2 focus:ring-ring transition-colors ${className}`}
+        <SelectTrigger
+          className={`mt-1 w-full border ${error ? "border-destructive" : "border-border"} bg-background text-foreground hover:border-primary focus:ring-2 focus:ring-ring transition-colors ${className}`}
         >
           <SelectValue placeholder="Select a service" />
         </SelectTrigger>

@@ -428,21 +428,6 @@ export default function AppRoutes() {
                 }
               />
 
-              {/* Admin-only branding assets route */}
-              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-                <Route
-                  path="settings/branding_assets"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense
-                        fallback={<div>Loading branding assets...</div>}
-                      >
-                        <SettingsPage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-              </Route>
 
               {/* Admin-only management routes */}
               <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>

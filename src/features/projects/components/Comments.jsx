@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import TextareaField from "../Form/TextareaField";
+import TextareaField from "@/components/Form/TextareaField";
 export default function Comments() {
   const [comments, setComments] = useState([
     {

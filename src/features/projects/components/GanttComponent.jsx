@@ -38,7 +38,11 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { useDeleteTask, useUpdateTask, useMarkTaskComplete } from "@/features/tasks/hooks/useTasksQuery";
+import {
+  useDeleteTask,
+  useUpdateTask,
+  useMarkTaskComplete,
+} from "@/features/tasks/hooks/useTasksQuery";
 
 export default function GanttComponent({ tasks, projectId }) {
   const [editingTask, setEditingTask] = useState(null);
@@ -51,35 +55,35 @@ export default function GanttComponent({ tasks, projectId }) {
   const transformedTasks =
     tasks?.length > 0
       ? tasks.map((task) => {
-        const startDate = task.start_date
-          ? new Date(task.start_date)
-          : task.startAt || new Date();
-        const endDate = task.end_date
-          ? new Date(task.end_date)
-          : task.endAt ||
-          new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+          const startDate = task.start_date
+            ? new Date(task.start_date)
+            : task.startAt || new Date();
+          const endDate = task.end_date
+            ? new Date(task.end_date)
+            : task.endAt ||
+              new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-        return {
-          id: task.id,
-          name: task.title || task.name || `Task ${task.id}`,
-          startAt: startDate,
-          endAt: endDate,
-          status: {
-            color:
-              task.status === "completed"
-                ? "#10b981"
-                : task.status === "in_progress"
-                  ? "#3b82f6"
-                  : task.status === "pending"
-                    ? "#f59e0b"
-                    : task.status?.color || "#6b7280",
-          },
-          lane: task.lane || task.id,
-          metadata: {
-            group: { name: task.group || "Tasks" },
-          },
-        };
-      })
+          return {
+            id: task.id,
+            name: task.title || task.name || `Task ${task.id}`,
+            startAt: startDate,
+            endAt: endDate,
+            status: {
+              color:
+                task.status === "completed"
+                  ? "#10b981"
+                  : task.status === "in_progress"
+                    ? "#3b82f6"
+                    : task.status === "pending"
+                      ? "#f59e0b"
+                      : task.status?.color || "#6b7280",
+            },
+            lane: task.lane || task.id,
+            metadata: {
+              group: { name: task.group || "Tasks" },
+            },
+          };
+        })
       : [];
   const groupedTasks = groupBy(transformedTasks, "metadata.group.name");
   const laneGroupedTasks = Object.fromEntries(
@@ -93,8 +97,10 @@ export default function GanttComponent({ tasks, projectId }) {
     if (!endAt) return;
 
     // Convert dates to ISO string format for API
-    const startDate = startAt instanceof Date ? startAt.toISOString().split('T')[0] : startAt;
-    const endDate = endAt instanceof Date ? endAt.toISOString().split('T')[0] : endAt;
+    const startDate =
+      startAt instanceof Date ? startAt.toISOString().split("T")[0] : startAt;
+    const endDate =
+      endAt instanceof Date ? endAt.toISOString().split("T")[0] : endAt;
 
     updateTaskMutation.mutate(
       {
@@ -102,8 +108,8 @@ export default function GanttComponent({ tasks, projectId }) {
         taskId: id,
         data: {
           start_date: startDate,
-          end_date: endDate
-        }
+          end_date: endDate,
+        },
       },
       {
         onError: (err) => console.error("Failed to update task dates:", err),
@@ -122,7 +128,7 @@ export default function GanttComponent({ tasks, projectId }) {
 
   const handleMarkComplete = (taskId) => {
     markTaskCompleteMutation.mutate(
-      { projectId, taskId },
+      { taskId },
       {
         onError: (err) => console.error("Mark complete failed:", err),
       }

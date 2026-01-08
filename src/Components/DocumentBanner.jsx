@@ -10,7 +10,7 @@ import {
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
-import PaymentPercentage from "@/components/Invoice_Quotes/paymentPercentage";
+import PaymentPercentage from "@/features/documents/components/paymentPercentage";
 
 export default function WhatsNextBanner({
   type,
