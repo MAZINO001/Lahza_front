@@ -135,28 +135,9 @@ const getDateByMousePosition = (context, mouseX) => {
 const createInitialTimelineData = (today, tasks = []) => {
   const data = [];
   const currentYear = today.getFullYear();
-  const previousYear = currentYear - 1;
 
-  // Check if any tasks are in the previous year
-  const hasPreviousYearTasks = tasks.some((task) => {
-    const taskStart = task.startAt || task.start_date;
-    const taskEnd = task.endAt || task.end_date;
-
-    if (taskStart && new Date(taskStart).getFullYear() === previousYear)
-      return true;
-    if (taskEnd && new Date(taskEnd).getFullYear() === previousYear)
-      return true;
-
-    return false;
-  });
-
-  // Always include current year
+  // Only include current year - remove previous year logic
   data.push({ year: currentYear, quarters: new Array(4).fill(null) });
-
-  // Include previous year only if there are tasks in that year
-  if (hasPreviousYearTasks) {
-    data.unshift({ year: previousYear, quarters: new Array(4).fill(null) });
-  }
 
   for (const yearObj of data) {
     yearObj.quarters = new Array(4).fill(null).map((_, quarterIndex) => ({
@@ -541,8 +522,8 @@ export const GanttColumn = ({ index, isColumnSecondary }) => {
 
   const top = useThrottle(
     mousePosition.y -
-      (mouseRef.current?.getBoundingClientRect().y ?? 0) -
-      (windowScroll.y ?? 0),
+    (mouseRef.current?.getBoundingClientRect().y ?? 0) -
+    (windowScroll.y ?? 0),
     10
   );
 
@@ -592,8 +573,8 @@ export const GanttCreateMarkerTrigger = ({ onCreateMarker, className }) => {
   const [windowScroll] = useWindowScroll();
   const x = useThrottle(
     mousePosition.x -
-      (mouseRef.current?.getBoundingClientRect().x ?? 0) -
-      (windowScroll.x ?? 0),
+    (mouseRef.current?.getBoundingClientRect().x ?? 0) -
+    (windowScroll.x ?? 0),
     10
   );
 
@@ -710,6 +691,12 @@ export const GanttFeatureItem = ({
   );
   const [startAt, setStartAt] = useState(feature.startAt);
   const [endAt, setEndAt] = useState(feature.endAt);
+
+  // Sync local state with feature prop when it changes (after API updates)
+  useEffect(() => {
+    setStartAt(feature.startAt);
+    setEndAt(feature.endAt);
+  }, [feature.startAt, feature.endAt]);
 
   // Memoize expensive calculations
   const width = useMemo(
@@ -986,7 +973,7 @@ GanttMarker.displayName = "GanttMarker";
 
 export const GanttProvider = ({
   zoom = 100,
-  range = "monthly",
+  range = "daily",
   onAddItem,
   children,
   className,
@@ -1198,7 +1185,6 @@ export const GanttProvider = ({
     >
       <div
         className={cn(
-          // "gantt relative isolate grid h-full w-full flex-none select-none overflow-auto rounded-sm bg-secondary ",
           "gantt relative isolate grid h-full w-full flex-none select-none overflow-auto rounded-sm ",
           range,
           className
@@ -1206,7 +1192,7 @@ export const GanttProvider = ({
         ref={scrollRef}
         style={{
           ...cssVariables,
-          gridTemplateColumns: "var(--gantt-sidebar-width) 1fr",
+          gridTemplateColumns: "var(--gantt-sidebar-width) minmax(0, 1fr)",
         }}
       >
         {children}
@@ -1218,9 +1204,7 @@ export const GanttProvider = ({
 export const GanttTimeline = ({ children, className }) => (
   <div
     className={cn(
-      // the mf error
-      // "relative flex h-full w-max flex-none overflow-clip",
-      "relative flex h-full flex-1 overflow-auto",
+      "relative flex h-full w-max flex-none overflow-clip",
       className
     )}
   >

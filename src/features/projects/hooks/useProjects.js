@@ -148,6 +148,7 @@ export function useMarkAsComplete() {
             toast.success("Project marked as complete!");
             queryClient.invalidateQueries({ queryKey: ["project", id] });
             queryClient.invalidateQueries({ queryKey: ["projects"] });
+            queryClient.invalidateQueries({ queryKey: ["tasks", id] });
         },
         onError: (error) => {
             const errorMessage = error?.response?.data?.message || "Failed to mark project as complete.";

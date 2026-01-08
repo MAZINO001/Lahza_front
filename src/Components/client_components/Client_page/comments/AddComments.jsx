@@ -2,6 +2,7 @@ import { Send, Image, Smile, AtSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import TextareaField from "@/components/Form/TextareaField";
+import { useAuthContext } from "@/hooks/AuthContext";
 
 export default function AddComments({
   commentText,
@@ -14,7 +15,7 @@ export default function AddComments({
   const remainingChars = maxLength - commentText.length;
   const isNearLimit = remainingChars < 50;
   const isAtLimit = remainingChars === 0;
-
+  const { user } = useAuthContext();
   return (
     <div className="bg-background rounded-xl border border-border">
       <div className="flex flex-col items-start gap-2 p-4 border-b border-border">
@@ -28,10 +29,7 @@ export default function AddComments({
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-3">
               <span className="font-semibold text-sm text-foreground">
-                Your Name
-              </span>
-              <span className="text-xs text-muted-foreground bg-background px-2 py-0.5 rounded-full border border-border">
-                @username
+                {user.name}
               </span>
             </div>
           </div>

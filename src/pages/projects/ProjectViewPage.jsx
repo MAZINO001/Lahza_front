@@ -320,7 +320,6 @@ export default function ProjectViewPage() {
                     <ChartBarDefault
                       startDate={project.start_date}
                       endDate={project.estimated_end_date}
-                      projectId={id}
                       tasks={tasks}
                     />
                   </div>
