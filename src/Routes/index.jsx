@@ -72,6 +72,12 @@ const ClientViewPage = lazy(() => import("../pages/clients/ClientViewPage"));
 const PaymentsPage = lazy(() => import("../pages/payments/PaymentsPage"));
 const PaymentViewPage = lazy(() => import("../pages/payments/PaymentViewPage"));
 
+// Lazy load receipt pages
+const ReceiptsPage = lazy(() => import("../pages/receipts/ReceiptsPage"));
+const ReceiptViewPage = lazy(() => import("../pages/receipts/ReceiptViewPage"));
+const ReceiptCreatePage = lazy(() => import("../pages/receipts/ReceiptCreatePage"));
+const ReceiptClientView = lazy(() => import("../pages/receipts/views/ReceiptClientView"));
+
 // Lazy load offer pages
 const OffersPage = lazy(() => import("../pages/offers/OffersPage"));
 const OfferViewPage = lazy(() => import("../pages/offers/OfferViewPage"));
@@ -307,6 +313,26 @@ export default function AppRoutes() {
                     </ErrorBoundary>
                   }
                 />
+                <Route
+                  path="receipts/create"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading receipt creation...</div>}>
+                        <ReceiptCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="receipt/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading receipt editor...</div>}>
+                        <ReceiptCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
               </Route>
 
               <Route
@@ -381,6 +407,48 @@ export default function AppRoutes() {
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading payment details...</div>}>
                       <PaymentViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* Receipts - Both Admin and Client */}
+              <Route
+                path="receipt"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading receipts...</div>}>
+                      <ReceiptsPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="receipts"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading receipts...</div>}>
+                      <ReceiptsPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="receipt/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading receipt details...</div>}>
+                      <ReceiptViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="receipts/views/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading receipt view...</div>}>
+                      <ReceiptClientView />
                     </Suspense>
                   </ErrorBoundary>
                 }
@@ -751,6 +819,28 @@ export default function AppRoutes() {
                     <ErrorBoundary>
                       <Suspense fallback={<div>Loading client editor...</div>}>
                         <ClientEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+
+                {/* Receipts */}
+                <Route
+                  path="receipts/create"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading receipt creation...</div>}>
+                        <ReceiptCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="receipt/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading receipt editor...</div>}>
+                        <ReceiptCreatePage />
                       </Suspense>
                     </ErrorBoundary>
                   }

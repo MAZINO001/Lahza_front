@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -13,7 +19,7 @@ import {
   CheckCircle,
   Eye,
   Calendar,
-  User
+  User,
 } from "lucide-react";
 import { useAuthContext } from "@/hooks/AuthContext";
 
@@ -21,13 +27,14 @@ const mockTickets = [
   {
     id: "TKT-001",
     title: "Login page not loading properly",
-    description: "Users are reporting that the login page is stuck on loading screen",
+    description:
+      "Users are reporting that the login page is stuck on loading screen",
     category: "website",
     status: "open",
     priority: "high",
     createdAt: "2024-01-08",
     updatedAt: "2024-01-08",
-    createdBy: "John Doe"
+    createdBy: "John Doe",
   },
   {
     id: "TKT-002",
@@ -38,7 +45,7 @@ const mockTickets = [
     priority: "medium",
     createdAt: "2024-01-07",
     updatedAt: "2024-01-08",
-    createdBy: "Jane Smith"
+    createdBy: "Jane Smith",
   },
   {
     id: "TKT-003",
@@ -49,7 +56,7 @@ const mockTickets = [
     priority: "low",
     createdAt: "2024-01-06",
     updatedAt: "2024-01-07",
-    createdBy: "Admin"
+    createdBy: "Admin",
   },
   {
     id: "TKT-004",
@@ -60,37 +67,52 @@ const mockTickets = [
     priority: "low",
     createdAt: "2024-01-05",
     updatedAt: "2024-01-05",
-    createdBy: "Mike Johnson"
-  }
+    createdBy: "Mike Johnson",
+  },
 ];
 
 const getStatusColor = (status) => {
   switch (status) {
-    case "open": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "in-progress": return "bg-blue-100 text-blue-800 border-blue-200";
-    case "resolved": return "bg-green-100 text-green-800 border-green-200";
-    case "closed": return "bg-gray-100 text-gray-800 border-gray-200";
-    default: return "bg-gray-100 text-gray-800 border-gray-200";
+    case "open":
+      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    case "in-progress":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "resolved":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "closed":
+      return "bg-gray-100 text-gray-800 border-gray-200";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200";
   }
 };
 
 const getPriorityColor = (priority) => {
   switch (priority) {
-    case "high": return "bg-red-100 text-red-800 border-red-200";
-    case "medium": return "bg-orange-100 text-orange-800 border-orange-200";
-    case "low": return "bg-gray-100 text-gray-800 border-gray-200";
-    case "critical": return "bg-red-200 text-red-900 border-red-300";
-    default: return "bg-gray-100 text-gray-800 border-gray-200";
+    case "high":
+      return "bg-red-100 text-red-800 border-red-200";
+    case "medium":
+      return "bg-orange-100 text-orange-800 border-orange-200";
+    case "low":
+      return "bg-gray-100 text-gray-800 border-gray-200";
+    case "critical":
+      return "bg-red-200 text-red-900 border-red-300";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200";
   }
 };
 
 const getCategoryColor = (category) => {
   switch (category) {
-    case "website": return "bg-red-50 text-red-700 border-red-200";
-    case "hosting": return "bg-orange-50 text-orange-700 border-orange-200";
-    case "billing": return "bg-blue-50 text-blue-700 border-blue-200";
-    case "general": return "bg-green-50 text-green-700 border-green-200";
-    default: return "bg-gray-50 text-gray-700 border-gray-200";
+    case "website":
+      return "bg-red-50 text-red-700 border-red-200";
+    case "hosting":
+      return "bg-orange-50 text-orange-700 border-orange-200";
+    case "billing":
+      return "bg-blue-50 text-blue-700 border-blue-200";
+    case "general":
+      return "bg-green-50 text-green-700 border-green-200";
+    default:
+      return "bg-gray-50 text-gray-700 border-gray-200";
   }
 };
 
@@ -100,11 +122,14 @@ export default function TicketsPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPriority, setFilterPriority] = useState("all");
 
-  const filteredTickets = mockTickets.filter(ticket => {
-    const matchesSearch = ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredTickets = mockTickets.filter((ticket) => {
+    const matchesSearch =
+      ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || ticket.status === filterStatus;
-    const matchesPriority = filterPriority === "all" || ticket.priority === filterPriority;
+    const matchesStatus =
+      filterStatus === "all" || ticket.status === filterStatus;
+    const matchesPriority =
+      filterPriority === "all" || ticket.priority === filterPriority;
 
     return matchesSearch && matchesStatus && matchesPriority;
   });
@@ -113,8 +138,8 @@ export default function TicketsPage() {
     navigate("/client/ticket/new");
   };
 
+  const { role } = useAuthContext();
   const handleViewTicket = (ticketId) => {
-    const { role } = useAuthContext();
     navigate(`/${role}/ticket/${ticketId}`);
   };
 
@@ -123,7 +148,9 @@ export default function TicketsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Support Tickets</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            Support Tickets
+          </h1>
           <p className="text-muted-foreground mt-1">
             Manage and track all your support tickets in one place
           </p>
@@ -186,9 +213,13 @@ export default function TicketsPage() {
               <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
                 <AlertCircle className="h-8 w-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">No tickets found</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                No tickets found
+              </h3>
               <p className="text-muted-foreground mb-4">
-                {searchTerm || filterStatus !== "all" || filterPriority !== "all"
+                {searchTerm ||
+                filterStatus !== "all" ||
+                filterPriority !== "all"
                   ? "Try adjusting your filters or search terms"
                   : "Get started by creating your first support ticket"}
               </p>
@@ -200,12 +231,17 @@ export default function TicketsPage() {
           </Card>
         ) : (
           filteredTickets.map((ticket) => (
-            <Card key={ticket.id} className="hover:shadow-md transition-shadow cursor-pointer">
+            <Card
+              key={ticket.id}
+              className="hover:shadow-md transition-shadow cursor-pointer"
+            >
               <CardContent className="p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-foreground text-lg">{ticket.title}</h3>
+                      <h3 className="font-semibold text-foreground text-lg">
+                        {ticket.title}
+                      </h3>
                       <div className="flex flex-wrap gap-2">
                         <Badge className={getStatusColor(ticket.status)}>
                           {ticket.status}

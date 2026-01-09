@@ -14,6 +14,8 @@ import {
   Package,
   PercentSquare,
   User,
+  Receipt,
+  ReceiptCentIcon,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -57,13 +59,18 @@ export function AppSidebar(props) {
           url: `/${role}/payments`,
           icon: DollarSign,
         },
+        {
+          title: "Receipt",
+          url: `/${role}/receipt`,
+          icon: ReceiptCentIcon,
+        },
         { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
       ],
       navSecondary: [
         { title: "Tickets", url: `/${role}/tickets`, icon: IconInvoice },
         {
           title: "Settings",
-          url: `/${role}/settings`,
+          url: `/${role}/settings/company_basics`,
           icon: IconSettings,
         },
       ],
@@ -96,13 +103,22 @@ export function AppSidebar(props) {
           url: `/${role}/payments`,
           icon: DollarSign,
         },
+        {
+          title: "Receipt",
+          url: `/${role}/receipt`,
+          icon: ReceiptCentIcon,
+        },
         { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
         { title: "Clients", url: `/${role}/clients`, icon: User },
         { title: "Services", url: `/${role}/services`, icon: Package },
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },
-        { title: "Settings", url: "/admin/settings/company_basics", icon: IconSettings },
+        {
+          title: "Settings",
+          url: "/admin/settings/company_basics",
+          icon: IconSettings,
+        },
       ],
     },
   };

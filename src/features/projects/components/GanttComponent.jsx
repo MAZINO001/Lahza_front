@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   GanttProvider,
   GanttHeader,
@@ -12,7 +13,6 @@ import {
 } from "@/components/kibo-ui/gantt";
 
 import React, { useState } from "react";
-import { useAuthContext } from "@/hooks/AuthContext";
 
 const groupBy = (array, key) => {
   return array.reduce((result, item) => {
@@ -43,12 +43,10 @@ import {
   useDeleteTask,
   useUpdateTask,
   useMarkTaskComplete,
+  useTasks,
 } from "@/features/tasks/hooks/useTasksQuery";
 
 export default function GanttComponent({ tasks, projectId, role }) {
-  const { role: contextRole } = useAuthContext();
-  const userRole = role || contextRole;
-  const isClient = userRole === "client";
   const [editingTask, setEditingTask] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -98,7 +96,6 @@ export default function GanttComponent({ tasks, projectId, role }) {
   );
 
   const handleMoveTask = (id, startAt, endAt) => {
-    if (isClient) return; // Clients cannot move tasks
     if (!endAt) return;
 
     const startDate =
@@ -127,7 +124,6 @@ export default function GanttComponent({ tasks, projectId, role }) {
   };
 
   const handleTaskDelete = (taskId) => {
-    if (isClient) return; // Clients cannot delete tasks
     deleteTaskMutation.mutate(
       { projectId, taskId },
       {
@@ -140,7 +136,6 @@ export default function GanttComponent({ tasks, projectId, role }) {
   };
 
   const handleMarkComplete = (taskId) => {
-    if (isClient) return; // Clients cannot mark tasks complete
     markTaskCompleteMutation.mutate(
       { taskId, projectId },
       {
@@ -153,14 +148,12 @@ export default function GanttComponent({ tasks, projectId, role }) {
   };
 
   const handleTaskEdit = (task) => {
-    if (isClient) return; // Clients cannot edit tasks
     setEditingTask(task);
     setIsEditDialogOpen(true);
     console.log(task);
   };
 
   const handleTaskAdd = () => {
-    if (isClient) return; // Clients cannot add tasks
     setIsAddDialogOpen(true);
   };
 
@@ -168,7 +161,7 @@ export default function GanttComponent({ tasks, projectId, role }) {
     <div className="w-full h-full ">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-bold">Project Timeline</h2>
-        {!isClient && (
+        {role !== "client" && (
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={handleTaskAdd}>+ Add Task</Button>
@@ -185,14 +178,14 @@ export default function GanttComponent({ tasks, projectId, role }) {
         )}
       </div>
 
-      <div className="w-full h-full overflow-hidden">
+      <div className="w-full h-full">
         <GanttProvider
           tasks={transformedTasks}
-          onTaskChange={(task) =>
-            !isClient && handleMoveTask(task.id, task.startAt, task.endAt)
-          }
-          onTaskClick={(task) => console.log("EDIT THIS:", task)}
-          onTaskDelete={(task) => !isClient && handleTaskDelete(task.id)}
+          onTaskChange={role !== "client" ? (task) =>
+            handleMoveTask(task.id, task.startAt, task.endAt)
+            : undefined}
+          onTaskClick={role !== "client" ? (task) => console.log("EDIT THIS:", task) : undefined}
+          onTaskDelete={role !== "client" ? (task) => handleTaskDelete(task.id) : undefined}
           className="border border-border rounded-lg"
           range="daily"
           zoom={100}
@@ -220,40 +213,37 @@ export default function GanttComponent({ tasks, projectId, role }) {
 
                   return (
                     <div key={laneId} className="relative ">
-                      <ContextMenu>
-                        <ContextMenuTrigger asChild>
-                          <div>
-                            <GanttSidebarItem feature={representativeTask} />
-                          </div>
-                        </ContextMenuTrigger>
+                      {role !== "client" ? (
+                        <ContextMenu>
+                          <ContextMenuTrigger asChild>
+                            <div>
+                              <GanttSidebarItem feature={representativeTask} />
+                            </div>
+                          </ContextMenuTrigger>
 
-                        <ContextMenuContent>
-                          {!isClient && (
-                            <>
-                              <ContextMenuItem
-                                onClick={() => handleTaskEdit(representativeTask)}
-                              >
-                                Edit
-                              </ContextMenuItem>
-                              <ContextMenuItem
-                                onClick={() => handleMarkComplete(laneId)}
-                              >
-                                Mark as Complete
-                              </ContextMenuItem>
-                              <ContextMenuItem
-                                onClick={() => handleTaskDelete(laneId)}
-                              >
-                                Delete
-                              </ContextMenuItem>
-                            </>
-                          )}
-                          {isClient && (
-                            <ContextMenuItem disabled>
-                              View Only (Client Access)
+                          <ContextMenuContent>
+                            <ContextMenuItem
+                              onClick={() => handleTaskEdit(representativeTask)}
+                            >
+                              Edit
                             </ContextMenuItem>
-                          )}
-                        </ContextMenuContent>
-                      </ContextMenu>
+                            <ContextMenuItem
+                              onClick={() => handleMarkComplete(laneId)}
+                            >
+                              Mark as Complete
+                            </ContextMenuItem>
+                            <ContextMenuItem
+                              onClick={() => handleTaskDelete(laneId)}
+                            >
+                              Delete
+                            </ContextMenuItem>
+                          </ContextMenuContent>
+                        </ContextMenu>
+                      ) : (
+                        <div>
+                          <GanttSidebarItem feature={representativeTask} />
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -271,20 +261,20 @@ export default function GanttComponent({ tasks, projectId, role }) {
                       <div key={laneId}>
                         <GanttFeatureRow
                           features={laneTaskList}
-                          onMove={handleMoveTask}
+                          onMove={role !== "client" ? handleMoveTask : undefined}
                         >
                           {(task) => (
-                            <ContextMenu>
-                              <ContextMenuTrigger asChild>
-                                <div className="flex w-full items-center gap-2 cursor-pointer hover:bg-muted/50 p-1 rounded">
-                                  <p className="flex-1 truncate text-xs">
-                                    {task.name}
-                                  </p>
-                                </div>
-                              </ContextMenuTrigger>
-                              <ContextMenuContent>
-                                {!isClient && (
-                                  <>
+                            <div className="flex w-full items-center gap-2">
+                              {role !== "client" ? (
+                                <ContextMenu>
+                                  <ContextMenuTrigger asChild>
+                                    <div className="flex w-full items-center gap-2 cursor-pointer">
+                                      <p className="flex-1 truncate text-xs">
+                                        {task.name}
+                                      </p>
+                                    </div>
+                                  </ContextMenuTrigger>
+                                  <ContextMenuContent>
                                     <ContextMenuItem
                                       onClick={() => handleTaskEdit(task)}
                                     >
@@ -300,15 +290,16 @@ export default function GanttComponent({ tasks, projectId, role }) {
                                     >
                                       Delete
                                     </ContextMenuItem>
-                                  </>
-                                )}
-                                {isClient && (
-                                  <ContextMenuItem disabled>
-                                    View Only (Client Access)
-                                  </ContextMenuItem>
-                                )}
-                              </ContextMenuContent>
-                            </ContextMenu>
+                                  </ContextMenuContent>
+                                </ContextMenu>
+                              ) : (
+                                <div className="flex w-full items-center gap-2">
+                                  <p className="flex-1 truncate text-xs">
+                                    {task.name}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           )}
                         </GanttFeatureRow>
                       </div>
@@ -322,7 +313,7 @@ export default function GanttComponent({ tasks, projectId, role }) {
         </GanttProvider>
       </div>
 
-      {isEditDialogOpen && (
+      {isEditDialogOpen && role !== "client" && (
         <Dialog
           open={!!isEditDialogOpen}
           onOpenChange={(open) => !open && setIsEditDialogOpen(false)}
@@ -331,7 +322,7 @@ export default function GanttComponent({ tasks, projectId, role }) {
             <DialogHeader>
               <DialogTitle>Edit Task: {editingTask?.id}</DialogTitle>
               <DialogDescription>
-                Edit the task details below.
+                Edit task details below.
               </DialogDescription>
             </DialogHeader>
             <TaskEditPage
