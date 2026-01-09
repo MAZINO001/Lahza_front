@@ -235,14 +235,16 @@ export default function ProjectViewPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button
-            onClick={() => handleMarkAsComplete(project.id)}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <CheckCircle className="w-4 h-4" />
-            Done
-          </Button>
+          {role !== "client" && (
+            <Button
+              onClick={() => handleMarkAsComplete(project.id)}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <CheckCircle className="w-4 h-4" />
+              Done
+            </Button>
+          )}
 
           <Link to={`/${role}/project/${id}/${destination}`}>
             <Button className="flex items-center gap-2">
@@ -387,10 +389,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                        <p className="text-muted-foreground text-center py-4">
-                          No team members found
-                        </p>
-                      )}
+                          <p className="text-muted-foreground text-center py-4">
+                            No team members found
+                          </p>
+                        )}
                     </div>
                   </div>
                 </TabsContent>
@@ -410,13 +412,12 @@ export default function ProjectViewPage() {
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${
-                                tx?.payment_url
+                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${tx?.payment_url
                                   ? "hover:bg-blue-100"
                                   : tx?.payment_method === "bank"
                                     ? "hover:bg-green-100"
                                     : "hover:bg-gray-100"
-                              }`}
+                                }`}
                               onClick={() => {
                                 if (tx?.payment_url) {
                                   handleStripePayment(tx.payment_url);
@@ -491,10 +492,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                        <p className="text-muted-foreground text-center py-4">
-                          No transactions found
-                        </p>
-                      )}
+                          <p className="text-muted-foreground text-center py-4">
+                            No transactions found
+                          </p>
+                        )}
                     </div>
                   </div>
                 </TabsContent>
@@ -533,10 +534,10 @@ export default function ProjectViewPage() {
                           </span>
                         </div>
                       )) || (
-                        <p className="text-muted-foreground text-center py-4">
-                          No attachments found
-                        </p>
-                      )}
+                          <p className="text-muted-foreground text-center py-4">
+                            No attachments found
+                          </p>
+                        )}
                     </div>
                   </div>
                 </TabsContent>
@@ -549,7 +550,7 @@ export default function ProjectViewPage() {
 
           <Card className="p-2 h-[40%]">
             <CardContent value="gantt" className="h-full  p-2">
-              <GanttComponent tasks={tasks} projectId={id} />
+              <GanttComponent tasks={tasks} projectId={id} role={role} />
             </CardContent>
           </Card>
         </div>

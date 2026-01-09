@@ -390,9 +390,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
 
       cell: ({ row }) => {
         const id = row.getValue("id");
-        return (
-          <div className="font-mono text-sm">{formatId(id, "PAYMENT")}</div>
-        );
+        return <div>{formatId(id, "PAYMENT")}</div>;
       },
     },
     {
@@ -553,9 +551,19 @@ export function paymentColumns(role, { onEditPaidAt }) {
             );
           }
         };
+
+        if (role === "client") {
+          return (
+            <div className="text-muted-foreground">
+              —
+            </div>
+          );
+        }
+
         const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
         const confirmPayment = useConfirmPayment();
         const cancelPayment = useCancelPayment();
+
         return (
           <div className="flex gap-2">
             {payment.stripe_session_id && row.getValue("status") === "paid" && (
@@ -605,8 +613,8 @@ export function paymentColumns(role, { onEditPaidAt }) {
                       confirmPayment.mutate(row.getValue("id"));
                       setOpen(false);
                     }}
-                    title="Cancel Payment"
-                    description="Are you sure you want to cancel this payment? This action cannot be undone."
+                    title="Confirm Payment"
+                    description="Are you sure you want to confirm this payment? This action cannot be undone."
                     action="confirm"
                   />
                 </>

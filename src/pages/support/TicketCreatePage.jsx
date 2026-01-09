@@ -1,8 +1,6 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useForm, Controller } from "react-hook-form";
 import {
   Card,
   CardContent,
@@ -12,6 +10,16 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertCircle,
   ArrowLeft,
@@ -20,9 +28,6 @@ import {
   Paperclip,
 } from "lucide-react";
 import { toast } from "sonner";
-import FormField from "@/Components/Form/FormField";
-import SelectField from "@/Components/Form/SelectField";
-import TextareaField from "@/Components/Form/TextareaField";
 
 const ticketCategories = [
   {
@@ -109,35 +114,64 @@ export default function TicketCreatePage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [ticketId, setTicketId] = useState(null);
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      category: searchParams.get("category") || "",
-      subcategory: "",
-      subject: "",
-      description: "",
-      priority: "medium",
-      email: "",
-      attachments: [],
-    },
+  const [formData, setFormData] = useState({
+    category: searchParams.get("category") || "",
+    subcategory: "",
+    subject: "",
+    description: "",
+    priority: "medium",
+    email: "",
+    attachments: [],
   });
 
+  const [errors, setErrors] = useState({});
+
   const selectedCategory = ticketCategories.find(
-    (cat) => cat.id === watch("category")
+    (cat) => cat.id === formData.category
   );
 
   useEffect(() => {
-    if (watch("category")) {
-      setValue("subcategory", "");
+    if (formData.category) {
+      setFormData((prev) => ({ ...prev, subcategory: "" }));
     }
-  }, [watch("category"), setValue]);
+  }, [formData.category]);
 
-  const onSubmit = async (data) => {
+  const handleInputChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.category) newErrors.category = "Please select a category";
+    if (!formData.subcategory)
+      newErrors.subcategory = "Please select a subcategory";
+    if (!formData.subject.trim()) newErrors.subject = "Subject is required";
+    if (formData.subject.trim().length < 5)
+      newErrors.subject = "Subject must be at least 5 characters";
+    if (!formData.description.trim())
+      newErrors.description = "Description is required";
+    if (formData.description.trim().length < 20)
+      newErrors.description = "Description must be at least 20 characters";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
+      newErrors.email = "Please enter a valid email address";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      toast.error("Please fix the errors in the form");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -160,21 +194,24 @@ export default function TicketCreatePage() {
 
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
-    setValue("attachments", [...watch("attachments"), ...files]);
+    setFormData((prev) => ({
+      ...prev,
+      attachments: [...prev.attachments, ...files],
+    }));
   };
 
   const removeAttachment = (index) => {
-    setValue(
-      "attachments",
-      watch("attachments").filter((_, i) => i !== index)
-    );
+    setFormData((prev) => ({
+      ...prev,
+      attachments: prev.attachments.filter((_, i) => i !== index),
+    }));
   };
 
   if (isSubmitted) {
     return (
-      <div className="w-full p-4">
+      <div className="max-w-2xl mx-auto p-4">
         <Card className="text-center">
-          <CardContent className="p-4">
+          <CardContent className="p-8">
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-green-100 rounded-full">
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -194,11 +231,11 @@ export default function TicketCreatePage() {
               </p>
             </div>
             <div className="flex gap-3 justify-center">
-              <Button
-                variant="outline"
-                onClick={() => navigate("/client/tickets")}
-              >
-                Back to Tickets
+              <Button variant="outline" onClick={() => navigate("/support")}>
+                Back to Support Center
+              </Button>
+              <Button onClick={() => navigate(`/support/ticket/${ticketId}`)}>
+                View Ticket
               </Button>
             </div>
           </CardContent>
@@ -208,16 +245,16 @@ export default function TicketCreatePage() {
   }
 
   return (
-    <div className="w-full p-4">
+    <div className="p-4">
       {/* Header */}
       <div className="mb-4">
         <Button
           variant="ghost"
-          onClick={() => navigate("/client/tickets")}
+          onClick={() => navigate("/support")}
           className="mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Tickets
+          Back to Support Center
         </Button>
         <h1 className="text-3xl font-bold text-foreground">
           Create Support Ticket
@@ -227,7 +264,7 @@ export default function TicketCreatePage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Category Selection */}
         <Card>
           <CardHeader>
@@ -242,11 +279,11 @@ export default function TicketCreatePage() {
                 <div
                   key={category.id}
                   className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                    watch("category") === category.id
+                    formData.category === category.id
                       ? category.color
                       : "border-border hover:border-primary/50"
                   }`}
-                  onClick={() => setValue("category", category.id)}
+                  onClick={() => handleInputChange("category", category.id)}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{category.icon}</span>
@@ -265,24 +302,31 @@ export default function TicketCreatePage() {
 
             {selectedCategory && (
               <div>
-                <Controller
-                  name="subcategory"
-                  control={control}
-                  rules={{ required: "Please select a subcategory" }}
-                  render={({ field }) => (
-                    <SelectField
-                      {...field}
-                      label="Subcategory"
-                      id="subcategory"
-                      placeholder="Select a subcategory"
-                      options={selectedCategory.subcategories.map((sub) => ({
-                        value: sub.id,
-                        label: sub.label,
-                      }))}
-                      error={errors.subcategory?.message}
-                    />
-                  )}
-                />
+                <Label htmlFor="subcategory">Subcategory</Label>
+                <Select
+                  value={formData.subcategory}
+                  onValueChange={(value) =>
+                    handleInputChange("subcategory", value)
+                  }
+                >
+                  <SelectTrigger
+                    className={`mt-1 ${errors.subcategory ? "border-destructive" : ""}`}
+                  >
+                    <SelectValue placeholder="Select a subcategory" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {selectedCategory.subcategories.map((sub) => (
+                      <SelectItem key={sub.id} value={sub.id}>
+                        {sub.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.subcategory && (
+                  <p className="text-sm text-destructive mt-1">
+                    {errors.subcategory}
+                  </p>
+                )}
               </div>
             )}
           </CardContent>
@@ -298,74 +342,81 @@ export default function TicketCreatePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Controller
-                name="subject"
-                control={control}
-                rules={{
-                  required: "Subject is required",
-                  minLength: {
-                    value: 5,
-                    message: "Subject must be at least 5 characters",
-                  },
-                }}
-                render={({ field }) => (
-                  <FormField
-                    {...field}
-                    id="subject"
-                    label="Subject"
-                    type="text"
-                    placeholder="Brief description of your issue"
-                    error={errors.subject?.message}
-                  />
-                )}
+              <Label htmlFor="subject">Subject</Label>
+              <Input
+                id="subject"
+                value={formData.subject}
+                onChange={(e) => handleInputChange("subject", e.target.value)}
+                placeholder="Brief description of your issue"
+                className={`mt-1 ${errors.subject ? "border-destructive" : ""}`}
               />
+              {errors.subject && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.subject}
+                </p>
+              )}
             </div>
 
             <div>
-              <Controller
-                name="description"
-                control={control}
-                rules={{
-                  required: "Description is required",
-                  minLength: {
-                    value: 20,
-                    message: "Description must be at least 20 characters",
-                  },
-                }}
-                render={({ field }) => (
-                  <TextareaField
-                    {...field}
-                    id="description"
-                    label="Description"
-                    placeholder="Please provide detailed information about your issue..."
-                    error={errors.description?.message}
-                  />
-                )}
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) =>
+                  handleInputChange("description", e.target.value)
+                }
+                placeholder="Please provide detailed information about your issue..."
+                rows={6}
+                className={`mt-1 ${errors.description ? "border-destructive" : ""}`}
               />
+              {errors.description && (
+                <p className="text-sm text-destructive mt-1">
+                  {errors.description}
+                </p>
+              )}
             </div>
 
             <div>
-              <Controller
-                name="priority"
-                control={control}
-                render={({ field }) => (
-                  <SelectField
-                    {...field}
-                    id="priority"
-                    label="Priority"
-                    placeholder="Select priority level"
-                    options={priorityLevels.map((priority) => ({
-                      value: priority.id,
-                      label: priority.label,
-                    }))}
-                    error={errors.priority?.message}
-                  />
-                )}
+              <Label htmlFor="priority">Priority</Label>
+              <Select
+                value={formData.priority}
+                onValueChange={(value) => handleInputChange("priority", value)}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {priorityLevels.map((priority) => (
+                    <SelectItem key={priority.id} value={priority.id}>
+                      <div className="flex items-center gap-2">
+                        <Badge className={priority.color}>
+                          {priority.label}
+                        </Badge>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="email">Contact Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange("email", e.target.value)}
+                placeholder="your.email@example.com"
+                className={`mt-1 ${errors.email ? "border-destructive" : ""}`}
               />
+              {errors.email && (
+                <p className="text-sm text-destructive mt-1">{errors.email}</p>
+              )}
             </div>
           </CardContent>
         </Card>
 
+        {/* Attachments */}
         <Card>
           <CardHeader>
             <CardTitle>Attachments</CardTitle>
@@ -394,12 +445,12 @@ export default function TicketCreatePage() {
               </label>
             </div>
 
-            {watch("attachments").length > 0 && (
+            {formData.attachments.length > 0 && (
               <div className="mt-4 space-y-2">
                 <p className="text-sm font-medium text-foreground">
                   Attached Files:
                 </p>
-                {watch("attachments").map((file, index) => (
+                {formData.attachments.map((file, index) => (
                   <div
                     key={index}
                     className="flex items-center justify-between p-2 bg-muted rounded"
@@ -428,12 +479,11 @@ export default function TicketCreatePage() {
           </CardContent>
         </Card>
 
-        {/* Submit Button */}
         <div className="flex justify-end gap-3">
           <Button
             type="button"
             variant="outline"
-            onClick={() => navigate("/client/tickets")}
+            onClick={() => navigate("/support")}
           >
             Cancel
           </Button>

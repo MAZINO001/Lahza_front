@@ -12,6 +12,7 @@ import {
 } from "@/components/kibo-ui/gantt";
 
 import React, { useState } from "react";
+import { useAuthContext } from "@/hooks/AuthContext";
 
 const groupBy = (array, key) => {
   return array.reduce((result, item) => {
@@ -44,7 +45,10 @@ import {
   useMarkTaskComplete,
 } from "@/features/tasks/hooks/useTasksQuery";
 
-export default function GanttComponent({ tasks, projectId }) {
+export default function GanttComponent({ tasks, projectId, role }) {
+  const { role: contextRole } = useAuthContext();
+  const userRole = role || contextRole;
+  const isClient = userRole === "client";
   const [editingTask, setEditingTask] = useState(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -94,6 +98,7 @@ export default function GanttComponent({ tasks, projectId }) {
   );
 
   const handleMoveTask = (id, startAt, endAt) => {
+    if (isClient) return; // Clients cannot move tasks
     if (!endAt) return;
 
     const startDate =
@@ -122,6 +127,7 @@ export default function GanttComponent({ tasks, projectId }) {
   };
 
   const handleTaskDelete = (taskId) => {
+    if (isClient) return; // Clients cannot delete tasks
     deleteTaskMutation.mutate(
       { projectId, taskId },
       {
@@ -134,6 +140,7 @@ export default function GanttComponent({ tasks, projectId }) {
   };
 
   const handleMarkComplete = (taskId) => {
+    if (isClient) return; // Clients cannot mark tasks complete
     markTaskCompleteMutation.mutate(
       { taskId, projectId },
       {
@@ -146,12 +153,14 @@ export default function GanttComponent({ tasks, projectId }) {
   };
 
   const handleTaskEdit = (task) => {
+    if (isClient) return; // Clients cannot edit tasks
     setEditingTask(task);
     setIsEditDialogOpen(true);
     console.log(task);
   };
 
   const handleTaskAdd = () => {
+    if (isClient) return; // Clients cannot add tasks
     setIsAddDialogOpen(true);
   };
 
@@ -159,29 +168,31 @@ export default function GanttComponent({ tasks, projectId }) {
     <div className="w-full h-full ">
       <div className="flex justify-between mb-4">
         <h2 className="text-2xl font-bold">Project Timeline</h2>
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={handleTaskAdd}>+ Add Task</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Task</DialogTitle>
-              <DialogDescription>
-                <TaskCreatePage onCancel={() => setIsAddDialogOpen(false)} />
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+        {!isClient && (
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={handleTaskAdd}>+ Add Task</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Task</DialogTitle>
+                <DialogDescription>
+                  <TaskCreatePage onCancel={() => setIsAddDialogOpen(false)} />
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
       <div className="w-full h-full overflow-hidden">
         <GanttProvider
           tasks={transformedTasks}
           onTaskChange={(task) =>
-            handleMoveTask(task.id, task.startAt, task.endAt)
+            !isClient && handleMoveTask(task.id, task.startAt, task.endAt)
           }
           onTaskClick={(task) => console.log("EDIT THIS:", task)}
-          onTaskDelete={(task) => handleTaskDelete(task.id)}
+          onTaskDelete={(task) => !isClient && handleTaskDelete(task.id)}
           className="border border-border rounded-lg"
           range="daily"
           zoom={100}
@@ -217,21 +228,30 @@ export default function GanttComponent({ tasks, projectId }) {
                         </ContextMenuTrigger>
 
                         <ContextMenuContent>
-                          <ContextMenuItem
-                            onClick={() => handleTaskEdit(representativeTask)}
-                          >
-                            Edit
-                          </ContextMenuItem>
-                          <ContextMenuItem
-                            onClick={() => handleMarkComplete(laneId)}
-                          >
-                            Mark as Complete
-                          </ContextMenuItem>
-                          <ContextMenuItem
-                            onClick={() => handleTaskDelete(laneId)}
-                          >
-                            Delete
-                          </ContextMenuItem>
+                          {!isClient && (
+                            <>
+                              <ContextMenuItem
+                                onClick={() => handleTaskEdit(representativeTask)}
+                              >
+                                Edit
+                              </ContextMenuItem>
+                              <ContextMenuItem
+                                onClick={() => handleMarkComplete(laneId)}
+                              >
+                                Mark as Complete
+                              </ContextMenuItem>
+                              <ContextMenuItem
+                                onClick={() => handleTaskDelete(laneId)}
+                              >
+                                Delete
+                              </ContextMenuItem>
+                            </>
+                          )}
+                          {isClient && (
+                            <ContextMenuItem disabled>
+                              View Only (Client Access)
+                            </ContextMenuItem>
+                          )}
                         </ContextMenuContent>
                       </ContextMenu>
                     </div>
@@ -263,21 +283,30 @@ export default function GanttComponent({ tasks, projectId }) {
                                 </div>
                               </ContextMenuTrigger>
                               <ContextMenuContent>
-                                <ContextMenuItem
-                                  onClick={() => handleTaskEdit(task)}
-                                >
-                                  Edit
-                                </ContextMenuItem>
-                                <ContextMenuItem
-                                  onClick={() => handleMarkComplete(task.id)}
-                                >
-                                  Mark as Complete
-                                </ContextMenuItem>
-                                <ContextMenuItem
-                                  onClick={() => handleTaskDelete(task.id)}
-                                >
-                                  Delete
-                                </ContextMenuItem>
+                                {!isClient && (
+                                  <>
+                                    <ContextMenuItem
+                                      onClick={() => handleTaskEdit(task)}
+                                    >
+                                      Edit
+                                    </ContextMenuItem>
+                                    <ContextMenuItem
+                                      onClick={() => handleMarkComplete(task.id)}
+                                    >
+                                      Mark as Complete
+                                    </ContextMenuItem>
+                                    <ContextMenuItem
+                                      onClick={() => handleTaskDelete(task.id)}
+                                    >
+                                      Delete
+                                    </ContextMenuItem>
+                                  </>
+                                )}
+                                {isClient && (
+                                  <ContextMenuItem disabled>
+                                    View Only (Client Access)
+                                  </ContextMenuItem>
+                                )}
                               </ContextMenuContent>
                             </ContextMenu>
                           )}

@@ -21,7 +21,7 @@ export function ProjectColumns(role, navigate) {
         const id = row.getValue("id");
         return (
           <Link
-            to={`/admin/project/${id}`}
+            to={`/${role}/project/${id}`}
             className="font-medium text-foreground hover:underline"
           >
             {formatId(id, "PROJECT")}
@@ -91,6 +91,16 @@ export function ProjectColumns(role, navigate) {
       header: "Actions",
       cell: ({ row }) => {
         const { HandleEditProject } = globalFnStore();
+
+        // Only show actions for admin and team_member roles
+        if (role === "client") {
+          return (
+            <div className="text-muted-foreground">
+              —
+            </div>
+          );
+        }
+
         console.log(row.getValue("estimated_end_date"));
         return (
           <div className="flex gap-2">

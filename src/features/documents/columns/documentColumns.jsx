@@ -343,13 +343,11 @@ export function DocumentsColumns(role, navigate, currentSection) {
           globalFnStore();
 
         const handleSend = () => {
-          const type = isInvoice ? "invoices" : "quotes";
-          handleSendInvoice_Quote(document.id, user.email, type);
+          handleSendInvoice_Quote(document.id, user.email, currentSection);
         };
 
         const handleDownload = () => {
-          const type = isInvoice ? "invoices" : "quotes";
-          handleDownloadInvoice_Quotes(document.id, type);
+          handleDownloadInvoice_Quotes(document.id, currentSection);
         };
 
         const handlePay = () => {

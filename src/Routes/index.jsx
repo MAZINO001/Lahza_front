@@ -35,12 +35,15 @@ const QuoteEditPage = lazy(() => import("../pages/quotes/QuoteEditPage"));
 
 // Lazy load ticket pages
 const TicketsPage = lazy(() => import("../pages/tickets/TicketsPage"));
-const TicketViewPage = lazy(() => import("../pages/tickets/TicketViewPage"));
+const AdminTicketsPage = lazy(
+  () => import("../pages/tickets/views/AdminTicketsPage")
+);
+const TicketAdminView = lazy(
+  () => import("../pages/tickets/views/TicketAdminView")
+);
 const TicketCreatePage = lazy(
   () => import("../pages/tickets/TicketCreatePage")
 );
-const TicketEditPage = lazy(() => import("../pages/tickets/TicketEditPage"));
-
 // Lazy load invoice pages
 const InvoicesPage = lazy(() => import("../pages/invoices/InvoicesPage"));
 const InvoiceViewPage = lazy(() => import("../pages/invoices/InvoiceViewPage"));
@@ -106,6 +109,14 @@ const UserManagementView = lazy(
 );
 const UserManagementForm = lazy(
   () => import("@/features/settings/user-management/views/UserManagementForm")
+);
+
+// Lazy load profile page
+const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
+
+// Lazy load notifications page
+const NotificationsPage = lazy(
+  () => import("@/pages/notifications/NotificationsPage")
 );
 
 import AuthLayout from "@/app/layout/AuthLayout";
@@ -216,6 +227,30 @@ export default function AppRoutes() {
                 }
               />
 
+              {/* Profile */}
+              <Route
+                path="profile"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading profile...</div>}>
+                      <ProfilePage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* Notifications */}
+              <Route
+                path="notifications"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading notifications...</div>}>
+                      <NotificationsPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
               {/* Projects */}
               <Route
                 path="projects"
@@ -260,23 +295,26 @@ export default function AppRoutes() {
                 }
               />
 
-              {/* Tickets */}
+              {/* Tickets - Client Only */}
+              <Route element={<ProtectedRoute allowedRoles={["client"]} />}>
+                <Route
+                  path="tickets"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading tickets...</div>}>
+                        <TicketsPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+              </Route>
+
               <Route
-                path="tickets"
+                path="ticket/new"
                 element={
                   <ErrorBoundary>
-                    <Suspense fallback={<div>Loading tickets...</div>}>
-                      <TicketsPage />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="ticket/:id"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading ticket details...</div>}>
-                      <TicketViewPage />
+                    <Suspense fallback={<div>Loading ticket creation...</div>}>
+                      <TicketCreatePage />
                     </Suspense>
                   </ErrorBoundary>
                 }
@@ -428,9 +466,29 @@ export default function AppRoutes() {
                 }
               />
 
-
               {/* Admin-only management routes */}
               <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                {/* Tickets */}
+                <Route
+                  path="tickets"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading admin tickets...</div>}>
+                        <AdminTicketsPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="ticket/:id"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading ticket details...</div>}>
+                        <TicketAdminView />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
                 <Route
                   path="settings/team_management/:id"
                   element={
@@ -600,30 +658,6 @@ export default function AppRoutes() {
                     <ErrorBoundary>
                       <Suspense fallback={<div>Loading quote editor...</div>}>
                         <QuoteEditPage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-
-                {/* Tickets */}
-                <Route
-                  path="ticket/new"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense
-                        fallback={<div>Loading ticket creation...</div>}
-                      >
-                        <TicketCreatePage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="ticket/:id/edit"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading ticket editor...</div>}>
-                        <TicketEditPage />
                       </Suspense>
                     </ErrorBoundary>
                   }
