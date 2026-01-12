@@ -22,6 +22,7 @@ import path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
+  base: '/', // Use relative asset paths for subdirectory / cPanel deployments
   plugins: [
     react(),
     tailwindcss(),
@@ -43,27 +44,32 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
+        entryFileNames: 'assets/app-[hash].js',
+        chunkFileNames: 'assets/chunk-[hash].js',
+        assetFileNames: 'assets/asset-[hash].[ext]',
         // Manual chunk splitting strategy
-        manualChunks(id) {
-          // Split vendor dependencies
-          if (id.includes('node_modules')) {
-            if (id.includes('react')) {
-              return 'vendor-react';
-            }
-            if (id.includes('@radix-ui') || id.includes('lucide-react')) {
-              return 'vendor-ui';
-            }
-            return 'vendor-other';
-          }
+        // manualChunks(id) {
+        //   // Split vendor dependencies
+        //   if (id.includes('node_modules')) {
+        //     if (id.includes('react')) {
+        //       return 'vendor-react';
+        //     }
+        //     if (id.includes('@radix-ui') || id.includes('lucide-react')) {
+        //       return 'vendor-ui';
+        //     }
+        //     return 'vendor-other';
+        //   }
 
-          // Split by feature/route
-          if (id.includes('src/pages') || id.includes('src/components')) {
-            const match = id.match(/src\/(pages|components)\/([^/]+)/);
-            if (match) {
-              return `feature-${match[2].toLowerCase()}`;
-            }
-          }
-        },
+        //   // Split by feature/route
+        //   if (id.includes('src/pages') || id.includes('src/components')) {
+        //     const match = id.match(/src\/(pages|components)\/([^/]+)/);
+        //     if (match) {
+        //       return `feature-${match[2].toLowerCase()}`;
+        //     }
+        //   }
+        // },
+              manualChunks: () => 'everything',
+
       },
     },
 
