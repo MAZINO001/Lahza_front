@@ -31,5 +31,12 @@
     "client_form_title": "Client Registration",
     "worker_form_title": "Worker Registration",
     "login_title": "Login"
+  },
+  "currency": {
+    "select_currency": "Select Currency",
+    "currency_changed": "Currency changed to {{currency}}",
+    "euro": "Euro",
+    "moroccan_dirham": "Moroccan Dirham",
+    "us_dollar": "US Dollar"
   }
 }

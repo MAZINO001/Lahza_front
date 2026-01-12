@@ -1,37 +1,37 @@
 /* eslint-disable no-unused-vars */
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { formatId } from "@/lib/utils/formatId";
-import { MoreHorizontal, Eye, Download, Edit, Trash2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const getReceiptColumns = (role, navigate) => [
   {
     accessorKey: "id",
     header: "Receipt ID",
     cell: ({ row }) => {
-      const receipt = row.original;
+      const payment = row.original;
+      const id = payment.id;
       return (
-        <div className="font-medium">{formatId(receipt.id, "RECEIPT")}</div>
+        <Link
+          to={`/${role}/receipt/${id}`}
+          className="font-medium text-foreground hover:underline ml-3"
+        >
+          {formatId(id, "RECEIPT")}
+        </Link>
       );
     },
   },
   {
-    accessorKey: "clientName",
-    header: "Client",
+    accessorKey: "invoice_id",
+    header: "Invoice ID",
     cell: ({ row }) => {
-      const receipt = row.original;
-      return (
-        <div>
-          <div className="font-medium">{receipt.clientName}</div>
+      const payment = row.original;
+      const invoiceId = payment.invoice_id;
+      return invoiceId ? (
+        <div className="font-medium">
+          {formatId(invoiceId, "INVOICE")}
         </div>
+      ) : (
+        <div className="text-muted-foreground">—</div>
       );
     },
   },
@@ -39,26 +39,27 @@ export const getReceiptColumns = (role, navigate) => [
     accessorKey: "amount",
     header: "Amount",
     cell: ({ row }) => {
-      const receipt = row.original;
+      const payment = row.original;
+      const amount = parseFloat(row.getValue("amount"));
+      const formatted = new Intl.NumberFormat("fr-MA", {
+        style: "currency",
+        currency: "MAD",
+      }).format(amount);
       return (
         <div className="font-medium">
-          $
-          {receipt.totalAmount
-            ? receipt.totalAmount.toFixed(2)
-            : receipt.amount.toFixed(2)}
+          {formatted}
         </div>
       );
     },
   },
   {
-    accessorKey: "paymentMethod",
+    accessorKey: "payment_method",
     header: "Payment Method",
     cell: ({ row }) => {
-      const receipt = row.original;
-
+      const method = row.getValue("payment_method");
       return (
         <div className="flex items-center">
-          <span>{receipt.paymentMethod}</span>
+          <span className="capitalize">{method ? method.replace(/_/g, " ") : '—'}</span>
         </div>
       );
     },
@@ -67,7 +68,7 @@ export const getReceiptColumns = (role, navigate) => [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const receipt = row.original;
+      const status = row.getValue("status");
       const statusColors = {
         paid: "bg-green-100 text-green-800",
         pending: "bg-yellow-100 text-yellow-800",
@@ -75,30 +76,23 @@ export const getReceiptColumns = (role, navigate) => [
       };
 
       return (
-        <Badge className={statusColors[receipt.status]}>{receipt.status}</Badge>
+        <Badge className={statusColors[status] || "bg-gray-100 text-gray-800"}>
+          {status}
+        </Badge>
       );
     },
   },
   {
-    accessorKey: "receiptDate",
+    accessorKey: "created_at",
     header: "Date",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("receiptDate"));
+      const date = new Date(row.getValue("created_at"));
       const formatted = date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
         day: "numeric",
       });
-      return date ? formatted : "—";
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const receipt = row.original;
-
-      return <div>action</div>;
+      return !isNaN(date) ? formatted : "—";
     },
   },
 ];

@@ -10,7 +10,7 @@ const apiProject = {
         api.get(`${API_URL}/project/${id}`)
             .then((res) => res.data?.Project ?? res.data ?? null),
     create: (data) => api.post(`${API_URL}/projects`, data).then((res) => res.data),
-    update: (id, data) => api.put(`${API_URL}/projects/${id}`, data).then((res) => res.data),
+    update: (id, data) => api.put(`${API_URL}/project/${id}`, data).then((res) => res.data),
     delete: (id) => api.delete(`${API_URL}/projects/${id}`).then((res) => res.data),
     getProgress: (id) => api.get(`${API_URL}/getProgress/${id}`).then((res) => res.data),
     getProjectTeam: (id) => api.get(`${API_URL}/project/team/${id}`).then((res) => res.data),

@@ -158,7 +158,7 @@ export const getTicketColumns = (role, navigate) => [
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
-                navigate(`/${role}/tickets/create?edit=${ticket.id}`)
+                navigate(`/${role}/tickets/new?edit=${ticket.id}`)
               }
             >
               <Edit className="mr-2 h-4 w-4" />

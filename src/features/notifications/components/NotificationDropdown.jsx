@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
+import { requestNotificationPermission } from "@/features/notifications/hooks/requestPermission";
 
 const mockNotifications = [
   {

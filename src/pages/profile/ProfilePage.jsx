@@ -17,6 +17,8 @@ import { Edit2, Calendar, Shield, Camera } from "lucide-react";
 import FormField from "@/components/Form/FormField";
 import InputError from "@/components/InputError";
 import FileUploader from "@/components/Form/FileUploader";
+import LanguageToggle from "@/components/LanguageToggle";
+import CurrencyToggle, { CurrencyProvider } from "@/components/CurrencyToggle";
 
 const ProfilePage = () => {
   const { user, role } = useAuthContext();
@@ -98,43 +100,51 @@ const ProfilePage = () => {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Avatar className="w-20 h-20">
-                <AvatarImage src={user?.avatar} alt={user?.name} />
-                <AvatarFallback className="text-lg">
-                  {user?.name?.charAt(0)?.toUpperCase() || "U"}
-                </AvatarFallback>
-              </Avatar>
-              {isEditing && (
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full"
-                >
-                  <Camera className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-            <div>
-              <CardTitle className="text-2xl flex items-center gap-4">
-                {user?.name || "User Name"}
-                <Badge className={getRoleColor(role)}>
-                  <Shield className="w-3 h-3 mr-1" />
-                  {role?.charAt(0).toUpperCase() + role?.slice(1)}
-                </Badge>
-              </CardTitle>
-              <CardDescription className="text-base mt-1">
-                {user?.email || "user@example.com"}
-              </CardDescription>
-              <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  Joined{" "}
-                  {new Date(user?.created_at).toLocaleDateString() ||
-                    "Recently"}
-                </span>
+          <div className="flex items-center gap-4 justify-between">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <Avatar className="w-20 h-20">
+                  <AvatarImage src={user?.avatar} alt={user?.name} />
+                  <AvatarFallback className="text-lg">
+                    {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                {isEditing && (
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full"
+                  >
+                    <Camera className="w-4 h-4" />
+                  </Button>
+                )}
               </div>
+              <div>
+                <CardTitle className="text-2xl flex items-center gap-4">
+                  {user?.name || "User Name"}
+                  <Badge className={getRoleColor(role)}>
+                    <Shield className="w-3 h-3 mr-1" />
+                    {role?.charAt(0).toUpperCase() + role?.slice(1)}
+                  </Badge>
+                </CardTitle>
+                <CardDescription className="text-base mt-1">
+                  {user?.email || "user@example.com"}
+                </CardDescription>
+                <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-4 h-4" />
+                    Joined{" "}
+                    {new Date(user?.created_at).toLocaleDateString() ||
+                      "Recently"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-4">
+              <CurrencyProvider>
+                <LanguageToggle />
+                <CurrencyToggle />
+              </CurrencyProvider>
             </div>
           </div>
         </CardHeader>

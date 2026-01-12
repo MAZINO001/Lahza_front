@@ -75,8 +75,9 @@ const PaymentViewPage = lazy(() => import("../pages/payments/PaymentViewPage"));
 // Lazy load receipt pages
 const ReceiptsPage = lazy(() => import("../pages/receipts/ReceiptsPage"));
 const ReceiptViewPage = lazy(() => import("../pages/receipts/ReceiptViewPage"));
-const ReceiptCreatePage = lazy(() => import("../pages/receipts/ReceiptCreatePage"));
-const ReceiptClientView = lazy(() => import("../pages/receipts/views/ReceiptClientView"));
+const ReceiptClientView = lazy(
+  () => import("../pages/receipts/views/ReceiptClientView")
+);
 
 // Lazy load offer pages
 const OffersPage = lazy(() => import("../pages/offers/OffersPage"));
@@ -309,26 +310,6 @@ export default function AppRoutes() {
                     <ErrorBoundary>
                       <Suspense fallback={<div>Loading tickets...</div>}>
                         <TicketsPage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="receipts/create"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading receipt creation...</div>}>
-                        <ReceiptCreatePage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="receipt/:id/edit"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading receipt editor...</div>}>
-                        <ReceiptCreatePage />
                       </Suspense>
                     </ErrorBoundary>
                   }
@@ -582,7 +563,7 @@ export default function AppRoutes() {
                   }
                 />
                 <Route
-                  path="settings/users_management/create"
+                  path="settings/users_management/new"
                   element={
                     <ErrorBoundary>
                       <Suspense fallback={<div>Loading user creation...</div>}>
@@ -819,28 +800,6 @@ export default function AppRoutes() {
                     <ErrorBoundary>
                       <Suspense fallback={<div>Loading client editor...</div>}>
                         <ClientEditPage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-
-                {/* Receipts */}
-                <Route
-                  path="receipts/create"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading receipt creation...</div>}>
-                        <ReceiptCreatePage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="receipt/:id/edit"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading receipt editor...</div>}>
-                        <ReceiptCreatePage />
                       </Suspense>
                     </ErrorBoundary>
                   }

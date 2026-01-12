@@ -2,21 +2,20 @@ import { Link } from "react-router-dom";
 import SearchBar from "@/Components/comp-25";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import NotificationDropdown from "@/components/notifications/NotificationDropdown";
+import NotificationDropdown from "@/features/notifications/components/NotificationDropdown";
 
 export default function Header() {
   const { role, user } = useAuthContext();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-accent-foreground backdrop-blur">
+    <header className="sticky top-0 z-50 w-full bg-accent-foreground backdrop-blur">
       <div className="flex items-center justify-between px-4 py-3 lg:px-6">
         <SearchBar />
 
         <div className="flex items-center gap-3 ml-auto">
           <ThemeToggle />
-          
-          <NotificationDropdown />
 
+          <NotificationDropdown />
           <Link
             to={`/${role}/profile`}
             className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-100"

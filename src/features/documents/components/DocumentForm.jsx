@@ -73,12 +73,12 @@ export function DocumentForm({ type, onSuccess }) {
       customerName: clientId || "",
       ...(isInvoice
         ? {
-            invoice_date: new Date().toISOString().split("T")[0],
-            due_date: new Date().toISOString().split("T")[0],
-          }
+          invoice_date: new Date().toISOString().split("T")[0],
+          due_date: new Date().toISOString().split("T")[0],
+        }
         : {
-            quoteDate: new Date().toISOString().split("T")[0],
-          }),
+          quoteDate: new Date().toISOString().split("T")[0],
+        }),
       notes: "",
       payment_percentage: "50",
       payment_status: "pending",
@@ -166,7 +166,6 @@ export function DocumentForm({ type, onSuccess }) {
               const serviceDetails = services.find(
                 (srv) => Number(srv.id) === Number(s.service_id)
               );
-
               return {
                 serviceId: Number(s.service_id),
                 description: serviceDetails?.description || "",
@@ -184,12 +183,12 @@ export function DocumentForm({ type, onSuccess }) {
           customerName: doc.client?.id || doc.client_id || clientId,
           ...(isInvoice
             ? {
-                invoice_date: doc.invoice_date,
-                due_date: doc.due_date,
-              }
+              invoice_date: doc.invoice_date,
+              due_date: doc.due_date,
+            }
             : {
-                quoteDate: doc.quotation_date,
-              }),
+              quoteDate: doc.quotation_date,
+            }),
           notes: doc.notes || "",
           terms: doc.terms || terms,
           payment_percentage: "50",
@@ -314,17 +313,17 @@ export function DocumentForm({ type, onSuccess }) {
 
       ...(isInvoice
         ? {
-            invoice_date: data.invoice_date,
-            due_date: data.due_date,
-            status: status || "unpaid",
-            balance_due: Number(calculateTotal().toFixed(2)),
-            ...(isConvertMode && { quote_id: quoteId }),
-          }
+          invoice_date: data.invoice_date,
+          due_date: data.due_date,
+          status: status || "unpaid",
+          balance_due: Number(calculateTotal().toFixed(2)),
+          ...(isConvertMode && { quote_id: quoteId }),
+        }
         : {
-            quotation_date: data.quoteDate,
-            status: status || "draft",
-            description: data.description,
-          }),
+          quotation_date: data.quoteDate,
+          status: status || "draft",
+          description: data.description,
+        }),
 
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
@@ -342,7 +341,7 @@ export function DocumentForm({ type, onSuccess }) {
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
         rate: Number(item.rate),
-        tax: Number(item.tax),
+        tax: Number(item.tax_rate),
         discount: Number(item.discount || 0),
         individual_total: Number(item.amount),
       })),
@@ -798,9 +797,8 @@ export function DocumentForm({ type, onSuccess }) {
         <div className="flex gap-4 w-full items-start space-between">
           {(type === "invoices" || (type === "quotes" && !isEditMode)) && (
             <div
-              className={`flex gap-4 items-end justify-between ${
-                !isInvoice ? "w-full" : "w-[50%]"
-              }`}
+              className={`flex gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"
+                }`}
             >
               <div className="w-full">
                 <Controller

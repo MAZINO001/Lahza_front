@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facture INV-000634</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Receipt</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         * {
             margin: 0;
@@ -17,1108 +17,261 @@
         }
 
         body {
-            font-family: "Roboto", sans-serif;
-            padding: 40px;
-            background: #f5f5f5;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f8f9fa;
+            color: #1a1a1a;
+            line-height: 1.45;
         }
 
-        .invoice-container {
-            max-width: 800px;
-            margin: 0 auto;
+        .receipt-container {
             background: white;
-            padding: 30px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
+            max-width: 820px;
+            margin: 30px auto;
+            padding: 50px 60px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
         }
 
-        .header {
+        /* Header */
+        .header-top {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 36px;
         }
 
-        .company-info {
-            display: flex;
-            align-items: start;
-            justify-content: space-between;
-            width: 100%;
-            margin-top: 30px;
-        }
-
-        .company-logo img {
-            width: 170px;
-            height: auto;
-            color: #999;
-            font-size: 12px;
-            margin-bottom: 15px;
-        }
-
-        .company-info .data {
-            text-align: right;
-        }
-
-        .company-info .data h1 {
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 8px;
-
-        }
-
-        .company-info p {
-            font-size: 11px;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .invoice-title {
-            position: relative;
-            text-align: center;
-            margin: 15px 0px;
-        }
-
-        .invoice-title h2 {
-            display: inline-block;
-            position: relative;
-            font-size: 16px;
-            color: #000;
-            background: #fff;
-            padding: 0 10px;
-            z-index: 1;
-        }
-
-        .invoice-title::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background-color: #ebe6e6;
-            z-index: 0;
-        }
-
-
-        .client-invoice-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            margin-bottom: 20px;
-
-        }
-
-        .client-info {
-            display: flex;
-            align-items: start;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 20px;
-
-        }
-
-        .client-info h3 {
-            font-size: 14px;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-
-        .client-info p {
-            font-size: 12px;
-            line-height: 1.6;
-            color: #222;
-            font-weight: 900;
-        }
-
-        .invoice-details {
-            text-align: left;
-        }
-
-        .invoice-details table {
-            width: 100%;
-            font-size: 11px;
-            text-align: left;
-        }
-
-        .invoice-details table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-
-        .invoice-details table.one thead {
-            background-color: #051630;
+        .logo-square {
+            width: 64px;
+            height: 64px;
+            background: #2d2d2d;
             color: white;
-        }
-
-        .invoice-details th {
-            padding: 10px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 300;
-            border-bottom: 1px solid #ebe6e6;
-        }
-
-
-
-        .invoice-details table.one tr td {
-            text-align: left;
-            font-weight: normal;
-        }
-
-        .invoice-details th,
-        .invoice-details td {
-            border: 1px solid #ebe6e6;
-            padding: 6px 12px;
-        }
-
-        .invoice-details th {
-            text-align: left;
-        }
-
-        .invoice-details td:first-child {
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .invoice-details td:last-child {
-            text-align: right;
-        }
-
-        .items-table {
-            border: 1px solid #ebe6e6;
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .items-table thead {
-            background-color: #051630;
-            color: white;
-        }
-
-        .items-table th {
-            padding: 6px 12px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 300;
-            border-bottom: 1px solid #ebe6e6;
-        }
-
-        .Sous-total span {
-            text-align: right;
-            font-size: 12px;
             font-weight: 700;
-        }
-
-        .items-table td:first-child:not(.Sous-total) {
-            text-align: left;
-        }
-
-
-        .items-table td {
-            padding: 15px 10px;
-            font-size: 11px;
-            border-bottom: 1px solid #ebe6e6;
-            vertical-align: top;
-            text-align: right;
-            font-weight: 400;
-        }
-
-        .item-description {
-            margin-top: 8px;
-            color: #444;
-            font-weight: 300;
-            line-height: 1.6;
-        }
-
-        .item-description li {
-            margin-left: 15px;
-        }
-
-        .totals {
+            font-size: 36px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            margin-left: auto;
-            text-align: right;
-
-        }
-
-        .total-div {
-            width: 50%;
-            font-weight: bold;
-            font-size: 14px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ebe6e6;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .payment-info {
-            margin-bottom: 20px;
-
-        }
-
-        .payment-info p {
-            font-size: 11px;
-        }
-
-        .payment-info strong:not(.mode) {
-            font-weight: 400;
-        }
-
-        .bank-details {
-            margin-top: 10px;
-            font-size: 11px;
-            line-height: 1.6;
+            justify-content: center;
             border-radius: 6px;
         }
 
-        .bank-details p {
-            margin: 4px 0;
-        }
-
-        .bank-details strong {
-            display: inline-block;
-            width: 120px;
-            color: #333;
-        }
-
-        .conditions {
-
-            font-size: 11px;
+        .contact-block {
+            text-align: right;
+            font-size: 13px;
+            color: #555;
             line-height: 1.6;
-            margin-bottom: 20px;
         }
 
-        .thank-you {
-            font-size: 12px;
-            font-weight: normal;
+        .contact-block a {
+            color: #444;
+            text-decoration: none;
         }
 
-        .mode {
-            font-weight: 800;
-            color: #000;
-        }
-
-        .signatures {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        * .signatures .admin_sign {
-            border: 1px solid #051630;
-            padding: 20px 30px;
-        }
-
-        .signatures .client_sign {
-            border: 1px solid #051630;
-            padding: 20px 30px;
-        }
-
-        .status {
-            position: absolute;
-            top: 20px;
-            left: -40px;
-            background-color: red;
-            color: #fff;
-            font-weight: 400;
+        /* Title & date */
+        .main-title {
             text-align: center;
-            width: 160px;
-            line-height: 30px;
-            transform: rotate(-45deg);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-            z-index: 10;
-            font-family: sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .receipt-date {
+            text-align: center;
+            color: #666;
+            font-size: 14.5px;
+            margin-bottom: 40px;
+        }
+
+        /* From */
+        .from-block {
+            margin-bottom: 40px;
+        }
+
+        .from-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .from-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        .from-email {
+            color: #444;
+            font-size: 14.5px;
+        }
+
+        /* Table */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+        }
+
+        .items-table thead {
+            background: #f1f3f5;
+        }
+
+        .items-table th,
+        .items-table td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
             font-size: 14px;
+        }
+
+        .items-table th {
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 12.5px;
+            letter-spacing: 0.4px;
+        }
+
+        .items-table .qty,
+        .items-table .price,
+        .items-table .total {
+            text-align: right;
+        }
+
+        .items-table .description {
+            font-weight: 500;
+        }
+
+        /* Totals */
+        .totals-block {
+            margin-left: auto;
+            width: 320px;
+            margin-bottom: 40px;
+        }
+
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            font-size: 14.5px;
+        }
+
+        .total-line strong {
+            font-weight: 600;
+        }
+
+        .grand-total {
+            border-top: 2px solid #333;
+            padding-top: 14px;
+            margin-top: 10px;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        /* Payment info */
+        .payment-info {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .payment-info strong {
+            font-weight: 600;
+            min-width: 140px;
+            display: inline-block;
+        }
+
+        /* Footer message */
+        .thank-you {
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .thank-you strong {
+            color: #222;
         }
     </style>
 </head>
 
 <body>
-    <div class="invoice-container">
-        <div class="status">
-            Draft
-        </div>
-        <div class="header">
-            <div class="company-info">
-                <div class="company-logo">
-                    <img src="/public/images/logo.png" alt="lahza logo">
-                </div>
-                <div class="data">
-                    <h1>LAHZA HM SARL</h1>
-                    <p>
-                        Rue Sayed Kotb, Rés. Assedk,<br>
-                        Etg 1 Bureau 12, 90000 Tanger<br>
-                        Morocco<br>
-                        +2126 27 34 08 75<br>
-                        contact@lahza.ma<br>
-                        www.lahza.ma
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="invoice-title">
-            <h2>FACTURE</h2>
-        </div>
 
-        <div class="client-invoice-info">
-            <div class="client-info">
-                <div>
-                    <h3>NEWERA</h3>
-                    <p>
-                        7 Angle Rue de Fès & Rue de Uruguay, 5ème Ét. N°21,<br>
-                        Tanger<br>
-                        90000, Morocco<br>
-                        SIREN (ou ICE) :
-                    </p>
-                </div>
-                <div>
-                    <p>N° de facture</p>
-                    <h3>INV-000634</h3>
-                </div>
-            </div>
-            <div class="invoice-details">
-                <table border="1" class="one">
-                    <thead>
-                        <tr>
-                            <th>Date de facture</th>
-                            <th>Date d'échéance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>06 août 2025</td>
-                            <td>06 août 2025</td>
-                        </tr>
-                    </tbody>
-                </table>
+    <div class="receipt-container">
+
+        <div class="header-top">
+            <div class="logo-square">T.</div>
+            <div class="contact-block">
+                inquire@startra.mail<br>
+                Templatete.net │ 222 555 7777
             </div>
         </div>
 
-        <table class="items-table" border="1">
+        <h1 class="main-title">Receipt</h1>
+        <div class="receipt-date">Date: November 5, 2050</div>
+
+        <div class="from-block">
+            <div class="from-title">Received From:</div>
+            <div class="from-name">Efrain Abshire</div>
+            <div class="from-email">Email: efrain@you.mail</div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <div class="from-title">Description of Services or Products:</div>
+        </div>
+
+        <table class="items-table">
             <thead>
                 <tr>
-                    <th>Article & Description</th>
-                    <th>Quantité</th>
-                    <th>Prix HT</th>
-                    <th>Montant TTC</th>
+                    <th>Item Description</th>
+                    <th class="qty">Quantity</th>
+                    <th class="price">Unit Price</th>
+                    <th class="total">Total Price</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>
-                        <strong>Serveur d'hébergement WEB - Full Pack</strong>
-                        <div class="item-description">
-                            - Offre de 100 Dh / mois<br>
-                            - Nom de domaine Gratuit<br>
-                            - Certificat de sécurité SSL<br>
-                            - Espace du serveur 80GB<br>
-                            - Sous domaine illimités<br>
-                            - Databases illimité<br>
-                            - Web mail Active<br>
-                            - Adresses mail professionnels<br>
-                            - Système LiteSpeed<br>
-                            - Sauvegarde automatique 24h / 24<br>
-                            - Sécurité du Serveur 24/h<br>
-                            - FTP & SFTP Access
-                        </div>
-                    </td>
-                    <td>1.00</td>
-                    <td>1,200.00</td>
-                    <td>1,440.00</td>
+                    <td class="description">Wireless Headphones</td>
+                    <td class="qty">2</td>
+                    <td class="price">$50.00</td>
+                    <td class="total">$100.00</td>
+                </tr>
+                <tr>
+                    <td class="description">Bluetooth Speaker</td>
+                    <td class="qty">1</td>
+                    <td class="price">$120.00</td>
+                    <td class="total">$120.00</td>
                 </tr>
             </tbody>
-            <tr>
-                <td colspan="3" class="Sous-total">
-                    <span>Sous-total</span>
-                </td>
-                <td>1,440.00</td>
-            </tr>
         </table>
 
-        <div class="totals">
-            <div class="thank-you">
-                Merci de votre confiance.
+        <div class="totals-block">
+            <div class="total-line">
+                <div>Subtotal:</div>
+                <div>$220.00</div>
             </div>
-            <div class="total-div">
-                <span>Total TTC</span>
-                <span>1,440.00 MAD</span>
+            <div class="total-line">
+                <div>Tax (10%):</div>
+                <div>$22.00</div>
+            </div>
+            <div class="total-line grand-total">
+                <strong>Total Amount:</strong>
+                <strong>$242.00</strong>
             </div>
         </div>
-
-
 
         <div class="payment-info">
-            <div class="bank-details">
-                <p> <b><strong class="mode">Mode de paiement :</strong></b> Par virement ou Chèque</p>
-                <div class="bank-info">
-                    <p><strong>Banque :</strong> ATTIJARI WAFABANK</p>
-                    <p><strong>Nom du compte :</strong> LAHZA HM</p>
-                    <p><strong>R.I.B :</strong> 007640001433200000026029</p>
-                    <p><strong>SWIFT :</strong> BCMAMAMC</p>
-                    <p><strong>ICE :</strong> 002 056 959 000 039</p>
-                    <p><strong>RC :</strong> 88049</p>
-                </div>
-            </div>
-
+            <div><strong>Payment Method:</strong> Credit Card (•••• •••• •••• 1234)</div>
+            <div><strong>Transaction ID:</strong> 789456123</div>
         </div>
 
-        <div class="footer">
-            <div class="conditions">
-                <strong>Conditions d'utilisation</strong><br>
-                En signant la facture, le client accepte sans réserves nos conditions. Pour plus d'informations,
-                consultez les politiques de notre entreprise sur : https://lahza.ma/politique-de-confidentialite/
-            </div>
+        <div class="thank-you">
+            Thank you for your purchase!<br>
+            If you have any questions or need assistance, feel free to<br>
+            contact us at <strong>inquire@startra.mail</strong>.
         </div>
-        <div class="signatures">
-            <div class="admin_sign">admin signature</div>
-            <div class="client_sign">client signature </div>
-        </div>
+
     </div>
+
 </body>
 
 </html>
-
-<!-- <!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        @if ($type === 'invoice')
-            Facture {{ 'INVOICE-' . str_pad($invoice->id ?? 0, 5, '0', STR_PAD_LEFT) }}
-        @else
-            Facture {{ 'QUOTES-' . str_pad($quote->id ?? 0, 5, '0', STR_PAD_LEFT) }}
-        @endif
-    </title>
-    <link rel="stylesheet" href="{{ public_path('fonts/roboto.css') }}">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: "Roboto", sans-serif;
-            /* padding: 40px; */
-            background: #f5f5f5;
-            letter-spacing: 1.5px;
-            line-height: 1.8;
-        }
-
-        .invoice-container {
-            /* max-width: 800px; */
-            /* margin: 0 auto; */
-            /* padding: 30px; */
-            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
-            background: white;
-            height: 100%;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* .company-info {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            width: 100%;
-        } */
-
-        .company-info {
-            display: table;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .company-info>div {
-            display: table-cell;
-            vertical-align: top;
-            padding: 5px;
-        }
-
-
-        .company-logo img {
-            width: 170px;
-            height: auto;
-            color: #999;
-            font-size: 12px;
-            margin-bottom: 15px;
-        }
-
-        .company-info .data {
-            text-align: right;
-        }
-
-        .company-info .data h1 {
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 8px;
-
-        }
-
-        .company-info p {
-            font-size: 11px;
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .invoice-title {
-            position: relative;
-            text-align: center;
-            margin: 15px 0px;
-        }
-
-        .invoice-title h2 {
-            display: inline-block;
-            position: relative;
-            font-size: 16px;
-            color: #000;
-            background: #fff;
-            padding: 0 10px;
-            z-index: 1;
-        }
-
-        .invoice-title::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background-color: #ebe6e6;
-            z-index: 0;
-        }
-
-
-        .client-invoice-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            margin-bottom: 25px;
-        }
-
-        /* .client-info {
-            display: flex;
-            align-items: start;
-            justify-content: space-between;
-            width: 100%;
-            margin-bottom: 25px;
-        } */
-
-
-        .client-info h3 {
-            font-size: 15px;
-            font-weight: 900;
-            margin-bottom: 8px;
-        }
-
-        .client-info p {
-            font-size: 13px;
-            line-height: 1.6;
-            color: #222;
-            font-weight: 700;
-        }
-
-        .invoice-details {
-            text-align: left;
-        }
-
-        .invoice-details table {
-            width: 100%;
-            font-size: 11px;
-            text-align: left;
-        }
-
-        .invoice-details table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-
-        .invoice-details table.one thead {
-            background-color: #051630;
-            color: white;
-        }
-
-        .invoice-details th {
-            padding: 10px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 300;
-            border-bottom: 1px solid #ebe6e6;
-        }
-
-
-
-        .invoice-details table.one tr td {
-            text-align: left;
-            font-weight: normal;
-        }
-
-        .invoice-details th,
-        .invoice-details td {
-            border: 1px solid #ebe6e6;
-            padding: 6px 12px;
-        }
-
-        .invoice-details th {
-            text-align: left;
-        }
-
-        .invoice-details td:first-child {
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .invoice-details td:last-child {
-            text-align: right;
-        }
-
-        .items-table {
-            border: 1px solid #ebe6e6;
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-        }
-
-        .items-table thead {
-            background-color: #051630;
-            color: white;
-        }
-
-        .items-table th {
-            padding: 6px 12px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 300;
-            border-bottom: 1px solid #ebe6e6;
-        }
-
-        .Sous-total span {
-            text-align: right;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .items-table td:first-child:not(.Sous-total) {
-            text-align: left;
-        }
-
-
-        .items-table td {
-            padding: 15px 10px;
-            font-size: 12px;
-            border-bottom: 1px solid #ebe6e6;
-            vertical-align: top;
-            text-align: right;
-            font-weight: 400;
-        }
-
-        .item-description {
-            margin-top: 8px;
-            color: #444;
-            font-weight: 300;
-            line-height: 1.6;
-        }
-
-        .item-description li {
-            margin-left: 15px;
-        }
-
-        /* .totals {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            margin-left: auto;
-            text-align: right;
-        } */
-
-        .total_container {
-            width: 30%;
-            font-weight: 900;
-            font-size: 16px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ebe6e6;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .total_container span:nth-child(2) {
-            margin-left: 15px
-        }
-
-        .payment-info {
-            width: 100%;
-            margin-bottom: 25px;
-        }
-
-        .payment-info p {
-            font-size: 13px;
-        }
-
-        .payment-info strong:not(.mode) {
-            font-weight: 400;
-            width: 17%;
-        }
-
-        .payment-info .mode {
-            width: 17%;
-            font-weight: 800;
-            color: #000;
-        }
-
-
-        .bank-details {
-            margin-top: 10px;
-            font-size: 11px;
-            line-height: 1.6;
-            border-radius: 6px;
-        }
-
-        .bank-details p {
-            margin: 4px 0;
-        }
-
-        .bank-details strong {
-            display: inline-block;
-            width: 120px;
-            color: #333;
-        }
-
-        .conditions {
-
-            font-size: 13px;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .notes {
-            font-size: 12px;
-            font-weight: normal;
-        }
-
-
-        /*
-        .signatures {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        } */
-
-
-        * .signatures .admin_sign {
-            /* border: 1px solid #051630; */
-            padding: 20px 30px;
-        }
-
-        .signatures .client_sign {
-            /* border: 1px solid #051630; */
-            padding: 20px 30px;
-        }
-
-
-        /* testing this shit  */
-        .signatures {
-            width: 100%;
-            margin-top: 20px;
-            overflow: hidden;
-        }
-
-        .signatures>.admin_sign {
-            float: left;
-            width: 30%;
-            padding: 30px 20px;
-            text-align: center
-        }
-
-
-
-        .signatures>.client_sign {
-            float: right;
-            width: 30%;
-            padding: 30px 20px;
-            text-align: center
-        }
-
-        .client-info {
-            width: 100%;
-            margin-bottom: 25px;
-            position: relative;
-            height: auto;
-        }
-
-        .client-info>div:first-child {
-            display: inline-block;
-            vertical-align: top;
-            padding: 5px;
-            width: 200px;
-        }
-
-        .client-info>div:nth-child(2) {
-            display: inline-block;
-            vertical-align: top;
-            padding: 5px;
-            position: absolute;
-            right: 0;
-            top: 0;
-            text-align: right;
-            width: 200px;
-        }
-
-        .totals {
-            width: 100%;
-            margin-bottom: 25px;
-            overflow: hidden;
-            /* ensures floats stay inside */
-        }
-
-        .totals>div:first-child {
-            display: inline-block;
-            vertical-align: middle;
-            padding: 5px;
-            width: 250px;
-        }
-
-        .totals>div:last-child {
-            display: inline-block;
-            vertical-align: middle;
-            padding: 5px;
-            float: right;
-            text-align: right;
-        }
-
-        .last {
-            /* background-color: red; */
-            /* position: absolute; */
-            /* bottom: 0; */
-            /* width: 100%; */
-        }
-
-        .status {
-            border: 1px solid #8a7d7d;
-            padding: 4px;
-            border-radius: 5px;
-            text-align: center;
-            width: 100px;
-            float: right;
-            text-transform: capitalize;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="invoice-container">
-        <div class="header">
-            <div class="company-info">
-                <div class="company-logo">
-                    <img src="{{ public_path('logo.png') }}" alt="lahza logo">
-                </div>
-
-                <div class="data">
-                    <h1>LAHZA HM SARL</h1>
-                    <p>
-                        Rue Sayed Kotb, Rés. Assedk,<br>
-                        Etg 1 Bureau 12, 90000 Tanger<br>
-                        Morocco<br>
-                        +2126 27 34 08 75<br>
-                        contact@lahza.ma<br>
-                        www.lahza.ma
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="invoice-title">
-            <h2>
-                @if ($type === 'invoice')
-                    FACTURE
-                @else
-                    DEVIS
-                @endif
-            </h2>
-        </div>
-
-        <div class="client-invoice-info">
-            <div class="client-info">
-                <div>
-                    @php($client = $type === 'invoice' ? $invoice->client ?? null : $quote->client ?? null)
-                    <h3>{{ $client?->company ?? ($client?->name ?? '') }}</h3>
-                    <p>
-                        {{ $client?->address ?? '' }}<br>
-                        {{ $client?->city ?? '' }}<br>
-                        {{ $client?->country ?? '' }}<br>
-                        {{ empty($client?->ice) ? 'SIREN : ' . ($client?->siren ?? '') : 'ICE : ' . ($client?->ice ?? '') }}
-                    </p>
-                </div>
-                <div>
-                    @if ($type === 'invoice')
-                        <p>N° de facture</p>
-                        <h3>{{ sprintf('INV-%05d', $invoice->id ?? 0) }}</h3>
-                        <h3>{{ $invoice->status }}</h3>
-                    @else
-                        <p>N° de devis</p>
-                        <h3>{{ sprintf('Q-%05d', $quote->id ?? 0) }}</h3>
-                        <h3 class="status">{{ $quote->status }}</h3>
-                    @endif
-                </div>
-            </div>
-            <div class="invoice-details">
-                <table border="1" class="one">
-                    <thead>
-                        <tr>
-                            @if ($type === 'invoice')
-                                <th>Date de facture</th>
-                                <th>Date d'échéance</th>
-                            @else
-                                <th>Date du devis</th>
-                                <th>Date d'échéance</th>
-                            @endif
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            @if ($type === 'invoice')
-                                <td>{{ optional($invoice->invoice_date ? \Carbon\Carbon::parse($invoice->invoice_date) : '-')->translatedFormat('d F Y') }}
-                                </td>
-                                <td>{{ optional($invoice->due_date ? \Carbon\Carbon::parse($invoice->due_date) : null)->translatedFormat('d F Y') }}
-                                </td>
-                            @else
-                                <td>{{ optional($quote->quotation_date ? \Carbon\Carbon::parse($quote->quotation_date) : null)->translatedFormat('d F Y') }}
-                                </td>
-                                <td>{{ optional($quote->due_date ?? null ? \Carbon\Carbon::parse($quote->due_date) : null)->translatedFormat('d F Y') }}
-                                </td>
-                            @endif
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <table class="items-table" border="1">
-            <thead>
-                <tr>
-                    <th>Article & Description</th>
-                    <th>Quantité</th>
-                    <th>Prix HT</th>
-                    <th>Montant TTC</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if ($type === 'invoice')
-                    @foreach ($invoice->invoiceServices ?? [] as $line)
-                        @php($service = $line->service ?? null)
-                        <tr>
-                            <td>
-                                <strong>{{ $service->name ?? '' }}</strong>
-                                @if (!empty($service->description))
-                                    <div class="item-description">{!! nl2br(e($service->description)) !!}</div>
-                                @endif
-                            </td>
-                            <td>{{ number_format((float) ($line->quantity ?? 0), 2, '.', ' ') }}</td>
-                            <td>{{ number_format((float) ($service->base_Price ?? 0), 2, '.', ' ') }}</td>
-                            <td>{{ number_format((float) ($line->individual_total ?? 0), 2, '.', ' ') }}</td>
-                        </tr>
-                    @endforeach
-                @else
-                    @foreach ($quote->services ?? [] as $service)
-                        <tr>
-                            <td>
-                                <strong>{{ $service->name ?? '' }}</strong>
-                                @if (!empty($service->description))
-                                    <div class="item-description">{!! nl2br(e($service->description)) !!}</div>
-                                @endif
-                            </td>
-                            <td>{{ number_format((float) ($service->pivot->quantity ?? 0), 2, '.', ' ') }}</td>
-                            <td>{{ number_format((float) ($service->base_Price ?? 0), 2, '.', ' ') }}</td>
-                            <td>{{ number_format((float) ($service->pivot->individual_total ?? 0), 2, '.', ' ') }}</td>
-                        </tr>
-                    @endforeach
-                @endif
-            </tbody>
-            <tr>
-                <td colspan="3" class="Sous-total">
-                    <span>Sous-total</span>
-                </td>
-                <td>
-                    @php($currency = $type === 'invoice' ? $invoice->client?->currency ?? 'MAD' : $quote->client?->currency ?? 'MAD')
-                    @if ($type === 'invoice')
-                        {{ number_format((float) ($invoice->total_amount ?? 0), 2, '.', ' ') }}
-                    @else
-                        {{ number_format((float) ($quote->total_amount ?? 0), 2, '.', ' ') }}
-                    @endif
-                </td>
-            </tr>
-        </table>
-        <div class="totals">
-            <div class="notes">
-                @if ($type === 'invoice')
-                    {{ $invoice->notes ?? 'Merci de votre confiance.' }}
-                @else
-                    {{ $quote->notes ?? 'Merci de votre confiance.' }}
-                @endif
-            </div>
-            <div class="total_container">
-                <span>Total TTC</span>
-                @php($currency = $type === 'invoice' ? $invoice->client->currency ?? 'MAD' : $quote->client->currency ?? 'MAD')
-                <span>
-                    @if ($type === 'invoice')
-                        {{ number_format((float) ($invoice->total_amount ?? 0), 2, '.', ' ') }}
-                        {{ $currency }}
-                    @else
-                        {{ number_format((float) ($quote->total_amount ?? 0), 2, '.', ' ') }} {{ $currency }}
-                    @endif
-                </span>
-            </div>
-        </div>
-
-        <div class="last">
-
-
-            <div class="payment-info">
-                <div class="bank-details">
-                    <p> <b><strong class="mode">Mode de paiement :</strong></b> Par virement ou Chèque</p>
-                    <div class="bank-info">
-                        <p><strong>Banque :</strong> ATTIJARI WAFABANK</p>
-                        <p><strong>Nom du compte :</strong> LAHZA HM</p>
-                        <p><strong>R.I.B :</strong> 007640001433200000026029</p>
-                        <p><strong>SWIFT :</strong> BCMAMAMC</p>
-                        <p><strong>ICE :</strong> 002 056 959 000 039</p>
-                        <p><strong>RC :</strong> 88049</p>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="footer">
-                <div class="conditions">
-                    <strong>Conditions d'utilisation</strong><br>
-                    En signant la facture, le client accepte sans réserves nos conditions. Pour plus d'informations,
-                    consultez les politiques de notre entreprise sur : https://lahza.ma/politique-de-confidentialite/
-                </div>
-            </div>
-            <div class="signatures">
-                <div class="admin_sign">
-                    <img src="{{ public_path('images/admin_signature.png') }}" alt="Admin Signature"
-                        style="width:200px;">
-                </div>
-                <div class="client_sign">
-                    @if ($clientSignatureBase64)
-                        <img src="{{ $clientSignatureBase64 }}" alt="Client Signature" style="width:200px;">
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-
-</html>-->

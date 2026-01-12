@@ -2,36 +2,25 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import FormField from "@/Components/Form/FormField";
-import CsvUploadModal from "@/components/common/CsvUploadModal";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { getReceiptColumns } from "../columns/receiptColumns";
-import { useReceipts } from "../hooks/useReceipts";
 import { DataTable } from "@/components/table/DataTable";
-import { Upload } from "lucide-react";
+import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
 
 export function ReceiptTable() {
-  const [showUploadModal, setShowUploadModal] = useState(false);
-  const { data: receipts = [], isLoading } = useReceipts();
+  const { data: payments = [], isLoading } = usePayments();
   const { role } = useAuthContext();
   const navigate = useNavigate();
+
+  // Filter only paid payments for receipts
+  const paidPayments = payments.filter(payment => payment.status === 'paid');
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -42,7 +31,7 @@ export function ReceiptTable() {
   );
 
   const table = useReactTable({
-    data: receipts,
+    data: paidPayments,
     columns,
     state: { sorting, columnFilters },
     onSortingChange: setSorting,
@@ -58,32 +47,18 @@ export function ReceiptTable() {
       <div className="flex justify-between mb-4">
         <FormField
           placeholder="Filter receipts..."
-          value={table.getColumn("clientName")?.getFilterValue() ?? ""}
+          value={table.getColumn("invoice_id")?.getFilterValue() ?? ""}
           onChange={(e) =>
-            table.getColumn("clientName")?.setFilterValue(e.target.value)
+            table.getColumn("invoice_id")?.setFilterValue(e.target.value)
           }
           className="max-w-sm"
         />
-        <div className="flex gap-2">
-          <Button onClick={() => setShowUploadModal(true)} variant="outline">
-            <Upload className="mr-2 h-4 w-4" /> Upload CSV
-          </Button>
-          <Link to={`/${role}/receipts/new`}>
-            <Button>Add New Receipt</Button>
-          </Link>
-        </div>
       </div>
-
       <DataTable
         table={table}
         columns={columns}
         isInvoiceTable={false}
         isLoading={isLoading}
-      />
-      <CsvUploadModal
-        open={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadReceipts`}
       />
     </div>
   );
