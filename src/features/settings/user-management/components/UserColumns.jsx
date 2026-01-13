@@ -64,16 +64,13 @@ export function getUserManagementColumns(role, navigate) {
       accessorKey: "created_at",
       header: "Created",
       cell: ({ row }) => {
-        const date = row.getValue("created_at");
-        return date ? (
-          <div className="flex items-center gap-2">
-            <span className="text-sm">
-              {new Date(date).toLocaleDateString()}
-            </span>
-          </div>
-        ) : (
-          <span className="text-gray-400">—</span>
-        );
+        const date = new Date(row.getValue("created_at"));
+        const formatted = date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+        return <div className="text-sm">{formatted}</div>;
       },
     },
 

@@ -35,10 +35,14 @@ import {
   Flag,
   MoreHorizontal,
   Paperclip,
+  Trash,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { useTickets } from "@/features/tickets/hooks/useTickets";
+import {
+  useDeleteTicket,
+  useTickets,
+} from "@/features/tickets/hooks/useTickets";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -133,6 +137,22 @@ export default function AdminTicketsPage() {
       matchesAssigned
     );
   });
+  const deleteTicket = useDeleteTicket();
+  const handleDeleteTicket = async (ticketId) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this ticket? This action cannot be undone."
+      )
+    ) {
+      try {
+        await deleteTicket.mutate(ticketId);
+        // Ticket will be automatically removed from the list due to React Query cache invalidation
+      } catch (error) {
+        // Error is already handled by the hook with toast notification
+        console.error("Failed to delete ticket:", error);
+      }
+    }
+  };
 
   const handleViewTicket = (ticketId) => {
     navigate(`/${role}/ticket/${ticketId}`);
@@ -445,6 +465,16 @@ export default function AdminTicketsPage() {
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteTicket(ticket.id);
+                            }}
+                          >
+                            <Trash className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>

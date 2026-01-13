@@ -174,6 +174,17 @@ function BreadcrumbsWrapper() {
       name = "Edit";
     } else if (segment === "settings") {
       name = "Settings";
+      // If this is the settings segment and there's a next segment (like company_basics)
+      // make it link to the full settings path instead of just /settings
+      if (index < pathSegments.length - 1) {
+        breadcrumbPath = currentPath + '/' + pathSegments[index + 1];
+      }
+    } else if (index > 0 && pathSegments[index - 1] === "settings") {
+      // This is a settings page (e.g., company_basics in /admin/settings/company_basics)
+      // Don't make it clickable since it's already the current page
+      name = segment
+        .replace(/[-_]/g, " ")
+        .replace(/\b\w/g, (l) => l.toUpperCase());
     } else if (segment === "tasks") {
       name = "Tasks";
     } else if (segment === "calendar") {
