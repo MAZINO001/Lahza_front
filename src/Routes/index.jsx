@@ -44,6 +44,9 @@ const TicketAdminView = lazy(
 const TicketCreatePage = lazy(
   () => import("../pages/tickets/TicketCreatePage")
 );
+const TicketForm = lazy(
+  () => import("../features/tickets/components/TicketForm")
+);
 // Lazy load invoice pages
 const InvoicesPage = lazy(() => import("../pages/invoices/InvoicesPage"));
 const InvoiceViewPage = lazy(() => import("../pages/invoices/InvoiceViewPage"));
@@ -322,6 +325,18 @@ export default function AppRoutes() {
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading ticket creation...</div>}>
                       <TicketCreatePage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+
+              <Route
+                path="ticket/:id/edit"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading ticket edit...</div>}>
+                      <TicketForm />
                     </Suspense>
                   </ErrorBoundary>
                 }

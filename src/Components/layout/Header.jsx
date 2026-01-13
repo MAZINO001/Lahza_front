@@ -21,7 +21,7 @@ export default function Header() {
             className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-100"
           >
             <img
-              src="https://picsum.photos/600/400"
+              src={user?.profile_image || "https://picsum.photos/600/400"}
               alt="Profile"
               className="h-9 w-9 rounded-full object-cover"
             />

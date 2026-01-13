@@ -186,6 +186,8 @@ function BreadcrumbsWrapper() {
       const prevSegment = pathSegments[index - 1];
       if (prevSegment === "project") {
         name = `Project ${segment}`;
+      } else if (prevSegment === "ticket") {
+        name = `TKT ${segment}`;
       } else {
         name = `ID: ${segment}`;
       }

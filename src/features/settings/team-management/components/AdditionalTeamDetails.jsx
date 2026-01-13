@@ -13,17 +13,16 @@ import {
   useUpdateTeamAdditionalData,
   useTeamAdditionalData,
 } from "../../hooks/useTeamAdditionalDataQuery";
+import { useTeams } from "../../hooks/useTeamsQuery";
 
 export default function AdditionalTeamDetails() {
-  const [showAddCert, setShowAddCert] = useState(false);
   const { user } = useAuthContext();
-  const { data: existingData, isLoading } = useTeamAdditionalData(user.id || 1);
-  const isEditMode = !!existingData && !isLoading;
-
+  const { role } = useAuthContext();
   const {
     control,
     formState: { errors },
     handleSubmit,
+    watch,
     reset,
   } = useForm({
     defaultValues: {
@@ -47,6 +46,11 @@ export default function AdditionalTeamDetails() {
       cv: "",
     },
   });
+  const [showAddCert, setShowAddCert] = useState(false);
+  const teamMemberId = watch("team_user_id");
+  const { data: teamsMembers } = useTeams();
+  const { data: existingData, isLoading } = useTeamAdditionalData(teamMemberId);
+  const isEditMode = !!existingData && !isLoading;
 
   React.useEffect(() => {
     if (existingData && !isLoading) {
@@ -91,8 +95,30 @@ export default function AdditionalTeamDetails() {
           <h2 className="text-md font-semibold text-foreground mb-2">
             Banking Information
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+              {role === "admin" && (
+                <div className="space-y-2">
+                  <Controller
+                    name="user_id"
+                    control={control}
+                    render={({ field }) => (
+                      <SelectField
+                        label="Choose a team member"
+                        id="user_id"
+                        options={teamsMembers?.data?.map((member) => ({
+                          value: member.user.id,
+                          label: member.user.name,
+                        }))}
+                        placeholder="team member"
+                        error={errors.user_id?.message}
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+              )}
+
               <Controller
                 name="bank_name"
                 control={control}

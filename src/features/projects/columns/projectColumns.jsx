@@ -90,18 +90,12 @@ export function ProjectColumns(role, navigate) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
+        const { HandleCloneProject } = globalFnStore();
         const { HandleEditProject } = globalFnStore();
-
-        // Only show actions for admin and team_member roles
         if (role === "client") {
-          return (
-            <div className="text-muted-foreground">
-              —
-            </div>
-          );
+          return <div className="text-muted-foreground">—</div>;
         }
 
-        console.log(row.getValue("estimated_end_date"));
         return (
           <div className="flex gap-2">
             <Button
@@ -117,7 +111,7 @@ export function ProjectColumns(role, navigate) {
               size="sm"
               variant="outline"
               onClick={() =>
-                HandleEditProject(row.getValue("id"), navigate, role)
+                HandleCloneProject(row.getValue("id"), navigate, role)
               }
             >
               <CopyPlus className="h-4 w-4" />

@@ -38,177 +38,16 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthContext } from "@/hooks/AuthContext";
-
-const mockAdminTickets = [
-  {
-    id: "TKT-001",
-    title: "Login page not loading properly",
-    description:
-      "Users are reporting that the login page is stuck on loading screen. This issue started happening after the latest deployment. Multiple users have reported this issue across different browsers and devices.",
-    category: "website",
-    subcategory: "bug",
-    status: "open",
-    priority: "high",
-    createdAt: "2024-01-08T10:30:00Z",
-    updatedAt: "2024-01-08T14:45:00Z",
-    createdBy: {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "+1-555-0123",
-      company: "Tech Corp",
-    },
-    assignedTo: {
-      name: "Sarah Johnson",
-      email: "sarah.j@company.com",
-      role: "Senior Developer",
-      avatar: null,
-    },
-    attachments: 2,
-    tags: ["urgent", "frontend", "authentication"],
-    internalNotes:
-      "Issue appears to be related to the new authentication middleware.",
-    estimatedTime: "2-3 hours",
-    actualTime: null,
-    customerSatisfaction: null,
-    resolutionTime: null,
-  },
-  {
-    id: "TKT-002",
-    title: "Payment method update request",
-    description:
-      "Customer wants to update their payment method on file. They need to change from credit card to bank transfer for their monthly subscription.",
-    category: "billing",
-    subcategory: "payment",
-    status: "in-progress",
-    priority: "medium",
-    createdAt: "2024-01-07T09:15:00Z",
-    updatedAt: "2024-01-08T11:20:00Z",
-    createdBy: {
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      phone: "+1-555-0124",
-      company: "Global Solutions",
-    },
-    assignedTo: {
-      name: "Mike Wilson",
-      email: "mike.w@company.com",
-      role: "Billing Specialist",
-      avatar: null,
-    },
-    attachments: 1,
-    tags: ["billing", "payment-method", "customer-request"],
-    internalNotes: "Customer verified identity through security questions.",
-    estimatedTime: "1 hour",
-    actualTime: "45 minutes",
-    customerSatisfaction: null,
-    resolutionTime: null,
-  },
-  {
-    id: "TKT-003",
-    title: "Server downtime notification",
-    description:
-      "Scheduled maintenance for server upgrade. All services will be unavailable for 2 hours during the maintenance window.",
-    category: "hosting",
-    subcategory: "downtime",
-    status: "resolved",
-    priority: "low",
-    createdAt: "2024-01-06T08:00:00Z",
-    updatedAt: "2024-01-07T10:30:00Z",
-    createdBy: {
-      name: "System Admin",
-      email: "admin@company.com",
-      phone: "+1-555-0125",
-      company: "Internal",
-    },
-    assignedTo: {
-      name: "Tom Davis",
-      email: "tom.d@company.com",
-      role: "System Administrator",
-      avatar: null,
-    },
-    attachments: 0,
-    tags: ["maintenance", "scheduled", "infrastructure"],
-    internalNotes: "Maintenance completed successfully. All services restored.",
-    estimatedTime: "2 hours",
-    actualTime: "1 hour 45 minutes",
-    customerSatisfaction: 4.5,
-    resolutionTime: "2024-01-07T10:30:00Z",
-  },
-  {
-    id: "TKT-004",
-    title: "Feature request: Dark mode support",
-    description:
-      "User requesting dark mode for better accessibility and reduced eye strain during extended use sessions.",
-    category: "general",
-    subcategory: "feature-request",
-    status: "open",
-    priority: "low",
-    createdAt: "2024-01-05T14:20:00Z",
-    updatedAt: "2024-01-05T14:20:00Z",
-    createdBy: {
-      name: "Mike Johnson",
-      email: "mike.j@example.com",
-      phone: "+1-555-0126",
-      company: "Design Studio",
-    },
-    assignedTo: {
-      name: "Unassigned",
-      email: "",
-      role: "",
-      avatar: null,
-    },
-    attachments: 1,
-    tags: ["enhancement", "ui", "accessibility"],
-    internalNotes: "Feature request under consideration for next sprint.",
-    estimatedTime: "4-6 hours",
-    actualTime: null,
-    customerSatisfaction: null,
-    resolutionTime: null,
-  },
-  {
-    id: "TKT-005",
-    title: "Database connection timeout",
-    description:
-      "Critical database connection timeout affecting production environment. Multiple services are experiencing intermittent connectivity issues.",
-    category: "hosting",
-    subcategory: "database",
-    status: "in-progress",
-    priority: "critical",
-    createdAt: "2024-01-09T06:45:00Z",
-    updatedAt: "2024-01-09T08:15:00Z",
-    createdBy: {
-      name: "Monitoring System",
-      email: "alerts@company.com",
-      phone: "+1-555-0127",
-      company: "Internal",
-    },
-    assignedTo: {
-      name: "Alex Chen",
-      email: "alex.c@company.com",
-      role: "Database Administrator",
-      avatar: null,
-    },
-    attachments: 3,
-    tags: ["critical", "database", "production", "urgent"],
-    internalNotes:
-      "Database cluster experiencing high load. Scaling in progress.",
-    estimatedTime: "1-2 hours",
-    actualTime: "1 hour 30 minutes",
-    customerSatisfaction: null,
-    resolutionTime: null,
-  },
-];
+import { useTickets } from "@/features/tickets/hooks/useTickets";
 
 const getStatusColor = (status) => {
   switch (status) {
     case "open":
       return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "in-progress":
+    case "in_progress":
       return "bg-blue-100 text-blue-800 border-blue-200";
     case "resolved":
       return "bg-green-100 text-green-800 border-green-200";
-    case "closed":
-      return "bg-gray-100 text-gray-800 border-gray-200";
     default:
       return "bg-gray-100 text-gray-800 border-gray-200";
   }
@@ -216,7 +55,7 @@ const getStatusColor = (status) => {
 
 const getPriorityColor = (priority) => {
   switch (priority) {
-    case "critical":
+    case "urgent":
       return "bg-red-200 text-red-900 border-red-300";
     case "high":
       return "bg-red-100 text-red-800 border-red-200";
@@ -254,27 +93,26 @@ export default function AdminTicketsPage() {
   const [filterAssigned, setFilterAssigned] = useState("all");
   const [selectedTickets, setSelectedTickets] = useState([]);
 
+  const { data: tickets } = useTickets();
+
   // Calculate statistics
   const stats = {
-    total: mockAdminTickets.length,
-    open: mockAdminTickets.filter((t) => t.status === "open").length,
-    inProgress: mockAdminTickets.filter((t) => t.status === "in-progress")
-      .length,
-    resolved: mockAdminTickets.filter((t) => t.status === "resolved").length,
-    critical: mockAdminTickets.filter((t) => t.priority === "critical").length,
-    unassigned: mockAdminTickets.filter(
-      (t) => t.assignedTo.name === "Unassigned"
-    ).length,
+    total: tickets?.length,
+    open: tickets?.filter((t) => t.status === "open").length,
+    inProgress: tickets?.filter((t) => t.status === "in_progress").length,
+    resolved: tickets?.filter((t) => t.status === "resolved").length,
+    urgent: tickets?.filter((t) => t.priority === "urgent").length,
+    unassigned: tickets?.filter((t) => t.user.name === "Unassigned").length,
     avgResolutionTime: "2.5 hours",
     satisfactionRate: 4.2,
   };
 
-  const filteredTickets = mockAdminTickets.filter((ticket) => {
+  const filteredTickets = tickets?.filter((ticket) => {
     const matchesSearch =
       ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ticket.createdBy.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      ticket.createdBy.email.toLowerCase().includes(searchTerm.toLowerCase());
+      ticket.user?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ticket.user?.email.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       filterStatus === "all" || ticket.status === filterStatus;
@@ -284,10 +122,8 @@ export default function AdminTicketsPage() {
       filterCategory === "all" || ticket.category === filterCategory;
     const matchesAssigned =
       filterAssigned === "all" ||
-      (filterAssigned === "unassigned" &&
-        ticket.assignedTo.name === "Unassigned") ||
-      (filterAssigned === "assigned" &&
-        ticket.assignedTo.name !== "Unassigned");
+      (filterAssigned === "unassigned" && ticket.user.name === "Unassigned") ||
+      (filterAssigned === "assigned" && ticket.user.name !== "Unassigned");
 
     return (
       matchesSearch &&
@@ -302,17 +138,13 @@ export default function AdminTicketsPage() {
     navigate(`/${role}/ticket/${ticketId}`);
   };
 
-  const handleCreateTicket = () => {
-    navigate(`/${role}/ticket/new`);
-  };
-
   const handleBulkAction = (action) => {
-    if (selectedTickets.length === 0) {
+    if (selectedTickets?.length === 0) {
       toast.error("Please select tickets first");
       return;
     }
 
-    toast.success(`${action} ${selectedTickets.length} ticket(s)`);
+    toast.success(`${action} ${selectedTickets?.length} ticket(s)`);
     setSelectedTickets([]);
   };
 
@@ -333,10 +165,10 @@ export default function AdminTicketsPage() {
   };
 
   const handleSelectAll = () => {
-    if (selectedTickets.length === filteredTickets.length) {
+    if (selectedTickets?.length === filteredTickets?.length) {
       setSelectedTickets([]);
     } else {
-      setSelectedTickets(filteredTickets.map((t) => t.id));
+      setSelectedTickets(filteredTickets?.map((t) => t.id));
     }
   };
 
@@ -382,10 +214,10 @@ export default function AdminTicketsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">
-                  Critical Issues
+                  urgent Issues
                 </p>
                 <p className="text-2xl font-bold text-foreground">
-                  {stats.critical}
+                  {stats.urgent}
                 </p>
               </div>
               <div className="p-2 bg-red-100 rounded-lg">
@@ -438,9 +270,8 @@ export default function AdminTicketsPage() {
             >
               <option value="all">All Status</option>
               <option value="open">Open</option>
-              <option value="in-progress">In Progress</option>
-              <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">resolved</option>
             </select>
             <select
               value={filterPriority}
@@ -448,7 +279,7 @@ export default function AdminTicketsPage() {
               className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
             >
               <option value="all">All Priority</option>
-              <option value="critical">Critical</option>
+              <option value="urgent">urgent</option>
               <option value="high">High</option>
               <option value="medium">Medium</option>
               <option value="low">Low</option>
@@ -478,13 +309,13 @@ export default function AdminTicketsPage() {
       </Card>
 
       {/* Bulk Actions */}
-      {selectedTickets.length > 0 && (
-        <Card className="border-blue-200 bg-blue-50">
+      {selectedTickets?.length > 0 && (
+        <Card className="border-blue-200 bg-blue-50 p-0">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-blue-800">
-                  {selectedTickets.length} ticket(s) selected
+                  {selectedTickets?.length} ticket(s) selected
                 </span>
               </div>
               <div className="flex gap-2">
@@ -507,14 +338,6 @@ export default function AdminTicketsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleBulkAction("Archive")}
-                >
-                  <Archive className="h-4 w-4 mr-2" />
-                  Archive
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
                   onClick={() => handleBulkAction("Delete")}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
@@ -528,7 +351,7 @@ export default function AdminTicketsPage() {
 
       {/* Tickets List */}
       <div className="space-y-4">
-        {filteredTickets.length === 0 ? (
+        {filteredTickets?.length === 0 ? (
           <Card>
             <CardContent className="p-12 text-center">
               <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
@@ -546,33 +369,30 @@ export default function AdminTicketsPage() {
                   ? "Try adjusting your filters or search terms"
                   : "No tickets in the system yet"}
               </p>
-              <Button onClick={handleCreateTicket}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create First Ticket
-              </Button>
             </CardContent>
           </Card>
         ) : (
           <>
-            {/* Table Header */}
-            <Card>
+            <Card className="p-0 ">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
-                    checked={selectedTickets.length === filteredTickets.length}
+                    checked={
+                      selectedTickets?.length === filteredTickets?.length
+                    }
                     onChange={handleSelectAll}
                     className="rounded border-border"
                   />
                   <span className="text-sm font-medium text-muted-foreground">
-                    Select All ({filteredTickets.length})
+                    Select All ({filteredTickets?.length})
                   </span>
                 </div>
               </CardContent>
             </Card>
 
             {/* Ticket Cards */}
-            {filteredTickets.map((ticket) => (
+            {filteredTickets?.map((ticket) => (
               <Card
                 key={ticket.id}
                 className="hover:shadow-md transition-shadow"
@@ -583,7 +403,7 @@ export default function AdminTicketsPage() {
                     <div className="flex items-center gap-3">
                       <input
                         type="checkbox"
-                        checked={selectedTickets.includes(ticket.id)}
+                        checked={selectedTickets?.includes(ticket.id)}
                         onChange={() => handleSelectTicket(ticket.id)}
                         className="rounded border-border mt-1"
                       />
@@ -626,9 +446,6 @@ export default function AdminTicketsPage() {
                             <Eye className="h-4 w-4 mr-2" />
                             View
                           </Button>
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
                         </div>
                       </div>
 
@@ -648,10 +465,10 @@ export default function AdminTicketsPage() {
                           <User className="h-4 w-4 text-muted-foreground" />
                           <div>
                             <p className="font-medium text-foreground">
-                              {ticket.createdBy.name}
+                              {ticket.user?.name}
                             </p>
                             <p className="text-muted-foreground">
-                              {ticket.createdBy.company}
+                              {ticket.user?.company}
                             </p>
                           </div>
                         </div>
@@ -659,39 +476,15 @@ export default function AdminTicketsPage() {
                           <Users className="h-4 w-4 text-muted-foreground" />
                           <div>
                             <p className="font-medium text-foreground">
-                              {ticket.assignedTo.name}
+                              {ticket.assigned_to?.name || "Unassigned"}
                             </p>
                             <p className="text-muted-foreground">
-                              {ticket.assignedTo.role}
+                              {ticket.assigned_to?.role || "No assignee"}
                             </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium text-foreground">
-                              {ticket.estimatedTime}
-                            </p>
-                            <p className="text-muted-foreground">estimated</p>
                           </div>
                         </div>
                       </div>
-
-                      {/* Tags and Attachments */}
                       <div className="flex flex-wrap items-center gap-3 mt-3">
-                        {ticket.tags.length > 0 && (
-                          <div className="flex gap-1">
-                            {ticket.tags.map((tag, index) => (
-                              <Badge
-                                key={index}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                #{tag}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
                         {ticket.attachments > 0 && (
                           <div className="flex items-center gap-1 text-sm text-muted-foreground">
                             <Paperclip className="h-3 w-3" />

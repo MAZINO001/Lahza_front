@@ -28,6 +28,8 @@ import {
   Paperclip,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTicketsLegacy } from "@/features/tickets/hooks/useTickets";
+import { useAuthContext } from "@/hooks/AuthContext";
 
 const ticketCategories = [
   {
@@ -101,8 +103,8 @@ const priorityLevels = [
     color: "bg-red-100 text-red-800",
   },
   {
-    id: "critical",
-    label: "Critical - System down",
+    id: "urgent",
+    label: "Urgent - System down",
     color: "bg-red-200 text-red-900",
   },
 ];
@@ -110,11 +112,15 @@ const priorityLevels = [
 export default function TicketCreatePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [ticketId, setTicketId] = useState(null);
 
+  // Use the real API hook and auth context
+  const { createTicket, isCreating } = useTicketsLegacy();
+  const { user } = useAuthContext();
+
   const [formData, setFormData] = useState({
+    user_id: user?.id,
     category: searchParams.get("category") || "",
     subcategory: "",
     subject: "",
@@ -172,23 +178,39 @@ export default function TicketCreatePage() {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Debug: Check if user is available
+      console.log("User context:", user);
+      console.log("User ID:", user?.id);
 
-      // Generate ticket ID
-      const newTicketId = `TKT-${Date.now().toString().slice(-6)}`;
-      setTicketId(newTicketId);
+      if (!user?.id) {
+        toast.error("You must be logged in to create a ticket");
+        return;
+      }
 
-      // Simulate successful submission
+      // Ensure user_id is included in the payload
+      const ticketData = {
+        ...formData,
+        user_id: user.id, // Ensure authenticated user's ID is included
+      };
+
+      // Show the payload before sending
+      console.log("=== TICKET PAYLOAD BEFORE SENDING ===");
+      console.log("Form data:", ticketData);
+      console.log("Has attachments:", ticketData.attachments && ticketData.attachments.length > 0);
+      console.log("Payload type:", ticketData.attachments?.length > 0 ? "FormData" : "JSON");
+
+      // Use the real API to create ticket
+      const response = await createTicket(ticketData);
+
+      // Set the ticket ID from response
+      setTicketId(response.id || response.ticket?.id);
+
+      // Show success state
       setIsSubmitted(true);
-      toast.success("Ticket created successfully!");
     } catch (error) {
-      toast.error("Failed to create ticket. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      // Error is already handled by the hook with toast
+      console.error("Ticket creation failed:", error);
     }
   };
 
@@ -278,11 +300,10 @@ export default function TicketCreatePage() {
               {ticketCategories.map((category) => (
                 <div
                   key={category.id}
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                    formData.category === category.id
-                      ? category.color
-                      : "border-border hover:border-primary/50"
-                  }`}
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.category === category.id
+                    ? category.color
+                    : "border-border hover:border-primary/50"
+                    }`}
                   onClick={() => handleInputChange("category", category.id)}
                 >
                   <div className="flex items-center gap-3">
@@ -487,8 +508,8 @@ export default function TicketCreatePage() {
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating Ticket..." : "Create Ticket"}
+          <Button type="submit" disabled={isCreating}>
+            {isCreating ? "Creating Ticket..." : "Create Ticket"}
           </Button>
         </div>
       </form>

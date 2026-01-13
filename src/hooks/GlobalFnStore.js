@@ -74,6 +74,13 @@ export const globalFnStore = create((set) => ({
         });
     },
 
+    HandleCloneProject: async (id, navigate, role) => {
+        navigate(`/${role}/project/new`, {
+            state: { cloneFromId: id },
+            replace: true
+        });
+    },
+
     handleDeleteOffer: async (id, reloadCallback) => {
         if (!confirm("Are you sure you want to delete this offer?")) return;
         try {

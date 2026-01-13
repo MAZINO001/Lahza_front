@@ -21,105 +21,40 @@ import {
   Pause,
   Play,
   Download,
-  Eye,
   Reply,
   Forward,
   Archive,
   Flag,
   PaperclipIcon,
+  Copy,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthContext } from "@/hooks/AuthContext";
-
-const mockTicketData = {
-  "TKT-001": {
-    id: "TKT-001",
-    title: "Login page not loading properly",
-    description:
-      "Users are reporting that the login page is stuck on loading screen. This issue started happening after the latest deployment. Multiple users have reported this issue across different browsers and devices. The loading spinner appears indefinitely and never completes the authentication process.",
-    category: "website",
-    subcategory: "bug",
-    status: "open",
-    priority: "high",
-    createdAt: "2024-01-08T10:30:00Z",
-    updatedAt: "2024-01-08T14:45:00Z",
-    createdBy: {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "+1-555-0123",
-      avatar: null,
-    },
-    assignedTo: {
-      name: "Sarah Johnson",
-      email: "sarah.j@company.com",
-      role: "Senior Developer",
-    },
-    attachments: [
-      { name: "screenshot-loading.png", size: 245760, type: "image/png" },
-      { name: "browser-console.log", size: 1536, type: "text/plain" },
-    ],
-    tags: ["urgent", "frontend", "authentication"],
-    internalNotes:
-      "Issue appears to be related to the new authentication middleware. Investigating the token refresh mechanism.",
-    resolution: null,
-    resolutionTime: null,
-    estimatedTime: "2-3 hours",
-    actualTime: null,
-  },
-  "TKT-002": {
-    id: "TKT-002",
-    title: "Payment method update request",
-    description:
-      "Customer wants to update their payment method on file. They need to change from credit card to bank transfer for their monthly subscription. They've provided their new banking details and want this changed before the next billing cycle.",
-    category: "billing",
-    subcategory: "payment",
-    status: "in-progress",
-    priority: "medium",
-    createdAt: "2024-01-07T09:15:00Z",
-    updatedAt: "2024-01-08T11:20:00Z",
-    createdBy: {
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      phone: "+1-555-0124",
-      avatar: null,
-    },
-    assignedTo: {
-      name: "Mike Wilson",
-      email: "mike.w@company.com",
-      role: "Billing Specialist",
-    },
-    attachments: [
-      { name: "bank-details.pdf", size: 524288, type: "application/pdf" },
-    ],
-    tags: ["billing", "payment-method", "customer-request"],
-    internalNotes:
-      "Customer verified identity through security questions. Awaiting payment processor confirmation.",
-    resolution: null,
-    resolutionTime: null,
-    estimatedTime: "1 hour",
-    actualTime: "45 minutes",
-  },
+import {
+  useTicket,
+  useTicketsLegacy,
+} from "@/features/tickets/hooks/useTickets";
+import { useTeams } from "@/features/settings";
+import { Controller, useForm } from "react-hook-form";
+import SelectField from "@/components/Form/SelectField";
+const categoryIcons = {
+  website: "🐛",
+  hosting: "🖥️",
+  billing: "💳",
+  general: "💬",
 };
 
 const statusColors = {
   open: "bg-yellow-100 text-yellow-800",
-  "in-progress": "bg-blue-100 text-blue-800",
-  resolved: "bg-green-100 text-green-800",
-  closed: "bg-gray-100 text-gray-800",
+  in_progress: "bg-blue-100 text-blue-800",
+  resolved: "bg-gray-100 text-gray-800",
 };
 
 const priorityColors = {
   low: "bg-gray-100 text-gray-800",
   medium: "bg-orange-100 text-orange-800",
   high: "bg-red-100 text-red-800",
-  critical: "bg-red-200 text-red-900",
-};
-
-const categoryIcons = {
-  website: "🐛",
-  hosting: "🖥️",
-  billing: "💳",
-  general: "💬",
+  urgent: "bg-red-200 text-red-900",
 };
 
 const getCategoryColor = (category) => {
@@ -138,60 +73,80 @@ const getCategoryColor = (category) => {
 };
 
 export default function TicketAdminView() {
+  const {
+    control,
+    formState: { errors },
+  } = useForm();
+
+  const { data: teamsMembers } = useTeams();
+
   const { id } = useParams();
   const navigate = useNavigate();
   const { role } = useAuthContext();
-  const [ticket, setTicket] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: ticket, isLoading } = useTicket(id);
+  const { updateTicket } = useTicketsLegacy();
+
+  const [selectedAssignee, setSelectedAssignee] = useState(
+    ticket?.assigned_to?.id || ""
+  );
 
   useEffect(() => {
-    const loadTicketData = () => {
-      setLoading(true);
+    if (ticket?.assigned_to?.id) {
+      setSelectedAssignee(ticket.assigned_to.id);
+    }
+  }, [ticket]);
 
-      setTimeout(() => {
-        const ticketData = mockTicketData[id];
-        if (ticketData) {
-          setTicket(ticketData);
-        } else {
-          toast.error("Ticket not found");
-          navigate("/admin/settings/tickets_management");
-        }
-        setLoading(false);
-      }, 1000);
-    };
-
-    loadTicketData();
-  }, [id, navigate]);
-
-  const handleStatusChange = (newStatus) => {
-    setTicket((prev) => ({
-      ...prev,
-      status: newStatus,
-      updatedAt: new Date().toISOString(),
-    }));
-    toast.success(`Ticket status updated to ${newStatus}`);
-  };
-
-  const handleAssignTicket = () => {
-    toast.success("Ticket assigned successfully");
-  };
-
-  const handleDeleteTicket = () => {
-    if (
-      confirm(
-        "Are you sure you want to delete this ticket? This action cannot be undone."
-      )
-    ) {
-      toast.success("Ticket deleted successfully");
-      navigate("/admin/settings/tickets_management");
+  const handleStatusChange = async (newStatus) => {
+    try {
+      await updateTicket(id, { status: newStatus });
+      toast.success(`Ticket status updated to ${newStatus}`);
+    } catch (error) {
+      toast.error("Failed to update status");
+      console.error("Status update error:", error);
     }
   };
 
-  const handleDownloadAttachment = (attachment) => {
-    toast.success(`Downloading ${attachment.name}`);
+  const handleAssignTicket = async (assignedTo) => {
+    try {
+      await updateTicket(id, { assigned_to: assignedTo });
+      setSelectedAssignee(assignedTo);
+    } catch (error) {
+      console.error("Assignment error:", error);
+    }
   };
 
-  if (loading) {
+  const handleArchiveTicket = async () => {
+    try {
+      await updateTicket(id, { status: "resolved" });
+      navigate("/admin/settings/tickets_management");
+    } catch (error) {
+      console.error("Archive error:", error);
+    }
+  };
+
+  const handleDownloadAttachment = async (ticketId, fileId, fileName) => {
+    try {
+      const response = await fetch(
+        `/api/tickets/${ticketId}/download/${fileId}`
+      );
+
+      if (!response.ok) throw new Error("Download failed");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download error:", error);
+    }
+  };
+
+  if (isLoading) {
     return (
       <div className="p-4">
         <div className="flex flex-col items-center justify-center h-96">
@@ -199,6 +154,17 @@ export default function TicketAdminView() {
           <p className="mt-4 text-lg text-muted-foreground">
             Loading ticket details...
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!ticket) {
+    return (
+      <div className="p-4">
+        <div className="flex flex-col items-center justify-center h-96">
+          <AlertCircle className="h-16 w-16 text-destructive mb-4" />
+          <p className="text-lg text-destructive">Ticket not found</p>
         </div>
       </div>
     );
@@ -226,7 +192,7 @@ export default function TicketAdminView() {
           </div>
           <div className="flex flex-wrap gap-3 mb-4">
             <Badge className={statusColors[ticket.status]}>
-              {ticket.status.replace("-", " ").toUpperCase()}
+              {ticket.status.replace("_", " ").toUpperCase()}
             </Badge>
             <Badge className={priorityColors[ticket.priority]}>
               {ticket.priority.toUpperCase()} PRIORITY
@@ -265,25 +231,32 @@ export default function TicketAdminView() {
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm font-medium text-foreground">
-                  {ticket.createdBy.name}
+                  {ticket.user?.name}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {ticket.createdBy.email}
+                  {ticket.user?.email}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {ticket.createdBy.phone}
+                  {ticket.user?.phone}
                 </p>
-                {ticket.createdBy.company && (
+                {ticket.user?.company && (
                   <p className="text-sm text-muted-foreground">
-                    Company: {ticket.createdBy.company}
+                    Company: {ticket.user?.company}
                   </p>
                 )}
               </div>
               <Separator />
               <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Mail className="h-4 w-4 mr-2" />
-                  Email Customer
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(ticket.user?.email);
+                    toast.success("Customer email copied to clipboard!");
+                  }}
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  copy Email Customer
                 </Button>
               </div>
             </CardContent>
@@ -297,36 +270,43 @@ export default function TicketAdminView() {
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm font-medium text-foreground">
-                  {ticket.assignedTo.name}
+                  {ticket.assigned_to?.name || "Unassigned"}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {ticket.assignedTo.role}
+                  {ticket.assigned_to?.role || "No assignee"}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {ticket.assignedTo.email}
+                  {ticket.assigned_to?.email || "No email"}
                 </p>
               </div>
               <Separator />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleAssignTicket}
-                className="w-full"
-              >
-                Reassign
-              </Button>
+              <div className="space-y-2">
+                <SelectField
+                  label="Choose a team member"
+                  id="user_id"
+                  value={selectedAssignee}
+                  onChange={handleAssignTicket}
+                  options={
+                    teamsMembers?.data?.map((member) => ({
+                      value: member.user?.id || member.id,
+                      label: member.user?.name || member.name,
+                    })) || []
+                  }
+                  placeholder="Select team member"
+                />
+              </div>
             </CardContent>
           </Card>
 
           {/* Attachments */}
-          {ticket.attachments && ticket.attachments.length > 0 && (
+          {ticket.file && ticket.file.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle>Attachments</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {ticket.attachments.map((attachment, index) => (
+                  {ticket.file.map((attachment, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between p-3 border rounded-lg"
@@ -335,11 +315,13 @@ export default function TicketAdminView() {
                         <PaperclipIcon className="h-4 w-4 text-muted-foreground" />
                         <div>
                           <p className="font-medium text-foreground">
-                            {attachment.name}
+                            {attachment.original_name ||
+                              `attachment_${attachment.id}`}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            {(attachment.size / 1024).toFixed(1)} KB •{" "}
-                            {attachment.type}
+                            {attachment.size
+                              ? `${(attachment.size / 1024).toFixed(1)} KB`
+                              : "File"}
                           </p>
                         </div>
                       </div>
@@ -347,12 +329,16 @@ export default function TicketAdminView() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => handleDownloadAttachment(attachment)}
+                          onClick={() =>
+                            handleDownloadAttachment(
+                              ticket.id,
+                              attachment.id,
+                              attachment.original_name ||
+                                `file_${attachment.id}`
+                            )
+                          }
                         >
                           <Download className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm">
-                          <Eye className="h-4 w-4" />
                         </Button>
                       </div>
                     </div>
@@ -374,51 +360,32 @@ export default function TicketAdminView() {
               {ticket.status === "open" && (
                 <Button
                   size="sm"
-                  onClick={() => handleStatusChange("in-progress")}
+                  onClick={() => handleStatusChange("in_progress")}
                   className="w-full"
                 >
                   <Play className="h-4 w-4 mr-2" />
                   Start Working
                 </Button>
               )}
-              {ticket.status === "in-progress" && (
+              {ticket.status === "in_progress" && (
                 <Button
                   size="sm"
                   onClick={() => handleStatusChange("resolved")}
                   className="w-full"
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  Mark as Resolved
+                  Mark as resolved
                 </Button>
               )}
-              <Button variant="outline" size="sm" className="w-full">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={handleArchiveTicket}
+              >
                 <Archive className="h-4 w-4 mr-2" />
                 Archive
               </Button>
-            </CardContent>
-          </Card>
-
-          {/* Time Tracking */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Time Tracking</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Estimated:
-                </span>
-                <span className="text-sm font-medium">
-                  {ticket.estimatedTime}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-muted-foreground">Actual:</span>
-                <span className="text-sm font-medium">
-                  {ticket.actualTime || "Not tracked"}
-                </span>
-              </div>
-              <Separator />
             </CardContent>
           </Card>
 
@@ -433,7 +400,11 @@ export default function TicketAdminView() {
                 <div>
                   <p className="text-sm font-medium">Created</p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(ticket.createdAt).toLocaleDateString()}
+                    {new Date(ticket.created_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
                   </p>
                 </div>
               </div>
@@ -442,29 +413,16 @@ export default function TicketAdminView() {
                 <div>
                   <p className="text-sm font-medium">Last Updated</p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(ticket.updatedAt).toLocaleDateString()}
+                    {new Date(ticket.updated_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
                   </p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          {/* Tags */}
-          {ticket.tags && ticket.tags.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Tags</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
-                  {ticket.tags.map((tag, index) => (
-                    <Badge key={index} variant="secondary">
-                      #{tag}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>

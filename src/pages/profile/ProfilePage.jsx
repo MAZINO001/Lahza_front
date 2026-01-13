@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAuthContext } from "@/hooks/AuthContext";
@@ -19,10 +20,16 @@ import InputError from "@/components/InputError";
 import FileUploader from "@/components/Form/FileUploader";
 import LanguageToggle from "@/components/LanguageToggle";
 import CurrencyToggle, { CurrencyProvider } from "@/components/CurrencyToggle";
+import {
+  useProfile,
+  useUpdateProfile,
+} from "@/features/profile/hooks/useProfile";
 
 const ProfilePage = () => {
-  const { user, role } = useAuthContext();
+  const { role } = useAuthContext();
+  const { data: user } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
+  const updateProfileMutation = useUpdateProfile();
 
   const {
     control,
@@ -34,18 +41,86 @@ const ProfilePage = () => {
       name: user?.name || "",
       email: user?.email || "",
       phone: user?.phone || "",
-      bio: user?.bio || "",
       address: user?.address || "",
-      city: user?.city || "",
       country: user?.country || "",
-      avatar: user?.avatar || "",
+      profile_image: user?.profile_image || "",
     },
   });
 
+  // Reset form when user data changes
+  React.useEffect(() => {
+    if (user) {
+      reset({
+        name: user.name || "",
+        email: user.email || "",
+        phone: user.phone || "",
+        address: user.address || "",
+        country: user.country || "",
+        profile_image: user.profile_image || "",
+      });
+    }
+  }, [user, reset]);
+
   const onSubmit = async (data) => {
     try {
-      console.log("Updating profile:", data);
-      // TODO: Add API call to update profile
+      console.log("Form data before processing:", data);
+
+      // Check if there's a file
+      const hasFile = data.profile_image instanceof File;
+
+      let payloadData;
+
+      if (hasFile) {
+        // Use FormData only if there's a file
+        const formData = new FormData();
+
+        Object.keys(data).forEach((key) => {
+          if (
+            data[key] !== "" &&
+            data[key] !== null &&
+            data[key] !== undefined
+          ) {
+            if (key === "profile_image") {
+              formData.append("profile_image", data[key]);
+            } else {
+              formData.append(key, data[key]);
+            }
+          }
+        });
+
+        payloadData = formData;
+        console.log("Sending FormData with file");
+      } else {
+        // Send as JSON if no file
+        payloadData = {};
+        Object.keys(data).forEach((key) => {
+          if (
+            key !== "profile_image" &&
+            data[key] !== "" &&
+            data[key] !== null &&
+            data[key] !== undefined
+          ) {
+            payloadData[key] = data[key];
+          }
+        });
+        console.log("Sending JSON:", payloadData);
+      }
+
+      const response = await updateProfileMutation.mutateAsync(payloadData);
+
+      // The response contains the updated user data with profile_image_url
+      console.log("Updated user data:", response.user);
+
+      // Reset the form with the updated data from the server
+      reset({
+        name: response.user.name || "",
+        email: response.user.email || "",
+        phone: response.user.phone || "",
+        address: response.user.address || "",
+        country: response.user.country || "",
+        profile_image: response.user.profile_image || "",
+      });
+
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -90,8 +165,11 @@ const ProfilePage = () => {
               <Button onClick={onCancel} variant="outline">
                 Cancel
               </Button>
-              <Button onClick={handleSubmit(onSubmit)} disabled={!isDirty}>
-                Save Changes
+              <Button
+                onClick={handleSubmit(onSubmit)}
+                disabled={!isDirty || updateProfileMutation.isPending}
+              >
+                {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           )}
@@ -104,19 +182,40 @@ const ProfilePage = () => {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <Avatar className="w-20 h-20">
-                  <AvatarImage src={user?.avatar} alt={user?.name} />
+                  <AvatarImage
+                    src={user?.profile_image_url || user?.profile_image}
+                    alt={user?.name}
+                  />
                   <AvatarFallback className="text-lg">
                     {user?.name?.charAt(0)?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
                 {isEditing && (
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full"
-                  >
-                    <Camera className="w-4 h-4" />
-                  </Button>
+                  <Controller
+                    name="profile_image"
+                    control={control}
+                    render={({ field: { onChange, value, ...field } }) => (
+                      <FileUploader
+                        label=""
+                        placeholder=""
+                        accept="image/*"
+                        className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full overflow-hidden border-2 border-background"
+                        onChange={(file) => {
+                          onChange(file);
+                        }}
+                        {...field}
+                      >
+                        <Button
+                          size="icon"
+                          variant="outline"
+                          className="w-full h-full rounded-full"
+                          disabled={updateProfileMutation.isPending}
+                        >
+                          <Camera className="w-4 h-4" />
+                        </Button>
+                      </FileUploader>
+                    )}
+                  />
                 )}
               </div>
               <div>
@@ -193,103 +292,72 @@ const ProfilePage = () => {
               )}
             />
 
-            <Controller
-              name="phone"
-              control={control}
-              render={({ field }) => (
-                <FormField
-                  id="phone"
-                  label="Phone Number"
-                  type="tel"
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={errors.phone?.message}
-                  placeholder="Enter your phone number"
-                  disabled={!isEditing}
+            {/* Show phone, country, and address only for clients */}
+            {role === "client" && (
+              <>
+                <Controller
+                  name="phone"
+                  control={control}
+                  render={({ field }) => (
+                    <FormField
+                      id="phone"
+                      label="Phone Number"
+                      type="tel"
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.phone?.message}
+                      placeholder="Enter your phone number"
+                      disabled={!isEditing}
+                    />
+                  )}
                 />
-              )}
-            />
 
-            <Controller
-              name="country"
-              control={control}
-              render={({ field }) => (
-                <FormField
-                  id="country"
-                  label="Country"
-                  type="text"
-                  value={field.value}
-                  onChange={field.onChange}
-                  error={errors.country?.message}
-                  placeholder="Enter your country"
-                  disabled={!isEditing}
+                <Controller
+                  name="country"
+                  control={control}
+                  render={({ field }) => (
+                    <FormField
+                      id="country"
+                      label="Country"
+                      type="text"
+                      value={field.value}
+                      onChange={field.onChange}
+                      error={errors.country?.message}
+                      placeholder="Enter your country"
+                      disabled={!isEditing}
+                    />
+                  )}
                 />
-              )}
-            />
+              </>
+            )}
           </div>
 
-          <Controller
-            name="address"
-            control={control}
-            render={({ field }) => (
-              <div>
-                <Label htmlFor="address" className="text-foreground">
-                  Address
-                </Label>
-                <Textarea
-                  id="address"
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Enter your address"
-                  className="mt-1 border-border text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring"
-                  disabled={!isEditing}
-                  rows={3}
-                />
-                {errors.address && (
-                  <InputError
-                    message={errors.address.message}
-                    className="mt-2"
-                  />
-                )}
-              </div>
-            )}
-          />
-
-          <Controller
-            name="bio"
-            control={control}
-            render={({ field }) => (
-              <div>
-                <Label htmlFor="bio" className="text-foreground">
-                  Bio
-                </Label>
-                <Textarea
-                  id="bio"
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Tell us about yourself"
-                  className="mt-1 border-border text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring"
-                  disabled={!isEditing}
-                  rows={4}
-                />
-                {errors.bio && (
-                  <InputError message={errors.bio.message} className="mt-2" />
-                )}
-              </div>
-            )}
-          />
-
-          {isEditing && (
+          {/* Show address only for clients */}
+          {role === "client" && (
             <Controller
-              name="avatar"
+              name="address"
               control={control}
               render={({ field }) => (
-                <FileUploader
-                  label="Profile Picture"
-                  placeholder="Upload your profile picture"
-                  error={errors.avatar?.message}
-                  {...field}
-                />
+                <div>
+                  <Label htmlFor="address" className="text-foreground">
+                    Address
+                  </Label>
+                  <Textarea
+                    id="address"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter your address"
+                    className="mt-1 border-border text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-ring"
+                    disabled={!isEditing}
+                    rows={3}
+                  />
+                  {errors.address && (
+                    <InputError
+                      message={errors.address.message}
+                      className="mt-2"
+                    />
+                  )}
+                </div>
               )}
             />
           )}

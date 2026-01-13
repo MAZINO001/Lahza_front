@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import {
   Card,
@@ -23,6 +23,9 @@ import { toast } from "sonner";
 import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
 import TextareaField from "@/Components/Form/TextareaField";
+import { useTicketsLegacy } from "../hooks/useTickets";
+import { useAuthContext } from "@/hooks/AuthContext";
+import { useTicket } from "../hooks/useTickets";
 
 const ticketCategories = [
   {
@@ -96,8 +99,8 @@ const priorityLevels = [
     color: "bg-red-100 text-red-800",
   },
   {
-    id: "critical",
-    label: "Critical - System down",
+    id: "urgent",
+    label: "Urgent - System down",
     color: "bg-red-200 text-red-900",
   },
 ];
@@ -105,9 +108,21 @@ const priorityLevels = [
 export default function TicketCreatePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [ticketId, setTicketId] = useState(null);
+
+  const { id } = useParams();
+  const { user } = useAuthContext();
+
+  // Check if we're in edit mode
+  const isEditMode = !!id;
+
+  // Fetch ticket data if in edit mode
+  const { data: ticket, isLoading: isLoadingTicket } = useTicket(id);
+
+  // Use the real API hook
+  const { createTicket, updateTicket, isCreating, isUpdating } =
+    useTicketsLegacy();
 
   const {
     control,
@@ -117,7 +132,8 @@ export default function TicketCreatePage() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      category: searchParams.get("category") || "",
+      user_id: Number(user?.id),
+      category: "",
       subcategory: "",
       subject: "",
       description: "",
@@ -133,28 +149,51 @@ export default function TicketCreatePage() {
 
   useEffect(() => {
     if (watch("category")) {
-      setValue("subcategory", "");
+      // Only reset subcategory in create mode or if no existing subcategory in edit mode
+      if (!isEditMode || !ticket?.subcategory) {
+        setValue("subcategory", "");
+      }
     }
-  }, [watch("category"), setValue]);
+  }, [watch("category"), setValue, isEditMode, ticket?.subcategory]);
+
+  // Populate form with ticket data when in edit mode
+  useEffect(() => {
+    if (isEditMode && ticket) {
+      console.log("Loading ticket data:", ticket); // Debug log
+      setValue("subject", ticket.title || "");
+      setValue("description", ticket.description || "");
+      setValue("category", ticket.category || "");
+      setValue("subcategory", ticket.subcategory || "");
+      setValue("priority", ticket.priority || "medium");
+      setValue("user_id", ticket.user_id || user?.id);
+      setTicketId(ticket.id);
+
+      // Force form to re-render with new values
+      setTimeout(() => {
+        setValue("subcategory", ticket.subcategory || "");
+      }, 100);
+    }
+  }, [isEditMode, ticket, setValue, user?.id]);
 
   const onSubmit = async (data) => {
-    setIsSubmitting(true);
-
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const ticketData = {
+        ...data,
+        user_id: Number(user?.id),
+      };
+      console.log(ticketData);
+      let response;
+      if (isEditMode) {
+        response = await updateTicket(id, ticketData);
+      } else {
+        response = await createTicket(ticketData);
+      }
 
-      // Generate ticket ID
-      const newTicketId = `TKT-${Date.now().toString().slice(-6)}`;
-      setTicketId(newTicketId);
+      setTicketId(response.id || response.ticket?.id);
 
-      // Simulate successful submission
       setIsSubmitted(true);
-      toast.success("Ticket created successfully!");
     } catch (error) {
-      toast.error("Failed to create ticket. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Ticket operation failed:", error);
     }
   };
 
@@ -170,6 +209,20 @@ export default function TicketCreatePage() {
     );
   };
 
+  // Show loading state when fetching ticket data for edit
+  if (isEditMode && isLoadingTicket) {
+    return (
+      <div className="w-full p-4">
+        <div className="flex items-center justify-center min-h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading ticket data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isSubmitted) {
     return (
       <div className="w-full p-4">
@@ -181,11 +234,14 @@ export default function TicketCreatePage() {
               </div>
             </div>
             <h2 className="text-2xl font-bold text-foreground mb-2">
-              Ticket Created Successfully!
+              {isEditMode
+                ? "Ticket Updated Successfully!"
+                : "Ticket Created Successfully!"}
             </h2>
             <p className="text-muted-foreground mb-6">
-              Your support ticket has been created and our team will review it
-              shortly.
+              {isEditMode
+                ? "Your support ticket has been updated and our team will review it shortly."
+                : "Your support ticket has been created and our team will review it shortly."}
             </p>
             <div className="bg-muted p-4 rounded-lg mb-6">
               <p className="text-sm text-muted-foreground mb-1">Ticket ID</p>
@@ -220,10 +276,12 @@ export default function TicketCreatePage() {
           Back to Tickets
         </Button>
         <h1 className="text-3xl font-bold text-foreground">
-          Create Support Ticket
+          {isEditMode ? "Edit Support Ticket" : "Create Support Ticket"}
         </h1>
         <p className="text-muted-foreground mt-2">
-          Fill out the form below and we'll get back to you as soon as possible.
+          {isEditMode
+            ? "Update your ticket information below."
+            : "Fill out the form below and we'll get back to you as soon as possible."}
         </p>
       </div>
 
@@ -437,8 +495,14 @@ export default function TicketCreatePage() {
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating Ticket..." : "Create Ticket"}
+          <Button type="submit" disabled={isCreating || isUpdating}>
+            {isCreating || isUpdating
+              ? isEditMode
+                ? "Updating Ticket..."
+                : "Creating Ticket..."
+              : isEditMode
+                ? "Update Ticket"
+                : "Create Ticket"}
           </Button>
         </div>
       </form>

@@ -1,13 +1,13 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
 import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
 import TextareaField from "@/Components/Form/TextareaField";
+import api from "@/lib/utils/axios";
 
 import {
   useDocuments,
@@ -29,6 +29,12 @@ export function ProjectForm({ onSuccess }) {
   const { id } = useParams();
   const { role } = useAuthContext();
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
+
+  // Handle clone mode from navigation state
+  const { state } = useLocation();
+  const cloneFromId = state?.cloneFromId;
+  const isCloneMode = !!cloneFromId;
+
   const { data: invoices = [], isLoading: invoicesLoading } =
     useNoInvoiceProject();
   const { data: project = [], isLoading: projectLoading } = useProject(id);
@@ -36,6 +42,7 @@ export function ProjectForm({ onSuccess }) {
   const updateMutation = useUpdateProject();
   const mutation = project?.id ? updateMutation : createMutation;
   const isEditMode = !!id;
+  const isCloneModeActive = isCloneMode && !isEditMode;
 
   const {
     control,
@@ -45,7 +52,7 @@ export function ProjectForm({ onSuccess }) {
     setValue,
     formState: { errors },
   } = useForm({
-    defaultValues: project || {
+    defaultValues: isCloneModeActive ? {} : (project || {
       customerName: "",
       name: "",
       description: "",
@@ -53,26 +60,53 @@ export function ProjectForm({ onSuccess }) {
       start_date: "",
       estimated_end_date: "",
       status: "pending",
-    },
+    }),
   });
 
   useEffect(() => {
-    if (isEditMode && project?.id) {
-      reset({
-        customerName: project.client_id ? String(project.client_id) : "",
-        name: project.name || "",
-        description: project.description || "",
-        invoice_id: project.invoice_id ? String(project.invoice_id) : "",
-        start_date: project.start_date || "",
-        estimated_end_date: project.estimated_end_date || "",
-        status: project.status || "pending",
-      });
+    if ((isEditMode && project?.id) || isCloneModeActive) {
+      const sourceProject = isCloneModeActive ? null : project;
+      const targetData = isCloneModeActive ? {} : {
+        customerName: sourceProject?.client_id ? String(sourceProject.client_id) : "",
+        name: sourceProject?.name || "",
+        description: sourceProject?.description || "",
+        invoice_id: sourceProject?.invoice_id ? String(sourceProject.invoice_id) : "",
+        start_date: sourceProject?.start_date || "",
+        estimated_end_date: sourceProject?.estimated_end_date || "",
+        status: sourceProject?.status || "pending",
+      };
+
+      reset(targetData);
+
+      if (isCloneModeActive) {
+        // Fetch the project data for cloning
+        const fetchProjectData = async () => {
+          try {
+            const response = await api.get(`${import.meta.env.VITE_BACKEND_URL}/projects/${cloneFromId}`);
+            const projectData = response.data;
+
+            reset({
+              customerName: projectData.client_id ? String(projectData.client_id) : "",
+              name: `${projectData.name || ""} (Clone)`,
+              description: projectData.description || "",
+              invoice_id: projectData.invoice_id ? String(projectData.invoice_id) : "",
+              start_date: projectData.start_date || "",
+              estimated_end_date: projectData.estimated_end_date || "",
+              status: "pending",
+            });
+          } catch (error) {
+            console.error("Failed to fetch project for cloning:", error);
+          }
+        };
+
+        fetchProjectData();
+      }
     }
-  }, [isEditMode, project, reset]);
+  }, [isEditMode, isCloneModeActive, project, reset, cloneFromId]);
 
   useEffect(() => {
-    setDirectProject(isEditMode && project?.invoice_id === null);
-  }, [isEditMode, project?.invoice_id]);
+    setDirectProject((isEditMode || isCloneModeActive) && project?.invoice_id === null);
+  }, [isEditMode, isCloneModeActive, project?.invoice_id]);
 
   const onSubmit = (data) => {
     if (isSubmitting || !startSubmit()) return;
@@ -83,12 +117,17 @@ export function ProjectForm({ onSuccess }) {
       client_id: Number(data.customerName),
       invoice_id: directProject ? "" : Number(data.invoice_id),
     };
+
+    // For clone mode, remove the ID to create a new project
+    const mutationPayload = isCloneModeActive ? payload : (isEditMode ? { id: project.id, data: payload } : payload);
+
     console.log(`payload :`);
-    console.log(payload);
-    mutation.mutate(isEditMode ? { id: project.id, data: payload } : payload, {
+    console.log(mutationPayload);
+
+    mutation.mutate(mutationPayload, {
       onSuccess: () => {
         onSuccess?.();
-        if (!isEditMode) reset();
+        if (!isEditMode || isCloneModeActive) reset();
         navigate(`/${role}/projects`);
       },
       onSettled: () => endSubmit(),
@@ -312,9 +351,11 @@ export function ProjectForm({ onSuccess }) {
         <Button type="submit" disabled={isSubmitting || mutation.isPending}>
           {mutation.isPending
             ? "Saving..."
-            : isEditMode
-              ? "Update Project"
-              : "Create Project"}
+            : isCloneModeActive
+              ? "Clone Project"
+              : isEditMode
+                ? "Update Project"
+                : "Create Project"}
         </Button>
       </div>
     </form>

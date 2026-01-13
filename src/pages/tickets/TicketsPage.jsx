@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,62 +21,21 @@ import {
   Eye,
   Calendar,
   User,
+  Trash,
 } from "lucide-react";
 import { useAuthContext } from "@/hooks/AuthContext";
-
-const mockTickets = [
-  {
-    id: "TKT-001",
-    title: "Login page not loading properly",
-    description:
-      "Users are reporting that the login page is stuck on loading screen",
-    category: "website",
-    status: "open",
-    priority: "high",
-    createdAt: "2024-01-08",
-    updatedAt: "2024-01-08",
-    createdBy: "John Doe",
-  },
-  {
-    id: "TKT-002",
-    title: "Payment method update request",
-    description: "Customer wants to update their payment method on file",
-    category: "billing",
-    status: "in-progress",
-    priority: "medium",
-    createdAt: "2024-01-07",
-    updatedAt: "2024-01-08",
-    createdBy: "Jane Smith",
-  },
-  {
-    id: "TKT-003",
-    title: "Server downtime notification",
-    description: "Scheduled maintenance for server upgrade",
-    category: "hosting",
-    status: "resolved",
-    priority: "low",
-    createdAt: "2024-01-06",
-    updatedAt: "2024-01-07",
-    createdBy: "Admin",
-  },
-  {
-    id: "TKT-004",
-    title: "Feature request: Dark mode support",
-    description: "User requesting dark mode for better accessibility",
-    category: "general",
-    status: "open",
-    priority: "low",
-    createdAt: "2024-01-05",
-    updatedAt: "2024-01-05",
-    createdBy: "Mike Johnson",
-  },
-];
+import {
+  useTicketsLegacy,
+  useDeleteTicket,
+  useUpdateTicket,
+} from "@/features/tickets/hooks/useTickets";
+import { toast } from "sonner";
 
 const getStatusColor = (status) => {
   switch (status) {
     case "open":
       return "bg-yellow-100 text-yellow-800 border-yellow-200";
-    case "in-progress":
+    case "in_progress":
       return "bg-blue-100 text-blue-800 border-blue-200";
     case "resolved":
       return "bg-green-100 text-green-800 border-green-200";
@@ -94,6 +54,8 @@ const getPriorityColor = (priority) => {
       return "bg-orange-100 text-orange-800 border-orange-200";
     case "low":
       return "bg-gray-100 text-gray-800 border-gray-200";
+    case "urgent":
+      return "bg-red-200 text-red-900 border-red-300";
     case "critical":
       return "bg-red-200 text-red-900 border-red-300";
     default:
@@ -121,8 +83,16 @@ export default function TicketsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterPriority, setFilterPriority] = useState("all");
+  const [filterAssignment, setFilterAssignment] = useState("all");
+  const [selectedTickets, setSelectedTickets] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
-  const filteredTickets = mockTickets.filter((ticket) => {
+  const { role } = useAuthContext();
+  const { data: tickets = [], loading, error } = useTicketsLegacy();
+  const deleteTicket = useDeleteTicket();
+  const updateTicket = useUpdateTicket();
+
+  const filteredTickets = tickets.filter((ticket) => {
     const matchesSearch =
       ticket.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       ticket.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -130,22 +100,110 @@ export default function TicketsPage() {
       filterStatus === "all" || ticket.status === filterStatus;
     const matchesPriority =
       filterPriority === "all" || ticket.priority === filterPriority;
+    const matchesAssignment =
+      filterAssignment === "all" ||
+      (filterAssignment === "assigned" && ticket.assigned_to !== null) ||
+      (filterAssignment === "unassigned" && ticket.assigned_to === null);
 
-    return matchesSearch && matchesStatus && matchesPriority;
+    return matchesSearch && matchesStatus && matchesPriority && matchesAssignment;
   });
 
   const handleCreateTicket = () => {
     navigate("/client/ticket/new");
   };
 
-  const { role } = useAuthContext();
+  const handleDeleteTicket = async (ticketId) => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete this ticket? This action cannot be undone."
+      )
+    ) {
+      try {
+        await deleteTicket.mutate(ticketId);
+        // Ticket will be automatically removed from the list due to React Query cache invalidation
+      } catch (error) {
+        // Error is already handled by the hook with toast notification
+        console.error("Failed to delete ticket:", error);
+      }
+    }
+  };
+
   const handleViewTicket = (ticketId) => {
-    navigate(`/${role}/ticket/${ticketId}`);
+    navigate(`/${role}/ticket/${ticketId}/edit`);
+  };
+
+  const handleEditTicket = (ticketId) => {
+    navigate(`/${role}/ticket/${ticketId}/edit`);
+  };
+
+  const handleSelectTicket = (ticketId) => {
+    setSelectedTickets((prev) =>
+      prev.includes(ticketId)
+        ? prev.filter((id) => id !== ticketId)
+        : [...prev, ticketId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedTickets([]);
+      setSelectAll(false);
+    } else {
+      setSelectedTickets(filteredTickets.map((ticket) => ticket.id));
+      setSelectAll(true);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedTickets.length === 0) {
+      toast.error("No tickets selected");
+      return;
+    }
+
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedTickets.length} ticket(s)? This action cannot be undone.`
+      )
+    ) {
+      try {
+        for (const ticketId of selectedTickets) {
+          await deleteTicket.mutate(ticketId);
+        }
+        setSelectedTickets([]);
+        setSelectAll(false);
+        toast.success(
+          `Deleted ${selectedTickets.length} ticket(s) successfully`
+        );
+      } catch (error) {
+        toast.error("Failed to delete tickets");
+        console.error("Bulk delete error:", error);
+      }
+    }
+  };
+
+  const handleBulkStatusUpdate = async (newStatus) => {
+    if (selectedTickets.length === 0) {
+      toast.error("No tickets selected");
+      return;
+    }
+
+    try {
+      for (const ticketId of selectedTickets) {
+        await updateTicket.mutate(ticketId, { status: newStatus });
+      }
+      setSelectedTickets([]);
+      setSelectAll(false);
+      toast.success(
+        `Updated ${selectedTickets.length} ticket(s) to ${newStatus}`
+      );
+    } catch (error) {
+      toast.error("Failed to update tickets");
+      console.error("Bulk status update error:", error);
+    }
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* Header */}
+    <div className="p-4 space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">
@@ -201,11 +259,19 @@ export default function TicketsPage() {
               <option value="medium">Medium</option>
               <option value="low">Low</option>
             </select>
+            <select
+              value={filterAssignment}
+              onChange={(e) => setFilterAssignment(e.target.value)}
+              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            >
+              <option value="all">All Assignment</option>
+              <option value="assigned">Assigned</option>
+              <option value="unassigned">Unassigned</option>
+            </select>
           </div>
         </CardContent>
       </Card>
 
-      {/* Tickets List */}
       <div className="space-y-4">
         {filteredTickets.length === 0 ? (
           <Card>
@@ -218,8 +284,8 @@ export default function TicketsPage() {
               </h3>
               <p className="text-muted-foreground mb-4">
                 {searchTerm ||
-                filterStatus !== "all" ||
-                filterPriority !== "all"
+                  filterStatus !== "all" ||
+                  filterPriority !== "all"
                   ? "Try adjusting your filters or search terms"
                   : "Get started by creating your first support ticket"}
               </p>
@@ -233,57 +299,85 @@ export default function TicketsPage() {
           filteredTickets.map((ticket) => (
             <Card
               key={ticket.id}
-              className="hover:shadow-md transition-shadow cursor-pointer"
+              className="hover:shadow-md transition-shadow cursor-pointer w-full"
+              onClick={() => handleEditTicket(ticket.id)}
             >
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-                      <h3 className="font-semibold text-foreground text-lg">
-                        {ticket.title}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        <Badge className={getStatusColor(ticket.status)}>
-                          {ticket.status}
-                        </Badge>
-                        <Badge className={getPriorityColor(ticket.priority)}>
-                          {ticket.priority}
-                        </Badge>
-                        <Badge className={getCategoryColor(ticket.category)}>
-                          {ticket.category}
-                        </Badge>
+                  <div className="flex items-center gap-3 w-full">
+                    <input
+                      type="checkbox"
+                      checked={selectedTickets.includes(ticket.id)}
+                      onChange={() => handleSelectTicket(ticket.id)}
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    <div className="flex-1 ">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
+                        <h3 className="font-semibold text-foreground text-lg">
+                          {ticket.title}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          <Badge className={getStatusColor(ticket.status)}>
+                            {ticket.status}
+                          </Badge>
+                          <Badge className={getPriorityColor(ticket.priority)}>
+                            {ticket.priority}
+                          </Badge>
+                          <Badge className={getCategoryColor(ticket.category)}>
+                            {ticket.category}
+                          </Badge>
+                        </div>
+                      </div>
+                      <p className="text-muted-foreground mb-3 line-clamp-2">
+                        {ticket.description}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">#{ticket.id}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <User className="h-3 w-3" />
+                          <span>{ticket.user?.name || "Unknown"}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            Created{" "}
+                            {new Date(ticket.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          <span>
+                            Updated{" "}
+                            {new Date(ticket.updated_at).toLocaleDateString()}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <p className="text-muted-foreground mb-3 line-clamp-2">
-                      {ticket.description}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium">#{ticket.id}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <User className="h-3 w-3" />
-                        <span>{ticket.createdBy}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>Created {ticket.createdAt}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        <span>Updated {ticket.updatedAt}</span>
-                      </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewTicket(ticket.id);
+                        }}
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteTicket(ticket.id);
+                        }}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
                     </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleViewTicket(ticket.id)}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View
-                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -291,14 +385,6 @@ export default function TicketsPage() {
           ))
         )}
       </div>
-
-      {filteredTickets.length > 0 && (
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Showing {filteredTickets.length} of {mockTickets.length} tickets
-          </p>
-        </div>
-      )}
     </div>
   );
 }
