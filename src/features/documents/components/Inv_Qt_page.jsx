@@ -86,14 +86,16 @@ export default function Inv_Qt_page({ type, currentId }) {
           {isInvoice ? "INVOICE" : "QUOTE"}-000{currentId}
         </div>
         <div className="flex items-center gap-2 ">
-          <Link
-            to={`/${role}/${currentSection}/${currentId}/edit`}
-            state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
-          >
-            <Button variant="outline" className="h-8 w-8 cursor-pointer">
-              <Edit2 size={20} />
-            </Button>
-          </Link>
+          {role === "admin" && (
+            <Link
+              to={`/${role}/${currentSection}/${currentId}/edit`}
+              state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
+            >
+              <Button variant="outline" className="h-8 w-8 cursor-pointer">
+                <Edit2 size={20} />
+              </Button>
+            </Link>
+          )}
           <Button
             onClick={handleDownloadPdf}
             variant="outline"

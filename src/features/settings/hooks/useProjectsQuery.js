@@ -20,11 +20,12 @@ const projectsApi = {
         api.post(`${API_URL}/projects`, data).then((res) => res.data),
 
     update: (id, data) =>
-        api.put(`${API_URL}/projects/${id}`, data).then((res) => res.data),
+        api.put(`${API_URL}/project/${id}`, data).then((res) => res.data),
 
     delete: (id) => api.delete(`${API_URL}/projects/${id}`),
 
-    // Project assignments
+
+
     addAssignment: (data) =>
         api.post(`${API_URL}/addAssignment`, data).then((res) => res.data),
 

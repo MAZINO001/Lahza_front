@@ -93,7 +93,9 @@ export default function CountDownComponent({ startDate, endDate }) {
       </div>
 
       <p className="text-sm text-gray-600 mt-4">
-        Duration from {startDate} to {endDate}
+        {timeRemaining <= 0
+          ? "Project has ended"
+          : "Time remaining until project ends"}
       </p>
     </div>
   );

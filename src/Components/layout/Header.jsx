@@ -1,31 +1,27 @@
-import { BellIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import SearchBar from "@/Components/comp-25";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import NotificationDropdown from "@/features/notifications/components/NotificationDropdown";
 
 export default function Header() {
   const { role, user } = useAuthContext();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-accent-foreground backdrop-blur">
+    <header className="sticky top-0 z-50 w-full bg-accent-foreground backdrop-blur">
       <div className="flex items-center justify-between px-4 py-3 lg:px-6">
         <SearchBar />
 
         <div className="flex items-center gap-3 ml-auto">
           <ThemeToggle />
 
-          <button className="relative inline-flex items-center justify-center h-10 w-10 rounded-md hover:bg-accent transition-colors">
-            <BellIcon size={20} />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-          </button>
-
+          <NotificationDropdown />
           <Link
             to={`/${role}/profile`}
-            className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-accent transition-colors"
+            className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-100"
           >
             <img
-              src="https://picsum.photos/600/400"
+              src={user?.profile_image || "https://picsum.photos/600/400"}
               alt="Profile"
               className="h-9 w-9 rounded-full object-cover"
             />

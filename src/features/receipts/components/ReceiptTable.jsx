@@ -1,0 +1,65 @@
+// src/features/receipts/components/ReceiptTable.jsx
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import FormField from "@/Components/Form/FormField";
+import { useAuthContext } from "@/hooks/AuthContext";
+import { getReceiptColumns } from "../columns/receiptColumns";
+import { DataTable } from "@/components/table/DataTable";
+import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+
+export function ReceiptTable() {
+  const { data: payments = [], isLoading } = usePayments();
+  const { role } = useAuthContext();
+  const navigate = useNavigate();
+
+  // Filter only paid payments for receipts
+  const paidPayments = payments.filter(payment => payment.status === 'paid');
+
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+
+  const columns = React.useMemo(
+    () => getReceiptColumns(role, navigate),
+    [role, navigate]
+  );
+
+  const table = useReactTable({
+    data: paidPayments,
+    columns,
+    state: { sorting, columnFilters },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+  });
+
+  return (
+    <div className="w-full p-4 bg-background min-h-screen">
+      <div className="flex justify-between mb-4">
+        <FormField
+          placeholder="Filter receipts..."
+          value={table.getColumn("invoice_id")?.getFilterValue() ?? ""}
+          onChange={(e) =>
+            table.getColumn("invoice_id")?.setFilterValue(e.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
+      <DataTable
+        table={table}
+        columns={columns}
+        isInvoiceTable={false}
+        isLoading={isLoading}
+      />
+    </div>
+  );
+}

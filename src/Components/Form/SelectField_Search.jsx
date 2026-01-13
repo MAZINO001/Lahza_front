@@ -165,7 +165,7 @@
 //             }
 //             className="flex-1 min-w-[120px] outline-none bg-transparent placeholder:text-muted-foreground"
 //           />
-//           <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+//           <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
 //         </div>
 //       </div>
 

@@ -4,11 +4,14 @@ import {
   Bell,
   Building,
   Contact,
+  FileQuestion,
   FolderKanban,
   Lock,
+  MessageSquare,
   Palette,
   Scale,
   Target,
+  Ticket,
   User,
 } from "lucide-react";
 import React from "react";
@@ -89,6 +92,11 @@ const sidebarItems = [
         name: "Agency Objectives",
         value: "agency_objectives",
         icon: <Target className="w-4 h-4" />,
+      },
+      {
+        name: "Tickets Management",
+        value: "tickets_management",
+        icon: <MessageSquare className="w-4 h-4" />,
       },
     ],
   },

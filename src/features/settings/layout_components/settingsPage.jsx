@@ -26,7 +26,7 @@ export default function SettingsMainContent() {
     }
 
     if (
-      ["team_management", "projects_management", "users_management", "agency_objectives"].includes(
+      ["team_management", "projects_management", "users_management", "agency_objectives", "tickets_management"].includes(
         id
       )
     ) {

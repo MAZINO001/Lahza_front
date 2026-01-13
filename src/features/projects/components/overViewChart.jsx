@@ -14,15 +14,21 @@ import {
 
 const generateDailyTaskCount = (tasks, startDate, endDate) => {
   const data = [];
+  // const current = new Date("2026-01-01");
   const current = new Date(startDate);
 
   const taskMap = {};
 
   tasks?.forEach((task) => {
-    const isCompleted = task.status === "done" || task.percentage === 100;
+    const isCompleted =
+      task.status === "done" ||
+      task.status === "completed" ||
+      task.percentage === 100;
 
-    if (isCompleted && task.updated_at) {
-      const dateKey = new Date(task.updated_at).toLocaleDateString("en-US", {
+    if (isCompleted) {
+      const dateToUse =
+        task.updated_at || task.created_at || new Date().toISOString();
+      const dateKey = new Date(dateToUse).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       });

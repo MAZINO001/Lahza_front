@@ -147,10 +147,20 @@ export function useDeleteTask() {
 export function useMarkTaskComplete() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ projectId, taskId }) => apiTask.markComplete(projectId, taskId),
+        mutationFn: ({ taskId, projectId }) => {
+            if (projectId) {
+                // If projectId is provided, use the project-specific endpoint
+                return apiTask.update(projectId, taskId, { status: 'completed' });
+            } else {
+                // Otherwise use the standalone endpoint
+                return apiTask.markComplete(taskId);
+            }
+        },
         onSuccess: (_, { projectId }) => {
             toast.success("Task marked as complete!");
-            queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
+            if (projectId) {
+                queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
+            }
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
         }, refetchOnWindowFocus: true,
         onError: (error) => {

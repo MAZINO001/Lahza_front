@@ -21,7 +21,7 @@ export function ProjectColumns(role, navigate) {
         const id = row.getValue("id");
         return (
           <Link
-            to={`/admin/project/${id}`}
+            to={`/${role}/project/${id}`}
             className="font-medium text-foreground hover:underline"
           >
             {formatId(id, "PROJECT")}
@@ -90,8 +90,12 @@ export function ProjectColumns(role, navigate) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
+        const { HandleCloneProject } = globalFnStore();
         const { HandleEditProject } = globalFnStore();
-        console.log(row.getValue("estimated_end_date"));
+        if (role === "client") {
+          return <div className="text-muted-foreground">—</div>;
+        }
+
         return (
           <div className="flex gap-2">
             <Button
@@ -107,7 +111,7 @@ export function ProjectColumns(role, navigate) {
               size="sm"
               variant="outline"
               onClick={() =>
-                HandleEditProject(row.getValue("id"), navigate, role)
+                HandleCloneProject(row.getValue("id"), navigate, role)
               }
             >
               <CopyPlus className="h-4 w-4" />

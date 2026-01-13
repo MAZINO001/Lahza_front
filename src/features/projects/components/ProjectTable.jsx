@@ -56,11 +56,13 @@ export function ProjectsTable() {
           className="max-w-sm"
         />
         <div className="flex gap-2">
-          <Link to={`../project/new`} relative="path">
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Add New Project
-            </Button>
-          </Link>
+          {role !== "client" && (
+            <Link to={`../project/new`} relative="path">
+              <Button>
+                <Plus className="mr-2 h-4 w-4" /> Add New Project
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 

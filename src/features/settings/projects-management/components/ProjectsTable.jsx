@@ -217,20 +217,21 @@ export default function ProjectsTable() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [localProjects, setLocalProjects] = useState(null);
 
   const availableMembers = useMemo(() => {
     const teams = teamsResponse?.data || teamsResponse || [];
     return Array.isArray(teams)
       ? teams.map((team) => ({
-          id: team?.id,
-          name: team?.user?.name,
-          email: team?.user?.email,
-        }))
+        id: team?.id,
+        name: team?.user?.name,
+        email: team?.user?.email,
+      }))
       : [];
   }, [teamsResponse]);
 
   const availableStatuses = useMemo(
-    () => ["draft", "pending", "in-progress", "completed", "canceled"],
+    () => ["pending", "in_progress", "completed", "cancelled"],
     []
   );
 
@@ -239,12 +240,17 @@ export default function ProjectsTable() {
   const filteredData = useMemo(() => {
     let data = Array.isArray(projects) ? [...projects] : [];
 
+    // If we have local updates, apply them on top of the fresh data
+    if (localProjects) {
+      data = localProjects;
+    }
+
     if (statusFilter !== "all") {
       data = data.filter((p) => p.status === statusFilter);
     }
 
     return data;
-  }, [projects, statusFilter]);
+  }, [projects, localProjects, statusFilter]);
 
   const table = useReactTable({
     data: filteredData,
@@ -260,7 +266,22 @@ export default function ProjectsTable() {
         });
       },
       updateProjectMembers: (projectId, nextMembers) => {
-        console.log("Update project members:", projectId, nextMembers);
+        // Update the local state immediately for better UX
+        const currentProjects = localProjects || projects;
+        const updatedProjects = currentProjects.map(project =>
+          project.id === projectId
+            ? { ...project, members: nextMembers }
+            : project
+        );
+        setLocalProjects(updatedProjects);
+
+        // Update the project data in the backend
+        if (typeof updateProject.mutate === 'function') {
+          updateProject.mutate({
+            id: projectId,
+            data: { members: nextMembers.map(m => m.id) }
+          });
+        }
       },
       updateProjectStatus: (projectId, nextStatus) => {
         updateProject.mutate({
@@ -329,11 +350,10 @@ export default function ProjectsTable() {
               >
                 {[
                   "all",
-                  "draft",
                   "pending",
-                  "in-progress",
+                  "in_progress",
                   "completed",
-                  "canceled",
+                  "cancelled",
                 ].map((status) => (
                   <DropdownMenuRadioItem key={status} value={status}>
                     {status.replace("-", " ")}

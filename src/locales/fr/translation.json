@@ -31,5 +31,12 @@
     "client_form_title": "Inscription Client",
     "worker_form_title": "Inscription Travailleur",
     "login_title": "Connexion"
+  },
+  "currency": {
+    "select_currency": "Sélectionner la devise",
+    "currency_changed": "Devise changée en {{currency}}",
+    "euro": "Euro",
+    "moroccan_dirham": "Dirham marocain",
+    "us_dollar": "Dollar américain"
   }
 }
