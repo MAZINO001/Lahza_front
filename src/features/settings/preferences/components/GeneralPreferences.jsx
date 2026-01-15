@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -6,117 +7,132 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import SelectField from "@/components/Form/SelectField";
-import { usePreferences, useUpdatePreferences } from "../../hooks/usePreferencesQuery";
+import {
+  usePreferences,
+  useUpdatePreferences,
+} from "../../hooks/usePreferencesQuery";
 
 export default function GeneralPreferences() {
-    const { data: preferences, isLoading } = usePreferences();
-    const updatePreferences = useUpdatePreferences();
+  const { data: preferences, isLoading } = usePreferences();
+  const updatePreferences = useUpdatePreferences();
 
-    const { control, handleSubmit, reset } = useForm({
-        defaultValues: {
-            dark_mode: false,
-            language: "en",
-            timezone: "Africa/Casablanca",
-        },
-    });
+  const { control, handleSubmit, reset, watch } = useForm({
+    defaultValues: {
+      dark_mode: false,
+      language: "en",
+      currency: "eur",
+    },
+  });
 
-    useEffect(() => {
-        if (preferences?.ui) {
-            reset({
-                dark_mode: preferences.ui.dark_mode || false,
-                language: preferences.ui.language || "en",
-                timezone: preferences.ui.timezone || "Africa/Casablanca",
-            });
-        }
-    }, [preferences, reset]);
+  const watchedLanguage = watch("language");
+  console.log("Current language value:", watchedLanguage);
 
-    const onSubmit = (values) => {
-        const formattedData = {
-            ui: {
-                dark_mode: values.dark_mode,
-                language: values.language,
-                timezone: values.timezone,
-            },
-        };
+  useEffect(() => {
+    if (preferences?.ui) {
+      reset({
+        dark_mode: preferences.ui.dark_mode || false,
+        language: preferences.ui.language || "en",
+        currency: preferences.ui.currency || localStorage.getItem('userCurrency') || "eur",
+      });
+    }
+  }, [
+    preferences?.ui?.language,
+    preferences?.ui?.dark_mode,
+    preferences?.ui?.currency,
+    reset,
+  ]);
 
-        updatePreferences.mutate(formattedData);
+  const onSubmit = (values) => {
+    const formattedData = {
+      ui: {
+        dark_mode: values.dark_mode,
+        language: values.language,
+        currency: values.currency,
+      },
     };
 
-    return (
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-            <h1 className="font-semibold text-lg">General</h1>
-            <FormSection title="Preferences">
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-1">
-                            <Label className="text-sm font-medium">Dark Mode</Label>
-                        </div>
-                        <Controller
-                            name="dark_mode"
-                            control={control}
-                            render={({ field }) => (
-                                <Switch
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                />
-                            )}
-                        />
-                    </div>
+    console.log("Submitting preferences payload:", formattedData);
+    console.log("Form values:", values);
 
-                    <div>
-                        <h3 className="text-sm font-semibold text-muted-foreground mb-4">
-                            Language & Region
-                        </h3>
+    // Save currency to localStorage as fallback since backend isn't storing it
+    localStorage.setItem('userCurrency', values.currency);
 
-                        <div className="rounded-lg border p-4 space-y-2">
-                            <Controller
-                                name="language"
-                                control={control}
-                                render={({ field }) => (
-                                    <SelectField
-                                        Label="Language"
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                        options={[
-                                            { value: "en", label: "English" },
-                                            { value: "fr", label: "French" },
-                                            { value: "es", label: "Spanish" },
-                                            { value: "ar", label: "Arabic" },
-                                        ]}
-                                    />
-                                )}
-                            />
-                        </div>
+    updatePreferences.mutate(formattedData);
+  };
 
-                        <div className="rounded-lg border p-4 space-y-2 mt-4">
-                            <Controller
-                                name="timezone"
-                                control={control}
-                                render={({ field }) => (
-                                    <SelectField
-                                        Label="timezone"
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                        options={[
-                                            {
-                                                value: "Africa/Casablanca",
-                                                label: "Africa / Casablanca",
-                                            },
-                                            { value: "Europe/Paris", label: "Europe / Paris" },
-                                            { value: "UTC", label: "UTC" },
-                                        ]}
-                                    />
-                                )}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </FormSection>
-            <div className="mt-4 flex justify-end">
-                <Button type="submit" disabled={updatePreferences.isPending}>
-                    {updatePreferences.isPending ? "Saving..." : "Save Preferences"}
-                </Button>
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+      <h1 className="font-semibold text-lg">General</h1>
+      <FormSection title="Preferences">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between rounded-lg border p-4">
+            <div className="space-y-1">
+              <Label className="text-sm font-medium">Dark Mode</Label>
             </div>
-        </form>
-    );
+            <Controller
+              name="dark_mode"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
+          </div>
+
+          <div>
+            <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+              Language & Region
+            </h3>
+
+            <div className="rounded-lg border p-4 space-y-4">
+              <Controller
+                name="language"
+                control={control}
+                render={({ field }) => {
+                  console.log("Controller render - field.value:", field.value);
+                  return (
+                    <SelectField
+                      label="Language"
+                      value={field.value}
+                      onChange={(val) => field.onChange(val)}
+                      options={[
+                        { value: "en", label: "English" },
+                        { value: "fr", label: "French" },
+                        { value: "es", label: "Spanish" },
+                        { value: "ar", label: "Arabic" },
+                      ]}
+                    />
+                  );
+                }}
+              />
+
+              <Controller
+                name="currency"
+                control={control}
+                render={({ field }) => (
+                  <SelectField
+                    label="Currency"
+                    value={field.value}
+                    onChange={(val) => field.onChange(val)}
+                    options={[
+                      { value: "usd", label: "USD - US Dollar ($)" },
+                      { value: "eur", label: "EUR - Euro (€)" },
+                      { value: "mad", label: "MAD - Moroccan Dirham (د.م.)" },
+                    ]}
+                  />
+                )}
+              />
+            </div>
+          </div>
+        </div>
+      </FormSection>
+      <div className="mt-4 flex justify-end">
+        <Button type="submit" disabled={updatePreferences.isPending}>
+          {updatePreferences.isPending ? "Saving..." : "Save Preferences"}
+        </Button>
+      </div>
+    </form>
+  );
 }

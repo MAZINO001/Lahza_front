@@ -11,13 +11,45 @@ const handleApiError = (error, fallbackMsg) => {
 
 const teamAdditionalDataApi = {
     get: (teamUserId) =>
-        api.get(`${API_URL}/team-additional-data/${teamUserId}`).then((res) => res.data),
+        api.get(`${API_URL}/team-additional-data/${teamUserId}`).then((res) => res.data ?? null),
 
-    create: (data) =>
-        api.post(`${API_URL}/team-additional-data`, data).then((res) => res.data),
+    create: (data) => {
+        const formData = new FormData();
 
-    update: (teamUserId, data) =>
-        api.put(`${API_URL}/team-additional-data/${teamUserId}`, data).then((res) => res.data),
+        Object.keys(data).forEach(key => {
+            // Skip empty file fields
+            if (key === 'contract_file' || key === 'cv') {
+                if (data[key] instanceof File) {
+                    formData.append(key, data[key]);
+                }
+            } else if (data[key] !== null && data[key] !== undefined && data[key] !== "") {
+                formData.append(key, data[key]);
+            }
+        });
+
+        return api.post(`${API_URL}/team-additional-data`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((res) => res.data ?? []);
+    },
+
+    update: (teamUserId, data) => {
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+
+        Object.keys(data).forEach(key => {
+            if (key === 'contract_file' || key === 'cv') {
+                if (data[key] instanceof File) {
+                    formData.append(key, data[key]);
+                }
+            } else if (data[key] !== null && data[key] !== undefined && data[key] !== "") {
+                formData.append(key, data[key]);
+            }
+        });
+
+        return api.put(`${API_URL}/team-additional-data/${teamUserId}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        }).then((res) => res.data);
+    },
 
     delete: (teamUserId) =>
         api.delete(`${API_URL}/team-additional-data/${teamUserId}`).then((res) => res.data),
@@ -62,7 +94,7 @@ export function useDeleteTeamAdditionalData() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: teamAdditionalDataApi.delete,
+        mutationFn: (teamUserId) => teamAdditionalDataApi.delete(teamUserId),
         onSuccess: (_, teamUserId) => {
             toast.success("Team additional data deleted successfully!");
             queryClient.invalidateQueries({ queryKey: ["team-additional-data", teamUserId] });

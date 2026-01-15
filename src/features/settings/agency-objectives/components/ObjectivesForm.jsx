@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import FormField from "@/components/Form/FormField";
 import SelectField from "@/components/Form/SelectField";
@@ -12,33 +13,40 @@ export default function ObjectivesForm({
   objective = null,
   onSave,
 }) {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    status: "not-started",
-    start_date: "",
-    end_date: "",
-  });
-
   const { user } = useAuthContext();
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      status: "pending",
+      start_date: "",
+      end_date: "",
+      owner_id: user?.id || 1,
+    },
+  });
 
   useEffect(() => {
     if (objective) {
-      setFormData(objective);
+      reset(objective);
     } else {
-      setFormData({
+      reset({
         title: "",
         description: "",
         status: "pending",
         start_date: "",
-        owner_id: user.id || 1,
+        end_date: "",
+        owner_id: user?.id || 1,
       });
     }
-  }, [objective , user]);
+  }, [objective, user, reset]);
 
-  const handleSave = () => {
-    if (!formData.title.trim()) return;
-    onSave(formData);
+  const onSubmit = (data) => {
+    onSave(data);
   };
 
   const handleClose = () => {
@@ -48,55 +56,78 @@ export default function ObjectivesForm({
   return (
     <div>
       <div className="space-y-4">
-        <FormField
-          label="Title"
-          placeholder="e.g., Improve Client Satisfaction"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+        <Controller
+          name="title"
+          control={control}
+          rules={{ required: "Title is required" }}
+          render={({ field }) => (
+            <FormField
+              label="Title"
+              placeholder="e.g., Improve Client Satisfaction"
+              error={errors.title?.message}
+              {...field}
+            />
+          )}
         />
 
-        <TextareaField
-          label="Description"
-          placeholder="Describe your objective..."
-          value={formData.description}
-          onChange={(e) =>
-            setFormData({ ...formData, description: e.target.value })
-          }
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <TextareaField
+              label="Description"
+              placeholder="Describe your objective..."
+              error={errors.description?.message}
+              {...field}
+            />
+          )}
         />
 
-        <div className="w-full">
-          <SelectField
-            label="Status"
-            value={formData.status}
-            onValueChange={(value) =>
-              setFormData({ ...formData, status: value })
-            }
-            options={[
-              { value: "pending", label: "Pending" },
-              { value: "completed", label: "Completed" },
-              { value: "cancelled", label: "Cancelled" },
-              { value: "in_progress", label: "In Progress" },
-            ]}
-          />
-        </div>
+        <Controller
+          name="status"
+          control={control}
+          render={({ field, fieldState: { error } }) => (
+            <SelectField
+              label="Status"
+              options={[
+                { value: "pending", label: "Pending" },
+                { value: "completed", label: "Completed" },
+                { value: "cancelled", label: "Cancelled" },
+                { value: "in_progress", label: "In Progress" },
+              ]}
+              value={field.value || ""}
+              onChange={(val) => field.onChange(val)}
+              onBlur={field.onBlur}
+              error={error?.message}
+            />
+          )}
+        />
 
         <div className="grid grid-cols-2 gap-4">
-          <FormField
-            label="Start Date"
-            type="date"
-            value={formData.start_date}
-            onChange={(e) =>
-              setFormData({ ...formData, start_date: e.target.value })
-            }
+          <Controller
+            name="start_date"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                label="Start Date"
+                type="date"
+                error={errors.start_date?.message}
+                {...field}
+              />
+            )}
           />
 
-          <FormField
-            label="End Date"
-            type="date"
-            value={formData.end_date}
-            onChange={(e) =>
-              setFormData({ ...formData, end_date: e.target.value })
-            }
+          <Controller
+            name="end_date"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                label="End Date"
+                type="date"
+                error={errors.end_date?.message}
+                {...field}
+              />
+            )}
           />
         </div>
       </div>
@@ -105,7 +136,9 @@ export default function ObjectivesForm({
         <Button variant="outline" onClick={handleClose}>
           Cancel
         </Button>
-        <Button onClick={handleSave}>{objective ? "Update" : "Save"}</Button>
+        <Button onClick={handleSubmit(onSubmit)}>
+          {objective ? "Update" : "Save"}
+        </Button>
       </div>
     </div>
   );

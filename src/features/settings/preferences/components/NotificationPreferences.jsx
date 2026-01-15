@@ -19,31 +19,40 @@ export default function NotificationPreferences() {
         formState: { errors },
     } = useForm({
         defaultValues: {
-            email_projects: true,
+            email_notifications: true,
+            email_payments: true,
             email_invoices: true,
             email_quotes: true,
-            email_payments: true,
             email_offers: true,
-            in_app_projects: true,
-            in_app_invoices: true,
-            in_app_quotes: true,
+            in_app_notifications: true,
             in_app_payments: true,
+            in_app_invoices: false,
+            in_app_quotes: true,
             in_app_offers: true,
         },
     });
 
     useEffect(() => {
         if (preferences) {
+            const emailHasAny = (preferences.mail?.payments ?? true) ||
+                (preferences.mail?.invoices ?? true) ||
+                (preferences.mail?.quotes ?? true) ||
+                (preferences.mail?.offers ?? true);
+            const inAppHasAny = (preferences.browser?.payments ?? true) ||
+                (preferences.browser?.invoices ?? false) ||
+                (preferences.browser?.quotes ?? true) ||
+                (preferences.browser?.offers ?? true);
+
             reset({
-                email_projects: preferences.mail?.projects ?? true,
+                email_notifications: emailHasAny,
+                email_payments: preferences.mail?.payments ?? true,
                 email_invoices: preferences.mail?.invoices ?? true,
                 email_quotes: preferences.mail?.quotes ?? true,
-                email_payments: preferences.mail?.payments ?? true,
                 email_offers: preferences.mail?.offers ?? true,
-                in_app_projects: preferences.browser?.projects ?? true,
-                in_app_invoices: preferences.browser?.invoices ?? true,
-                in_app_quotes: preferences.browser?.quotes ?? true,
+                in_app_notifications: inAppHasAny,
                 in_app_payments: preferences.browser?.payments ?? true,
+                in_app_invoices: preferences.browser?.invoices ?? false,
+                in_app_quotes: preferences.browser?.quotes ?? true,
                 in_app_offers: preferences.browser?.offers ?? true,
             });
         }
@@ -53,84 +62,101 @@ export default function NotificationPreferences() {
     const inAppNotifications = watch("in_app_notifications");
 
     const emailSettings = watch([
-        "email_projects",
+        "email_payments",
         "email_invoices",
         "email_quotes",
-        "email_payments",
         "email_offers",
     ]);
 
     const inAppSettings = watch([
-        "in_app_projects",
+        "in_app_payments",
         "in_app_invoices",
         "in_app_quotes",
-        "in_app_payments",
         "in_app_offers",
     ]);
 
     const lastEmailMasterRef = useRef(emailNotifications);
     const lastInAppMasterRef = useRef(inAppNotifications);
+    const isUpdatingRef = useRef(false);
 
     useEffect(() => {
+        if (isUpdatingRef.current) return;
+
         if (lastEmailMasterRef.current !== emailNotifications) {
+            isUpdatingRef.current = true;
             if (!emailNotifications) {
-                setValue("email_projects", false);
+                setValue("email_payments", false);
                 setValue("email_invoices", false);
                 setValue("email_quotes", false);
-                setValue("email_payments", false);
                 setValue("email_offers", false);
-                setValue("email_invoices", false);
             }
             lastEmailMasterRef.current = emailNotifications;
+            setTimeout(() => { isUpdatingRef.current = false; }, 0);
         }
     }, [emailNotifications, setValue]);
 
     useEffect(() => {
+        if (isUpdatingRef.current) return;
+
         if (lastInAppMasterRef.current !== inAppNotifications) {
+            isUpdatingRef.current = true;
             if (!inAppNotifications) {
-                setValue("in_app_projects", false);
+                setValue("in_app_payments", false);
                 setValue("in_app_invoices", false);
                 setValue("in_app_quotes", false);
-                setValue("in_app_payments", false);
                 setValue("in_app_offers", false);
             }
             lastInAppMasterRef.current = inAppNotifications;
+            setTimeout(() => { isUpdatingRef.current = false; }, 0);
         }
     }, [inAppNotifications, setValue]);
 
     useEffect(() => {
+        if (isUpdatingRef.current) return;
+
         const hasEmailEnabled = emailSettings.some((val) => val === true);
         if (hasEmailEnabled !== emailNotifications) {
+            isUpdatingRef.current = true;
             setValue("email_notifications", hasEmailEnabled);
+            setTimeout(() => { isUpdatingRef.current = false; }, 0);
         }
     }, [emailSettings, emailNotifications, setValue]);
 
     useEffect(() => {
+        if (isUpdatingRef.current) return;
+
         const hasInAppEnabled = inAppSettings.some((val) => val === true);
         if (hasInAppEnabled !== inAppNotifications) {
+            isUpdatingRef.current = true;
             setValue("in_app_notifications", hasInAppEnabled);
+            setTimeout(() => { isUpdatingRef.current = false; }, 0);
         }
     }, [inAppSettings, inAppNotifications, setValue]);
 
     const onSubmit = (values) => {
         const formattedData = {
             mail: {
-                projects: values.email_projects,
+                payments: values.email_payments,
                 invoices: values.email_invoices,
                 quotes: values.email_quotes,
-                payments: values.email_payments,
                 offers: values.email_offers,
             },
             browser: {
-                projects: values.in_app_projects,
+                payments: values.in_app_payments,
                 invoices: values.in_app_invoices,
                 quotes: values.in_app_quotes,
-                payments: values.in_app_payments,
                 offers: values.in_app_offers,
             },
         };
 
-        updatePreferences.mutate(formattedData);
+        updatePreferences.mutate(formattedData, {
+            onSuccess: () => {
+                // Success is already handled by the mutation hook
+            },
+            onError: (error) => {
+                // Error is already handled by the mutation hook
+            }
+        });
     };
 
     function Setting({ label, description, name, control }) {
@@ -171,12 +197,6 @@ export default function NotificationPreferences() {
                         <p className="text-xs font-medium text-muted-foreground mb-3 uppercase">
                             Notification Types
                         </p>
-                        <Setting
-                            label="Projects"
-                            description="All actions related to new projects"
-                            name="email_projects"
-                            control={control}
-                        />
                         <Setting
                             label="Invoices"
                             description="All actions related to invoices"
@@ -220,12 +240,6 @@ export default function NotificationPreferences() {
                         <p className="text-xs font-medium text-muted-foreground mb-3 uppercase">
                             Notification Types
                         </p>
-                        <Setting
-                            label="Projects"
-                            description="When a project is created"
-                            name="in_app_projects"
-                            control={control}
-                        />
                         <Setting
                             label="Invoices"
                             description="All actions related to invoices"

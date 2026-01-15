@@ -18,8 +18,6 @@ import { Edit2, Calendar, Shield, Camera } from "lucide-react";
 import FormField from "@/components/Form/FormField";
 import InputError from "@/components/InputError";
 import FileUploader from "@/components/Form/FileUploader";
-import LanguageToggle from "@/components/LanguageToggle";
-import CurrencyToggle, { CurrencyProvider } from "@/components/CurrencyToggle";
 import {
   useProfile,
   useUpdateProfile,
@@ -219,7 +217,7 @@ const ProfilePage = () => {
                 )}
               </div>
               <div>
-                <CardTitle className="text-2xl flex items-center gap-4">
+                <CardTitle className="text-2xl flex  gap-4">
                   {user?.name || "User Name"}
                   <Badge className={getRoleColor(role)}>
                     <Shield className="w-3 h-3 mr-1" />
@@ -238,12 +236,6 @@ const ProfilePage = () => {
                   </span>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <CurrencyProvider>
-                <LanguageToggle />
-                <CurrencyToggle />
-              </CurrencyProvider>
             </div>
           </div>
         </CardHeader>

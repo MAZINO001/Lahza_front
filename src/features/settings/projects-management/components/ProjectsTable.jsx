@@ -219,6 +219,11 @@ export default function ProjectsTable() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [localProjects, setLocalProjects] = useState(null);
 
+  // Function to be passed to columns for accessing project data
+  const seeProjectAssignmentMembers = (projectId) => {
+    return projectId;
+  };
+
   const availableMembers = useMemo(() => {
     const teams = teamsResponse?.data || teamsResponse || [];
     return Array.isArray(teams)
@@ -259,6 +264,7 @@ export default function ProjectsTable() {
     meta: {
       availableMembers,
       availableStatuses,
+      seeProjectAssignmentMembers,
       updateProjectDate: (projectId, nextDate) => {
         updateProject.mutate({
           id: projectId,
