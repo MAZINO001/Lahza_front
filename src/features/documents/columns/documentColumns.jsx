@@ -446,17 +446,6 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 </DialogContent>
               </Dialog>
             )}
-
-            {/* {isInvoice && role === "admin" && (
-              <PaymentPercentage
-                InvoiceId={row.getValue("id")}
-                totalAmount={row.getValue("total_amount")}
-                balanceDue={row.getValue("balance_due")}
-                isOpen={isPaymentDialogOpen}
-                onOpenChange={setIsPaymentDialogOpen}
-                icon={true}
-              />
-            )} */}
             {role === "admin" && (
               <>
                 <Button

@@ -29,7 +29,6 @@ export default function Inv_Qt_page({ type, currentId }) {
     isLoading: documentLoading,
     isError: documentError,
   } = useDocument(currentId, type);
-
   const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =
     globalFnStore();
   const createInvoiceMutation = useCreateDocument("invoices");
@@ -171,25 +170,34 @@ export default function Inv_Qt_page({ type, currentId }) {
       </div>
       <div className="flex flex-col h-full p-4 gap-4 overflow-auto">
         <div className="shrink-0">
-          {type === "quotes" ? (
-            <DocumentBanner
-              type="quote"
-              action="Clone Quote"
-              content="Create a duplicate of this quote for easy editing"
-              clientId={currentId}
-              currentSection={currentSection}
-            />
-          ) : (
-            <DocumentBanner
-              type="invoice"
-              action="Generate Payment"
-              content="Create a duplicate of this quote for easy editing"
-              clientId={currentId}
-              currentSection={currentSection}
-              totalAmount={document?.total_amount}
-              balanceDue={document?.balance_due}
-            />
-          )}
+          <DocumentBanner
+            type={type}
+            action={
+              role === "admin"
+                ? type === "quotes"
+                  ? "Duplicate Quote"
+                  : "Check or Add Additional Data"
+                : type === "quotes"
+                  ? "Sign Quote"
+                  : ["paid", "partially_paid"].includes(document?.status)
+                    ? "Go to Project Page"
+                    : "Go to Payment Page"
+            }
+            content={
+              role === "admin"
+                ? type === "quotes"
+                  ? "Create a duplicate of this quote for easy editing"
+                  : "Review or complete missing invoice details"
+                : type === "quotes"
+                  ? "Sign this quote to approve it"
+                  : ["paid", "partially_paid"].includes(document?.status)
+                    ? "View progress and project details"
+                    : "Proceed to payment to complete the invoice"
+            }
+            clientId={currentId}
+            currentSection={currentSection}
+            DocId={document?.id}
+          />
         </div>
 
         <div className="min-h-0 w-full">
