@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Badge } from "@/components/ui/badge";
 import { formatId } from "@/lib/utils/formatId";
 import { Link } from "react-router-dom";

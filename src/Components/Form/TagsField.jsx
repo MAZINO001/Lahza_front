@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useId, useState, useEffect } from "react";
 import { TagInput } from "emblor";
 import { Label } from "@/components/ui/label";
@@ -17,9 +16,11 @@ export default function TagsField({
 
   // sync when external value (from react-hook-form) changes
   useEffect(() => {
-    const newTags = (value || []).map((t) => (typeof t === "string" ? { text: t } : t));
-    const currentTagsText = tags.map(t => t.text).join(',');
-    const newTagsText = newTags.map(t => t.text).join(',');
+    const newTags = (value || []).map((t) =>
+      typeof t === "string" ? { text: t } : t
+    );
+    const currentTagsText = tags.map((t) => t.text).join(",");
+    const newTagsText = newTags.map((t) => t.text).join(",");
 
     if (currentTagsText !== newTagsText) {
       setTags(newTags);

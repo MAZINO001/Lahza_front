@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { TabsList, TabsTrigger } from "../ui/tabs";
 
 export default function RoleTabs({ value, onChange }) {

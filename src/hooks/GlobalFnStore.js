@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 import api from "@/lib/utils/axios";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";

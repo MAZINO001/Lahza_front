@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { format } from "date-fns";
 import { useDocumentPayments } from "../hooks/useDocumentPayments";

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, Plus, ChevronDown } from "lucide-react";

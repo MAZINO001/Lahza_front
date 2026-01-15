@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Edit2, Link2Icon, MoreVertical, Plus, X } from "lucide-react";
 import React, { useState } from "react";
 import Transactions from "./Client_page/transactions/transactions";

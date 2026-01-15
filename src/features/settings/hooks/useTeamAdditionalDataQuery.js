@@ -35,7 +35,6 @@ const teamAdditionalDataApi = {
     update: (teamUserId, data) => {
         const formData = new FormData();
         formData.append('_method', 'PUT');
-
         Object.keys(data).forEach(key => {
             if (key === 'contract_file' || key === 'cv') {
                 if (data[key] instanceof File) {
@@ -45,6 +44,7 @@ const teamAdditionalDataApi = {
                 formData.append(key, data[key]);
             }
         });
+        console.log(formData)
 
         return api.put(`${API_URL}/team-additional-data/${teamUserId}`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }

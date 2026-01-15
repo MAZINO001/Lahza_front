@@ -7,7 +7,7 @@ export default function QuoteViewPage() {
   const { id } = useParams();
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex">
       <Inv_Qt_sidebar type="quotes" currentId={id} />
       <Inv_Qt_page type="quotes" currentId={id} />
     </div>

@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 import { Tabs, TabsContent } from "../ui/tabs";
 import { Button } from "../ui/button";
 import FormSection from "../Form/FormSection";

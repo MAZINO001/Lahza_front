@@ -61,7 +61,13 @@ export default function AdditionalTeamDetails() {
     role === "admin" ? selectedTeamMemberId : currentUserTeamId;
 
   const { data: existingData, isLoading } = useTeamAdditionalData(teamMemberId);
-  const isEditMode = existingData && !isLoading;
+  console.log(existingData);
+
+  const isEditMode = Array.isArray(existingData)
+    ? existingData.length > 0
+    : !!existingData;
+
+  console.log(isEditMode);
 
   React.useEffect(() => {
     if (existingData && !isLoading) {
@@ -106,7 +112,6 @@ export default function AdditionalTeamDetails() {
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-8">
-        {/* Admin only: Team Member Selection */}
         {role === "admin" && (
           <div className="">
             <h2 className="text-md font-semibold text-foreground mb-2">

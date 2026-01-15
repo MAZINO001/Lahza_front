@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Download, Edit2, Filter, Printer, Send, X } from "lucide-react";
 import DocumentBanner from "@/components/DocumentBanner";
 import { Button } from "@/components/ui/button";

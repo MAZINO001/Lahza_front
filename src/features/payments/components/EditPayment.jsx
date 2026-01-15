@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 // EditPayment.tsx
 import FormField from "@/components/Form/FormField";
 import { useForm, Controller } from "react-hook-form";

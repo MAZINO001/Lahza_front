@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
@@ -73,12 +72,12 @@ export function DocumentForm({ type, onSuccess }) {
       customerName: clientId || "",
       ...(isInvoice
         ? {
-          invoice_date: new Date().toISOString().split("T")[0],
-          due_date: new Date().toISOString().split("T")[0],
-        }
+            invoice_date: new Date().toISOString().split("T")[0],
+            due_date: new Date().toISOString().split("T")[0],
+          }
         : {
-          quoteDate: new Date().toISOString().split("T")[0],
-        }),
+            quoteDate: new Date().toISOString().split("T")[0],
+          }),
       notes: "",
       payment_percentage: "50",
       payment_status: "pending",
@@ -183,12 +182,12 @@ export function DocumentForm({ type, onSuccess }) {
           customerName: doc.client?.id || doc.client_id || clientId,
           ...(isInvoice
             ? {
-              invoice_date: doc.invoice_date,
-              due_date: doc.due_date,
-            }
+                invoice_date: doc.invoice_date,
+                due_date: doc.due_date,
+              }
             : {
-              quoteDate: doc.quotation_date,
-            }),
+                quoteDate: doc.quotation_date,
+              }),
           notes: doc.notes || "",
           terms: doc.terms || terms,
           payment_percentage: "50",
@@ -313,17 +312,17 @@ export function DocumentForm({ type, onSuccess }) {
 
       ...(isInvoice
         ? {
-          invoice_date: data.invoice_date,
-          due_date: data.due_date,
-          status: status || "unpaid",
-          balance_due: Number(calculateTotal().toFixed(2)),
-          ...(isConvertMode && { quote_id: quoteId }),
-        }
+            invoice_date: data.invoice_date,
+            due_date: data.due_date,
+            status: status || "unpaid",
+            balance_due: Number(calculateTotal().toFixed(2)),
+            ...(isConvertMode && { quote_id: quoteId }),
+          }
         : {
-          quotation_date: data.quoteDate,
-          status: status || "draft",
-          description: data.description,
-        }),
+            quotation_date: data.quoteDate,
+            status: status || "draft",
+            description: data.description,
+          }),
 
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
@@ -371,7 +370,7 @@ export function DocumentForm({ type, onSuccess }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full h-screen">
       <div className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div className="w-full">
@@ -797,8 +796,9 @@ export function DocumentForm({ type, onSuccess }) {
         <div className="flex gap-4 w-full items-start space-between">
           {(type === "invoices" || (type === "quotes" && !isEditMode)) && (
             <div
-              className={`flex gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"
-                }`}
+              className={`flex gap-4 items-end justify-between ${
+                !isInvoice ? "w-full" : "w-[50%]"
+              }`}
             >
               <div className="w-full">
                 <Controller

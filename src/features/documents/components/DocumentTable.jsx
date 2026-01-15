@@ -72,7 +72,7 @@ export function DocumentTable({ type }) {
   });
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full p-4 h-screen">
       <div className="flex items-center justify-between mb-4">
         <FormField
           placeholder={`Search by ID or Status...`}

@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -60,7 +58,7 @@ export function ServiceForm({ service, onSuccess }) {
   const isLoading = mutation.isPending;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 h-screen">
       <Controller
         name="name"
         control={control}

@@ -22,7 +22,7 @@ export default function AppLayout() {
           </header>
           <main>
             <LoadingProvider>
-              <div className="max-w-9xl">
+              <div className="bg-muted-foreground/7 ">
                 <BreadcrumbsWrapper />
                 <Outlet />
               </div>

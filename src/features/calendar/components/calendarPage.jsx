@@ -101,9 +101,9 @@ export default function CalendarPage() {
   };
 
   return (
-    <div className="calendar-container min-h-[800px]">
+    <div className="calendar-container min-h-[800px] ">
       <div className="flex justify-end items-center">
-        <div className="flex gap-4 items-center absolute top-4">
+        <div className="flex gap-4 items-center absolute top-8">
           <Button
             onClick={() => {
               setSelectedDate(null);

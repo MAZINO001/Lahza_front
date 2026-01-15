@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import {
   CheckCircle,
   Database,
@@ -389,10 +388,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                          <p className="text-muted-foreground text-center py-4">
-                            No team members found
-                          </p>
-                        )}
+                        <p className="text-muted-foreground text-center py-4">
+                          No team members found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -412,12 +411,13 @@ export default function ProjectViewPage() {
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${tx?.payment_url
+                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${
+                                tx?.payment_url
                                   ? "hover:bg-blue-100"
                                   : tx?.payment_method === "bank"
                                     ? "hover:bg-green-100"
                                     : "hover:bg-gray-100"
-                                }`}
+                              }`}
                               onClick={() => {
                                 if (tx?.payment_url) {
                                   handleStripePayment(tx.payment_url);
@@ -492,10 +492,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                          <p className="text-muted-foreground text-center py-4">
-                            No transactions found
-                          </p>
-                        )}
+                        <p className="text-muted-foreground text-center py-4">
+                          No transactions found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -534,10 +534,10 @@ export default function ProjectViewPage() {
                           </span>
                         </div>
                       )) || (
-                          <p className="text-muted-foreground text-center py-4">
-                            No attachments found
-                          </p>
-                        )}
+                        <p className="text-muted-foreground text-center py-4">
+                          No attachments found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -632,7 +632,7 @@ export default function ProjectViewPage() {
             onSelect={setDateRange}
             disabled={() => true}
             numberOfMonths={1}
-            className="w-full! flex justify-center rounded-lg border"
+            className="w-full! flex justify-center rounded-lg bg-background border"
           />
 
           <Card className="p-2">

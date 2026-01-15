@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
 import { toast } from "sonner";

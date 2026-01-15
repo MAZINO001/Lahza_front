@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -105,7 +104,9 @@ export default function TicketsPage() {
       (filterAssignment === "assigned" && ticket.assigned_to !== null) ||
       (filterAssignment === "unassigned" && ticket.assigned_to === null);
 
-    return matchesSearch && matchesStatus && matchesPriority && matchesAssignment;
+    return (
+      matchesSearch && matchesStatus && matchesPriority && matchesAssignment
+    );
   });
 
   const handleCreateTicket = () => {
@@ -284,8 +285,8 @@ export default function TicketsPage() {
               </h3>
               <p className="text-muted-foreground mb-4">
                 {searchTerm ||
-                  filterStatus !== "all" ||
-                  filterPriority !== "all"
+                filterStatus !== "all" ||
+                filterPriority !== "all"
                   ? "Try adjusting your filters or search terms"
                   : "Get started by creating your first support ticket"}
               </p>

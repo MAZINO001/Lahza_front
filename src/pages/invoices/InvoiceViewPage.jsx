@@ -6,7 +6,7 @@ import Inv_Qt_page from "@/features/documents/components/Inv_Qt_page";
 export default function InvoiceViewPage() {
   const { id } = useParams();
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex">
       <Inv_Qt_sidebar type="invoices" currentId={id} />
       <Inv_Qt_page type="invoices" currentId={id} />
     </div>

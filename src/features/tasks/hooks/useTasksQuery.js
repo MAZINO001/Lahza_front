@@ -149,10 +149,8 @@ export function useMarkTaskComplete() {
     return useMutation({
         mutationFn: ({ taskId, projectId }) => {
             if (projectId) {
-                // If projectId is provided, use the project-specific endpoint
                 return apiTask.update(projectId, taskId, { status: 'completed' });
             } else {
-                // Otherwise use the standalone endpoint
                 return apiTask.markComplete(taskId);
             }
         },

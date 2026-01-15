@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -53,29 +52,37 @@ export function ProjectForm({ onSuccess }) {
     setValue,
     formState: { errors },
   } = useForm({
-    defaultValues: isCloneModeActive ? {} : (project || {
-      customerName: "",
-      name: "",
-      description: "",
-      invoice_id: "",
-      start_date: "",
-      estimated_end_date: "",
-      status: "pending",
-    }),
+    defaultValues: isCloneModeActive
+      ? {}
+      : project || {
+          customerName: "",
+          name: "",
+          description: "",
+          invoice_id: "",
+          start_date: "",
+          estimated_end_date: "",
+          status: "pending",
+        },
   });
 
   useEffect(() => {
     if ((isEditMode && project?.id) || isCloneModeActive) {
       const sourceProject = isCloneModeActive ? null : project;
-      const targetData = isCloneModeActive ? {} : {
-        customerName: sourceProject?.client_id ? String(sourceProject.client_id) : "",
-        name: sourceProject?.name || "",
-        description: sourceProject?.description || "",
-        invoice_id: sourceProject?.invoice_id ? String(sourceProject.invoice_id) : "",
-        start_date: sourceProject?.start_date || "",
-        estimated_end_date: sourceProject?.estimated_end_date || "",
-        status: sourceProject?.status || "pending",
-      };
+      const targetData = isCloneModeActive
+        ? {}
+        : {
+            customerName: sourceProject?.client_id
+              ? String(sourceProject.client_id)
+              : "",
+            name: sourceProject?.name || "",
+            description: sourceProject?.description || "",
+            invoice_id: sourceProject?.invoice_id
+              ? String(sourceProject.invoice_id)
+              : "",
+            start_date: sourceProject?.start_date || "",
+            estimated_end_date: sourceProject?.estimated_end_date || "",
+            status: sourceProject?.status || "pending",
+          };
 
       reset(targetData);
 
@@ -83,14 +90,20 @@ export function ProjectForm({ onSuccess }) {
         // Fetch the project data for cloning
         const fetchProjectData = async () => {
           try {
-            const response = await api.get(`${import.meta.env.VITE_BACKEND_URL}/projects/${cloneFromId}`);
+            const response = await api.get(
+              `${import.meta.env.VITE_BACKEND_URL}/projects/${cloneFromId}`
+            );
             const projectData = response.data;
 
             reset({
-              customerName: projectData.client_id ? String(projectData.client_id) : "",
+              customerName: projectData.client_id
+                ? String(projectData.client_id)
+                : "",
               name: `${projectData.name || ""} (Clone)`,
               description: projectData.description || "",
-              invoice_id: projectData.invoice_id ? String(projectData.invoice_id) : "",
+              invoice_id: projectData.invoice_id
+                ? String(projectData.invoice_id)
+                : "",
               start_date: projectData.start_date || "",
               estimated_end_date: projectData.estimated_end_date || "",
               status: "pending",
@@ -106,7 +119,9 @@ export function ProjectForm({ onSuccess }) {
   }, [isEditMode, isCloneModeActive, project, reset, cloneFromId]);
 
   useEffect(() => {
-    setDirectProject((isEditMode || isCloneModeActive) && project?.invoice_id === null);
+    setDirectProject(
+      (isEditMode || isCloneModeActive) && project?.invoice_id === null
+    );
   }, [isEditMode, isCloneModeActive, project?.invoice_id]);
 
   const onSubmit = (data) => {
@@ -120,7 +135,11 @@ export function ProjectForm({ onSuccess }) {
     };
 
     // For clone mode, remove the ID to create a new project
-    const mutationPayload = isCloneModeActive ? payload : (isEditMode ? { id: project.id, data: payload } : payload);
+    const mutationPayload = isCloneModeActive
+      ? payload
+      : isEditMode
+        ? { id: project.id, data: payload }
+        : payload;
 
     console.log(`payload :`);
     console.log(mutationPayload);
@@ -153,7 +172,7 @@ export function ProjectForm({ onSuccess }) {
   }));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 h-screen">
       <div className="flex items-end justify-between gap-4">
         <div className="w-full">
           <Controller

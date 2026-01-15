@@ -66,7 +66,7 @@ export default function CountrySelect({ value, onChange, error }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.stopPropagation()}
-              className="w-full bg-muted text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring "
+              className="w-full bg-background text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring "
             />
           </div>
 

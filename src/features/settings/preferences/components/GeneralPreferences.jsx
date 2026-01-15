@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
+
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import FormSection from "@/components/Form/FormSection";
@@ -32,7 +32,10 @@ export default function GeneralPreferences() {
       reset({
         dark_mode: preferences.ui.dark_mode || false,
         language: preferences.ui.language || "en",
-        currency: preferences.ui.currency || localStorage.getItem('userCurrency') || "eur",
+        currency:
+          preferences.ui.currency ||
+          localStorage.getItem("userCurrency") ||
+          "eur",
       });
     }
   }, [
@@ -55,7 +58,7 @@ export default function GeneralPreferences() {
     console.log("Form values:", values);
 
     // Save currency to localStorage as fallback since backend isn't storing it
-    localStorage.setItem('userCurrency', values.currency);
+    localStorage.setItem("userCurrency", values.currency);
 
     updatePreferences.mutate(formattedData);
   };

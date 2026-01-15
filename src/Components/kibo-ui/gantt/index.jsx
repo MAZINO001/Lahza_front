@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable no-unused-vars */
+
 /* eslint-disable react-refresh/only-export-components */
 "use client";
 import {
@@ -522,8 +522,8 @@ export const GanttColumn = ({ index, isColumnSecondary }) => {
 
   const top = useThrottle(
     mousePosition.y -
-    (mouseRef.current?.getBoundingClientRect().y ?? 0) -
-    (windowScroll.y ?? 0),
+      (mouseRef.current?.getBoundingClientRect().y ?? 0) -
+      (windowScroll.y ?? 0),
     10
   );
 
@@ -573,8 +573,8 @@ export const GanttCreateMarkerTrigger = ({ onCreateMarker, className }) => {
   const [windowScroll] = useWindowScroll();
   const x = useThrottle(
     mousePosition.x -
-    (mouseRef.current?.getBoundingClientRect().x ?? 0) -
-    (windowScroll.x ?? 0),
+      (mouseRef.current?.getBoundingClientRect().x ?? 0) -
+      (windowScroll.x ?? 0),
     10
   );
 

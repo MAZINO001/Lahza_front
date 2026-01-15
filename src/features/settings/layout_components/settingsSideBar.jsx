@@ -109,8 +109,8 @@ export default function SettingsSideBar() {
   // Get the current settings section from the URL
   const currentSection = location.pathname.split("/").pop() || "company_basics";
   return (
-    <aside className="w-60 shrink-0 border border-border rounded-lg h-screen overflow-auto">
-      <div className="rounded-2xl bg-background backdrop-blur-sm ">
+    <aside className="w-60 shrink-0 border border-border rounded-lg h-screen overflow-auto bg-background">
+      <div className="bg-background backdrop-blur-sm ">
         <div className="p-4">
           <h2 className="mb-4 text-lg font-semibold text-foreground">
             Settings

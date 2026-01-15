@@ -78,12 +78,12 @@
 
 
 .calendar-container .fc {
-    background-color: var(--background) !important;
+    /* background-color: var(--background) !important; */
     color: var(--foreground);
 }
 
 .calendar-container .fc-toolbar {
-    background-color: var(--background) !important;
+    /* background-color: var(--background) !important; */
     border: none;
     position: relative;
     top: 8px;
