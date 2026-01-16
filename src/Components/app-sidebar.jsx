@@ -32,11 +32,8 @@ import {
 } from "./ui/sidebar";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Button } from "./ui/button";
-import { Outline } from "react-pdf";
 export function AppSidebar(props) {
   const { role, logout } = useAuthContext();
-  // const currentRole = role || "client";
-
   const sidebarData = {
     client: {
       navMain: [
@@ -129,15 +126,8 @@ export function AppSidebar(props) {
   const { state } = useSidebar();
 
   return (
-    <Sidebar collapsible="icon" {...props} className="p-0 border-r">
+    <Sidebar collapsible="icon" {...props} className="p-1 border-r">
       <SidebarRail />
-      {/* <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <div className="font-semibold text-lg px-2 py-1">My App</div>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader> */}
 
       <SidebarContent>
         <NavMain items={roleData.navMain} />

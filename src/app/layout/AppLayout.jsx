@@ -10,8 +10,8 @@ export default function AppLayout() {
   return (
     <SidebarProvider
       style={{
-        "--sidebar-width": "calc(var(--spacing) * 45)",
-        "--header-height": "calc(var(--spacing) * 6)",
+        "--sidebar-width": "calc(var(--spacing) * 44)",
+        "--header-height": "calc(var(--spacing) * 4)",
       }}
     >
       <AppSidebar variant="inset" />

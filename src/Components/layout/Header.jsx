@@ -8,7 +8,7 @@ export default function Header() {
   const { role, user } = useAuthContext();
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-accent-foreground backdrop-blur">
+    <header className="sticky top-0 z-50 w-full bg-sidebar backdrop-blur border-b border-sidebar-border">
       <div className="flex items-center justify-between px-4 py-3 lg:px-6">
         <SearchBar />
 
@@ -18,7 +18,7 @@ export default function Header() {
           <NotificationDropdown />
           <Link
             to={`/${role}/profile`}
-            className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-gray-100"
+            className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-sidebar-accent"
           >
             <img
               src={user?.profile_image || "https://picsum.photos/600/400"}

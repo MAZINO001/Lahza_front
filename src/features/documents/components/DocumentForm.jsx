@@ -370,7 +370,7 @@ export function DocumentForm({ type, onSuccess }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full h-screen">
+    <form onSubmit={handleSubmit(onSubmit)} className="p-4 w-full min-h-screen">
       <div className="space-y-4">
         <div className="flex items-end justify-between gap-4">
           <div className="w-full">
