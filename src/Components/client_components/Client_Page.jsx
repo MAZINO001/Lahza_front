@@ -43,7 +43,7 @@ export default function Client_Page({ currentId }) {
   ];
 
   return (
-    <div className=" bg-background w-[75%] flex flex-col">
+    <div className="w-[75%] flex flex-col">
       <div className="bg-background p-4 border-b border-border">
         <div className="flex gap-4 items-center justify-between">
           <h1 className="text-xl font-semibold text-foreground ">

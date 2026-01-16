@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -143,7 +142,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 h-screen">
       <div className="flex w-full gap-4">
         <div className="w-[50%]">
           <Controller
