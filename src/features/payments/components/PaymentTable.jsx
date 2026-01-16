@@ -59,7 +59,7 @@ const PaymentTable = React.memo(function PaymentTable() {
   });
 
   return (
-    <div className="w-full p-4 bg-background min-h-screen">
+    <div className="w-full p-4 min-h-screen">
       <div className="flex items-center justify-between mb-4">
         <FormField
           placeholder="Filter payments..."

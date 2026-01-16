@@ -43,7 +43,7 @@ export default function Mails({ currentId = 1 }) {
   }
 
   return (
-    <div className="bg-background rounded-lg border border-border shadow-sm">
+    <div className="bg-background rounded-lg border border-border shadow-sm overflow-hidden">
       <div className="flex items-center justify-between p-4 border-b border-border bg-background">
         <div className="flex items-center gap-2">
           <Mail className="w-5 h-5 text-foreground" />

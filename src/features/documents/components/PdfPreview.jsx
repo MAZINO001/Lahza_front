@@ -50,7 +50,7 @@ export default function PdfPreview({ src }) {
   if (!blobUrl) return null;
 
   return (
-    <div className="flex flex-col items-center justify-start w-full min-h-screen bg-background">
+    <div className="flex flex-col items-center justify-start w-full h-screen">
       <Document
         file={blobUrl}
         onLoadSuccess={onLoadSuccess}
@@ -61,7 +61,7 @@ export default function PdfPreview({ src }) {
           Array.from({ length: numPages }, (_, i) => i + 1).map((page) => (
             <div
               key={page}
-              className="border border-border rounded-lg overflow-hidden mb-4"
+              className="border border-border rounded-lg overflow-hidden mb-4 "
             >
               <Page
                 pageNumber={page}

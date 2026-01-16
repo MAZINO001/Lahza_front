@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -79,7 +78,7 @@ export default function ActivityLogViewPage() {
   const displayChanges = getDisplayChanges();
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen p-4">
       <div className="mb-4 flex items-center justify-between">
         <Link
           to={`/${role}/logs`}

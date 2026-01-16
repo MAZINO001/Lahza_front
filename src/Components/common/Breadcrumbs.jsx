@@ -34,8 +34,10 @@ function BreadcrumbsWrapper() {
     let breadcrumbPath = currentPath;
 
     // Handle singular to plural conversion for list pages
-    if (index === pathSegments.length - 2 && /^\d+$/.test(pathSegments[index + 1])) {
-      // This is a detail page, so we need to make the previous segment plural
+    if (
+      index === pathSegments.length - 2 &&
+      /^\d+$/.test(pathSegments[index + 1])
+    ) {
       if (segment === "invoice") {
         name = "Invoices";
         breadcrumbPath = currentPath.replace(/invoice$/, "invoices");
@@ -67,7 +69,10 @@ function BreadcrumbsWrapper() {
         name = "Logs";
         breadcrumbPath = currentPath.replace(/log$/, "logs");
       }
-    } else if (index === pathSegments.length - 2 && pathSegments[index + 1] === "new") {
+    } else if (
+      index === pathSegments.length - 2 &&
+      pathSegments[index + 1] === "new"
+    ) {
       // This is a "new" page, so we need to make the previous segment plural
       if (segment === "invoice") {
         name = "Invoices";
@@ -100,7 +105,11 @@ function BreadcrumbsWrapper() {
         name = "Logs";
         breadcrumbPath = currentPath.replace(/log$/, "logs");
       }
-    } else if (index === pathSegments.length - 3 && pathSegments[index + 2] === "edit" && /^\d+$/.test(pathSegments[index + 1])) {
+    } else if (
+      index === pathSegments.length - 3 &&
+      pathSegments[index + 2] === "edit" &&
+      /^\d+$/.test(pathSegments[index + 1])
+    ) {
       // This is an edit page (e.g., /admin/offer/1/edit), so we need to make the resource segment plural
       if (segment === "invoice") {
         name = "Invoices";
@@ -133,7 +142,11 @@ function BreadcrumbsWrapper() {
         name = "Logs";
         breadcrumbPath = currentPath.replace(/log$/, "logs");
       }
-    } else if (index === pathSegments.length - 3 && pathSegments[index + 2] === "settings" && /^\d+$/.test(pathSegments[index + 1])) {
+    } else if (
+      index === pathSegments.length - 3 &&
+      pathSegments[index + 2] === "settings" &&
+      /^\d+$/.test(pathSegments[index + 1])
+    ) {
       // This is a settings page (e.g., /admin/project/1/settings), so we need to make the resource segment plural
       if (segment === "invoice") {
         name = "Invoices";
@@ -174,14 +187,10 @@ function BreadcrumbsWrapper() {
       name = "Edit";
     } else if (segment === "settings") {
       name = "Settings";
-      // If this is the settings segment and there's a next segment (like company_basics)
-      // make it link to the full settings path instead of just /settings
       if (index < pathSegments.length - 1) {
-        breadcrumbPath = currentPath + '/' + pathSegments[index + 1];
+        breadcrumbPath = currentPath + "/" + pathSegments[index + 1];
       }
     } else if (index > 0 && pathSegments[index - 1] === "settings") {
-      // This is a settings page (e.g., company_basics in /admin/settings/company_basics)
-      // Don't make it clickable since it's already the current page
       name = segment
         .replace(/[-_]/g, " ")
         .replace(/\b\w/g, (l) => l.toUpperCase());
@@ -218,7 +227,7 @@ function BreadcrumbsWrapper() {
   if (crumbs.length === 0) return null;
 
   return (
-    <Breadcrumb className="px-4 mt-4">
+    <Breadcrumb className="px-4 pt-4">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>

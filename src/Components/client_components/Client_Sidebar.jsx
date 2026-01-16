@@ -114,7 +114,7 @@ export default function Client_Sidebar({ currentId }) {
                 key={client.id}
                 className={`mb-1 rounded-tr-lg rounded-br-lg p-2 border-l-2 transition flex gap-4 items-center w-full ${
                   isActive
-                    ? "bg-background border-l-blue-500"
+                    ? "bg-blue-50 border-l-blue-500"
                     : "border-l-transparent hover:bg-accent-foreground"
                 }`}
               >

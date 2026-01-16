@@ -23,6 +23,12 @@ const usersApi = {
         api.put(`${API_URL}/users/${id}`, data),
 
     delete: (id) => api.delete(`${API_URL}/users/${id}`),
+
+    updateEmail: (data) =>
+        api.put(`${API_URL}/user/email_update`, data),
+
+    updatePassword: (data) =>
+        api.put(`${API_URL}/user/password_update`, data),
 };
 
 export function useUsers(page = 1) {
@@ -82,5 +88,25 @@ export function useDeleteUser() {
             queryClient.invalidateQueries({ queryKey: ["users"] });
         },
         onError: (error) => handleApiError(error, "Failed to delete user"),
+    });
+}
+
+export function useUpdateEmail() {
+    return useMutation({
+        mutationFn: usersApi.updateEmail,
+        onSuccess: () => {
+            toast.success("Email updated successfully!");
+        },
+        onError: (error) => handleApiError(error, "Failed to update email"),
+    });
+}
+
+export function useUpdatePassword() {
+    return useMutation({
+        mutationFn: usersApi.updatePassword,
+        onSuccess: () => {
+            toast.success("Password updated successfully!");
+        },
+        onError: (error) => handleApiError(error, "Failed to update password"),
     });
 }

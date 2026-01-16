@@ -4,9 +4,9 @@ import AppRoutes from "../Routes/index";
 
 export default function App() {
   return (
-    <>
+    <div>
       <Toaster position="bottom-right" richColors closeButton />
-      <AppRoutes />;
-    </>
+      <AppRoutes />
+    </div>
   );
 }

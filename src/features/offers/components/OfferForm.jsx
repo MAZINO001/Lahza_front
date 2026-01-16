@@ -67,7 +67,7 @@ export function OfferForm({ offer, onSuccess }) {
   }));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 h-screen">
       {servicesLoading && (
         <p className="text-sm text-muted-foreground">Loading services...</p>
       )}

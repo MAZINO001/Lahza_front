@@ -48,22 +48,22 @@ export function ServiceTable() {
   });
 
   return (
-    <div className="w-full p-4 bg-background min-h-screen">
-      <div className="flex items-center justify-between mb-4">
+    <div className="w-full p-4 min-h-screen">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <FormField
           placeholder="Filter by name..."
           value={table.getColumn("name")?.getFilterValue() ?? ""}
           onChange={(e) =>
             table.getColumn("name")?.setFilterValue(e.target.value)
           }
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
-        <div className="flex gap-2">
-          <Button onClick={() => setShowUploadModal(true)} variant="outline">
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button onClick={() => setShowUploadModal(true)} variant="outline" className="w-full sm:w-auto">
             <Upload className="mr-2 h-4 w-4" /> Upload CSV
           </Button>
           <Link to={`/${role}/service/new`}>
-            <Button>Add New Service</Button>
+            <Button className="w-full sm:w-auto">Add New Service</Button>
           </Link>
         </div>
       </div>

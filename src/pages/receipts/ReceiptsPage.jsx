@@ -4,7 +4,7 @@ import { ReceiptTable } from "@/features/receipts/components/ReceiptTable";
 
 const ReceiptsPage = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div >
       <ReceiptTable />
     </div>
   );

@@ -14,7 +14,7 @@ const projectsApi = {
         api.get(`${API_URL}/projects`).then((res) => res.data ?? []),
 
     getById: (id) =>
-        api.get(`${API_URL}/projects/${id}`).then((res) => res.data),
+        api.get(`${API_URL}/project/${id}`).then((res) => res.data),
 
     create: (data) =>
         api.post(`${API_URL}/projects`, data).then((res) => res.data),
@@ -24,7 +24,7 @@ const projectsApi = {
 
     delete: (id) => api.delete(`${API_URL}/projects/${id}`),
 
-
+    getProjectTeam: (id) => api.get(`${API_URL}/project/team/${id}`).then((res) => res.data),
 
     addAssignment: (data) =>
         api.post(`${API_URL}/addAssignment`, data).then((res) => res.data),
@@ -90,14 +90,27 @@ export function useDeleteProject() {
     });
 }
 
+export function useProjectTeam(id) {
+    return useQuery({
+        queryKey: ["projectTeam", id],
+        queryFn: () => projectsApi.getProjectTeam(id),
+        enabled: !!id,
+        retry: false,
+        staleTime: 0,
+        refetchOnWindowFocus: true,
+        onError: (error) => handleApiError(error, "Failed to fetch project team"),
+    });
+}
+
 export function useAddProjectAssignment() {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: projectsApi.addAssignment,
-        onSuccess: () => {
+        onSuccess: (_, { project_id }) => {
             toast.success("Project assigned successfully!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
+            queryClient.invalidateQueries({ queryKey: ["projectTeam", project_id] });
         },
         onError: (error) => handleApiError(error, "Failed to assign project"),
     });
@@ -108,9 +121,10 @@ export function useDeleteProjectAssignment() {
 
     return useMutation({
         mutationFn: projectsApi.deleteAssignment,
-        onSuccess: () => {
+        onSuccess: (_, { project_id }) => {
             toast.success("Project assignment removed successfully!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
+            queryClient.invalidateQueries({ queryKey: ["projectTeam", project_id] });
         },
         onError: (error) => handleApiError(error, "Failed to remove project assignment"),
     });

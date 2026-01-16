@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { OfferForm } from "@/features/offers/components/OfferForm";

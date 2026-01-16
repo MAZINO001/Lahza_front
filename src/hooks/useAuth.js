@@ -1,4 +1,4 @@
-// /* eslint-disable no-unused-vars */
+// 
 // import { useState, useEffect } from "react";
 // import api from "@/lib/utils/axios";
 
@@ -79,7 +79,7 @@
 //     return { user, role, isAuthenticated, loading, logout, verifyAuth };
 // }
 
-/* eslint-disable no-unused-vars */
+
 import { useState, useEffect } from "react";
 import api from "@/lib/utils/axios";
 

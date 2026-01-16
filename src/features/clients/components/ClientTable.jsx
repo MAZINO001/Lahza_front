@@ -99,7 +99,7 @@ export function ClientTable() {
   });
 
   return (
-    <div className="w-full p-4 bg-background min-h-screen">
+    <div className="w-full p-4 min-h-screen">
         <div className="flex justify-between mb-4">
           <div className="flex items-end justify-between gap-4">
             <FormField
@@ -112,7 +112,7 @@ export function ClientTable() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex-1 rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
+                <button className="flex-1 rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px] bg-background">
                   Order {selectedStatus}
                   <ChevronDown className="w-4 h-4" />
                 </button>
@@ -136,7 +136,7 @@ export function ClientTable() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex rounded-md items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
+                <button className="flex rounded-md items-center gap-2 transition capitalize border border-border px-2 py-[4.3px] bg-background">
                   {clientType === "all" ? "All Types" : clientType} •{" "}
                   {location === "all" ? "All Locations" : location}
                   <ChevronDown className="w-4 h-4" />

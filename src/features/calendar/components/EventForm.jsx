@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -295,7 +294,6 @@ function EventForm({
     if (editMode && selectedEvent) {
       // Edit existing event
       const eventPayload = createEvent(formData.startDate);
-      console.log("📝 Updating event:", eventPayload);
 
       onEventEdit({
         id: selectedEvent.id,
@@ -306,11 +304,9 @@ function EventForm({
       onOpenChange(false);
     } else {
       const eventPayload = createEvent(formData.startDate);
-      console.log("📤 Sending event to backend:", eventPayload);
 
       createMutation.mutate(eventPayload, {
         onSuccess: () => {
-          console.log("✅ Event created successfully");
           setIsLoading(false);
           onOpenChange(false);
         },

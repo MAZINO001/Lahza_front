@@ -30,14 +30,14 @@ export default function Overview({ data, currentId }) {
     }).format(amount);
 
   return (
-    <div className="grid bg-background grid-cols-2 gap-4">
+    <div className="grid  grid-cols-2 gap-4">
       <div className="space-y-4 ">
         <div className="bg-background rounded-lg border border-border p-4">
           <h3 className="text-lg font-semibold text-foreground mb-4">
             {displayName}
           </h3>
 
-          <div className="flex items-start gap-4 ">
+          <div className=" flex items-start gap-4 ">
             <Avatar className="w-12 h-12">
               <AvatarImage src="" alt={data?.client.user?.name || "unknown"} />
               <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">

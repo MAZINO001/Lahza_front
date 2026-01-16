@@ -2,7 +2,9 @@ import React, { Suspense, lazy } from "react";
 import { useParams, Navigate } from "react-router-dom";
 
 const AgencyInfo = lazy(() => import("../agency-info/AgencyInfo"));
-const PreferencesSection = lazy(() => import("../preferences/PreferencesPanel"));
+const PreferencesSection = lazy(
+  () => import("../preferences/PreferencesPanel")
+);
 const ManagementSection = lazy(() => import("../management/ManagementSection"));
 
 export default function SettingsMainContent() {
@@ -26,9 +28,13 @@ export default function SettingsMainContent() {
     }
 
     if (
-      ["team_management", "projects_management", "users_management", "agency_objectives", "tickets_management"].includes(
-        id
-      )
+      [
+        "team_management",
+        "projects_management",
+        "users_management",
+        "agency_objectives",
+        "tickets_management",
+      ].includes(id)
     ) {
       return <ManagementSection section={id} />;
     }
@@ -37,13 +43,15 @@ export default function SettingsMainContent() {
   };
 
   return (
-    <main className="flex-1 border border-border rounded-lg p-4">
-      <Suspense fallback={
-        <div className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-2 text-gray-600">Loading settings...</span>
-        </div>
-      }>
+    <main className="flex-1 border border-border rounded-lg p-4 bg-background">
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center p-4 ">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <span className="ml-2 text-gray-600">Loading settings...</span>
+          </div>
+        }
+      >
         {renderContent()}
       </Suspense>
     </main>

@@ -16,6 +16,7 @@ import {
   useObjectives,
   useUpdateObjective,
 } from "../hooks/useObjectivesQuery";
+import { StatusBadge } from "@/components/StatusBadge";
 
 export default function AgencyObjectives() {
   const [open, setOpen] = useState(false);
@@ -26,23 +27,6 @@ export default function AgencyObjectives() {
   const createObjective = useCreateObjective();
   const updateObjective = useUpdateObjective();
   const deleteObjective = useDeleteObjective();
-
-  const statusOptions = [
-    { value: "not-started", label: "Not Started" },
-    { value: "in-progress", label: "In Progress" },
-    { value: "completed", label: "Completed" },
-  ];
-
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "in-progress":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   const handleOpenDialog = (objective = null) => {
     if (objective) {
@@ -119,11 +103,7 @@ export default function AgencyObjectives() {
               </div>
 
               <div className="flex flex-wrap gap-2 mb-3">
-                <span
-                  className={`text-xs px-2 py-1 rounded ${getStatusColor(obj.status)}`}
-                >
-                  {statusOptions.find((s) => s.value === obj.status)?.label}
-                </span>
+                <StatusBadge status={obj.status}>{obj.status}</StatusBadge>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-sm">

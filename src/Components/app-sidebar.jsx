@@ -27,14 +27,13 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
 } from "./ui/sidebar";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Button } from "./ui/button";
-import { Outline } from "react-pdf";
 export function AppSidebar(props) {
   const { role, logout } = useAuthContext();
-  // const currentRole = role || "client";
-
   const sidebarData = {
     client: {
       navMain: [
@@ -114,42 +113,38 @@ export function AppSidebar(props) {
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },
-        {
-          title: "Settings",
-          url: "/admin/settings/company_basics",
-          icon: IconSettings,
-        },
+        // {
+        //   title: "Settings",
+        //   url: "/admin/settings/company_basics",
+        //   icon: IconSettings,
+        // },
       ],
     },
   };
 
   const roleData = sidebarData[role];
+  const { state } = useSidebar();
 
   return (
-    <Sidebar collapsible="offcanvas" {...props} className="p-0 border-r">
-      {/* <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <div className="font-semibold text-lg px-2 py-1">My App</div>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader> */}
+    <Sidebar collapsible="icon" {...props} className="p-1 border-r">
+      <SidebarRail />
 
       <SidebarContent>
         <NavMain items={roleData.navMain} />
         <NavSecondary items={roleData.navSecondary} className="mt-auto" />
       </SidebarContent>
 
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <Button
           variant="outline"
           onClick={() => logout()}
           className=" cursor-pointer"
+          size={state === "collapsed" ? "icon" : undefined}
         >
           <LogOutIcon />
-          LogOut
+          {state !== "collapsed" && <span className="ml-2">LogOut</span>}
         </Button>
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   );
 }

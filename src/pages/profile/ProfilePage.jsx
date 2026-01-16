@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useAuthContext } from "@/hooks/AuthContext";
@@ -18,8 +17,6 @@ import { Edit2, Calendar, Shield, Camera } from "lucide-react";
 import FormField from "@/components/Form/FormField";
 import InputError from "@/components/InputError";
 import FileUploader from "@/components/Form/FileUploader";
-import LanguageToggle from "@/components/LanguageToggle";
-import CurrencyToggle, { CurrencyProvider } from "@/components/CurrencyToggle";
 import {
   useProfile,
   useUpdateProfile,
@@ -146,7 +143,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="p-4 bg-background min-h-screen flex flex-col gap-4">
+    <div className="p-4 min-h-screen flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Profile</h1>
@@ -219,7 +216,7 @@ const ProfilePage = () => {
                 )}
               </div>
               <div>
-                <CardTitle className="text-2xl flex items-center gap-4">
+                <CardTitle className="text-2xl flex  gap-4">
                   {user?.name || "User Name"}
                   <Badge className={getRoleColor(role)}>
                     <Shield className="w-3 h-3 mr-1" />
@@ -238,12 +235,6 @@ const ProfilePage = () => {
                   </span>
                 </div>
               </div>
-            </div>
-            <div className="flex flex-col gap-4">
-              <CurrencyProvider>
-                <LanguageToggle />
-                <CurrencyToggle />
-              </CurrencyProvider>
             </div>
           </div>
         </CardHeader>

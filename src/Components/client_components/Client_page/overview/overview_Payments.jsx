@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Card, CardContent } from "@/components/ui/card";
 import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
 import { formatId } from "@/lib/utils/formatId";

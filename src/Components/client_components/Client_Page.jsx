@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { Edit2, Link2Icon, MoreVertical, Plus, X } from "lucide-react";
 import React, { useState } from "react";
 import Transactions from "./Client_page/transactions/transactions";
@@ -44,7 +43,7 @@ export default function Client_Page({ currentId }) {
   ];
 
   return (
-    <div className=" bg-background w-[75%] flex flex-col">
+    <div className="w-[75%] flex flex-col">
       <div className="bg-background p-4 border-b border-border">
         <div className="flex gap-4 items-center justify-between">
           <h1 className="text-xl font-semibold text-foreground ">

@@ -6,7 +6,7 @@ import Receipt_sidebar from "@/features/receipts/components/Receipt_sidebar";
 export default function ReceiptViewPage() {
   const { id } = useParams();
   return (
-    <div className="flex h-screen bg-background ">
+    <div className="flex h-screen">
       <Receipt_sidebar currentId={id} />
       <Receipt_page currentId={id} />
     </div>

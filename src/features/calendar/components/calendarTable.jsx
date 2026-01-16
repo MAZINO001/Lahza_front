@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import * as React from "react";
 import { useState } from "react";
 import {
@@ -11,7 +10,11 @@ import {
 
 import { useAuthContext } from "@/hooks/AuthContext";
 import calendarColumns from "../columns/calendarColumns";
-import { useEvents, useUpdateEvent, useDeleteEvent } from "../hooks/useCalendarQuery";
+import {
+  useEvents,
+  useUpdateEvent,
+  useDeleteEvent,
+} from "../hooks/useCalendarQuery";
 import { DataTable } from "@/components/table/DataTable";
 import EventDetailsDialog from "./EventDetailsDialog";
 import EventForm from "./EventForm";

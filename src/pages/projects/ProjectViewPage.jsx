@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import {
   CheckCircle,
   Database,
@@ -37,6 +36,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { ChartBarDefault } from "@/features/projects/components/overViewChart";
 import { useTransActions } from "@/features/payments/hooks/usePaymentQuery";
 import { formatId } from "@/lib/utils/formatId";
+import { Badge } from "@/components/ui/badge";
 
 export default function ProjectViewPage() {
   const { id } = useParams();
@@ -187,9 +187,8 @@ export default function ProjectViewPage() {
     return getAllFiles().length;
   };
 
-  // Copy RIB function for bank payments
   const copyRIB = () => {
-    const rib = "Your RIB Number Here"; // Replace with actual RIB
+    const rib = "Your RIB Number Here";
     navigator.clipboard
       .writeText(rib)
       .then(() => {
@@ -224,7 +223,6 @@ export default function ProjectViewPage() {
   const TheProgress = theTasks?.length
     ? Math.round((doneTasks / tasks?.length) * 100)
     : 0;
-
   return (
     <div className="p-4">
       <div className="mb-4 rounded-xl text-foreground flex w-full items-center justify-between">
@@ -235,23 +233,33 @@ export default function ProjectViewPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {role !== "client" && (
-            <Button
-              onClick={() => handleMarkAsComplete(project.id)}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <CheckCircle className="w-4 h-4" />
-              Done
-            </Button>
-          )}
-
           <Link to={`/${role}/project/${id}/${destination}`}>
-            <Button className="flex items-center gap-2">
+            <Button variant="outline">
               <Database className="w-4 h-4" />
               Additional Data
             </Button>
           </Link>
+          {role === "admin" && (
+            <>
+              <Link to={`/${role}/project/${id}/settings`}>
+                <Button
+                  onClick={() => handleMarkAsComplete(project.id)}
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  Project Settings
+                </Button>
+              </Link>
+              <Button
+                onClick={() => handleMarkAsComplete(project.id)}
+                className="flex items-center gap-2"
+              >
+                <CheckCircle className="w-4 h-4" />
+                Mark As Done
+              </Button>
+            </>
+          )}
         </div>
       </div>
       <div className="flex gap-4 w-full">
@@ -274,14 +282,14 @@ export default function ProjectViewPage() {
                 <div className="flex flex-col">
                   <div className="flex items-center gap-4">
                     <span className="text-lg font-bold text-foreground">
-                      {client?.name || "Client Name"}
+                      {client?.client?.company || client?.client?.name}
                     </span>
-                    <span className="inline-flex px-2 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700 border border-blue-200">
-                      Development
+                    <span>
+                      <Badge>Development</Badge>
                     </span>
                   </div>
                   <span className="font-semibold text-sm text-muted-foreground">
-                    {project?.name || "Project Name"}
+                    {client?.client?.name}
                   </span>
                 </div>
               </div>
@@ -389,10 +397,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                          <p className="text-muted-foreground text-center py-4">
-                            No team members found
-                          </p>
-                        )}
+                        <p className="text-muted-foreground text-center py-4">
+                          No team members found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -412,19 +420,13 @@ export default function ProjectViewPage() {
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${tx?.payment_url
+                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${
+                                tx?.payment_url
                                   ? "hover:bg-blue-100"
                                   : tx?.payment_method === "bank"
                                     ? "hover:bg-green-100"
                                     : "hover:bg-gray-100"
-                                }`}
-                              onClick={() => {
-                                if (tx?.payment_url) {
-                                  handleStripePayment(tx.payment_url);
-                                } else if (tx?.payment_method === "bank") {
-                                  copyRIB();
-                                }
-                              }}
+                              }`}
                               title={
                                 tx?.payment_url
                                   ? "Go to payment"
@@ -456,7 +458,15 @@ export default function ProjectViewPage() {
                                 {tx?.payment_method === "bank" && (
                                   <span
                                     className="ml-2 text-blue-600 hover:text-blue-700 cursor-pointer items-center gap-1 inline-flex"
-                                    onClick={copyRIB}
+                                    onClick={() => {
+                                      if (tx?.payment_url) {
+                                        handleStripePayment(tx.payment_url);
+                                      } else if (
+                                        tx?.payment_method === "bank"
+                                      ) {
+                                        copyRIB();
+                                      }
+                                    }}
                                   >
                                     <Copy className="w-3 h-3" />
                                     Copy RIB
@@ -492,10 +502,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                          <p className="text-muted-foreground text-center py-4">
-                            No transactions found
-                          </p>
-                        )}
+                        <p className="text-muted-foreground text-center py-4">
+                          No transactions found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -534,10 +544,10 @@ export default function ProjectViewPage() {
                           </span>
                         </div>
                       )) || (
-                          <p className="text-muted-foreground text-center py-4">
-                            No attachments found
-                          </p>
-                        )}
+                        <p className="text-muted-foreground text-center py-4">
+                          No attachments found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -632,7 +642,7 @@ export default function ProjectViewPage() {
             onSelect={setDateRange}
             disabled={() => true}
             numberOfMonths={1}
-            className="w-full! flex justify-center rounded-lg border"
+            className="w-full! flex justify-center rounded-lg bg-background border"
           />
 
           <Card className="p-2">

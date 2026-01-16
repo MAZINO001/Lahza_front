@@ -20,7 +20,7 @@ export function ReceiptTable() {
   const navigate = useNavigate();
 
   // Filter only paid payments for receipts
-  const paidPayments = payments.filter(payment => payment.status === 'paid');
+  const paidPayments = payments.filter((payment) => payment.status === "paid");
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -43,7 +43,7 @@ export function ReceiptTable() {
   });
 
   return (
-    <div className="w-full p-4 bg-background min-h-screen">
+    <div className="w-full p-4 min-h-screen">
       <div className="flex justify-between mb-4">
         <FormField
           placeholder="Filter receipts..."

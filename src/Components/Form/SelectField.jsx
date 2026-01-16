@@ -17,15 +17,19 @@ export default function SelectField({
   placeholder,
   error,
 }) {
+  const handleChange = (newValue) => {
+    onChange(newValue);
+  };
+
   return (
     <div>
       <Label htmlFor={id} className="text-foreground">
         {label}
       </Label>
-      <Select value={value || ""} onValueChange={onChange}>
+      <Select value={value || ""} onValueChange={handleChange}>
         <SelectTrigger
           id={id}
-          className={`mt-1 block w-full h-10 px-3 py-2 ${error ? "border-destructive" : "border-border"} text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary flex items-center justify-between [&>span]:truncate`}
+          className={`mt-1 block w-full h-10 px-3 py-2 ${error ? "border-destructive" : "border-border"} text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:border-primary flex items-center justify-between [&>span]:truncate bg-background`}
         >
           <SelectValue
             placeholder={placeholder || "-- Sélectionnez une option --"}

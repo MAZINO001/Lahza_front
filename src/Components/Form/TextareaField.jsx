@@ -20,7 +20,7 @@ export default function TextareaField({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`mt-1 block w-full  ${error ? "border-destructive" : "border-border"} text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-ring transition-colors min-h-[100px]`}
+        className={`mt-1 block bg-background w-full  ${error ? "border-destructive" : "border-border"} text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-ring transition-colors min-h-[100px]`}
       />
       {error && (
         <InputError message={error} className="mt-2 text-destructive" />

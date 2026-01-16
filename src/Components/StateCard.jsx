@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 export function StatCard({ title, value, icon: Icon, color, subtitle }) {
   const colorClasses =
     {

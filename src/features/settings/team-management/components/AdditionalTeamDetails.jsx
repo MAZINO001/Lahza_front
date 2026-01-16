@@ -18,6 +18,13 @@ import { useTeams } from "../../hooks/useTeamsQuery";
 export default function AdditionalTeamDetails() {
   const { user } = useAuthContext();
   const { role } = useAuthContext();
+  const { data: teamsMembers } = useTeams();
+
+  // Find current user's team member ID
+  const currentUserTeamId = teamsMembers?.data?.find(
+    (member) => member.user_id === user.id
+  )?.id;
+
   const {
     control,
     formState: { errors },
@@ -26,7 +33,7 @@ export default function AdditionalTeamDetails() {
     reset,
   } = useForm({
     defaultValues: {
-      team_user_id: user.id || 1,
+      team_user_id: currentUserTeamId || 1,
       bank_name: "",
       bank_account_number: "",
       iban: "",
@@ -47,78 +54,102 @@ export default function AdditionalTeamDetails() {
     },
   });
   const [showAddCert, setShowAddCert] = useState(false);
-  const teamMemberId = watch("team_user_id");
-  const { data: teamsMembers } = useTeams();
+
+  // Watch the selected team member (only for admin)
+  const selectedTeamMemberId = watch("team_user_id");
+  const teamMemberId =
+    role === "admin" ? selectedTeamMemberId : currentUserTeamId;
+
   const { data: existingData, isLoading } = useTeamAdditionalData(teamMemberId);
-  const isEditMode = !!existingData && !isLoading;
+  console.log(existingData);
+
+  const isEditMode = Array.isArray(existingData)
+    ? existingData.length > 0
+    : !!existingData;
+
+  console.log(isEditMode);
 
   React.useEffect(() => {
     if (existingData && !isLoading) {
       reset({
-        bank_name: existingData?.bank_name,
-        bank_account_number: existingData?.bank_account_number,
-        iban: existingData?.iban,
-        contract_type: existingData?.contract_type,
-        contract_start_date: existingData?.contract_start_date,
-        contract_end_date: existingData?.contract_end_date,
-        contract_file: existingData?.contract_file,
-        emergency_contact_name: existingData?.emergency_contact_name,
-        emergency_contact_phone: existingData?.emergency_contact_phone,
-        job_title: existingData?.job_title,
-        salary: existingData?.salary,
-        notes: existingData?.notes,
-        portfolio: existingData?.portfolio,
-        github: existingData?.github,
-        linkedin: existingData?.linkedin,
-        cv: existingData?.cv,
+        team_user_id: teamMemberId,
+        bank_name: existingData?.bank_name || "",
+        bank_account_number: existingData?.bank_account_number || "",
+        iban: existingData?.iban || "",
+        contract_type: existingData?.contract_type || "",
+        contract_start_date: existingData?.contract_start_date || "",
+        contract_end_date: existingData?.contract_end_date || "",
+        contract_file: existingData?.contract_file || "",
+        emergency_contact_name: existingData?.emergency_contact_name || "",
+        emergency_contact_phone: existingData?.emergency_contact_phone || "",
+        job_title: existingData?.job_title || "",
+        salary: existingData?.salary || "",
+        notes: existingData?.notes || "",
+        portfolio: existingData?.portfolio || "",
+        github: existingData?.github || "",
+        linkedin: existingData?.linkedin || "",
+        cv: existingData?.cv || "",
       });
     }
-  }, [existingData, isLoading, reset]);
+  }, [existingData, isLoading, reset, teamMemberId]);
 
   const createMutation = useCreateTeamAdditionalData();
   const updateMutation = useUpdateTeamAdditionalData();
 
   const onSubmit = (data) => {
+    const submitData = {
+      ...data,
+      team_user_id: teamMemberId,
+    };
+
     if (isEditMode) {
-      console.log(data);
-      updateMutation.mutate({ teamUserId: user.id || 1, data });
+      updateMutation.mutate({ teamUserId: teamMemberId, data: submitData });
     } else {
-      console.log(data);
-      createMutation.mutate(data);
+      createMutation.mutate(submitData);
     }
   };
 
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-8">
+        {role === "admin" && (
+          <div className="">
+            <h2 className="text-md font-semibold text-foreground mb-2">
+              Select Team Member
+            </h2>
+            <div className="space-y-2">
+              <Controller
+                name="team_user_id"
+                control={control}
+                rules={{
+                  required: "Team member is required",
+                }}
+                render={({ field }) => (
+                  <SelectField
+                    label="Choose a team member"
+                    id="team_user_id"
+                    options={
+                      teamsMembers?.data?.map((member) => ({
+                        value: member.id,
+                        label: member.user.name,
+                      })) || []
+                    }
+                    placeholder="Select team member"
+                    error={errors.team_user_id?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+          </div>
+        )}
+
         <div className="">
           <h2 className="text-md font-semibold text-foreground mb-2">
             Banking Information
           </h2>
           <div className="space-y-2">
             <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-              {role === "admin" && (
-                <div className="space-y-2">
-                  <Controller
-                    name="user_id"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectField
-                        label="Choose a team member"
-                        id="user_id"
-                        options={teamsMembers?.data?.map((member) => ({
-                          value: member.user.id,
-                          label: member.user.name,
-                        }))}
-                        placeholder="team member"
-                        error={errors.user_id?.message}
-                        {...field}
-                      />
-                    )}
-                  />
-                </div>
-              )}
-
               <Controller
                 name="bank_name"
                 control={control}
@@ -183,7 +214,6 @@ export default function AdditionalTeamDetails() {
                 rules={{
                   required: "IBAN is required",
                   pattern: {
-                    value: /^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/i,
                     message: "Please enter a valid IBAN format",
                   },
                 }}
@@ -218,7 +248,7 @@ export default function AdditionalTeamDetails() {
                   <SelectField
                     id="contract_type"
                     label="Contract Type"
-                    value={field.value || existingData?.existingData}
+                    value={field.value}
                     onChange={field.onChange}
                     options={[
                       { value: "CDI", label: "CDI" },
@@ -292,7 +322,6 @@ export default function AdditionalTeamDetails() {
                     type="date"
                     label="End Date"
                     id="contract_end_date"
-                    onChange={field.onChange}
                     error={errors.contract_end_date?.message}
                   />
                 )}
@@ -324,7 +353,6 @@ export default function AdditionalTeamDetails() {
                     step="1"
                     min="0"
                     max="1000000"
-                    onChange={field.onChange}
                     error={errors.salary?.message}
                   />
                 )}
@@ -382,7 +410,6 @@ export default function AdditionalTeamDetails() {
                     label="Emergency Contact Name"
                     id="emergency_contact_name"
                     placeholder="Full name"
-                    onChange={field.onChange}
                     error={errors.emergency_contact_name?.message}
                   />
                 )}
@@ -407,7 +434,6 @@ export default function AdditionalTeamDetails() {
                     label="Emergency Contact Phone"
                     id="emergency_contact_phone"
                     placeholder="Phone number"
-                    onChange={field.onChange}
                     error={errors.emergency_contact_phone?.message}
                   />
                 )}
@@ -438,9 +464,8 @@ export default function AdditionalTeamDetails() {
                     label="Portfolio"
                     id="portfolio"
                     placeholder="https://..."
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.target.value)}
                     error={errors.portfolio?.message}
+                    {...field}
                   />
                 )}
               />
@@ -462,9 +487,8 @@ export default function AdditionalTeamDetails() {
                     label="GitHub"
                     id="github"
                     placeholder="https://github.com/..."
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.target.value)}
                     error={errors.github?.message}
+                    {...field}
                   />
                 )}
               />
@@ -486,9 +510,8 @@ export default function AdditionalTeamDetails() {
                     label="LinkedIn"
                     id="linkedin"
                     placeholder="https://linkedin.com/..."
-                    value={field.value}
-                    onChange={(e) => field.onChange(e.target.value)}
                     error={errors.linkedin?.message}
+                    {...field}
                   />
                 )}
               />
@@ -498,9 +521,6 @@ export default function AdditionalTeamDetails() {
               <Controller
                 name="cv"
                 control={control}
-                // rules={{
-                //   required: "CV is required",
-                // }}
                 render={({ field }) => (
                   <FileUploader
                     {...field}
@@ -544,7 +564,6 @@ export default function AdditionalTeamDetails() {
                   {...field}
                   label="Additional Notes"
                   id="notes"
-                  onChange={field.onChange}
                   placeholder="Any additional information..."
                   error={errors.notes?.message}
                 />
@@ -553,7 +572,7 @@ export default function AdditionalTeamDetails() {
           </div>
         </div>
 
-        <div className=" flex gap-4">
+        <div className="flex gap-4">
           <Button onClick={handleSubmit(onSubmit)} disabled={isLoading}>
             {isLoading
               ? "Loading..."

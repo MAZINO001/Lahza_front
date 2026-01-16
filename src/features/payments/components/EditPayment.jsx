@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 // EditPayment.tsx
 import FormField from "@/components/Form/FormField";
 import { useForm, Controller } from "react-hook-form";
@@ -74,7 +73,7 @@ export default function EditPayment({ payment, onClose }) {
                 max="100"
                 step="1"
                 placeholder=""
-                value={payment?.percentage}
+                value={field.value}
                 onChange={(e) => field.onChange(Number(e.target.value))}
                 error={error?.message}
               />

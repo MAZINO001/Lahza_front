@@ -1,16 +1,20 @@
-/* eslint-disable no-unused-vars */
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import FormSection from "@/components/Form/FormSection";
 import FormField from "@/components/Form/FormField";
 import { Button } from "@/components/ui/button";
+import { useUpdateEmail, useUpdatePassword } from "@/features/settings/hooks/useUsersQuery";
 
 export default function SecurityPreferences() {
+  const updateEmailMutation = useUpdateEmail();
+  const updatePasswordMutation = useUpdatePassword();
+
   /* ---------------- Password ---------------- */
   const {
     control: passwordControl,
     handleSubmit: handlePasswordSubmit,
     formState: { errors: passwordErrors },
+    reset: resetPasswordForm,
   } = useForm({
     defaultValues: {
       current_password: "",
@@ -24,6 +28,7 @@ export default function SecurityPreferences() {
     control: emailControl,
     handleSubmit: handleEmailSubmit,
     formState: { errors: emailErrors },
+    reset: resetEmailForm,
   } = useForm({
     defaultValues: {
       email: "",
@@ -32,11 +37,26 @@ export default function SecurityPreferences() {
   });
 
   const onPasswordSubmit = (values) => {
-    // Password update logic
+    updatePasswordMutation.mutate({
+      current_password: values.current_password,
+      password: values.new_password,
+      password_confirmation: values.confirm_password,
+    }, {
+      onSuccess: () => {
+        resetPasswordForm();
+      }
+    });
   };
 
   const onEmailSubmit = (values) => {
-    // Email update logic
+    updateEmailMutation.mutate({
+      email: values.email,
+      password: values.password,
+    }, {
+      onSuccess: () => {
+        resetEmailForm();
+      }
+    });
   };
 
   return (
@@ -81,6 +101,7 @@ export default function SecurityPreferences() {
             name="confirm_password"
             control={passwordControl}
             rules={{
+              required: "Please confirm your password",
               validate: (v, f) =>
                 v === f.new_password || "Passwords do not match",
             }}
@@ -96,7 +117,12 @@ export default function SecurityPreferences() {
           />
 
           <div className="flex justify-end">
-            <Button type="submit">Update Password</Button>
+            <Button
+              type="submit"
+              disabled={updatePasswordMutation.isPending}
+            >
+              {updatePasswordMutation.isPending ? "Updating..." : "Update Password"}
+            </Button>
           </div>
         </form>
       </FormSection>
@@ -106,7 +132,13 @@ export default function SecurityPreferences() {
           <Controller
             name="email"
             control={emailControl}
-            rules={{ required: "Email is required" }}
+            rules={{
+              required: "Email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Invalid email address"
+              }
+            }}
             render={({ field }) => (
               <FormField
                 label="New Email"
@@ -132,7 +164,13 @@ export default function SecurityPreferences() {
             )}
           />
           <div className="flex justify-end">
-            <Button variant="outline">Update Email</Button>
+            <Button
+              type="submit"
+              disabled={updateEmailMutation.isPending}
+              variant="outline"
+            >
+              {updateEmailMutation.isPending ? "Updating..." : "Update Email"}
+            </Button>
           </div>
         </form>
       </FormSection>

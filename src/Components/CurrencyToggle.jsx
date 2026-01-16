@@ -73,10 +73,10 @@ export default function CurrencyToggle() {
           size="sm"
           className="px-2 gap-2 border  border-border rounded-md flex items-center justify-center"
         >
-          <span className="hidden sm:inline">
-            {currentCurrency.symbol} {currentCurrency.code}
-          </span>
-          <span className="sm:hidden">{currentCurrency.symbol}</span>
+          <div className="hidden sm:flex gap-4 w-full">
+            <p>{currentCurrency.symbol}</p>
+            <p>{currentCurrency.code}</p>
+          </div>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="max-h-60 overflow-y-auto">
@@ -89,9 +89,6 @@ export default function CurrencyToggle() {
             <div className="flex items-center justify-between w-full">
               <span className="mr-2">{currency.symbol}</span>
               <span>{currency.name}</span>
-              <span className="ml-auto text-muted-foreground text-sm">
-                {currency.code}
-              </span>
             </div>
           </DropdownMenuItem>
         ))}

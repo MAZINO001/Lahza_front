@@ -17,7 +17,7 @@ export default function WhatsNextBanner({ currentId }) {
 
   return (
     <div className="bg-background border border-border rounded-lg px-4 py-4">
-      <div className="flex gap-3 items-start ">
+      <div className="flex gap-3 items-start w-full ">
         <div
           aria-hidden="true"
           className="flex size-9 shrink-0 items-center justify-center rounded-full bg-purple-100"
@@ -25,7 +25,7 @@ export default function WhatsNextBanner({ currentId }) {
           <Sparkles className="text-purple-600" size={18} />
         </div>
 
-        <div className="flex flex-col w-full min-w-0">
+        <div className="flex  justify-between w-full min-w-0">
           <div className="space-y-1 mb-3">
             <p className="font-semibold text-sm text-foreground">
               WHAT'S NEXT?

@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 // src/features/tasks/components/TasksTable.jsx
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";

@@ -23,6 +23,7 @@ import {
 import * as React from "react";
 import { format, isValid } from "date-fns";
 import { formatId } from "@/lib/utils/formatId";
+import TeamMembersCell from "./TeamMembersCell";
 
 function copyToClipboard(text, label = "Copied") {
   navigator.clipboard.writeText(text);
@@ -118,10 +119,10 @@ function DeliveryDateCell({ row, table }) {
           <span className="truncate">
             {value
               ? new Date(value).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })
               : "Pick a date"}
           </span>
         </button>
@@ -493,7 +494,7 @@ export function projectColumns() {
     {
       accessorKey: "members",
       header: "Members",
-      cell: ({ row, table }) => <MembersCell row={row} table={table} />,
+      cell: ({ row, table }) => <TeamMembersCell row={row} table={table} />,
     },
   ];
 }

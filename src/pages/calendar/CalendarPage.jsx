@@ -14,11 +14,11 @@ export default function CalendarPage() {
   const [selectedView, setSelectedView] = useState("calendar");
   const AllViews = ["calendar", "table"];
   return (
-    <div className="bg-background text-foreground w-full p-4">
+    <div className="text-foreground w-full p-4">
       <div className="flex items-center justify-between mb-2">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 capitalize border border-border px-2 py-[4.3px] rounded-md">
+            <button className="flex items-center bg-background gap-2 capitalize border border-border px-2 py-[4.3px] rounded-md">
               {selectedView}
               <ChevronDown className="w-4 h-4" />
             </button>
