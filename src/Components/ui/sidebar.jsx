@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
-import { PanelLeftIcon } from "lucide-react";
+import { PanelLeftIcon, Eye } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -265,16 +265,19 @@ function SidebarRail({ className, ...props }) {
       onClick={toggleSidebar}
       title="Toggle Sidebar"
       className={cn(
-        "hover:after:bg-accent-foreground-border absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:left-1/2 after:w-0.5 sm:flex",
-        "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",
-        "[[data-side=left][data-state=collapsed]_&]:cursor-e-resize [[data-side=right][data-state=collapsed]_&]:cursor-w-resize",
-        "hover:group-data-[collapsible=offcanvas]:bg-accent-foreground group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full",
-        "[[data-side=left][data-collapsible=offcanvas]_&]:-right-2",
-        "[[data-side=right][data-collapsible=offcanvas]_&]:-left-2",
+        "absolute z-30 hidden transition-all ease-linear sm:flex",
+        // position bottom-right for left side, bottom-left for right side
+        "group-data-[side=left]:right-2 group-data-[side=left]:bottom-4",
+        "group-data-[side=right]:left-2 group-data-[side=right]:bottom-4",
+        // size and appearance
+        "w-10 h-10 rounded-md flex items-center justify-center shadow-sm",
+        "bg-accent-foreground-accent text-sidebar-accent-foreground hover:bg-accent-foreground",
         className
       )}
       {...props}
-    />
+    >
+      <Eye className="w-5 h-5 " />
+    </button>
   );
 }
 

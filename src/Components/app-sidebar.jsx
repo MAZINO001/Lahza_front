@@ -27,6 +27,8 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
 } from "./ui/sidebar";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Button } from "./ui/button";
@@ -124,9 +126,11 @@ export function AppSidebar(props) {
   };
 
   const roleData = sidebarData[role];
+  const { state } = useSidebar();
 
   return (
-    <Sidebar collapsible="offcanvas" {...props} className="p-0 border-r">
+    <Sidebar collapsible="icon" {...props} className="p-0 border-r">
+      <SidebarRail />
       {/* <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -145,9 +149,10 @@ export function AppSidebar(props) {
           variant="outline"
           onClick={() => logout()}
           className=" cursor-pointer"
+          size={state === "collapsed" ? "icon" : undefined}
         >
           <LogOutIcon />
-          LogOut
+          {state !== "collapsed" && <span className="ml-2">LogOut</span>}
         </Button>
       </SidebarFooter>
     </Sidebar>

@@ -133,14 +133,19 @@ export default function Inv_Qt_sidebar({ type }) {
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                <span className="text-blue-600">
-                  {type === "invoices" ? item.id : item.quote_number}
-                </span>
+                
                 <span className="text-muted-foreground">
-                  {type === "invoices"
-                    ? item.invoice_date
-                    : item.quotation_date}
+                  {new Date(
+                    type === "invoices"
+                      ? item.invoice_date
+                      : item.quotation_date
+                  ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
                 </span>
+
                 <span className="px-2 py-0.5 rounded text-xs font-medium">
                   <StatusBadge status={item.status} />
                 </span>

@@ -70,10 +70,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 
 export function NavMain({ items }) {
   const location = useLocation();
+  const { state } = useSidebar();
 
   const isActive = (itemUrl) => {
     const pathname = location.pathname;
@@ -103,9 +105,17 @@ export function NavMain({ items }) {
           <SidebarMenuItem className="flex items-center gap-2">
             <Link to="/client/dashboard" className="flex items-center">
               <img
-                src="/images/logo.png"
+                src={
+                  state === "collapsed"
+                    ? "/images/alt_logo.png"
+                    : "/images/logo.png"
+                }
                 alt="lahza agency logo"
-                className="w-auto h-9 md:h-12 lg:h-15"
+                className={
+                  state === "collapsed"
+                    ? "w-auto h-6 md:h-8"
+                    : "w-auto h-9 md:h-12 lg:h-15"
+                }
               />
             </Link>
           </SidebarMenuItem>
