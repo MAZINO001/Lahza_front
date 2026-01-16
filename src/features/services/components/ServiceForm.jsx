@@ -58,7 +58,10 @@ export function ServiceForm({ service, onSuccess }) {
   const isLoading = mutation.isPending;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 h-screen">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 p-4 sm:p-6 h-screen"
+    >
       <Controller
         name="name"
         control={control}
@@ -86,7 +89,7 @@ export function ServiceForm({ service, onSuccess }) {
           />
         )}
       />
-      <div className="flex gap-4 w-full">
+      <div className="flex flex-col sm:flex-row gap-4 w-full">
         <div className="w-full">
           <Controller
             name="base_price"
@@ -120,7 +123,7 @@ export function ServiceForm({ service, onSuccess }) {
           />
         </div>
       </div>
-      <div className="flex gap-4 w-full">
+      <div className="flex flex-col sm:flex-row gap-4 w-full">
         <div className="w-full">
           <Controller
             name="time"
@@ -178,7 +181,7 @@ export function ServiceForm({ service, onSuccess }) {
         />
       )}
 
-      <div className="flex justify-end gap-3 pt-6">
+      <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-6">
         <Button
           type="button"
           variant="outline"

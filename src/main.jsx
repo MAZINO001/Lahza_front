@@ -8,6 +8,13 @@ import { AuthProvider } from "./hooks/AuthContext.jsx";
 import { ThemeProvider } from "next-themes";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 
+// Disable right-click globally
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  return false;
+});
+
+
 const qc = new QueryClient();
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>

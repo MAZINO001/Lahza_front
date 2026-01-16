@@ -1,37 +1,23 @@
-import { Link } from "react-router-dom";
 import SearchBar from "@/Components/comp-25";
-import { useAuthContext } from "@/hooks/AuthContext";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import NotificationDropdown from "@/features/notifications/components/NotificationDropdown";
+import NotificationDropdown from "@/components/popover-standard-12";
+import DropdownMenuProfile from "@/components/dropdown-menu-profile-1";
+import DropdownMenuActions from "@/components/dropdown-menu-actions-5";
 
 export default function Header() {
-  const { role, user } = useAuthContext();
-
   return (
     <header className="sticky top-0 z-50 w-full bg-sidebar backdrop-blur border-b border-sidebar-border">
       <div className="flex items-center justify-between px-4 py-3 lg:px-6">
         <SearchBar />
 
-        <div className="flex items-center gap-3 ml-auto">
+        <div className="flex items-center gap-4 ml-auto">
+          <DropdownMenuActions />
+
           <ThemeToggle />
 
           <NotificationDropdown />
-          <Link
-            to={`/${role}/profile`}
-            className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-sidebar-accent"
-          >
-            <img
-              src={user?.profile_image || "https://picsum.photos/600/400"}
-              alt="Profile"
-              className="h-9 w-9 rounded-full object-cover"
-            />
-            <div className="hidden flex-col gap-0.5 md:flex">
-              <span className="text-sm font-semibold">{user.name}</span>
-              <span className="text-xs text-muted-foreground">
-                {user.email}
-              </span>
-            </div>
-          </Link>
+
+          <DropdownMenuProfile />
         </div>
       </div>
     </header>

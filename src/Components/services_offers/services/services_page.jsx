@@ -53,13 +53,13 @@ export default function ServicePage({ currentId }) {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="bg-background border-b px-4 py-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">
+      <div className="bg-background border-b px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground">
           {data?.name || "Unnamed Service"}
         </h1>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" asChild>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="outline" asChild className="flex-1 sm:flex-none">
             <Link
               to={`/${role}/service/${currentId}/edit`}
               state={{ editId: currentId }}
@@ -76,13 +76,14 @@ export default function ServicePage({ currentId }) {
               }
             }}
             disabled={deleteMutation.isPending}
+            className="flex-1 sm:flex-none"
           >
             <Trash2 className="w-4 h-4 mr-2" /> Delete
           </Button>
 
-          <div className="w-px h-6 bg-gray-300 mx-2"></div>
+          <div className="w-px h-6 bg-gray-300 mx-2 hidden sm:block"></div>
 
-          <Button variant="outline" className="h-8 w-8">
+          <Button variant="outline" className="h-8 w-8 hidden sm:flex">
             <Link to={`/${role}/services`}>
               <X className="w-5 h-5" />
             </Link>
@@ -90,17 +91,16 @@ export default function ServicePage({ currentId }) {
         </div>
       </div>
 
-      <div className="bg-background border-b border-border">
-        <div className="flex px-4">
+      <div className="bg-background border-b border-border overflow-x-auto">
+        <div className="flex px-4 min-w-max">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-muted-foreground  hover:text-foreground "
-              }`}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-muted-foreground  hover:text-foreground "
+                }`}
             >
               {tab.label}
             </button>

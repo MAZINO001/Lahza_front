@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -65,58 +66,46 @@ export function ProjectForm({ onSuccess }) {
         },
   });
 
+  const { data: currentProject } = useProject(cloneFromId);
   useEffect(() => {
-    if ((isEditMode && project?.id) || isCloneModeActive) {
-      const sourceProject = isCloneModeActive ? null : project;
-      const targetData = isCloneModeActive
-        ? {}
-        : {
-            customerName: sourceProject?.client_id
-              ? String(sourceProject.client_id)
+    if (isCloneModeActive) {
+      // Fetch the project data for cloning
+      const fetchProjectData = async () => {
+        try {
+          const projectData = currentProject;
+
+          reset({
+            customerName: projectData?.client_id
+              ? String(projectData?.client_id)
               : "",
-            name: sourceProject?.name || "",
-            description: sourceProject?.description || "",
-            invoice_id: sourceProject?.invoice_id
-              ? String(sourceProject.invoice_id)
+            name: `${projectData?.name || ""} (Clone)`,
+            description: projectData?.description || "",
+            invoice_id: projectData?.invoice_id
+              ? String(projectData?.invoice_id)
               : "",
-            start_date: sourceProject?.start_date || "",
-            estimated_end_date: sourceProject?.estimated_end_date || "",
-            status: sourceProject?.status || "pending",
-          };
+            start_date: projectData?.start_date || "",
+            estimated_end_date: projectData?.estimated_end_date || "",
+            status: "pending",
+          });
+        } catch (error) {
+          console.error("Failed to fetch project for cloning:", error);
+        }
+      };
 
-      reset(targetData);
-
-      if (isCloneModeActive) {
-        // Fetch the project data for cloning
-        const fetchProjectData = async () => {
-          try {
-            const response = await api.get(
-              `${import.meta.env.VITE_BACKEND_URL}/projects/${cloneFromId}`
-            );
-            const projectData = response.data;
-
-            reset({
-              customerName: projectData.client_id
-                ? String(projectData.client_id)
-                : "",
-              name: `${projectData.name || ""} (Clone)`,
-              description: projectData.description || "",
-              invoice_id: projectData.invoice_id
-                ? String(projectData.invoice_id)
-                : "",
-              start_date: projectData.start_date || "",
-              estimated_end_date: projectData.estimated_end_date || "",
-              status: "pending",
-            });
-          } catch (error) {
-            console.error("Failed to fetch project for cloning:", error);
-          }
-        };
-
-        fetchProjectData();
-      }
+      fetchProjectData();
+    } else if (isEditMode && project?.id) {
+      // Handle edit mode
+      reset({
+        customerName: project?.client_id ? String(project.client_id) : "",
+        name: project?.name || "",
+        description: project?.description || "",
+        invoice_id: project?.invoice_id ? String(project.invoice_id) : "",
+        start_date: project?.start_date || "",
+        estimated_end_date: project?.estimated_end_date || "",
+        status: project?.status || "pending",
+      });
     }
-  }, [isEditMode, isCloneModeActive, project, reset, cloneFromId]);
+  }, [isEditMode, isCloneModeActive, cloneFromId, project?.id]);
 
   useEffect(() => {
     setDirectProject(
@@ -195,67 +184,82 @@ export function ProjectForm({ onSuccess }) {
         <AddClientModel />
       </div>
       {selectedClient && (
-        <div className="flex gap-4 p-4 border rounded bg-background text-sm space-y-4 max-w-[700px]">
-          <div className="flex flex-col gap-2 w-[50%]">
-            <p>
-              <span className="font-medium">Name:</span>{" "}
-              {selectedClient?.client?.user?.name}
-            </p>
-            <p>
-              <span className="font-medium">Email:</span>{" "}
-              {selectedClient?.client?.user?.email}
-            </p>
-            <p>
-              <span className="font-medium">Client Type:</span>{" "}
-              {selectedClient?.client?.client_type}
-            </p>
-            {selectedClient?.client?.company && (
+        <div className="space-y-4 flex gap-4">
+          <div className="border rounded bg-background p-4">
+            <h3 className="font-bold text-base mb-3">Billing</h3>
+            <div className="space-y-2 text-sm">
               <p>
-                <span className="font-medium">Company:</span>{" "}
-                {selectedClient?.client?.company}
+                <span className="font-medium">Address:</span>{" "}
+                {selectedClient?.client?.address}
               </p>
-            )}
-            <p>
-              <span className="font-medium">Phone:</span>{" "}
-              {selectedClient?.client?.phone}
-            </p>
-            <p>
-              <span className="font-medium">Address:</span>{" "}
-              {selectedClient?.client?.address}
-            </p>
-            <p>
-              <span className="font-medium">City:</span>{" "}
-              {selectedClient?.client?.city}
-            </p>
+              <p>
+                <span className="font-medium">City:</span>{" "}
+                {selectedClient?.client?.city}
+              </p>
+              <p>
+                <span className="font-medium">Country:</span>{" "}
+                {selectedClient?.client?.country}
+              </p>
+              <p>
+                <span className="font-medium">Currency:</span>{" "}
+                {selectedClient?.client?.currency || "MAD"}
+              </p>
+              <p>
+                <span className="font-medium">VAT:</span>{" "}
+                {selectedClient?.client?.vat || "20%"}
+              </p>
+            </div>
           </div>
 
-          {/* Second Row */}
-          <div className="flex flex-col gap-4  w-[50%]">
-            <p>
-              <span className="font-medium">Country:</span>{" "}
-              {selectedClient?.client?.country}
-            </p>
-            <p>
-              <span className="font-medium">Currency:</span>{" "}
-              {selectedClient?.client?.currency || "MAD"}
-            </p>
-            {selectedClient?.client?.ice && (
+          <div className="border rounded bg-background p-4">
+            <h3 className="font-bold text-base mb-3">Personal Info</h3>
+            <div className="space-y-2 text-sm">
               <p>
-                <span className="font-medium">ICE:</span>{" "}
-                {selectedClient?.client?.ice}
+                <span className="font-medium">Name:</span>{" "}
+                {selectedClient?.client?.user?.name}
               </p>
-            )}
-            {selectedClient?.client?.siren && (
               <p>
-                <span className="font-medium">SIREN:</span>{" "}
-                {selectedClient?.client?.siren}
+                <span className="font-medium">Email:</span>{" "}
+                {selectedClient?.client?.user?.email}
               </p>
-            )}
-            <p>
-              <span className="font-medium">VAT:</span>{" "}
-              {selectedClient?.client?.vat || "20%"}
-            </p>
+              <p>
+                <span className="font-medium">Phone:</span>{" "}
+                {selectedClient?.client?.phone}
+              </p>
+              <p>
+                <span className="font-medium">Client Type:</span>{" "}
+                {selectedClient?.client?.client_type}
+              </p>
+            </div>
           </div>
+
+          {(selectedClient?.client?.company ||
+            selectedClient?.client?.ice ||
+            selectedClient?.client?.siren) && (
+            <div className="border rounded bg-background p-4">
+              <h3 className="font-bold text-base mb-3">Company Info</h3>
+              <div className="space-y-2 text-sm">
+                {selectedClient?.client?.company && (
+                  <p>
+                    <span className="font-medium">Company:</span>{" "}
+                    {selectedClient?.client?.company}
+                  </p>
+                )}
+                {selectedClient?.client?.ice && (
+                  <p>
+                    <span className="font-medium">ICE:</span>{" "}
+                    {selectedClient?.client?.ice}
+                  </p>
+                )}
+                {selectedClient?.client?.siren && (
+                  <p>
+                    <span className="font-medium">SIREN:</span>{" "}
+                    {selectedClient?.client?.siren}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -298,18 +302,17 @@ export function ProjectForm({ onSuccess }) {
             )}
           />
         </div>
-        <div className="flex gap-4 w-[15%] border border-border rounded-md p-[5.5px]">
+        <div
+          onClick={() => setDirectProject((prev) => !prev)}
+          className="flex gap-4 w-[15%] border border-border rounded-md p-[5.5px] cursor-pointer select-none"
+        >
           <Checkbox
             checked={directProject}
-            onCheckedChange={setDirectProject}
+            onCheckedChange={(v) => setDirectProject(v)}
             className="w-6 h-6 rounded-md"
+            onClick={(e) => e.stopPropagation()}
           />
-          <span
-            onClick={() => setDirectProject((prev) => !prev)}
-            className="cursor-pointer select-none"
-          >
-            Direct Project
-          </span>
+          <span>Direct Project</span>
         </div>
       </div>
 

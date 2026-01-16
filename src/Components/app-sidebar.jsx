@@ -113,11 +113,11 @@ export function AppSidebar(props) {
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },
-        {
-          title: "Settings",
-          url: "/admin/settings/company_basics",
-          icon: IconSettings,
-        },
+        // {
+        //   title: "Settings",
+        //   url: "/admin/settings/company_basics",
+        //   icon: IconSettings,
+        // },
       ],
     },
   };
@@ -134,7 +134,7 @@ export function AppSidebar(props) {
         <NavSecondary items={roleData.navSecondary} className="mt-auto" />
       </SidebarContent>
 
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <Button
           variant="outline"
           onClick={() => logout()}
@@ -144,7 +144,7 @@ export function AppSidebar(props) {
           <LogOutIcon />
           {state !== "collapsed" && <span className="ml-2">LogOut</span>}
         </Button>
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   );
 }

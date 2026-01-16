@@ -393,69 +393,83 @@ export function DocumentForm({ type, onSuccess }) {
           </div>
           <AddClientModel />
         </div>
-
         {selectedClient && (
-          <div className="flex gap-4 p-4 border rounded bg-background text-sm space-y-4 max-w-[700px]">
-            <div className="flex flex-col gap-2 w-[50%]">
-              <p>
-                <span className="font-medium">Name:</span>{" "}
-                {selectedClient?.client?.user?.name}
-              </p>
-              <p>
-                <span className="font-medium">Email:</span>{" "}
-                {selectedClient?.client?.user?.email}
-              </p>
-              <p>
-                <span className="font-medium">Client Type:</span>{" "}
-                {selectedClient?.client?.client_type}
-              </p>
-              {selectedClient?.client?.company && (
+          <div className="space-y-4 flex gap-4">
+            <div className="border rounded bg-background p-4">
+              <h3 className="font-bold text-base mb-3">Billing</h3>
+              <div className="space-y-2 text-sm">
                 <p>
-                  <span className="font-medium">Company:</span>{" "}
-                  {selectedClient?.client?.company}
+                  <span className="font-medium">Address:</span>{" "}
+                  {selectedClient?.client?.address}
                 </p>
-              )}
-              <p>
-                <span className="font-medium">Phone:</span>{" "}
-                {selectedClient?.client?.phone}
-              </p>
-              <p>
-                <span className="font-medium">Address:</span>{" "}
-                {selectedClient?.client?.address}
-              </p>
-              <p>
-                <span className="font-medium">City:</span>{" "}
-                {selectedClient?.client?.city}
-              </p>
+                <p>
+                  <span className="font-medium">City:</span>{" "}
+                  {selectedClient?.client?.city}
+                </p>
+                <p>
+                  <span className="font-medium">Country:</span>{" "}
+                  {selectedClient?.client?.country}
+                </p>
+                <p>
+                  <span className="font-medium">Currency:</span>{" "}
+                  {selectedClient?.client?.currency || "MAD"}
+                </p>
+                <p>
+                  <span className="font-medium">VAT:</span>{" "}
+                  {selectedClient?.client?.vat || "20%"}
+                </p>
+              </div>
             </div>
 
-            {/* Second Row */}
-            <div className="flex flex-col gap-4  w-[50%]">
-              <p>
-                <span className="font-medium">Country:</span>{" "}
-                {selectedClient?.client?.country}
-              </p>
-              <p>
-                <span className="font-medium">Currency:</span>{" "}
-                {selectedClient?.client?.currency || "MAD"}
-              </p>
-              {selectedClient?.client?.ice && (
+            <div className="border rounded bg-background p-4">
+              <h3 className="font-bold text-base mb-3">Personal Info</h3>
+              <div className="space-y-2 text-sm">
                 <p>
-                  <span className="font-medium">ICE:</span>{" "}
-                  {selectedClient?.client?.ice}
+                  <span className="font-medium">Name:</span>{" "}
+                  {selectedClient?.client?.user?.name}
                 </p>
-              )}
-              {selectedClient?.client?.siren && (
                 <p>
-                  <span className="font-medium">SIREN:</span>{" "}
-                  {selectedClient?.client?.siren}
+                  <span className="font-medium">Email:</span>{" "}
+                  {selectedClient?.client?.user?.email}
                 </p>
-              )}
-              <p>
-                <span className="font-medium">VAT:</span>{" "}
-                {selectedClient?.client?.vat || "20%"}
-              </p>
+                <p>
+                  <span className="font-medium">Phone:</span>{" "}
+                  {selectedClient?.client?.phone}
+                </p>
+                <p>
+                  <span className="font-medium">Client Type:</span>{" "}
+                  {selectedClient?.client?.client_type}
+                </p>
+              </div>
             </div>
+
+            {(selectedClient?.client?.company ||
+              selectedClient?.client?.ice ||
+              selectedClient?.client?.siren) && (
+              <div className="border rounded bg-background p-4">
+                <h3 className="font-bold text-base mb-3">Company Info</h3>
+                <div className="space-y-2 text-sm">
+                  {selectedClient?.client?.company && (
+                    <p>
+                      <span className="font-medium">Company:</span>{" "}
+                      {selectedClient?.client?.company}
+                    </p>
+                  )}
+                  {selectedClient?.client?.ice && (
+                    <p>
+                      <span className="font-medium">ICE:</span>{" "}
+                      {selectedClient?.client?.ice}
+                    </p>
+                  )}
+                  {selectedClient?.client?.siren && (
+                    <p>
+                      <span className="font-medium">SIREN:</span>{" "}
+                      {selectedClient?.client?.siren}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

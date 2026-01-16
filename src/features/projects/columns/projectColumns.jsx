@@ -91,14 +91,13 @@ export function ProjectColumns(role, navigate) {
       header: "Actions",
       cell: ({ row }) => {
         const { HandleCloneProject } = globalFnStore();
-        const { HandleEditProject } = globalFnStore();
         if (role === "client") {
           return <div className="text-muted-foreground">—</div>;
         }
 
         return (
           <div className="flex gap-2">
-            <Button
+            {/* <Button
               size="sm"
               variant="outline"
               onClick={() =>
@@ -106,7 +105,7 @@ export function ProjectColumns(role, navigate) {
               }
             >
               <Settings className="h-4 w-4" />
-            </Button>
+            </Button> */}
             <Button
               size="sm"
               variant="outline"

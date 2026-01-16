@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
+import { Badge } from "@/components/ui/badge";
 export function getServiceColumns(role, navigate) {
   return [
     {
@@ -13,6 +14,7 @@ export function getServiceColumns(role, navigate) {
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="hidden sm:flex"
         >
           Service Image <ArrowUpDown className="ml-1 h-4 w-4" />
         </Button>
@@ -23,7 +25,7 @@ export function getServiceColumns(role, navigate) {
           <img
             src={service.image}
             alt={service.name}
-            className="h-12 w-20 object-cover rounded-md"
+            className="h-12 w-20 object-cover rounded-md hidden sm:block"
           />
         );
       },
@@ -51,10 +53,20 @@ export function getServiceColumns(role, navigate) {
       },
     },
     {
+      accessorKey: "category",
+      header: "Category",
+      cell: ({ row }) => (
+        <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
+          <Badge>{row.getValue("category")}</Badge>
+        </div>
+      ),
+    },
+
+    {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="text-sm text-muted-foreground truncate max-w-40">
+        <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
           {row.getValue("description")}
         </div>
       ),

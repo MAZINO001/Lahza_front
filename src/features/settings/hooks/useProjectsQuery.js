@@ -14,7 +14,7 @@ const projectsApi = {
         api.get(`${API_URL}/projects`).then((res) => res.data ?? []),
 
     getById: (id) =>
-        api.get(`${API_URL}/projects/${id}`).then((res) => res.data),
+        api.get(`${API_URL}/project/${id}`).then((res) => res.data),
 
     create: (data) =>
         api.post(`${API_URL}/projects`, data).then((res) => res.data),

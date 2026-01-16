@@ -52,19 +52,19 @@ export function DataTable({
   }
   return (
     <div>
-      <div className="rounded-md border bg-background overflow-hidden">
+      <div className="rounded-md border bg-background overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="whitespace-nowrap">
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -80,7 +80,7 @@ export function DataTable({
                       onClick={() => row.toggleExpanded()}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell key={cell.id} className="whitespace-nowrap">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -96,7 +96,7 @@ export function DataTable({
                       onClick={() => onRowClick && onRowClick(row.original)}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                        <TableCell key={cell.id} className="whitespace-nowrap">
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()

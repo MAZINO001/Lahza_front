@@ -74,7 +74,6 @@ export default function SideBar() {
         side="left"
         variant="sidebar"
         collapsible="offcanvas"
-      // className="bg-red-500"
       >
         {/* Main Menu */}
         <SidebarContent className="lg:mt-28 mt-4 px-2">
