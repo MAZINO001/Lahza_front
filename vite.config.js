@@ -29,6 +29,7 @@ export default defineConfig({
     // Bundle analysis visualization
     visualizer({
       open: true,
+      
       gzipSize: true,
       brotliSize: true,
       filename: 'dist/stats.html',
