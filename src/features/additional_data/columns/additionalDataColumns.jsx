@@ -115,19 +115,21 @@ export const getAdditionalDataColumns = (navigate, role, projectId) => [
         <div className="flex gap-2">
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             onClick={() =>
               navigate(`/${role}/project/${projectId}/additional-data`)
             }
+            className="cursor-pointer"
           >
             <Eye className="h-4 w-4" />
           </Button>
           <Button
             size="sm"
-            variant="outline"
+            variant="ghost"
             onClick={() =>
               HandleEditAdditionalData(additionalData.id, navigate, role)
             }
+            className="cursor-pointer"
           >
             <Pencil className="h-4 w-4" />
           </Button>

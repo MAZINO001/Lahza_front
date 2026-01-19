@@ -29,6 +29,7 @@ import {
   useUpdateTicket,
 } from "@/features/tickets/hooks/useTickets";
 import { toast } from "sonner";
+import EmptySearch1 from "@/components/empty-search-1";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -275,27 +276,30 @@ export default function TicketsPage() {
 
       <div className="space-y-4">
         {filteredTickets.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <AlertCircle className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                No tickets found
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                {searchTerm ||
-                filterStatus !== "all" ||
-                filterPriority !== "all"
-                  ? "Try adjusting your filters or search terms"
-                  : "Get started by creating your first support ticket"}
-              </p>
-              <Button onClick={handleCreateTicket}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Your First Ticket
-              </Button>
-            </CardContent>
-          </Card>
+          searchTerm ||
+            filterStatus !== "all" ||
+            filterPriority !== "all" ||
+            filterAssignment !== "all" ? (
+            <EmptySearch1 />
+          ) : (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                  <AlertCircle className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  No tickets found
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Get started by creating your first support ticket
+                </p>
+                <Button onClick={handleCreateTicket}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Your First Ticket
+                </Button>
+              </CardContent>
+            </Card>
+          )
         ) : (
           filteredTickets.map((ticket) => (
             <Card

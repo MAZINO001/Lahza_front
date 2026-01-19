@@ -59,6 +59,8 @@ export function ReceiptTable() {
         columns={columns}
         isInvoiceTable={false}
         isLoading={isLoading}
+        tableType="receipts"
+        role={role}
       />
     </div>
   );

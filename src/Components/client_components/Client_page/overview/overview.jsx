@@ -1,11 +1,17 @@
 import TimelineComponent from "@/components/timeline";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, Copy, Check } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Overview_chart from "./overview_chart";
 import Overview_ClientInfo from "./overview_ClientInfo";
 import Overview_Payments from "./overview_Payments";
 import { useClientHistory } from "@/features/clients/hooks/useClientsHistory";
+import { useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 export default function Overview({ data, currentId }) {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedPhone, setCopiedPhone] = useState(false);
+
   const getInitials = (name) => {
     return name
       .split(" ")
@@ -13,6 +19,21 @@ export default function Overview({ data, currentId }) {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+
+  const copyToClipboard = async (text, type) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      if (type === "email") {
+        setCopiedEmail(true);
+        setTimeout(() => setCopiedEmail(false), 2000);
+      } else if (type === "phone") {
+        setCopiedPhone(true);
+        setTimeout(() => setCopiedPhone(false), 2000);
+      }
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
   };
 
   const { data: history } = useClientHistory(currentId);
@@ -30,14 +51,14 @@ export default function Overview({ data, currentId }) {
     }).format(amount);
 
   return (
-    <div className="grid  grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4">
       <div className="space-y-4 ">
-        <div className="bg-background rounded-lg border border-border p-4">
-          <h3 className="text-lg font-semibold text-foreground mb-4">
+        <Card className="bg-background rounded-lg border border-border py-4">
+          <CardHeader className="text-lg font-semibold text-foreground px-4">
             {displayName}
-          </h3>
+          </CardHeader>
 
-          <div className=" flex items-start gap-4 ">
+          <CardContent className=" flex items-start gap-4 px-4 pb-4">
             <Avatar className="w-12 h-12">
               <AvatarImage src="" alt={data?.client.user?.name || "unknown"} />
               <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
@@ -46,20 +67,39 @@ export default function Overview({ data, currentId }) {
             </Avatar>
 
             <div className="flex flex-col gap-2">
-              <div className="text-base font-medium text-foreground">
-                {data?.client.user?.name || "unknown"}
+              <div className="text-base font-medium text-foreground gap-4 flex ">
+                <p>{data?.client.user?.name || "unknown"}</p>
+                <Badge>verified</Badge>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div
+                className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                onClick={() =>
+                  copyToClipboard(data?.client.user?.email, "email")
+                }
+              >
                 <Mail className="w-4 h-4" />
                 {data?.client.user?.email}
+                {copiedEmail ? (
+                  <Check className="w-3 h-3 text-green-600" />
+                ) : (
+                  <Copy className="w-3 h-3" />
+                )}
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div
+                className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+                onClick={() => copyToClipboard(data?.client?.phone, "phone")}
+              >
                 <Phone className="w-4 h-4" />
                 <span>{data?.client?.phone}</span>
+                {copiedPhone ? (
+                  <Check className="w-3 h-3 text-green-600" />
+                ) : (
+                  <Copy className="w-3 h-3" />
+                )}
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
         <Overview_ClientInfo id={data?.client?.id} />
       </div>
       <div className="space-y-4">

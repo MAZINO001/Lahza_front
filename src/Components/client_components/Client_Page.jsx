@@ -1,4 +1,4 @@
-import { Edit2, Link2Icon, MoreVertical, Plus, X } from "lucide-react";
+import { Edit2, MoreVertical, Plus, X } from "lucide-react";
 import React, { useState } from "react";
 import Transactions from "./Client_page/transactions/transactions";
 import { Link, useParams } from "react-router-dom";
@@ -13,10 +13,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useClient } from "@/features/clients/hooks/useClientsQuery";
+import { useClient, useDeleteClient } from "@/features/clients/hooks/useClientsQuery";
 import ClientBanner from "@/components/ClientBanner";
 import { Controller, useForm } from "react-hook-form";
 import FileUploader from "@/components/Form/FileUploader";
+import AlertDialogDestructive from "../alert-dialog-destructive-1";
+import ComboBoxWithStates3 from "@/components/combobox-with-states-3";
 export default function Client_Page({ currentId }) {
   const [activeTab, setActiveTab] = useState("overview");
   const {
@@ -35,6 +37,12 @@ export default function Client_Page({ currentId }) {
     isError: clientError,
   } = useClient(currentId);
   const { role } = useAuthContext();
+
+  const deleteClientMutation = useDeleteClient();
+
+  const handleDeleteClient = () => {
+    deleteClientMutation.mutate(currentId);
+  };
   const tabs = [
     { id: "overview", label: "Overview" },
     { id: "comments", label: "Comments" },
@@ -44,7 +52,7 @@ export default function Client_Page({ currentId }) {
 
   return (
     <div className="w-[75%] flex flex-col">
-      <div className="bg-background p-4 border-b border-border">
+      <div className="p-4 border-t border-b border-border">
         <div className="flex gap-4 items-center justify-between">
           <h1 className="text-xl font-semibold text-foreground ">
             {client?.client_type === "company"
@@ -61,29 +69,13 @@ export default function Client_Page({ currentId }) {
               </Link>
             </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="p-2 border border-border rounded-md">
-                  <Link2Icon className="w-4 h-4" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 z-50">
-                <DropdownMenuItem className="bg-background hover:bg-background hover:text-foreground focus:bg-background focus:text-foreground">
-                  <Controller
-                    name="client_files"
-                    control={control}
-                    render={({ field }) => (
-                      <FileUploader
-                        label="Client Files"
-                        placeholder="Client Files path or URL"
-                        error={errors.client_files?.message}
-                        {...field}
-                      />
-                    )}
-                  />
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Controller
+              name="client_files"
+              control={control}
+              render={({ field }) => (
+                <ComboBoxWithStates3 />
+              )}
+            />
 
             <Link to={`/${role}/invoice/new`} state={{ clientId: currentId }}>
               <Button className="p-2 cursor-pointer">
@@ -94,7 +86,7 @@ export default function Client_Page({ currentId }) {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-2 border border-border rounded-md">
+                <button className="p-2 border border-border rounded-md bg-background">
                   <MoreVertical className="w-4 h-4" />
                 </button>
               </DropdownMenuTrigger>
@@ -105,36 +97,39 @@ export default function Client_Page({ currentId }) {
                 <DropdownMenuItem onClick={() => console.log("clone client")}>
                   Client Portal
                 </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="text-red-600 focus:text-red-600"
-                  onClick={() => console.log("delete client")}
-                >
-                  Delete client
-                </DropdownMenuItem>
+                <AlertDialogDestructive
+                  onDelete={handleDeleteClient}
+                  trigger={
+                    <DropdownMenuItem
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      Delete client
+                    </DropdownMenuItem>
+                  }
+                />
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <div className="w-px h-6 bg-background mx-1"></div>
+            <div className="w-px h-6 bg-gray-300 mx-1"></div>
             <Link to={`/${role}/clients`}>
-              <Button variant="outline" className="p-2 cursor-pointer">
-                <X className="w-5 h-5" />
+              <Button variant="outline" className="cursor-pointer">
+                <X className="w-4 h-4" />
               </Button>
             </Link>
           </div>
         </div>
       </div>
 
-      <div className="bg-background border-b border-border">
+      <div className=" border-b border-border">
         <div className="flex px-4">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-muted-foreground  hover:text-foreground "
-              }`}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-muted-foreground  hover:text-foreground "
+                }`}
             >
               {tab.label}
             </button>

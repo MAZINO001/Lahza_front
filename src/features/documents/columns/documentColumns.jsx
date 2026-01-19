@@ -100,74 +100,8 @@ export function DocumentsColumns(role, navigate, currentSection) {
 
     ...(isInvoice
       ? [
-          {
-            accessorKey: "balance_due",
-            header: ({ column }) => (
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  column.toggleSorting(column.getIsSorted() === "asc")
-                }
-              >
-                Balance Due <ArrowUpDown className="ml-1 h-4 w-4" />
-              </Button>
-            ),
-            cell: ({ row }) => {
-              const invoice = row.original;
-              const balanceDue = parseFloat(invoice.balance_due) || 0;
-              const totalAmount = parseFloat(invoice.total_amount) || 0;
-
-              const percentage =
-                totalAmount > 0
-                  ? ((balanceDue / totalAmount) * 100).toFixed(1)
-                  : 0;
-
-              const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "MAD",
-              }).format(balanceDue);
-
-              return (
-                <div className="ml-3">
-                  <div className="font-medium">{formatted}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {percentage}% remaining
-                  </div>
-                </div>
-              );
-            },
-          },
-        ]
-      : []),
-
-    isInvoice
-      ? {
-          accessorKey: "due_date",
-          header: ({ column }) => {
-            return (
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  column.toggleSorting(column.getIsSorted() === "asc")
-                }
-              >
-                Due Date
-                <ArrowUpDown />
-              </Button>
-            );
-          },
-          cell: ({ row }) => {
-            const date = new Date(row.getValue("due_date"));
-            const formatted = date.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            });
-            return <div className="ml-3">{formatted}</div>;
-          },
-        }
-      : {
-          accessorKey: "quotation_date",
+        {
+          accessorKey: "balance_due",
           header: ({ column }) => (
             <Button
               variant="ghost"
@@ -175,22 +109,88 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
             >
-              Quotation Date <ArrowUpDown className="ml-2 h-4 w-4" />
+              Balance Due <ArrowUpDown className="ml-1 h-4 w-4" />
             </Button>
           ),
           cell: ({ row }) => {
-            const value = row.getValue("quotation_date");
-            if (!value)
-              return <div className="ml-3 text-muted-foreground">N/A</div>;
+            const invoice = row.original;
+            const balanceDue = parseFloat(invoice.balance_due) || 0;
+            const totalAmount = parseFloat(invoice.total_amount) || 0;
 
-            const formatted = new Date(value).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            });
-            return <div className="ml-3">{formatted}</div>;
+            const percentage =
+              totalAmount > 0
+                ? ((balanceDue / totalAmount) * 100).toFixed(1)
+                : 0;
+
+            const formatted = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "MAD",
+            }).format(balanceDue);
+
+            return (
+              <div className="ml-3">
+                <div className="font-medium">{formatted}</div>
+                <div className="text-xs text-muted-foreground">
+                  {percentage}% remaining
+                </div>
+              </div>
+            );
           },
         },
+      ]
+      : []),
+
+    isInvoice
+      ? {
+        accessorKey: "due_date",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Due Date
+              <ArrowUpDown />
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          const date = new Date(row.getValue("due_date"));
+          const formatted = date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+          return <div className="ml-3">{formatted}</div>;
+        },
+      }
+      : {
+        accessorKey: "quotation_date",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === "asc")
+            }
+          >
+            Quotation Date <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
+        cell: ({ row }) => {
+          const value = row.getValue("quotation_date");
+          if (!value)
+            return <div className="ml-3 text-muted-foreground">N/A</div>;
+
+          const formatted = new Date(value).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+          return <div className="ml-3">{formatted}</div>;
+        },
+      },
 
     {
       accessorKey: "status",
@@ -390,10 +390,10 @@ export function DocumentsColumns(role, navigate, currentSection) {
 
             {role === "admin" && (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={handleSend}
-                className="h-8"
+                className="h-8 cursor-pointer"
               >
                 <Send className="h-4 w-4" />
               </Button>
@@ -405,7 +405,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 onOpenChange={setIsSignDialogOpen}
               >
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8">
+                  <Button variant="ghost" size="sm" className="h-8 cursor-pointer">
                     <FileSignature className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
@@ -430,7 +430,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
                   <SignUploader onFileChange={handleSignatureUpload} />
                   <DialogFooter>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       onClick={() => setIsSignDialogOpen(false)}
                     >
                       Cancel
@@ -448,10 +448,10 @@ export function DocumentsColumns(role, navigate, currentSection) {
             {role === "admin" && (
               <>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setOpen(true)}
-                  className="h-8 text-muted-foreground hover:text-red-700 hover:bg-red-50"
+                  className="h-8 text-muted-foreground hover:text-red-700 hover:bg-red-50 cursor-pointer"
                 >
                   <SignatureIcon className="h-4 w-4" />
                 </Button>
@@ -471,10 +471,10 @@ export function DocumentsColumns(role, navigate, currentSection) {
             )}
 
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleDownload}
-              className="h-8"
+              className="h-8 cursor-pointer"
             >
               <Download className="h-4 w-4" />
             </Button>

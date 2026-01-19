@@ -48,7 +48,7 @@ export default function Receipt_page({ currentId }) {
 
   return (
     <div className="flex-1 flex flex-col h-screen">
-      <div className="bg-background px-2 py-4 border-b gap-3 flex items-center justify-between">
+      <div className="border-t px-2 py-4 border-b gap-3 flex items-center justify-between">
         <div className="text-lg font-semibold">
           {formatId(currentId, "RECEIPT")}
         </div>

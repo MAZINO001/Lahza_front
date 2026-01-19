@@ -15,6 +15,7 @@ import {
 import { StatusBadge } from "../StatusBadge";
 import { useServices } from "@/features/services/hooks/useServiceQuery";
 import { useOffers } from "@/features/offers/hooks/useOffersQuery";
+import EmptySearch1 from "@/components/empty-search-1";
 
 export default function ServicesSidebar({ type, currentId }) {
   const title = type === "service" ? "Services" : "Offers";
@@ -53,7 +54,7 @@ export default function ServicesSidebar({ type, currentId }) {
   };
 
   return (
-    <div className="w-[260px] bg-background border-r flex flex-col">
+    <div className="w-[260px] border-t border-r flex flex-col">
       <div className="px-2 py-4 border-b flex items-center gap-3">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -94,9 +95,7 @@ export default function ServicesSidebar({ type, currentId }) {
 
       <div className="flex-1 overflow-y-auto">
         {filteredData.length === 0 ? (
-          <div className="p-8 text-center text-muted-foreground text-sm">
-            No {title.toLowerCase()} found
-          </div>
+          <EmptySearch1 />
         ) : (
           filteredData.map((item) => (
             <Link

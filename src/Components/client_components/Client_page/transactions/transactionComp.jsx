@@ -23,6 +23,7 @@ import {
 import { DataTable } from "@/components/table/DataTable";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
+import { Badge } from "@/components/ui/badge";
 
 export default function TransactionSection({
   title,
@@ -32,6 +33,7 @@ export default function TransactionSection({
   columns = [],
   onToggle,
   currentId,
+  count,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -75,16 +77,21 @@ export default function TransactionSection({
           ) : (
             <ChevronRight className="h-4 w-4 text-muted-foreground" />
           )}
-          <span className="font-medium text-foreground">{title}</span>
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-foreground">{title}</span>
+            <Badge className="w-5 h-5">{count || 0}</Badge>
+          </div>
         </CollapsibleTrigger>
 
         <Link
-          to={`/${role}/${title.toLowerCase() === "invoices" ? "invoice" : title.toLowerCase() === "quotes" ? "quote" : title.toLowerCase()}/new`}
+          to={`/${role}/${title.toLowerCase() === "invoices" ? "invoice" : title.toLowerCase() === "quotes" ? "quote" : title.toLowerCase() === "projects" ? "project" : title.toLowerCase()}/new`}
         >
-          <Button size="sm">
-            <Plus className="h-4 w-4 mr-1" />
-            New
-          </Button>
+          {title.toLowerCase() !== "payments" && (
+            <Button size="sm">
+              <Plus className="h-4 w-4 mr-1" />
+              New
+            </Button>
+          )}
         </Link>
       </div>
       <CollapsibleContent>
@@ -98,38 +105,6 @@ export default function TransactionSection({
                 isLoading={isLoading}
               />
             )}
-          </div>
-
-          <div className="p-4 border-t border-border flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">
-              Total Count:{" "}
-              <a href="#" className="text-blue-600 hover:underline">
-                View
-              </a>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === 1}
-                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm text-foreground px-2">
-                {currentPage} - {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={currentPage === totalPages}
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                }
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </div>
       </CollapsibleContent>

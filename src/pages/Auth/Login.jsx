@@ -58,7 +58,7 @@ export default function Login({ status, canResetPassword }) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex w-full">
+    <div className="h-screen flex w-full">
       {/* Left side - Login Form */}
       <div className="flex-1 flex flex-col">
         {/* Logo */}
@@ -78,7 +78,9 @@ export default function Login({ status, canResetPassword }) {
             <CardContent className="p-0">
               <div className="text-center mb-8">
                 <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
-                <p className="text-muted-foreground">Sign in to your account to continue</p>
+                <p className="text-muted-foreground">
+                  Sign in to your account to continue
+                </p>
               </div>
 
               {status && (
@@ -148,17 +150,16 @@ export default function Login({ status, canResetPassword }) {
                     {...register("remember")}
                     className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                   />
-                  <label htmlFor="remember" className="text-sm text-muted-foreground">
+                  <label
+                    htmlFor="remember"
+                    className="text-sm text-muted-foreground"
+                  >
                     Remember me
                   </label>
                 </div>
 
                 {/* Login Button */}
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={submitting}
-                >
+                <Button type="submit" className="w-full" disabled={submitting}>
                   {submitting ? "Signing in..." : "Login"}
                 </Button>
                 <div className="text-center text-sm text-muted-foreground">

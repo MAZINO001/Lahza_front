@@ -108,10 +108,11 @@ export function ProjectColumns(role, navigate) {
             </Button> */}
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               onClick={() =>
                 HandleCloneProject(row.getValue("id"), navigate, role)
               }
+              className="cursor-pointer"
             >
               <CopyPlus className="h-4 w-4" />
             </Button>

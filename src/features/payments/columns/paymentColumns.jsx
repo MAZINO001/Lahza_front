@@ -228,7 +228,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
         return (
           <div className="flex gap-2">
             {payment.stripe_session_id && row.getValue("status") === "paid" && (
-              <Button variant="outline" size="sm" onClick={handleViewSession}>
+              <Button variant="ghost" size="sm" onClick={handleViewSession} className="cursor-pointer">
                 <Eye />
               </Button>
             )}
@@ -237,7 +237,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
                 row.getValue("payment_method") === "bank") && (
                 <div className="text-sm">
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
                     onClick={() => {
                       if (payment.payment_method === "stripe") {
@@ -251,6 +251,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
                         );
                       }
                     }}
+                    className="cursor-pointer"
                   >
                     <Copy className="mr-1 h-4 w-4" />
                   </Button>
@@ -262,7 +263,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
                 <>
                   <Button
                     onClick={() => setOpen(true)}
-                    variant="outline"
+                    variant="ghost"
                     className="cursor-pointer"
                   >
                     <CircleCheck className="h-4 w-4" />
@@ -286,7 +287,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
                 <>
                   <Button
                     onClick={() => setOpen(true)}
-                    variant="outline"
+                    variant="ghost"
                     className="cursor-pointer"
                   >
                     <CircleX className="h-4 w-4" />
@@ -311,7 +312,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
                 onOpenChange={setIsSignDialogOpen}
               >
                 <DialogTrigger asChild>
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="ghost" className="cursor-pointer">
                     <Pencil className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>

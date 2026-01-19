@@ -16,6 +16,8 @@ import {
 import AddClientModel from "../common/AddClientModel";
 import { Button } from "../ui/button";
 import Checkbox from "../Checkbox";
+import EmptySearch1 from "@/components/empty-search-1";
+import AlertDialogDestructive from "../alert-dialog-destructive-1";
 
 export default function Client_Sidebar({ currentId }) {
   const { data: clients = [], isLoading, isError } = useClients();
@@ -66,7 +68,7 @@ export default function Client_Sidebar({ currentId }) {
   };
 
   return (
-    <div className="w-[25%]  bg-background border-r border-border h-full ">
+    <div className="w-[25%] border-t border-r border-border h-full ">
       <div className="px-2 py-4 border-b flex items-center justify-between">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -91,9 +93,14 @@ export default function Client_Sidebar({ currentId }) {
         </DropdownMenu>
 
         {selectedIds.length > 0 ? (
-          <Button onClick={deleteSelected} variant="destructive">
-            Delete ({selectedIds.length})
-          </Button>
+          <AlertDialogDestructive
+            onDelete={deleteSelected}
+            trigger={
+              <Button variant="destructive">
+                Delete ({selectedIds.length})
+              </Button>
+            }
+          />
         ) : (
           <AddClientModel />
         )}
@@ -101,9 +108,7 @@ export default function Client_Sidebar({ currentId }) {
 
       <div className="cursor-pointer  overflow-auto h-full">
         {filteredData.length === 0 ? (
-          <div className="p-4 text-center text-muted-foreground text-sm">
-            No client found
-          </div>
+          <EmptySearch1 />
         ) : (
           filteredData.map((item) => {
             const client = item.client;
@@ -112,11 +117,10 @@ export default function Client_Sidebar({ currentId }) {
             return (
               <div
                 key={client.id}
-                className={`mb-1 rounded-tr-lg rounded-br-lg p-2 border-l-2 transition flex gap-4 items-center w-full ${
-                  isActive
+                className={`mb-1 rounded-tr-lg rounded-br-lg p-2 border-l-2 transition flex gap-4 items-center w-full ${isActive
                     ? "bg-blue-50 border-l-blue-500"
                     : "border-l-transparent hover:bg-accent-foreground"
-                }`}
+                  }`}
               >
                 <Checkbox
                   type="checkbox"

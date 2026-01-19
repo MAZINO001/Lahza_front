@@ -79,7 +79,7 @@ export default function Inv_Qt_page({ type, currentId }) {
 
   return (
     <div className="flex-1 flex flex-col h-screen">
-      <div className="bg-background px-2 py-4 border-b gap-3 flex items-center justify-between">
+      <div className="px-2 py-4 border-b border-t gap-3 flex items-center justify-between">
         <div className="text-lg font-semibold">
           {isInvoice ? "INVOICE" : "QUOTE"}-000{currentId}
         </div>
@@ -119,7 +119,7 @@ export default function Inv_Qt_page({ type, currentId }) {
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="p-2 border border-border rounded-md">
+                  <button className="p-2 border border-border rounded-md bg-background">
                     <MoreVertical className="h-4 w-4" />
                   </button>
                 </DropdownMenuTrigger>
@@ -162,7 +162,9 @@ export default function Inv_Qt_page({ type, currentId }) {
               to={`/${role}/${type}`}
               state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
             >
-              <X size={20} />
+              <Button variant="outline" className="h-8 w-8 cursor-pointer">
+                <X size={20} />
+              </Button>
             </Link>
           </button>
         </div>

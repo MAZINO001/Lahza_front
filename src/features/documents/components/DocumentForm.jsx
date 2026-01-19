@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus, X, GripVertical } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
@@ -119,6 +119,51 @@ export function DocumentForm({ type, onSuccess }) {
   });
 
   const items = watch("items");
+
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDragOver = (index) => {
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e, dropIndex) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === dropIndex) {
+      setDraggedIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const currentItems = [...items];
+    const draggedItem = currentItems[draggedIndex];
+
+    // Remove the dragged item from its original position
+    currentItems.splice(draggedIndex, 1);
+
+    // Insert it at the new position
+    currentItems.splice(dropIndex, 0, draggedItem);
+
+    // Update the form with the new order
+    setValue("items", currentItems);
+
+    // Reset drag states
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
 
   const formatToBullets = (text) => {
     if (!text.trim()) return text;
@@ -535,25 +580,24 @@ export function DocumentForm({ type, onSuccess }) {
                 />
               )}
             />
-
-            <Controller
-              name="description"
-              control={control}
-              render={({ field, fieldState: { error } }) => (
-                <FormField
-                  id="description"
-                  label="Object"
-                  type="text"
-                  value={field.value || ""}
-                  placeholder="Type An Object"
-                  onChange={(e) => field.onChange(e.target.value)}
-                  onBlur={field.onBlur}
-                  error={error?.message}
-                />
-              )}
-            />
           </>
         )}
+        <Controller
+          name="description"
+          control={control}
+          render={({ field, fieldState: { error } }) => (
+            <FormField
+              id="description"
+              label="Object"
+              type="text"
+              value={field.value || ""}
+              placeholder="Type An Object"
+              onChange={(e) => field.onChange(e.target.value)}
+              onBlur={field.onBlur}
+              error={error?.message}
+            />
+          )}
+        />
 
         <div className="mt-4">
           <span className="text-sm font-medium  text-foreground mb-4">
@@ -563,6 +607,7 @@ export function DocumentForm({ type, onSuccess }) {
             <table className="w-full min-w-[500px] border-collapse">
               <thead>
                 <tr className="bg-background">
+                  <th className="p-2 w-8"></th>
                   <th className="p-2 text-left text-sm font-semibold text-foreground">
                     ITEM DETAILS
                   </th>
@@ -587,11 +632,40 @@ export function DocumentForm({ type, onSuccess }) {
               <tbody>
                 {itemFields.map((field, index) => {
                   const selectedService = watch(`items.${index}.serviceId`);
+                  const isDragging = draggedIndex === index;
+                  const isDragOver = dragOverIndex === index;
+
                   return (
                     <tr
                       key={field.id}
-                      className="border-b border-border hover:bg-background"
+                      className={`border-b border-border hover:bg-background transition-all ${
+                        isDragging ? "opacity-50" : ""
+                      } ${
+                        isDragOver
+                          ? "border-t-2 border-t-blue-500 bg-blue-50"
+                          : ""
+                      }`}
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        handleDragOver(index);
+                      }}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, index)}
+                      onDragEnd={handleDragEnd}
+                      style={{
+                        cursor: isDragging ? "grabbing" : "grab",
+                      }}
                     >
+                      <td className="p-2 text-center">
+                        <div
+                          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
+                          onMouseDown={() => handleDragStart(index)}
+                        >
+                          <GripVertical size={16} />
+                        </div>
+                      </td>
                       <td className="p-2">
                         <Controller
                           name={`items.${index}.serviceId`}

@@ -14,19 +14,37 @@ import { TasksForm } from "@/features/tasks/components/TasksForm";
 import { Input } from "@/components/ui/input";
 import { TasksTable } from "@/features/tasks/components/TasksTable";
 import { useParams } from "react-router-dom";
-import { useProjectTeamMembers, useProjectInvoices, useProjectServices, useDeleteProjectService, useRemoveProjectTeamMember, useDeleteProjectInvoice } from "@/features/projects/hooks/useProjectSettings";
+import {
+  useProjectTeamMembers,
+  useProjectInvoices,
+  useProjectServices,
+  useDeleteProjectService,
+  useRemoveProjectTeamMember,
+  useDeleteProjectInvoice,
+} from "@/features/projects/hooks/useProjectSettings";
 import { Loader2 } from "lucide-react";
+import AlertDialogDestructive from "@/components/alert-dialog-destructive-1.jsx";
 
 export default function ProjectSettingsPage() {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("info");
 
-  // Fetch data from API
-  const { data: members = [], isLoading: membersLoading, error: membersError } = useProjectTeamMembers(id);
-  const { data: invoices = [], isLoading: invoicesLoading, error: invoicesError } = useProjectInvoices(id);
-  const { data: services = [], isLoading: servicesLoading, error: servicesError } = useProjectServices(id);
+  const {
+    data: members = [],
+    isLoading: membersLoading,
+    error: membersError,
+  } = useProjectTeamMembers(id);
+  const {
+    data: invoices = [],
+    isLoading: invoicesLoading,
+    error: invoicesError,
+  } = useProjectInvoices(id);
+  const {
+    data: services = [],
+    isLoading: servicesLoading,
+    error: servicesError,
+  } = useProjectServices(id);
 
-  // Mutations
   const deleteServiceMutation = useDeleteProjectService();
   const removeTeamMemberMutation = useRemoveProjectTeamMember();
   const deleteInvoiceMutation = useDeleteProjectInvoice();
@@ -34,10 +52,8 @@ export default function ProjectSettingsPage() {
   const [editingMember, setEditingMember] = useState(null);
   const [editingInvoice, setEditingInvoice] = useState(null);
 
-  // Note: These functions would need to be connected to mutations for full CRUD functionality
   const removeMember = (memberId) => {
-    // Extract the user ID from the team member data
-    const member = members.find(m => m.id === memberId);
+    const member = members.find((m) => m.id === memberId);
     const userId = member?.team_user?.user_id;
     if (userId) {
       removeTeamMemberMutation.mutate({ projectId: id, userId });
@@ -53,12 +69,10 @@ export default function ProjectSettingsPage() {
   };
 
   const updateMember = (id, field, value) => {
-    // TODO: Implement update mutation
     console.log("Update member:", id, field, value);
   };
 
   const updateInvoice = (id, field, value) => {
-    // TODO: Implement update mutation
     console.log("Update invoice:", id, field, value);
   };
 
@@ -75,7 +89,7 @@ export default function ProjectSettingsPage() {
     }
   };
   return (
-    <div className="w-full bg-background p-4">
+    <div className="w-full p-4 h-screen">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full ">
         <TabsList className="grid w-[40%] grid-cols-3 mb-2">
           <TabsTrigger value="info">Project Information</TabsTrigger>
@@ -109,7 +123,9 @@ export default function ProjectSettingsPage() {
               {membersLoading ? (
                 <div className="flex items-center justify-center p-8">
                   <Loader2 className="w-6 h-6 animate-spin" />
-                  <span className="ml-2 text-sm text-muted-foreground">Loading team members...</span>
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    Loading team members...
+                  </span>
                 </div>
               ) : membersError ? (
                 <div className="p-4 text-center text-sm text-destructive">
@@ -132,7 +148,7 @@ export default function ProjectSettingsPage() {
                         {editingMember === member.id ? (
                           <div className="space-y-2">
                             <Input
-                              value={teamUser?.name || ''}
+                              value={teamUser?.name || ""}
                               onChange={(e) =>
                                 updateMember(member.id, "name", e.target.value)
                               }
@@ -140,7 +156,7 @@ export default function ProjectSettingsPage() {
                               className="h-8 text-sm"
                             />
                             <Input
-                              value={teamInfo?.poste || ''}
+                              value={teamInfo?.poste || ""}
                               onChange={(e) =>
                                 updateMember(member.id, "role", e.target.value)
                               }
@@ -148,7 +164,7 @@ export default function ProjectSettingsPage() {
                               className="h-8 text-sm"
                             />
                             <Input
-                              value={teamUser?.email || ''}
+                              value={teamUser?.email || ""}
                               onChange={(e) =>
                                 updateMember(member.id, "email", e.target.value)
                               }
@@ -158,12 +174,14 @@ export default function ProjectSettingsPage() {
                           </div>
                         ) : (
                           <>
-                            <p className="font-medium text-sm">{teamUser?.name || 'Unknown'}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {teamInfo?.poste || 'No role specified'}
+                            <p className="font-medium text-sm">
+                              {teamUser?.name || "Unknown"}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {teamUser?.email || 'No email'}
+                              {teamInfo?.poste || "No role specified"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {teamUser?.email || "No email"}
                             </p>
                           </>
                         )}
@@ -179,14 +197,9 @@ export default function ProjectSettingsPage() {
                           }
                           className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                         ></Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeMember(member.id)}
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        <AlertDialogDestructive
+                          onDelete={() => removeMember(member.id)}
+                        />
                       </div>
                     </div>
                   );
@@ -207,7 +220,9 @@ export default function ProjectSettingsPage() {
               {invoicesLoading ? (
                 <div className="flex items-center justify-center p-8">
                   <Loader2 className="w-6 h-6 animate-spin" />
-                  <span className="ml-2 text-sm text-muted-foreground">Loading invoices...</span>
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    Loading invoices...
+                  </span>
                 </div>
               ) : invoicesError ? (
                 <div className="p-4 text-center text-sm text-destructive">
@@ -229,14 +244,18 @@ export default function ProjectSettingsPage() {
                           <Input
                             value={`INV-${invoice.id}`}
                             onChange={(e) =>
-                              updateInvoice(invoice.id, "number", e.target.value)
+                              updateInvoice(
+                                invoice.id,
+                                "number",
+                                e.target.value
+                              )
                             }
                             placeholder="Invoice Number"
                             className="h-8 text-sm"
                           />
                           <div className="grid grid-cols-3 gap-2">
                             <Input
-                              value={invoice.total_amount || ''}
+                              value={invoice.total_amount || ""}
                               onChange={(e) =>
                                 updateInvoice(
                                   invoice.id,
@@ -249,16 +268,20 @@ export default function ProjectSettingsPage() {
                               className="h-8 text-sm"
                             />
                             <Input
-                              value={invoice.invoice_date || ''}
+                              value={invoice.invoice_date || ""}
                               onChange={(e) =>
-                                updateInvoice(invoice.id, "date", e.target.value)
+                                updateInvoice(
+                                  invoice.id,
+                                  "date",
+                                  e.target.value
+                                )
                               }
                               placeholder="Date"
                               type="date"
                               className="h-8 text-sm"
                             />
                             <Input
-                              value={invoice.status || ''}
+                              value={invoice.status || ""}
                               onChange={(e) =>
                                 updateInvoice(
                                   invoice.id,
@@ -273,18 +296,20 @@ export default function ProjectSettingsPage() {
                         </div>
                       ) : (
                         <>
-                          <p className="font-medium text-sm">INV-{invoice.id}</p>
+                          <p className="font-medium text-sm">
+                            INV-{invoice.id}
+                          </p>
                           <div className="flex items-center gap-3 mt-1">
                             <span className="text-xs text-muted-foreground">
-                              ${invoice.total_amount || '0.00'}
+                              ${invoice.total_amount || "0.00"}
                             </span>
                             <span
                               className={`text-xs px-2 py-1 rounded-full ${getStatusColor(invoice.status)}`}
                             >
-                              {invoice.status || 'Unknown'}
+                              {invoice.status || "Unknown"}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              {invoice.invoice_date || 'No date'}
+                              {invoice.invoice_date || "No date"}
                             </span>
                           </div>
                         </>
@@ -301,14 +326,9 @@ export default function ProjectSettingsPage() {
                         }
                         className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                       ></Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeInvoice(invoice.id)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
+                      <AlertDialogDestructive
+                        onDelete={() => removeInvoice(invoice.id)}
+                      />
                     </div>
                   </div>
                 ))
@@ -327,7 +347,9 @@ export default function ProjectSettingsPage() {
               {servicesLoading ? (
                 <div className="flex items-center justify-center p-8">
                   <Loader2 className="w-6 h-6 animate-spin" />
-                  <span className="ml-2 text-sm text-muted-foreground">Loading services...</span>
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    Loading services...
+                  </span>
                 </div>
               ) : servicesError ? (
                 <div className="p-4 text-center text-sm text-destructive">
@@ -350,24 +372,22 @@ export default function ProjectSettingsPage() {
                       </p>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-xs text-muted-foreground">
-                          ${service.pivot?.individual_total || service.base_price || '0.00'}
+                          $
+                          {service.pivot?.individual_total ||
+                            service.base_price ||
+                            "0.00"}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           Qty: {service.pivot?.quantity || 1}
                         </span>
                         <span className="text-xs px-2 py-1 rounded-full bg-green-100 text-green-800">
-                          {service.status || 'Active'}
+                          {service.status || "Active"}
                         </span>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeService(service.id)}
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <AlertDialogDestructive
+                      onDelete={() => removeService(service.id)}
+                    />
                   </div>
                 ))
               )}

@@ -53,7 +53,7 @@ export default function ServicePage({ currentId }) {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="bg-background border-b px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="border-b border-t px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">
           {data?.name || "Unnamed Service"}
         </h1>
@@ -91,16 +91,17 @@ export default function ServicePage({ currentId }) {
         </div>
       </div>
 
-      <div className="bg-background border-b border-border overflow-x-auto">
+      <div className="border-b border-border overflow-x-auto">
         <div className="flex px-4 min-w-max">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-muted-foreground  hover:text-foreground "
-                }`}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === tab.id
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-muted-foreground  hover:text-foreground "
+              }`}
             >
               {tab.label}
             </button>

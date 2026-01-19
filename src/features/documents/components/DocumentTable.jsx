@@ -97,6 +97,9 @@ export function DocumentTable({ type }) {
         columns={columns}
         isInvoiceTable={type === "invoices"}
         isLoading={isLoading}
+        globalFilter={globalFilter}
+        tableType={type}
+        role={role}
       />
       <CsvUploadModal
         open={showUploadModal}

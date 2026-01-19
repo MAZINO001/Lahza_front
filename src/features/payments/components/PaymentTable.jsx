@@ -76,6 +76,8 @@ const PaymentTable = React.memo(function PaymentTable() {
         columns={columns}
         isLoading={isLoading}
         isInvoiceTable={false}
+        tableType="payments"
+        role={role}
       />
 
       <Dialog open={paidAtOpen} onOpenChange={setPaidAtOpen}>

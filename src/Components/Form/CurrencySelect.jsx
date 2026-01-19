@@ -53,7 +53,7 @@ export default function CurrencySelect({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 ">
       <Label htmlFor="devise">Devise</Label>
 
       <Select
@@ -64,7 +64,7 @@ export default function CurrencySelect({
         <SelectTrigger
           className={`w-full ${
             error
-              ? "border-destructive focus:ring-destructive"
+              ? "border-destructive focus:ring-destructive "
               : "border-border"
           }`}
         >
@@ -79,7 +79,7 @@ export default function CurrencySelect({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.stopPropagation()} // prevent Select from closing
-              className="h-9"
+              className="h-9 bg-background"
               disabled={disabled}
             />
           </div>

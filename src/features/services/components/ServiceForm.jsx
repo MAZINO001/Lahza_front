@@ -6,10 +6,16 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
 import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
-import TextareaField from "@/Components/Form/TextareaField";
-import { useCreateService, useUpdateService } from "../hooks/useServiceQuery";
+import RichTextEditor from "@/components/Form/RichTextEditor";
+import ImageUploader from "@/components/Form/ImageUploader";
+import {
+  useCreateService,
+  useService,
+  useUpdateService,
+} from "../hooks/useServiceQuery";
 
-export function ServiceForm({ service, onSuccess }) {
+export function ServiceForm({ serviceId, onSuccess }) {
+  const { data: service } = useService(serviceId);
   const navigate = useNavigate();
   const { role } = useAuthContext();
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
@@ -34,25 +40,97 @@ export function ServiceForm({ service, onSuccess }) {
       time: "1",
       category: "",
       status: "active",
+      image: null,
     },
   });
   const onSubmit = async (data) => {
     if (isSubmitting || !startSubmit()) return;
 
-    const payload = {
-      ...data,
-      base_price: Number(data.base_price).toFixed(2),
-      tax_rate: Number(data.tax_rate),
-    };
-    console.log(payload);
+    // For UPDATE: Send as JSON (no image upload in edit)
+    if (isEditMode) {
+      const updateData = {
+        name: data.name,
+        description: data.description,
+        base_price: Number(data.base_price).toFixed(2),
+        tax_rate: Number(data.tax_rate),
+        time: data.time,
+        category: data.category,
+        status: data.status,
+      };
 
-    mutation.mutate(isEditMode ? { id: service.id, data: payload } : payload, {
-      onSuccess: () => {
-        onSuccess?.();
-        if (!isEditMode) reset();
-      },
-      onSettled: () => endSubmit(),
-    });
+      // If user selected a new image, use FormData; otherwise send JSON
+      if (data.image instanceof File) {
+        const formData = new FormData();
+        Object.entries(updateData).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+        formData.append("image", data.image);
+
+        mutation.mutate(
+          { id: service.id, data: formData },
+          {
+            onSuccess: () => {
+              onSuccess?.();
+            },
+            onSettled: () => endSubmit(),
+          }
+        );
+      } else if (data.image === null && service?.image) {
+        // User removed image
+        updateData.remove_image = true;
+        mutation.mutate(
+          { id: service.id, data: updateData },
+          {
+            onSuccess: () => {
+              onSuccess?.();
+            },
+            onSettled: () => endSubmit(),
+          }
+        );
+      } else {
+        // No image change
+        mutation.mutate(
+          { id: service.id, data: updateData },
+          {
+            onSuccess: () => {
+              onSuccess?.();
+            },
+            onSettled: () => endSubmit(),
+          }
+        );
+      }
+    } else {
+      // For CREATE: Use FormData (handles image upload)
+      const formData = new FormData();
+
+      Object.keys(data).forEach((key) => {
+        if (key !== "image") {
+          if (key === "base_price") {
+            formData.append(key, Number(data[key]).toFixed(2));
+          } else if (key === "tax_rate") {
+            formData.append(key, Number(data[key]));
+          } else if (
+            data[key] !== undefined &&
+            data[key] !== null &&
+            data[key] !== ""
+          ) {
+            formData.append(key, data[key]);
+          }
+        }
+      });
+
+      if (data.image instanceof File) {
+        formData.append("image", data.image);
+      }
+
+      mutation.mutate(formData, {
+        onSuccess: () => {
+          onSuccess?.();
+          reset();
+        },
+        onSettled: () => endSubmit(),
+      });
+    }
   };
 
   const isLoading = mutation.isPending;
@@ -81,12 +159,29 @@ export function ServiceForm({ service, onSuccess }) {
         control={control}
         rules={{ required: "Description is required" }}
         render={({ field }) => (
-          <TextareaField
+          <RichTextEditor
             label="Description"
             placeholder="Describe your service..."
             error={errors.description?.message}
             {...field}
           />
+        )}
+      />
+
+      <Controller
+        name="image"
+        control={control}
+        render={({ field }) => (
+          <div className="space-y-2">
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Service Image
+            </label>
+            <ImageUploader
+              value={service?.image}
+              onChange={field.onChange}
+              error={errors.image?.message}
+            />
+          </div>
         )}
       />
       <div className="flex flex-col sm:flex-row gap-4 w-full">

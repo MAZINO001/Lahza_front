@@ -7,11 +7,9 @@ export default function ServiceEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { role } = useAuthContext();
-  const { data: offer, isLoading } = useOffer(id);
 
-  if (!offer) return <div>offer not found</div>;
 
   return (
-    <OfferForm offer={offer} onSuccess={() => navigate(`/${role}/offers`)} />
+    <OfferForm offerId={id} onSuccess={() => navigate(`/${role}/offers`)} />
   );
 }

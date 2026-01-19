@@ -66,7 +66,7 @@ export default function Transactions({ currentId }) {
     : sections;
 
   return (
-    <div className="space-y-4 bg-background min-h-screen">
+    <div className="space-y-4 min-h-screen">
       <div>
         <div>
           <DropdownMenu>

@@ -242,7 +242,13 @@ export function ActivityLogsTable() {
         </div>
       </Card>
 
-      <DataTable table={table} columns={columns} isLoading={isLoading} />
+      <DataTable
+        table={table}
+        columns={columns}
+        isLoading={isLoading}
+        tableType="system_logs"
+        role={role}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { MessageSquare, Trash2, Clock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import AlertDialogDestructive from "@/components/alert-dialog-destructive-1.jsx";
 
 export default function DisplayComments({ comments, handleDelete }) {
   const formatTimestamp = (timestamp) => {
@@ -86,14 +87,7 @@ export default function DisplayComments({ comments, handleDelete }) {
                   </div>
 
                   <div className="flex items-center gap-1 ">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(comment.id)}
-                      className="h-8 w-8 p-0 hover:bg-red-50 rounded-full"
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                    </Button>
+                    <AlertDialogDestructive onDelete={() => handleDelete(comment.id)} />
                   </div>
                 </div>
 

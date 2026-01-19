@@ -522,8 +522,8 @@ export const GanttColumn = ({ index, isColumnSecondary }) => {
 
   const top = useThrottle(
     mousePosition.y -
-      (mouseRef.current?.getBoundingClientRect().y ?? 0) -
-      (windowScroll.y ?? 0),
+    (mouseRef.current?.getBoundingClientRect().y ?? 0) -
+    (windowScroll.y ?? 0),
     10
   );
 
@@ -573,8 +573,8 @@ export const GanttCreateMarkerTrigger = ({ onCreateMarker, className }) => {
   const [windowScroll] = useWindowScroll();
   const x = useThrottle(
     mousePosition.x -
-      (mouseRef.current?.getBoundingClientRect().x ?? 0) -
-      (windowScroll.x ?? 0),
+    (mouseRef.current?.getBoundingClientRect().x ?? 0) -
+    (windowScroll.x ?? 0),
     10
   );
 
@@ -978,6 +978,7 @@ export const GanttProvider = ({
   children,
   className,
   tasks = [],
+  initialScrollDate = null,
 }) => {
   const scrollRef = useRef(null);
   const [timelineData, setTimelineData] = useState(
@@ -1010,11 +1011,36 @@ export const GanttProvider = ({
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollLeft =
-        scrollRef.current.scrollWidth / 2 - scrollRef.current.clientWidth / 2;
+      let targetScrollLeft;
+
+      if (initialScrollDate) {
+        // Calculate timeline start date from timelineData
+        const timelineStartDate = new Date(timelineData[0].year, 0, 1);
+
+        // Calculate the horizontal offset for the initial scroll date
+        const offset = getOffset(initialScrollDate, timelineStartDate, {
+          zoom,
+          range,
+          columnWidth,
+          sidebarWidth,
+          headerHeight,
+          rowHeight,
+          onAddItem,
+          placeholderLength: 2,
+          timelineData,
+          ref: scrollRef,
+        });
+
+        targetScrollLeft = Math.max(0, offset);
+      } else {
+        // Fallback to center if no initial scroll date is provided
+        targetScrollLeft = scrollRef.current.scrollWidth / 2 - scrollRef.current.clientWidth / 2;
+      }
+
+      scrollRef.current.scrollLeft = targetScrollLeft;
       setScrollX(scrollRef.current.scrollLeft);
     }
-  }, [setScrollX]);
+  }, [setScrollX, initialScrollDate, timelineData, zoom, range, columnWidth, sidebarWidth, onAddItem]);
 
   // Update timeline data when tasks change
   useEffect(() => {
