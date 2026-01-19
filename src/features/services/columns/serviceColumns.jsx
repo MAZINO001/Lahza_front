@@ -67,7 +67,9 @@ export function getServiceColumns(role, navigate) {
       header: "Description",
       cell: ({ row }) => (
         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
-          {row.getValue("description")}
+          <div
+            dangerouslySetInnerHTML={{ __html: row.getValue("description") }}
+          />
         </div>
       ),
     },
@@ -110,7 +112,7 @@ export function getServiceColumns(role, navigate) {
           <div className="flex items-center gap-2">
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               onClick={onEdit}
               className="cursor-pointer"
             >
@@ -119,10 +121,10 @@ export function getServiceColumns(role, navigate) {
             {role === "admin" && (
               <>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setOpen(true)}
-                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                 >
                   <Trash className="h-4 w-4" />
                 </Button>

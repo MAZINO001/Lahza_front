@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuthContext } from "@/hooks/AuthContext";
+import EmptySearch1 from "@/components/empty-search-1";
 
 const mockNotifications = [
   {
@@ -258,29 +259,28 @@ export default function NotificationsPage() {
         </Card>
 
         {filteredNotifications.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-              <Bell className="h-16 w-16 text-muted-foreground mb-4" />
-              <h3 className="text-xl font-semibold text-foreground mb-2">
-                {searchTerm || filterType !== "all" || filterStatus !== "all"
-                  ? "No matching notifications"
-                  : "No notifications"}
-              </h3>
-              <p className="text-muted-foreground max-w-md">
-                {searchTerm || filterType !== "all" || filterStatus !== "all"
-                  ? "Try adjusting your filters or search terms to find what you're looking for."
-                  : "You're all caught up! Check back later for updates."}
-              </p>
-            </CardContent>
-          </Card>
+          searchTerm || filterType !== "all" || filterStatus !== "all" ? (
+            <EmptySearch1 />
+          ) : (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <Bell className="h-16 w-16 text-muted-foreground mb-4" />
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  No notifications
+                </h3>
+                <p className="text-muted-foreground max-w-md">
+                  You're all caught up! Check back later for updates.
+                </p>
+              </CardContent>
+            </Card>
+          )
         ) : (
           <div className="space-y-4">
             {filteredNotifications.map((notification) => (
               <Card
                 key={notification.id}
-                className={`cursor-pointer transition-all hover:shadow-md ${
-                  !notification.read ? "border-l-4 border-l-blue-500" : ""
-                }`}
+                className={`cursor-pointer transition-all hover:shadow-md ${!notification.read ? "border-l-4 border-l-blue-500" : ""
+                  }`}
                 onClick={() => handleNotificationClick(notification)}
               >
                 <CardContent className="p-4">
@@ -292,11 +292,10 @@ export default function NotificationsPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
                             <h3
-                              className={`font-semibold text-lg ${
-                                !notification.read
+                              className={`font-semibold text-lg ${!notification.read
                                   ? "text-foreground"
                                   : "text-muted-foreground"
-                              }`}
+                                }`}
                             >
                               {notification.title}
                             </h3>

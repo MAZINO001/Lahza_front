@@ -120,14 +120,14 @@ export default function ClientEditPage() {
   if (isLoading || !data) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Chargement...</div>
+        <div className="text-lg">Loading...</div>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full p-4">
-      <FormSection title="Informations du data">
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full p-4 h-screen">
+      <FormSection title="update client information">
         <Controller
           name="client_type"
           control={control}

@@ -209,8 +209,8 @@ function AccessCell({ row }) {
                             </span>
                             <Button
                               size="sm"
-                              variant="outline"
-                              className="h-6 px-2 text-xs"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs cursor-pointer"
                               onClick={() =>
                                 copyToClipboard(item.link || "", "Link copied")
                               }
@@ -227,8 +227,8 @@ function AccessCell({ row }) {
                             </span>
                             <Button
                               size="sm"
-                              variant="outline"
-                              className="h-6 px-2 text-xs"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs cursor-pointer"
                               onClick={() =>
                                 copyToClipboard(
                                   item.email || "",
@@ -248,8 +248,8 @@ function AccessCell({ row }) {
                             </span>
                             <Button
                               size="sm"
-                              variant="outline"
-                              className="h-6 px-2 text-xs"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs cursor-pointer"
                               onClick={() =>
                                 copyToClipboard(
                                   item.password || "",
@@ -274,8 +274,8 @@ function AccessCell({ row }) {
                             </span>
                             <Button
                               size="sm"
-                              variant="outline"
-                              className="h-6 px-2 text-xs"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs cursor-pointer"
                               onClick={() =>
                                 copyToClipboard(
                                   parsed.email || "",
@@ -295,8 +295,8 @@ function AccessCell({ row }) {
                             </span>
                             <Button
                               size="sm"
-                              variant="outline"
-                              className="h-6 px-2 text-xs"
+                              variant="ghost"
+                              className="h-6 px-2 text-xs cursor-pointer"
                               onClick={() =>
                                 copyToClipboard(
                                   parsed.password || "",
@@ -368,7 +368,7 @@ function MembersCell({ row, table }) {
           {selected.length > 0 ? (
             <div className="flex flex-wrap gap-1">
               {selected.map((member) => (
-                <Badge key={member.id} variant="outline" className="gap-1">
+                <Badge key={member.id} variant="ghost" className="gap-1">
                   <button
                     type="button"
                     className="-ml-1 inline-flex items-center justify-center"

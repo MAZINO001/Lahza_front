@@ -3,8 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function overview({ data }) {
   return (
     <div>
-      <Card>
-        <CardContent className="space-y-6 py-4 px-4">
+      <Card className="w-full p-0">
+        <CardContent className="space-y-4 p-4">
           {data?.image && (
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-2">
@@ -22,16 +22,18 @@ export default function overview({ data }) {
             <p className="text-sm font-medium text-muted-foreground mb-2">
               Description
             </p>
-            <p className="text-md text-foreground whitespace-pre-wrap">
-              {data?.description || (
+            <div className="text-md text-foreground whitespace-pre-wrap">
+              {data?.description ? (
+                <div dangerouslySetInnerHTML={{ __html: data.description }} />
+              ) : (
                 <span className="text-muted-foreground italic">
                   No description provided
                 </span>
               )}
-            </p>
+            </div>
           </div>
 
-          <div className="flex gap-8">
+          <div className="flex gap-4">
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">
                 Base Price

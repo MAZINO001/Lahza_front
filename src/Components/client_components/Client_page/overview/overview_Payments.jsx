@@ -1,21 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+import { useAuthContext } from "@/hooks/AuthContext";
 import { formatId } from "@/lib/utils/formatId";
+import { Link } from "react-router-dom";
 export default function Overview_Payments({ formatCurrency, currentId }) {
-  const receivablesData = [
-    {
-      currency: "USD",
-      fullName: "United States Dollar",
-      outstanding: 0.0,
-      unusedCredits: 0.0,
-    },
-    {
-      currency: "EUR",
-      fullName: "Euro",
-      outstanding: 0.0,
-      unusedCredits: 0.0,
-    },
-  ];
+  const { role } = useAuthContext();
 
   const { data: Payments = [] } = usePayments();
 
@@ -24,8 +13,6 @@ export default function Overview_Payments({ formatCurrency, currentId }) {
       payment.client_id === Number(currentId) && payment.status === "paid"
   );
 
-  const paymentDuePeriod = "Due on Receipt";
-  const receivables = receivablesData;
   return (
     <Card className="p-0">
       <CardContent className="p-4">
@@ -52,7 +39,12 @@ export default function Overview_Payments({ formatCurrency, currentId }) {
               className="grid grid-cols-3 gap-4 py-3 border-b border-border last:border-0"
             >
               <div className="text-sm text-foreground">
-                {formatId(item?.invoice.id, "INVOICE")}
+                <Link
+                  to={`/${role}/invoice/${item?.invoice.id}`}
+                  className="hover:underline"
+                >
+                  {formatId(item?.invoice.id, "INVOICE")}
+                </Link>
               </div>
               <div className="text-sm text-foreground text-right font-medium">
                 {formatCurrency(item?.invoice.balance_due)}

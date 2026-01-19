@@ -66,10 +66,11 @@ export function ProjectForm({ onSuccess }) {
         },
   });
 
-  const { data: currentProject } = useProject(cloneFromId);
+  const { data: currentProject, isLoading: isCloneLoading } =
+    useProject(cloneFromId);
+  console.log(currentProject);
   useEffect(() => {
-    if (isCloneModeActive) {
-      // Fetch the project data for cloning
+    if (isCloneModeActive && !isCloneLoading && currentProject) {
       const fetchProjectData = async () => {
         try {
           const projectData = currentProject;
@@ -78,7 +79,7 @@ export function ProjectForm({ onSuccess }) {
             customerName: projectData?.client_id
               ? String(projectData?.client_id)
               : "",
-            name: `${projectData?.name || ""} (Clone)`,
+            name: `${projectData?.name || ""}`,
             description: projectData?.description || "",
             invoice_id: projectData?.invoice_id
               ? String(projectData?.invoice_id)
@@ -105,7 +106,14 @@ export function ProjectForm({ onSuccess }) {
         status: project?.status || "pending",
       });
     }
-  }, [isEditMode, isCloneModeActive, cloneFromId, project?.id]);
+  }, [
+    isEditMode,
+    isCloneModeActive,
+    cloneFromId,
+    project?.id,
+    isCloneLoading,
+    currentProject,
+  ]);
 
   useEffect(() => {
     setDirectProject(
@@ -162,6 +170,13 @@ export function ProjectForm({ onSuccess }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 h-screen">
+      {isCloneModeActive && isCloneLoading && (
+        <div className="flex items-center justify-center p-8">
+          <div className="text-sm text-muted-foreground">
+            Loading project data for cloning...
+          </div>
+        </div>
+      )}
       <div className="flex items-end justify-between gap-4">
         <div className="w-full">
           <Controller
@@ -177,6 +192,7 @@ export function ProjectForm({ onSuccess }) {
                 onBlur={field.onBlur}
                 error={error?.message}
                 placeholder="Select or add a customer"
+                disabled={isCloneModeActive && isCloneLoading}
               />
             )}
           />
@@ -267,52 +283,63 @@ export function ProjectForm({ onSuccess }) {
         <p className="text-sm text-muted-foreground">Loading invoices...</p>
       )}
 
-      <Controller
-        name="name"
-        control={control}
-        rules={{ required: "Project name is required" }}
-        render={({ field }) => (
-          <FormField
-            label="Project Name"
-            placeholder="e.g. Website Redesign"
-            error={errors.name?.message}
-            {...field}
-          />
-        )}
-      />
-      <div className="flex gap-4 items-end justify-between">
-        <div className="w-[85%]">
+      <div className="w-full flex gap-4">
+        <div className="w-[40%]">
           <Controller
-            name="invoice_id"
+            name="name"
             control={control}
+            rules={{ required: "Project name is required" }}
             render={({ field }) => (
-              <SelectField
-                label="Invoice (Optional)"
-                options={invoiceOptions}
-                placeholder={
-                  invoicesLoading
-                    ? "Loading invoices..."
-                    : "Select an invoice (optional)"
-                }
-                value={String(field.value || "")}
-                disabled={invoicesLoading || directProject}
-                onChange={(v) => field.onChange(v ? Number(v) : null)}
-                error={errors.invoice_id?.message}
+              <FormField
+                label="Project Name"
+                placeholder="e.g. Website Redesign"
+                error={errors.name?.message}
+                disabled={isCloneModeActive && isCloneLoading}
+                {...field}
               />
             )}
           />
         </div>
-        <div
-          onClick={() => setDirectProject((prev) => !prev)}
-          className="flex gap-4 w-[15%] border border-border rounded-md p-[5.5px] cursor-pointer select-none"
-        >
-          <Checkbox
-            checked={directProject}
-            onCheckedChange={(v) => setDirectProject(v)}
-            className="w-6 h-6 rounded-md"
-            onClick={(e) => e.stopPropagation()}
-          />
-          <span>Direct Project</span>
+        <div className="w-[60%]">
+          <div className="flex gap-4 items-end justify-between">
+            <div className="w-[76%]">
+              <Controller
+                name="invoice_id"
+                control={control}
+                render={({ field }) => (
+                  <SelectField
+                    label="Invoice (Optional)"
+                    options={invoiceOptions}
+                    placeholder={
+                      invoicesLoading
+                        ? "Loading invoices..."
+                        : "Select an invoice (optional)"
+                    }
+                    value={String(field.value || "")}
+                    disabled={
+                      invoicesLoading ||
+                      directProject ||
+                      (isCloneModeActive && isCloneLoading)
+                    }
+                    onChange={(v) => field.onChange(v ? Number(v) : null)}
+                    error={errors.invoice_id?.message}
+                  />
+                )}
+              />
+            </div>
+            <div
+              onClick={() => setDirectProject((prev) => !prev)}
+              className="flex gap-4 w-[24%] border border-border rounded-md p-[5.5px] cursor-pointer select-none"
+            >
+              <Checkbox
+                checked={directProject}
+                onCheckedChange={(v) => setDirectProject(v)}
+                className="w-6 h-6 rounded-md"
+                onClick={(e) => e.stopPropagation()}
+              />
+              <span>Direct Project</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -325,6 +352,7 @@ export function ProjectForm({ onSuccess }) {
             label="Description"
             placeholder="Describe this project..."
             error={errors.description?.message}
+            disabled={isCloneModeActive && isCloneLoading}
             {...field}
           />
         )}
@@ -341,6 +369,7 @@ export function ProjectForm({ onSuccess }) {
                 type="date"
                 label="Start Date"
                 error={errors.start_date?.message}
+                disabled={isCloneModeActive && isCloneLoading}
                 {...field}
               />
             )}
@@ -356,6 +385,7 @@ export function ProjectForm({ onSuccess }) {
                 type="date"
                 label="Estimated End Date"
                 error={errors.estimated_end_date?.message}
+                disabled={isCloneModeActive && isCloneLoading}
                 {...field}
               />
             )}
@@ -371,7 +401,14 @@ export function ProjectForm({ onSuccess }) {
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting || mutation.isPending}>
+        <Button
+          type="submit"
+          disabled={
+            isSubmitting ||
+            mutation.isPending ||
+            (isCloneModeActive && isCloneLoading)
+          }
+        >
           {mutation.isPending
             ? "Saving..."
             : isCloneModeActive

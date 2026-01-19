@@ -33,7 +33,7 @@ export function useProject(id) {
         queryKey: ["project", id],
         queryFn: () => apiProject.getById(id),
         enabled: !!id,
-        staleTime: 0,
+        staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch project");

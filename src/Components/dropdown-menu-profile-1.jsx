@@ -71,7 +71,7 @@ const Example = () => {
           <Button
             variant="ghost"
             onClick={() => logout()}
-            className=" cursor-pointer w-full h-full"
+            className="cursor-pointer w-full h-full"
             size={state === "collapsed" ? "icon" : undefined}
           >
             <LogOut />

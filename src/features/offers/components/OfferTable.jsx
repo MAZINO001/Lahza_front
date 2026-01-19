@@ -11,14 +11,6 @@ import {
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import FormField from "@/Components/Form/FormField";
 import CsvUploadModal from "@/components/common/CsvUploadModal";
 import { useAuthContext } from "@/hooks/AuthContext";
@@ -79,6 +71,8 @@ export function OfferTable() {
         columns={columns}
         isInvoiceTable={false}
         isLoading={isLoading}
+        tableType="offers"
+        role={role}
       />
       <CsvUploadModal
         open={showUploadModal}

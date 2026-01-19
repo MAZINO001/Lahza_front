@@ -5,7 +5,6 @@ import { toast } from "sonner";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-// Pure API functions
 const apiService = {
     getAll: () => api.get(`${API_URL}/services`).then((res) => res.data ?? []),
     getById: (id) =>
@@ -28,6 +27,7 @@ export function useServices() {
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch services");
+            console.error(error);
         },
     });
 }
@@ -41,6 +41,7 @@ export function useService(id) {
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch service");
+            console.error(error);
         },
     });
 }
@@ -55,6 +56,7 @@ export function useDocsByService(id, type) {
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch documents by service");
+            console.error(error);
         },
     });
 }
@@ -69,6 +71,7 @@ export function useCreateService() {
         }, refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to create service");
+            console.error(error);
         },
     });
 }
@@ -82,6 +85,7 @@ export function useUpdateService() {
             queryClient.invalidateQueries({ queryKey: ["services"] });
         }, refetchOnWindowFocus: true,
         onError: (error) => {
+            console.error(error);
             toast.error(error?.response?.data?.message || "Failed to update service");
         },
     });
@@ -97,6 +101,7 @@ export function useDeleteService() {
         }, refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to delete service");
+            console.error(error);
         },
     });
 }

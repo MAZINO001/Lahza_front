@@ -31,12 +31,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { FileText, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import EmptyData5 from "@/components/empty-data-5";
 import CountDownComponent from "@/features/projects/components/CountDownComponent";
 import { StatusBadge } from "@/components/StatusBadge";
 import { ChartBarDefault } from "@/features/projects/components/overViewChart";
 import { useTransActions } from "@/features/payments/hooks/usePaymentQuery";
 import { formatId } from "@/lib/utils/formatId";
 import { Badge } from "@/components/ui/badge";
+import AlertDialogConfirmation from "@/components/alert-dialog-confirmation-6";
 
 export default function ProjectViewPage() {
   const { id } = useParams();
@@ -188,7 +190,7 @@ export default function ProjectViewPage() {
   };
 
   const copyRIB = () => {
-    const rib = "Your RIB Number Here";
+    const rib = "007640001433200000026029";
     navigator.clipboard
       .writeText(rib)
       .then(() => {
@@ -242,22 +244,34 @@ export default function ProjectViewPage() {
           {role === "admin" && (
             <>
               <Link to={`/${role}/project/${id}/settings`}>
-                <Button
-                  onClick={() => handleMarkAsComplete(project.id)}
-                  variant="outline"
-                  className="flex items-center gap-2"
-                >
+                <Button variant="outline" className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
                   Project Settings
                 </Button>
               </Link>
-              <Button
-                onClick={() => handleMarkAsComplete(project.id)}
-                className="flex items-center gap-2"
-              >
-                <CheckCircle className="w-4 h-4" />
-                Mark As Done
-              </Button>
+              <AlertDialogConfirmation
+                triggerButton={
+                  <Button
+                    className="flex items-center gap-2"
+                    title={
+                      tasks?.length > 0 && doneTasks < tasks?.length
+                        ? "All tasks must be completed before marking the project as done"
+                        : "Mark project as complete"
+                    }
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Mark As Done
+                  </Button>
+                }
+                title="Mark Project as Complete?"
+                description="Are you sure you want to mark this project as completed? This action will change the project status to 'done' and cannot be undone easily."
+                icon={CheckCircle}
+                iconBgColor="bg-green-100 dark:bg-green-900"
+                iconColor="text-green-600 dark:text-green-400"
+                cancelText="Cancel"
+                actionText="Mark as Complete"
+                onAction={() => handleMarkAsComplete(project.id)}
+              />
             </>
           )}
         </div>
@@ -519,34 +533,39 @@ export default function ProjectViewPage() {
                       {getAllFilesCount()})
                     </h3>
                     <div className="space-y-2">
-                      {getAllFiles().map((file, index) => (
-                        <div
-                          key={file?.id || index}
-                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border  transition-colors cursor-pointer"
-                        >
-                          <div className="flex-1">
-                            <p className="text-sm font-medium text-foreground">
-                              {file?.name ||
-                                file?.filename ||
-                                `File ${index + 1}`}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {file?.size &&
-                                `${(file.size / 1024 / 1024).toFixed(1)} MB`}{" "}
-                              •{" "}
-                              {file?.date || file?.created_at
-                                ? formatDate(file.date || file.created_at)
-                                : "N/A"}
-                            </p>
+                      {console.log("getAllFiles() output:", getAllFiles())}
+                      {getAllFiles().length > 0 ? (
+                        getAllFiles().map((file, index) => (
+                          <div
+                            key={file?.id || index}
+                            className="flex items-center justify-between p-3 bg-secondary rounded-lg border  transition-colors cursor-pointer"
+                          >
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-foreground">
+                                {file?.name ||
+                                  file?.filename ||
+                                  `File ${index + 1}`}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {file?.size &&
+                                  `${(file.size / 1024 / 1024).toFixed(1)} MB`}{" "}
+                                •{" "}
+                                {file?.date || file?.created_at
+                                  ? formatDate(file.date || file.created_at)
+                                  : "N/A"}
+                              </p>
+                            </div>
+                            <span className="text-xs bg-secondary text-foreground px-2 py-1 rounded">
+                              Download
+                            </span>
                           </div>
-                          <span className="text-xs bg-secondary text-foreground px-2 py-1 rounded">
-                            Download
-                          </span>
-                        </div>
-                      )) || (
-                        <p className="text-muted-foreground text-center py-4">
-                          No attachments found
-                        </p>
+                        ))
+                      ) : (
+                        <EmptyData5
+                          onUploadClick={() =>
+                            navigate(`/${role}/project/${id}/${destination}`)
+                          }
+                        />
                       )}
                     </div>
                   </div>

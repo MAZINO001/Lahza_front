@@ -20,6 +20,8 @@ import {
 import { TablePagination } from "./TablePagination";
 import { DataTableSkeleton } from "./TableSkeleton";
 import PaymentDetails from "@/features/documents/components/PaymentDetails";
+import EmptySearch1 from "@/components/empty-search-1";
+import EmptyData from "@/components/empty-data-1";
 
 export function DataTable({
   data,
@@ -29,6 +31,10 @@ export function DataTable({
   isLoading = false,
   isInvoiceTable = false,
   onRowClick,
+  globalFilter,
+  tableType,
+  role,
+  customComponent,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -123,14 +129,27 @@ export function DataTable({
                 </React.Fragment>
               ))
             ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns?.length ?? table.getAllColumns().length}
-                  className="h-32 text-center text-muted-foreground"
-                >
-                  No data found.
-                </TableCell>
-              </TableRow>
+              globalFilter ? (
+                <EmptySearch1 />
+              ) : tableType && role ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns?.length ?? table.getAllColumns().length}
+                    className="p-0"
+                  >
+                    <EmptyData tableType={tableType} role={role} customComponent={customComponent} />
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns?.length ?? table.getAllColumns().length}
+                    className="h-32 text-center text-muted-foreground"
+                  >
+                    No data found.
+                  </TableCell>
+                </TableRow>
+              )
             )}
           </TableBody>
         </Table>

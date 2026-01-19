@@ -44,6 +44,8 @@ import {
   useMarkTaskComplete,
   useTasks,
 } from "@/features/tasks/hooks/useTasksQuery";
+import { useProject } from "@/features/projects/hooks/useProjects";
+import { toast } from "sonner";
 
 export default function GanttComponent({ tasks, projectId, role }) {
   const [editingTask, setEditingTask] = useState(null);
@@ -52,40 +54,49 @@ export default function GanttComponent({ tasks, projectId, role }) {
   const deleteTaskMutation = useDeleteTask();
   const updateTaskMutation = useUpdateTask();
   const markTaskCompleteMutation = useMarkTaskComplete();
+  const { data: project } = useProject(projectId);
 
   const transformedTasks =
     tasks?.length > 0
       ? tasks.map((task) => {
-          const startDate = task.start_date
-            ? new Date(task.start_date)
-            : task.startAt || new Date();
-          const endDate = task.end_date
-            ? new Date(task.end_date)
-            : task.endAt ||
-              new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const startDate = task.start_date
+          ? new Date(task.start_date)
+          : task.startAt || new Date();
+        const endDate = task.end_date
+          ? new Date(task.end_date)
+          : task.endAt ||
+          new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-          return {
-            id: task.id,
-            name: task.title || task.name || `Task ${task.id}`,
-            startAt: startDate,
-            endAt: endDate,
-            status: {
-              color:
-                task.status === "completed"
-                  ? "#10b981"
-                  : task.status === "in_progress"
-                    ? "#3b82f6"
-                    : task.status === "pending"
-                      ? "#f59e0b"
-                      : task.status?.color || "#6b7280",
-            },
-            lane: task.lane || task.id,
-            metadata: {
-              group: { name: task.group || "Tasks" },
-            },
-          };
-        })
+        return {
+          id: task.id,
+          name: task.title || task.name || `Task ${task.id}`,
+          startAt: startDate,
+          endAt: endDate,
+          status: {
+            color:
+              task.status === "completed"
+                ? "#10b981"
+                : task.status === "in_progress"
+                  ? "#3b82f6"
+                  : task.status === "pending"
+                    ? "#f59e0b"
+                    : task.status?.color || "#6b7280",
+          },
+          lane: task.lane || task.id,
+          metadata: {
+            group: { name: task.group || "Tasks" },
+          },
+        };
+      })
       : [];
+
+  // Calculate the first task start date
+  const firstTaskStartDate = transformedTasks.length > 0
+    ? transformedTasks.reduce((earliest, task) => {
+      return task.startAt < earliest ? task.startAt : earliest;
+    }, transformedTasks[0].startAt)
+    : null;
+
   const groupedTasks = groupBy(transformedTasks, "metadata.group.name");
   const laneGroupedTasks = Object.fromEntries(
     Object.entries(groupedTasks).map(([groupName, groupTasks]) => [
@@ -135,6 +146,12 @@ export default function GanttComponent({ tasks, projectId, role }) {
   };
 
   const handleMarkComplete = (taskId) => {
+    // Check if project is completed
+    if (project?.status === "completed") {
+      toast.info("You cannot change the status of tasks in a completed project");
+      return;
+    }
+
     markTaskCompleteMutation.mutate(
       { taskId },
       {
@@ -196,6 +213,7 @@ export default function GanttComponent({ tasks, projectId, role }) {
           className="border border-border rounded-lg"
           range="daily"
           zoom={100}
+          initialScrollDate={firstTaskStartDate}
         >
           <GanttSidebar>
             {Object.entries(laneGroupedTasks).map(([groupName, laneTasks]) => (

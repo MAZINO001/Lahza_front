@@ -41,30 +41,39 @@ export default function Transactions({ currentId }) {
     [role, navigate]
   );
 
+  const invoiceCount = invoices?.length
+  const projectsCount = projects?.length
+  const paymentsCount = payments?.length
+  const quotesCount = quotes?.length
+
   const sections = [
     {
       id: "invoices",
       title: "Invoices",
       data: invoices,
       isLoading: loadingInvoices,
+      count: invoiceCount,
     },
     {
       id: "quotes",
       title: "Quotes",
       data: quotes,
       isLoading: loadingQuotes,
+      count: quotesCount,
     },
     {
       id: "payments",
       title: "Payments",
       data: payments,
       isLoading: loadingPayments,
+      count: paymentsCount,
     },
     {
       id: "projects",
       title: "Projects",
       data: projects,
       isLoading: loadingProjects,
+      count: projectsCount,
     },
   ];
 
@@ -80,6 +89,7 @@ export default function Transactions({ currentId }) {
           isOpen={openSections[section.id]}
           onToggle={() => toggleSection(section.id)}
           currentId={currentId}
+          count={section.count}
         />
       ))}
     </div>

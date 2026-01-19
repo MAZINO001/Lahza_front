@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDocuments } from "@/features/documents/hooks/useDocumentsQuery";
+import EmptySearch1 from "@/components/empty-search-1";
 
 export default function Inv_Qt_sidebar({ type }) {
   const currentSection = type === "invoices" ? "invoice" : "quote";
@@ -74,7 +75,7 @@ export default function Inv_Qt_sidebar({ type }) {
   };
 
   return (
-    <div className=" w-[280px] bg-background border-r flex flex-col ">
+    <div className=" w-[280px] border-t border-r flex flex-col ">
       <div className="px-2 py-4 border-b flex items-center gap-3">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -107,9 +108,7 @@ export default function Inv_Qt_sidebar({ type }) {
 
       <div className="flex-1 overflow-y-auto">
         {filteredData.length === 0 ? (
-          <div className="p-4 text-center text-muted-foreground text-sm">
-            No {type === "invoices" ? "documents" : "quotes"} found
-          </div>
+          <EmptySearch1 />
         ) : (
           filteredData.map((item) => (
             <Link
@@ -117,11 +116,10 @@ export default function Inv_Qt_sidebar({ type }) {
               key={item.id}
               onMouseEnter={() => prefetchData(item.id)}
               onFocus={() => prefetchData(item.id)}
-              className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${
-                item.id == currentId
+              className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${item.id == currentId
                   ? "bg-blue-50 border-l-blue-500"
                   : "border-l-transparent hover:bg-background"
-              }`}
+                }`}
             >
               <div className="flex items-start justify-between mb-2">
                 <span className="font-medium text-foreground">
@@ -133,7 +131,6 @@ export default function Inv_Qt_sidebar({ type }) {
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                
                 <span className="text-muted-foreground">
                   {new Date(
                     type === "invoices"

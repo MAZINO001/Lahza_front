@@ -102,18 +102,19 @@ export function getOfferColumns(role, navigate) {
           <div className="flex gap-2">
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               onClick={() => HandleEditOffer(offer.id, navigate, role)}
+              className="cursor-pointer"
             >
               <Pencil className="h-4 w-4" />
             </Button>
             {role === "admin" && (
               <>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setOpen(true)}
-                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                 >
                   <Trash className="h-4 w-4" />
                 </Button>

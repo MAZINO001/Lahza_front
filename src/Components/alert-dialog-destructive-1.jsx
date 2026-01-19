@@ -13,12 +13,14 @@ import { Trash } from "lucide-react";
 
 export const title = "Simple Delete Confirmation";
 
-const Example = () => (
+const Example = ({ onDelete, trigger }) => (
   <AlertDialog>
     <AlertDialogTrigger asChild>
-      <button className="text-red-500">
-        <Trash />
-      </button>
+      {trigger || (
+        <button className="text-red-500 cursor-pointer hover:text-red-600">
+          <Trash className="w-4 h-4" />
+        </button>
+      )}
     </AlertDialogTrigger>
     <AlertDialogContent>
       <AlertDialogHeader>
@@ -30,7 +32,10 @@ const Example = () => (
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction className="bg-destructive text-white hover:bg-destructive/90">
+        <AlertDialogAction
+          className="bg-destructive text-white hover:bg-destructive/90"
+          onClick={onDelete}
+        >
           Delete
         </AlertDialogAction>
       </AlertDialogFooter>

@@ -18,6 +18,7 @@ export default function EditPayment({ payment, onClose }) {
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -25,6 +26,8 @@ export default function EditPayment({ payment, onClose }) {
       payment_type: payment?.payment_method,
     },
   });
+  const watchPercentage = watch("percentage");
+
   const { mutate: updatePayment } = useUpdatePayment();
 
   const onValidSubmit = (data) => {
@@ -117,7 +120,13 @@ export default function EditPayment({ payment, onClose }) {
           </Button>
         </DialogClose>
 
-        <Button type="submit" className={"ml-4"}>
+        <Button
+          type="submit"
+          className="ml-4"
+          disabled={
+            watchPercentage < 0 || watchPercentage > totalPercentageAmount
+          }
+        >
           Update Payment
         </Button>
       </DialogFooter>

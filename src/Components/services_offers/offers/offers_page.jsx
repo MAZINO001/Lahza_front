@@ -54,7 +54,7 @@ export default function OfferPage({ currentId }) {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="bg-background border-b px-4 py-4 flex items-center justify-between">
+      <div className="border-b border-t px-4 py-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-foreground">
           {data?.title || "Untitled Offer"}
         </h1>
@@ -98,13 +98,15 @@ export default function OfferPage({ currentId }) {
               <p className="text-sm font-medium text-muted-foreground mb-2">
                 Description
               </p>
-              <p className="text-md text-foreground whitespace-pre-wrap">
-                {data?.description || (
+              <div className="text-md text-foreground whitespace-pre-wrap">
+                {data?.description ? (
+                  <div dangerouslySetInnerHTML={{ __html: data.description }} />
+                ) : (
                   <span className="text-muted-foreground italic">
                     No description provided
                   </span>
                 )}
-              </p>
+              </div>
             </div>
 
             <div className="flex gap-8">

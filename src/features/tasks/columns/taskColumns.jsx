@@ -2,6 +2,7 @@
 import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
+import AlertDialogDestructive from "@/components/alert-dialog-destructive-1.jsx";
 
 export function getTaskColumns(navigate, role, projectId) {
   return [
@@ -64,18 +65,14 @@ export function getTaskColumns(navigate, role, projectId) {
           <div className="flex gap-2">
             <Button
               size="sm"
-              variant="outline"
+              variant="ghost"
               onClick={() => HandleEditTask(task.id, navigate, role)}
             >
               <Pencil className="h-4 w-4" />
             </Button>
-            <Button
-              size="sm"
-              variant="destructive"
-              onClick={() => handleDeleteTask(projectId, task.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <AlertDialogDestructive
+              onDelete={() => handleDeleteTask(projectId, task.id)}
+            />
           </div>
         );
       },

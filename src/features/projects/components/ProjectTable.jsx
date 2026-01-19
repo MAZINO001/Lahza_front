@@ -71,6 +71,8 @@ export function ProjectsTable() {
         columns={columns}
         isInvoiceTable={false}
         isLoading={isLoading}
+        tableType="projects"
+        role={role}
       />
     </div>
   );

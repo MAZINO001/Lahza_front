@@ -73,6 +73,8 @@ export function ServiceTable() {
         columns={columns}
         isInvoiceTable={false}
         isLoading={isLoading}
+        tableType="services"
+        role={role}
       />
 
       <CsvUploadModal

@@ -42,6 +42,7 @@ import {
   useDeleteTicket,
   useTickets,
 } from "@/features/tickets/hooks/useTickets";
+import EmptySearch1 from "@/components/empty-search-1";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -371,25 +372,27 @@ export default function AdminTicketsPage() {
       {/* Tickets List */}
       <div className="space-y-4">
         {filteredTickets?.length === 0 ? (
-          <Card>
-            <CardContent className="p-12 text-center">
-              <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <AlertCircle className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
-                No tickets found
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                {searchTerm ||
-                filterStatus !== "all" ||
-                filterPriority !== "all" ||
-                filterCategory !== "all" ||
-                filterAssigned !== "all"
-                  ? "Try adjusting your filters or search terms"
-                  : "No tickets in the system yet"}
-              </p>
-            </CardContent>
-          </Card>
+          searchTerm ||
+            filterStatus !== "all" ||
+            filterPriority !== "all" ||
+            filterCategory !== "all" ||
+            filterAssigned !== "all" ? (
+            <EmptySearch1 />
+          ) : (
+            <Card>
+              <CardContent className="p-12 text-center">
+                <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                  <AlertCircle className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  No tickets found
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  No tickets in the system yet
+                </p>
+              </CardContent>
+            </Card>
+          )
         ) : (
           <>
             <Card className="p-0 ">

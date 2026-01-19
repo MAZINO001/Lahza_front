@@ -9,6 +9,7 @@ import api from "@/lib/utils/axios";
 import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
 import { formatId } from "@/lib/utils/formatId";
 import FormField from "@/Components/Form/FormField";
+import EmptySearch1 from "@/components/empty-search-1";
 
 export default function Receipt_sidebar() {
   const currentSection = "receipt";
@@ -80,7 +81,7 @@ export default function Receipt_sidebar() {
   };
 
   return (
-    <div className=" w-[280px] bg-background border-r  flex flex-col ">
+    <div className=" w-[280px] border-t border-r  flex flex-col ">
       <div className="px-2 py-3 border-b space-y-3">
         <FormField
           placeholder="Search by Invoice ID..."
@@ -138,9 +139,7 @@ export default function Receipt_sidebar() {
 
       <div className="flex-1 overflow-y-auto">
         {filteredData?.length === 0 ? (
-          <div className="p-4 text-center text-muted-foreground text-sm">
-            No Receipt found
-          </div>
+          <EmptySearch1 />
         ) : (
           filteredData?.map((item) => (
             <Link
@@ -156,7 +155,7 @@ export default function Receipt_sidebar() {
             >
               <div className="flex items-start justify-between mb-2">
                 <span className="font-medium text-foreground">
-                  {formatId(item?.invoice_id || item?.id, "INVOICE")}
+                  {formatId(item.id, "RECEIPT")}
                 </span>
                 <span className="font-semibold text-foreground">
                   {new Intl.NumberFormat("fr-MA", {
@@ -167,11 +166,8 @@ export default function Receipt_sidebar() {
               </div>
 
               <div className="flex items-center justify-between text-sm">
-                <span className="text-blue-600">
-                  {formatId(item.id, "RECEIPT")}
-                </span>
                 <span className="text-muted-foreground">
-                  {new Date(item.created_at).toLocaleDateString("en-US", {
+                  {new Date(item.updated_at).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",
                     day: "numeric",

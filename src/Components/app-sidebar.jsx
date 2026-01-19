@@ -16,6 +16,8 @@ import {
   User,
   Receipt,
   ReceiptCentIcon,
+  Target,
+  Calculator,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -38,78 +40,126 @@ export function AppSidebar(props) {
     client: {
       navMain: [
         {
-          title: "Dashboard",
-          url: `/${role}/dashboard`,
-          icon: HomeIcon,
+          title: "Workspace",
+          items: [
+            {
+              title: "Dashboard",
+              url: `/${role}/dashboard`,
+              icon: HomeIcon,
+            },
+            {
+              title: "Calendar",
+              url: `/${role}/calendar`,
+              icon: Calendar1,
+            },
+            {
+              title: "Invoices",
+              url: `/${role}/invoices`,
+              icon: IconFileInvoice,
+            },
+            { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
+            {
+              title: "Payments",
+              url: `/${role}/payments`,
+              icon: DollarSign,
+            },
+            {
+              title: "Receipt",
+              url: `/${role}/receipt`,
+              icon: ReceiptCentIcon,
+            },
+          ]
         },
         {
-          title: "Projects",
-          url: `/${role}/projects`,
-          icon: BriefcaseIcon,
+          title: "Management",
+          items: [
+            { title: "Projects", url: `/${role}/projects`, icon: BriefcaseIcon },
+            { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
+            { title: "Clients", url: `/${role}/clients`, icon: User },
+            { title: "Plans", url: `/${role}/plans`, icon: Package },
+          ]
         },
         {
-          title: "Invoices",
-          url: `/${role}/invoices`,
-          icon: IconFileInvoice,
-        },
-        { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
-        {
-          title: "Payments",
-          url: `/${role}/payments`,
-          icon: DollarSign,
+          title: "Personal",
+          items: [
+            { title: "Objectives", url: `/${role}/objectives`, icon: Target },
+            { title: "Settings", url: `/${role}/settings`, icon: IconSettings },
+          ]
         },
         {
-          title: "Receipt",
-          url: `/${role}/receipt`,
-          icon: ReceiptCentIcon,
-        },
-        { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
+          title: "Finance",
+          items: [
+            { title: "Expenses", url: `/${role}/expenses`, icon: DollarSign },
+            { title: "Comptable", url: `/${role}/comptable`, icon: Calculator },
+          ]
+        }
       ],
       navSecondary: [
         { title: "Tickets", url: `/${role}/tickets`, icon: IconInvoice },
-        {
-          title: "Settings",
-          url: `/${role}/settings/company_basics`,
-          icon: IconSettings,
-        },
+        // {
+        //   title: "Settings",
+        //   url: `/${role}/settings/company_basics`,
+        //   icon: IconSettings,
+        // },
       ],
     },
     admin: {
       navMain: [
         {
-          title: "Dashboard",
-          url: `/${role}/dashboard`,
-          icon: HomeIcon,
+          title: "Workspace",
+          items: [
+            {
+              title: "Dashboard",
+              url: `/${role}/dashboard`,
+              icon: HomeIcon,
+            },
+            {
+              title: "Calendar",
+              url: `/${role}/calendar`,
+              icon: Calendar1,
+            },
+            {
+              title: "Invoices",
+              url: `/${role}/invoices`,
+              icon: IconFileInvoice,
+            },
+            { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
+            {
+              title: "Payments",
+              url: `/${role}/payments`,
+              icon: DollarSign,
+            },
+            {
+              title: "Receipt",
+              url: `/${role}/receipt`,
+              icon: ReceiptCentIcon,
+            },
+          ]
         },
         {
-          title: "Calendar",
-          url: `/${role}/calendar`,
-          icon: Calendar1,
+          title: "Management",
+          items: [
+            { title: "Projects", url: `/${role}/projects`, icon: BriefcaseIcon },
+            { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
+            { title: "Clients", url: `/${role}/clients`, icon: User },
+            { title: "Services", url: `/${role}/services`, icon: Package },
+            { title: "Plans", url: `/${role}/plans`, icon: Package },
+          ]
         },
         {
-          title: "Projects",
-          url: `/${role}/projects`,
-          icon: BriefcaseIcon,
+          title: "Personal",
+          items: [
+            { title: "Objectives", url: `/${role}/objectives`, icon: Target },
+            { title: "Settings", url: `/${role}/settings`, icon: IconSettings },
+          ]
         },
         {
-          title: "Invoices",
-          url: `/${role}/invoices`,
-          icon: IconFileInvoice,
-        },
-        { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
-        {
-          title: "Payments",
-          url: `/${role}/payments`,
-          icon: DollarSign,
-        },
-        {
-          title: "Receipt",
-          url: `/${role}/receipt`,
-          icon: ReceiptCentIcon,
-        },
-        { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
-        { title: "Clients", url: `/${role}/clients`, icon: User },
-        { title: "Services", url: `/${role}/services`, icon: Package },
+          title: "Finance",
+          items: [
+            { title: "Expenses", url: `/${role}/expenses`, icon: DollarSign },
+            { title: "Comptable", url: `/${role}/comptable`, icon: Calculator },
+          ]
+        }
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },
@@ -133,18 +183,6 @@ export function AppSidebar(props) {
         <NavMain items={roleData.navMain} />
         <NavSecondary items={roleData.navSecondary} className="mt-auto" />
       </SidebarContent>
-
-      {/* <SidebarFooter>
-        <Button
-          variant="outline"
-          onClick={() => logout()}
-          className=" cursor-pointer"
-          size={state === "collapsed" ? "icon" : undefined}
-        >
-          <LogOutIcon />
-          {state !== "collapsed" && <span className="ml-2">LogOut</span>}
-        </Button>
-      </SidebarFooter> */}
     </Sidebar>
   );
 }

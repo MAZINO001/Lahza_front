@@ -1,7 +1,5 @@
 
 import api from "@/lib/utils/axios";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { create } from "zustand";
 
 export const globalFnStore = create((set) => ({
@@ -53,7 +51,6 @@ export const globalFnStore = create((set) => ({
     },
 
     handleDeleteService: async (id, reloadCallback) => {
-        if (!confirm("Are you sure you want to delete this service?")) return;
         try {
             await api.delete(`${import.meta.env.VITE_BACKEND_URL}/services/${id}`);
             if (reloadCallback) reloadCallback();
@@ -82,7 +79,6 @@ export const globalFnStore = create((set) => ({
     },
 
     handleDeleteOffer: async (id, reloadCallback) => {
-        if (!confirm("Are you sure you want to delete this offer?")) return;
         try {
             await api.delete(`${import.meta.env.VITE_BACKEND_URL}/offers/${id}`);
             if (reloadCallback) reloadCallback();
@@ -110,7 +106,6 @@ export const globalFnStore = create((set) => ({
     },
 
     handleDeleteTask: async (projectId, id, reloadCallback) => {
-        if (!confirm("Are you sure you want to delete this task?")) return;
         try {
             await api.delete(`${import.meta.env.VITE_BACKEND_URL}/projects/tasks/${projectId}/${id}`);
             if (reloadCallback) reloadCallback();
