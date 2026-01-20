@@ -28,15 +28,14 @@ export default function ClientInfo({ id }) {
       value: client?.[item.key],
     }));
 
-    // Add company name only for non-individual clients
-    if (client?.client_type !== "individual" && client?.company) {
-      items.splice(5, 0, {
-        label: "Company Name",
-        key: "company",
-        icon: null,
-        value: client.company,
-      });
-    }
+    // if (client?.client_type !== "individual" && client?.company) {
+    //   items.splice(5, 0, {
+    //     label: "Company Name",
+    //     key: "company",
+    //     icon: null,
+    //     value: client.company,
+    //   });
+    // }
 
     return items.filter((item) => item.value);
   }, [client]);
@@ -44,7 +43,7 @@ export default function ClientInfo({ id }) {
   if (isLoading) {
     return (
       <Card className="max-w-2xl">
-        <div className="p-4 text-slate-600">Loading client info...</div>
+        <div className="p-4 ">Loading client info...</div>
       </Card>
     );
   }
@@ -52,14 +51,14 @@ export default function ClientInfo({ id }) {
   if (!client) {
     return (
       <Card className="max-w-2xl">
-        <div className="p-4 text-slate-600">No client data available</div>
+        <div className="p-4 ">No client data available</div>
       </Card>
     );
   }
 
   return (
     <Card className="p-0">
-      <div className="flex items-center justify-between border-b border-slate-200 p-4">
+      <div className="flex items-center justify-between border-b border-border p-4">
         <h3 className="text-lg font-semibold text-foreground">Client Info</h3>
         <button variant="outline" className="cursor-pointer">
           <Link

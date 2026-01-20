@@ -93,11 +93,6 @@ const sidebarItems = [
         value: "agency_objectives",
         icon: <Target className="w-4 h-4" />,
       },
-      {
-        name: "Tickets Management",
-        value: "tickets_management",
-        icon: <MessageSquare className="w-4 h-4" />,
-      },
     ],
   },
 ];
@@ -144,11 +139,10 @@ export default function SettingsSideBar() {
                           key={item.value}
                         >
                           <div
-                            className={`w-full text-left px-2 py-2 rounded-lg text-sm transition-colors ${
-                              isActive
+                            className={`w-full text-left px-2 py-2 rounded-lg text-sm transition-colors ${isActive
                                 ? "bg-primary/20 text-primary/80"
                                 : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
-                            }`}
+                              }`}
                           >
                             <span className="flex gap-2">
                               {item.icon}

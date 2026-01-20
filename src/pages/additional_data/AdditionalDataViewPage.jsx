@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,33 +12,32 @@ export default function AdditionalDataViewPage() {
   const navigate = useNavigate();
 
   const downloadFile = async (filePath, fileName) => {
-    try {
-      const response = await api.get(`${API_URL}/download`, {
-        params: { file: filePath },
-        responseType: "blob",
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName || "download");
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      toast.error("Failed to download file");
-      console.error("Download error:", error);
-    }
+    // try {
+    //   const response = await api.get(`${API_URL}/download`, {
+    //     params: { file: filePath },
+    //     responseType: "blob",
+    //   });
+    //   const url = window.URL.createObjectURL(new Blob([response.data]));
+    //   const link = document.createElement("a");
+    //   link.href = url;
+    //   link.setAttribute("download", fileName || "download");
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   link.parentNode.removeChild(link);
+    //   window.URL.revokeObjectURL(url);
+    // } catch (error) {
+    //   toast.error("Failed to download file");
+    //   console.error("Download error:", error);
+    // }
   };
 
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copied!`, {
-      description: text,
       duration: 3000,
     });
   };
+
   const currentPath = window.location.pathname;
   const pathMatch = currentPath.match(/\/project\/(\d+)/);
   const projectId = pathMatch ? pathMatch[1] : null;
@@ -50,288 +48,254 @@ export default function AdditionalDataViewPage() {
     error,
   } = useAdditionalData(projectId);
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error loading additional data</div>;
+  if (isLoading) return <div className="p-4">Loading...</div>;
+  if (error) return <div className="p-4">Error loading additional data</div>;
   if (!additionalData) {
     navigate(`/${role}/project/${projectId}/additional-data/new`);
     return null;
   }
 
   const renderFileField = (label, value) => {
-    if (!value) return <span className="text-muted-foreground">None</span>;
+    if (!value)
+      return <span className="text-sm text-muted-foreground">None</span>;
 
     return (
       <div className="flex items-center gap-2">
-        <Badge variant="secondary">Available</Badge>
-
+        <Badge variant="secondary" className="text-xs">
+          Available
+        </Badge>
         <Button
           size="sm"
-          variant="outline"
+          variant="ghost"
+          className="h-8 w-8 p-0"
           onClick={() => downloadFile(value, "filename.ext")}
         >
-          <Download className="h-3 w-3" />
+          <Download className="h-4 w-4" />
         </Button>
       </div>
     );
   };
 
-  return (
-    <div className="space-y-4 p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
-          <Link
-            to={-1}
-            className="flex items-center gap-2 text-md text-muted-foreground hover:text-foreground transition font-medium"
+  const AccountField = ({ label, value, onCopy }) => (
+    <div className="flex-1 min-w-0">
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <div className="flex items-center gap-2 p-2 rounded-md border border-border bg-slate-50 dark:bg-slate-950">
+        <span className="text-sm truncate">{value || "N/A"}</span>
+        {value && (
+          <button
+            onClick={onCopy}
+            className="ml-auto p-1 hover:bg-slate-200 dark:hover:bg-slate-800 rounded shrink-0 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back</span>
-          </Link>
-        </div>
+            <Copy className="h-4 w-4 text-muted-foreground" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen p-4">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <Link
+          to={-1}
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Link>
         <Button
           onClick={() =>
             navigate(`/${role}/project/${projectId}/additional-data/edit`)
           }
+          size="sm"
         >
           <Edit className="h-4 w-4 mr-2" />
           Edit
         </Button>
       </div>
 
-      <div className="gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Account Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Host Accounts
-                </label>
-                <div className="mt-1 space-y-2">
-                  {(() => {
-                    try {
-                      const hostAcc = JSON.parse(
-                        additionalData.host_acc || "{}"
-                      );
-                      return (
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
-                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
-                            <div className="truncate">
-                              <strong>Email:</strong> {hostAcc.email || "N/A"}
-                            </div>
-                            <Copy
-                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
-                              onClick={() =>
-                                copyToClipboard(hostAcc.email, "host email")
-                              }
-                            />
-                          </div>
-                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
-                            <div className="truncate">
-                              <strong>Password:</strong>{" "}
-                              {hostAcc.password || "N/A"}
-                            </div>
-                            <Copy
-                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
-                              onClick={() =>
-                                copyToClipboard(
-                                  hostAcc.password,
-                                  "host password"
-                                )
-                              }
-                            />
-                          </div>
-                        </div>
-                      );
-                    } catch {
-                      return (
-                        <div className="p-2 bg-gray-40 rounded-md border">
-                          Not provided
-                        </div>
-                      );
-                    }
-                  })()}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Website Accounts
-                </label>
-                <div className="mt-1 space-y-2">
-                  {(() => {
-                    try {
-                      const websiteAcc = JSON.parse(
-                        additionalData.website_acc || "{}"
-                      );
-                      return (
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
-                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
-                            <div className="truncate">
-                              <strong>Email:</strong>{" "}
-                              {websiteAcc.email || "N/A"}
-                            </div>
-                            <Copy
-                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
-                              onClick={() =>
-                                copyToClipboard(
-                                  websiteAcc.email,
-                                  "website email"
-                                )
-                              }
-                            />
-                          </div>
-                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
-                            <div className="truncate">
-                              <strong>Password:</strong>{" "}
-                              {websiteAcc.password || "N/A"}
-                            </div>
-                            <Copy
-                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
-                              onClick={() =>
-                                copyToClipboard(
-                                  websiteAcc.password,
-                                  "website password"
-                                )
-                              }
-                            />
-                          </div>
-                        </div>
-                      );
-                    } catch {
-                      return (
-                        <div className="p-2 bg-gray-40 rounded-md border">
-                          Not provided
-                        </div>
-                      );
-                    }
-                  })()}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Social Media
-                </label>
-                <div className="mt-1 space-y-2">
-                  {(() => {
-                    try {
-                      const socialMedia = JSON.parse(
-                        additionalData.social_media || "[]"
-                      );
-                      if (
-                        !Array.isArray(socialMedia) ||
-                        socialMedia.length === 0
-                      ) {
-                        return (
-                          <div className="p-2 bg-gray-40 rounded-md border">
-                            Not provided
-                          </div>
-                        );
+      {/* Account Information Card */}
+      <Card className="p-0 border-border mb-4">
+        <CardHeader className="p-4 border-b border-border">
+          <CardTitle className="text-lg">Account Information</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 space-y-4">
+          {/* Host Accounts */}
+          <div>
+            <h3 className="text-sm font-semibold mb-3 text-foreground">
+              Host Accounts
+            </h3>
+            {(() => {
+              try {
+                const hostAcc = JSON.parse(additionalData.host_acc || "{}");
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <AccountField
+                      label="Email"
+                      value={hostAcc.email}
+                      onCopy={() =>
+                        copyToClipboard(hostAcc.email, "host email")
                       }
-                      return socialMedia.map((acc, idx) => (
-                        <div
-                          key={idx}
-                          className="flex flex-col lg:flex-row items-start gap-4 w-full"
-                        >
-                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
-                            <div className="truncate">
-                              <strong>Link:</strong> {acc.link || "N/A"}
-                            </div>
-                            <Copy
-                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
-                              onClick={() =>
-                                copyToClipboard(acc.link, "social media link")
-                              }
-                            />
-                          </div>
-                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
-                            <div className="truncate">
-                              <strong>Email:</strong> {acc.email || "N/A"}
-                            </div>
-                            <Copy
-                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
-                              onClick={() =>
-                                copyToClipboard(acc.email, "social media email")
-                              }
-                            />
-                          </div>
-                          <div className="p-2 bg-gray-40 rounded-md border flex-1 flex items-center justify-between min-w-0">
-                            <div className="truncate">
-                              <strong>Password:</strong> {acc.password || "N/A"}
-                            </div>
-                            <Copy
-                              className="w-4 h-4 cursor-pointer shrink-0 ml-2"
-                              onClick={() =>
-                                copyToClipboard(
-                                  acc.password,
-                                  "social media password"
-                                )
-                              }
-                            />
-                          </div>
-                        </div>
-                      ));
-                    } catch {
-                      return (
-                        <div className="p-2 bg-gray-40 rounded-md border">
-                          Not provided
-                        </div>
-                      );
-                    }
-                  })()}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                    />
+                    <AccountField
+                      label="Password"
+                      value={hostAcc.password ? "••••••••••••••••" : ""}
+                      onCopy={() =>
+                        copyToClipboard(hostAcc.password, "host password")
+                      }
+                    />
+                  </div>
+                );
+              } catch {
+                return (
+                  <div className="text-sm text-muted-foreground p-2 rounded border border-border">
+                    Not provided
+                  </div>
+                );
+              }
+            })()}
+          </div>
 
-        <Card className={"mt-4"}>
-          <CardHeader>
-            <CardTitle>Files & Resources</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Media Files
-                </label>
-                <div className="mt-1">
-                  {renderFileField("Media Files", additionalData.media_files)}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Specification File
-                </label>
-                <div className="mt-1">
-                  {renderFileField(
-                    "Specification File",
-                    additionalData.specification_file
-                  )}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Logo
-                </label>
-                <div className="mt-1">
-                  {renderFileField("Logo", additionalData.logo)}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-muted-foreground">
-                  Other files
-                </label>
-                <div className="mt-1">
-                  {renderFileField("Other", additionalData.other)}
-                </div>
-              </div>
+          {/* Website Accounts */}
+          <div className="pt-3 border-t border-border">
+            <h3 className="text-sm font-semibold mb-3 text-foreground">
+              Website Accounts
+            </h3>
+            {(() => {
+              try {
+                const websiteAcc = JSON.parse(
+                  additionalData.website_acc || "{}",
+                );
+                return (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <AccountField
+                      label="Email"
+                      value={websiteAcc.email}
+                      onCopy={() =>
+                        copyToClipboard(websiteAcc.email, "website email")
+                      }
+                    />
+                    <AccountField
+                      label="Password"
+                      value={websiteAcc.password ? "••••••••••••••••" : ""}
+                      onCopy={() =>
+                        copyToClipboard(websiteAcc.password, "website password")
+                      }
+                    />
+                  </div>
+                );
+              } catch {
+                return (
+                  <div className="text-sm text-muted-foreground p-2 rounded border border-border">
+                    Not provided
+                  </div>
+                );
+              }
+            })()}
+          </div>
+
+          {/* Social Media */}
+          <div className="pt-3 border-t border-border">
+            <h3 className="text-sm font-semibold mb-3 text-foreground">
+              Social Media
+            </h3>
+            {(() => {
+              try {
+                const socialMedia = JSON.parse(
+                  additionalData.social_media || "[]",
+                );
+                if (!Array.isArray(socialMedia) || socialMedia.length === 0) {
+                  return (
+                    <div className="text-sm text-muted-foreground p-2 rounded border border-border">
+                      Not provided
+                    </div>
+                  );
+                }
+                return (
+                  <div className="space-y-4">
+                    {socialMedia.map((acc, idx) => (
+                      <div
+                        key={idx}
+                        className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-4 last:pb-0 border-b border-border last:border-0"
+                      >
+                        <AccountField
+                          label="Link"
+                          value={acc.link}
+                          onCopy={() =>
+                            copyToClipboard(acc.link, "social media link")
+                          }
+                        />
+                        <AccountField
+                          label="Email"
+                          value={acc.email}
+                          onCopy={() =>
+                            copyToClipboard(acc.email, "social media email")
+                          }
+                        />
+                        <AccountField
+                          label="Password"
+                          value={acc.password ? "••••••••••••••••" : ""}
+                          onCopy={() =>
+                            copyToClipboard(
+                              acc.password,
+                              "social media password",
+                            )
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                );
+              } catch {
+                return (
+                  <div className="text-sm text-muted-foreground p-2 rounded border border-border">
+                    Not provided
+                  </div>
+                );
+              }
+            })()}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Files & Resources Card */}
+      <Card className="p-0 border-border">
+        <CardHeader className="p-4 border-b border-border">
+          <CardTitle className="text-lg">Files & Resources</CardTitle>
+        </CardHeader>
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">
+                Media Files
+              </p>
+              {renderFileField("Media Files", additionalData.media_files)}
             </div>
-          </CardContent>
-        </Card>
-      </div>
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">
+                Specification File
+              </p>
+              {renderFileField(
+                "Specification File",
+                additionalData.specification_file,
+              )}
+            </div>
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">
+                Logo
+              </p>
+              {renderFileField("Logo", additionalData.logo)}
+            </div>
+            <div>
+              <p className="text-xs font-medium text-muted-foreground mb-2">
+                Other Files
+              </p>
+              {renderFileField("Other", additionalData.other)}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

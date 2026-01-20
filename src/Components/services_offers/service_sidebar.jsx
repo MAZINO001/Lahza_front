@@ -103,10 +103,11 @@ export default function ServicesSidebar({ type, currentId }) {
               to={`/${role}/${type}/${item.id}`}
               onMouseEnter={() => prefetchItem(item.id)}
               onFocus={() => prefetchItem(item.id)}
-              className={`block mb-1 rounded-tr-lg rounded-br-lg p-3 cursor-pointer border-l-2 transition-all ${item.id == currentId
+              className={`block mb-1 rounded-tr-lg rounded-br-lg p-3 cursor-pointer border-l-2 transition-all ${
+                item.id == currentId
                   ? "bg-blue-50 border-l-blue-500"
-                  : "border-l-transparent hover:bg-background"
-                }`}
+                  : "border-l-transparent hover:bg-accent-foreground/10"
+              }`}
             >
               <div className="flex flex-col gap-2">
                 <div className="font-medium text-foreground truncate">

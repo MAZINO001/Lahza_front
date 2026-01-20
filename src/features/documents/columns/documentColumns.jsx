@@ -53,11 +53,6 @@ export function DocumentsColumns(role, navigate, currentSection) {
       cell: ({ row }) => {
         const id = row.original?.id;
         const prefix = isInvoice ? "INVOICE" : "QUOTE";
-
-        // Debug: Log the row data to understand the structure
-        console.log("Row data:", row.original);
-        console.log("ID:", id);
-
         if (!id) {
           console.error("No ID found for row:", row.original);
           return (
@@ -77,7 +72,37 @@ export function DocumentsColumns(role, navigate, currentSection) {
         );
       },
     },
+    {
+      accessorKey: "client",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Client <ArrowUpDown className="ml-1 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const client = row.original?.client;
+        if (!client) {
+          return <div className="ml-3 text-muted-foreground">No client</div>;
+        }
 
+        const clientName =
+          client.client_type === "company"
+            ? client.company
+            : client.user?.name || "Unknown";
+
+        return (
+          <Link
+            to={`/${role}/client/${client.id}`}
+            className="ml-3 font-medium text-foreground hover:underline"
+          >
+            {clientName}
+          </Link>
+        );
+      },
+    },
     {
       accessorKey: "total_amount",
       header: ({ column }) => (
@@ -202,7 +227,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
         if (status === "overdue" && dueDate) {
           const daysOverdue = Math.max(
             0,
-            Math.ceil((new Date() - new Date(dueDate)) / (1000 * 60 * 60 * 24))
+            Math.ceil((new Date() - new Date(dueDate)) / (1000 * 60 * 60 * 24)),
           );
           return (
             <div className="flex items-center gap-2">
@@ -263,19 +288,19 @@ export function DocumentsColumns(role, navigate, currentSection) {
 
             if (!isInvoice && role === "client") {
               const shouldCreateInvoice = confirm(
-                "Would you like to create an invoice from this signed quote?"
+                "Would you like to create an invoice from this signed quote?",
               );
 
               if (shouldCreateInvoice) {
                 try {
                   await createInvoice.mutateAsync(document.id);
                   toast.success(
-                    "Quote signed and invoice created successfully!"
+                    "Quote signed and invoice created successfully!",
                   );
                 } catch (err) {
                   console.error("Failed to create invoice:", err);
                   toast.error(
-                    "Quote signed, but invoice creation failed. Please try again."
+                    "Quote signed, but invoice creation failed. Please try again.",
                   );
                 }
               } else {
@@ -305,13 +330,13 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-              }
+              },
             );
 
             if (!isInvoice) {
               try {
                 const invoicesResponse = await api.get(
-                  `${import.meta.env.VITE_BACKEND_URL}/invoices`
+                  `${import.meta.env.VITE_BACKEND_URL}/invoices`,
                 );
                 const invoices =
                   invoicesResponse.data?.invoices ||
@@ -322,7 +347,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 console.log("Available invoices:", invoices);
 
                 const associatedInvoice = invoices.find(
-                  (invoice) => invoice.quote_id === document.id
+                  (invoice) => invoice.quote_id === document.id,
                 );
 
                 console.log("Found associated invoice:", associatedInvoice);
@@ -336,10 +361,10 @@ export function DocumentsColumns(role, navigate, currentSection) {
               } catch (invoiceError) {
                 console.error(
                   "Failed to remove associated invoice:",
-                  invoiceError
+                  invoiceError,
                 );
                 toast.error(
-                  "Signature removed, but failed to remove associated invoice"
+                  "Signature removed, but failed to remove associated invoice",
                 );
               }
             }
@@ -405,7 +430,11 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 onOpenChange={setIsSignDialogOpen}
               >
                 <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-8 cursor-pointer">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 cursor-pointer"
+                  >
                     <FileSignature className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>

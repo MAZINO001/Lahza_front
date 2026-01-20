@@ -34,9 +34,12 @@ export function DocumentTable({ type }) {
   const currentSection = type === "invoices" ? "invoice" : "quote";
 
   const { data: documents = [], isLoading } = useDocuments(type);
+
+  console.log(documents);
+
   const columns = React.useMemo(
     () => DocumentsColumns(role, navigate, currentSection),
-    [role, navigate]
+    [role, navigate],
   );
 
   const [globalFilter, setGlobalFilter] = useState("");

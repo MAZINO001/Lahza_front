@@ -532,27 +532,6 @@ export default function AppRoutes() {
 
               {/* Admin-only management routes */}
               <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-                {/* Tickets */}
-                <Route
-                  path="tickets"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading admin tickets...</div>}>
-                        <AdminTicketsPage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="ticket/:id"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading ticket details...</div>}>
-                        <TicketAdminView />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
                 <Route
                   path="settings/team_management/:id"
                   element={
@@ -610,6 +589,30 @@ export default function AppRoutes() {
                   </ErrorBoundary>
                 }
               />
+
+              {/* Admin-only routes */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route
+                  path="tickets"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading admin tickets...</div>}>
+                        <AdminTicketsPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="ticket/:id"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading ticket details...</div>}>
+                        <TicketAdminView />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+              </Route>
 
               {/* tasks */}
               <Route

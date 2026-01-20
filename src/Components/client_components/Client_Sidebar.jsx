@@ -63,7 +63,7 @@ export default function Client_Sidebar({ currentId }) {
 
   const toggleSelect = (id) => {
     setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
   };
 
@@ -117,10 +117,11 @@ export default function Client_Sidebar({ currentId }) {
             return (
               <div
                 key={client.id}
-                className={`mb-1 rounded-tr-lg rounded-br-lg p-2 border-l-2 transition flex gap-4 items-center w-full ${isActive
+                className={`mb-1 rounded-tr-lg rounded-br-lg p-2 border-l-2 transition flex gap-4 items-center w-full ${
+                  isActive
                     ? "bg-blue-50 border-l-blue-500"
-                    : "border-l-transparent hover:bg-accent-foreground"
-                  }`}
+                    : "border-l-transparent hover:bg-accent-foreground/10"
+                }`}
               >
                 <Checkbox
                   type="checkbox"

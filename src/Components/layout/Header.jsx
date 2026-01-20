@@ -9,7 +9,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full bg-sidebar backdrop-blur border-b border-sidebar-border">
       <div className="flex items-center px-4 py-3 lg:px-6">
         <div className="flex-1"></div>
-        <div className="w-[30%]">
+        <div className="w-[30%] mr-4">
           <SearchBar />
         </div>
 

@@ -116,10 +116,11 @@ export default function Inv_Qt_sidebar({ type }) {
               key={item.id}
               onMouseEnter={() => prefetchData(item.id)}
               onFocus={() => prefetchData(item.id)}
-              className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${item.id == currentId
+              className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${
+                item.id == currentId
                   ? "bg-blue-50 border-l-blue-500"
-                  : "border-l-transparent hover:bg-background"
-                }`}
+                  : "border-l-transparent hover:bg-accent-foreground/10"
+              }`}
             >
               <div className="flex items-start justify-between mb-2">
                 <span className="font-medium text-foreground">
@@ -135,7 +136,7 @@ export default function Inv_Qt_sidebar({ type }) {
                   {new Date(
                     type === "invoices"
                       ? item.invoice_date
-                      : item.quotation_date
+                      : item.quotation_date,
                   ).toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "short",

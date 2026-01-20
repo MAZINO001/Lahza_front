@@ -75,14 +75,11 @@ export default function ProjectViewPage() {
   const navigate = useNavigate();
   const useMarkCompleteMutate = useMarkAsComplete();
   const handleMarkAsComplete = (projectId) => {
-    useMarkCompleteMutate.mutate(
-      { id: projectId, data: { status: "completed" } },
-      {
-        onSuccess: () => {
-          navigate(-1);
-        },
-      }
-    );
+    useMarkCompleteMutate.mutate(projectId, {
+      onSuccess: () => {
+        navigate(-1);
+      },
+    });
   };
 
   const [dateRange, setDateRange] = useState({
@@ -411,10 +408,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                        <p className="text-muted-foreground text-center py-4">
-                          No team members found
-                        </p>
-                      )}
+                          <p className="text-muted-foreground text-center py-4">
+                            No team members found
+                          </p>
+                        )}
                     </div>
                   </div>
                 </TabsContent>
@@ -434,13 +431,12 @@ export default function ProjectViewPage() {
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${
-                                tx?.payment_url
+                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${tx?.payment_url
                                   ? "hover:bg-blue-100"
                                   : tx?.payment_method === "bank"
                                     ? "hover:bg-green-100"
                                     : "hover:bg-gray-100"
-                              }`}
+                                }`}
                               title={
                                 tx?.payment_url
                                   ? "Go to payment"
@@ -516,10 +512,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                        <p className="text-muted-foreground text-center py-4">
-                          No transactions found
-                        </p>
-                      )}
+                          <p className="text-muted-foreground text-center py-4">
+                            No transactions found
+                          </p>
+                        )}
                     </div>
                   </div>
                 </TabsContent>

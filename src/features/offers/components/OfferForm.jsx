@@ -1,4 +1,3 @@
-// src/features/offers/components/OfferForm.jsx
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";

@@ -14,6 +14,7 @@ const apiProject = {
     delete: (id) => api.delete(`${API_URL}/projects/${id}`).then((res) => res.data),
     getProgress: (id) => api.get(`${API_URL}/getProgress/${id}`).then((res) => res.data),
     getProjectTeam: (id) => api.get(`${API_URL}/project/team/${id}`).then((res) => res.data),
+    postProjectDone: (id) => api.post(`${API_URL}/projects/${id}/complete`).then((res) => res.data),
 };
 
 export function useProjects() {
@@ -143,8 +144,8 @@ export function useDeleteProject() {
 export function useMarkAsComplete() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, data }) => apiProject.update(id, data),
-        onSuccess: (response, { id }) => {
+        mutationFn: (id) => apiProject.postProjectDone(id),
+        onSuccess: (response, id) => {
             toast.success("Project marked as complete!");
             queryClient.invalidateQueries({ queryKey: ["project", id] });
             queryClient.invalidateQueries({ queryKey: ["projects"] });

@@ -35,12 +35,12 @@ export function NavMain({ items }) {
     return false;
   };
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
       {/* Logo */}
       <SidebarGroup>
         <SidebarGroupContent className="flex flex-col ">
           <SidebarMenu>
-            <SidebarMenuItem className="flex items-center gap-2">
+            <SidebarMenuItem className="flex items-center gap-2  ">
               <Link to="/client/dashboard" className="flex items-center">
                 <img
                   src={
@@ -69,25 +69,28 @@ export function NavMain({ items }) {
               {section.title}
             </SidebarGroupLabel>
           )}
-          <SidebarGroupContent className="flex flex-col gap-2">
+          <SidebarGroupContent className="flex flex-col ">
             <SidebarMenu>
               {section.items.map((item) => (
-                <Link key={item.title} to={item.url} className=" ">
+                <Link key={item.title} to={item.url} className="">
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton
                       tooltip={item.title}
                       className={`
-                flex items-center gap-3 rounded-sm
-                cursor-pointer
-                hover:text-primary/80
-                
-                ${isActive(item.url)
+                      flex items-center rounded-sm
+                      cursor-pointer
+                      hover:text-primary/80
+                      text-xs
+                      ${
+                        isActive(item.url)
                           ? "bg-primary/20 text-primary/80"
                           : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
-                        }
-              `}
+                      }
+                      `}
                     >
-                      <span>{item.icon && <item.icon className="w-4 h-4" />}</span>
+                      <span>
+                        {item.icon && <item.icon className="w-4 h-4" />}
+                      </span>
                       <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

@@ -36,40 +36,40 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
   } = useForm({
     defaultValues: additionalData
       ? (() => {
-          const hostAcc = parseJSON(additionalData.host_acc, {});
-          const websiteAcc = parseJSON(additionalData.website_acc, {});
-          const socialMedia = parseJSON(additionalData.social_media, []);
+        const hostAcc = parseJSON(additionalData.host_acc, {});
+        const websiteAcc = parseJSON(additionalData.website_acc, {});
+        const socialMedia = parseJSON(additionalData.social_media, []);
 
-          return {
-            project_id: additionalData.project_id,
-            client_id: additionalData.client_id,
-            host_acc_email: hostAcc.email || "",
-            host_acc_password: hostAcc.password || "",
-            website_acc_email: websiteAcc.email || "",
-            website_acc_password: websiteAcc.password || "",
-            social_media:
-              socialMedia.length > 0
-                ? socialMedia
-                : [{ link: "", email: "", password: "" }],
-            media_files: additionalData.media_files || null,
-            specification_file: additionalData.specification_file || null,
-            logo: additionalData.logo || null,
-            other: additionalData.other || null,
-          };
-        })()
+        return {
+          project_id: additionalData.project_id,
+          client_id: additionalData.client_id,
+          host_acc_email: hostAcc.email || "",
+          host_acc_password: hostAcc.password || "",
+          website_acc_email: websiteAcc.email || "",
+          website_acc_password: websiteAcc.password || "",
+          social_media:
+            socialMedia.length > 0
+              ? socialMedia
+              : [{ link: "", email: "", password: "" }],
+          media_files: additionalData.media_files || null,
+          specification_file: additionalData.specification_file || null,
+          logo: additionalData.logo || null,
+          other: additionalData.other || null,
+        };
+      })()
       : {
-          project_id: projectId,
-          client_id: 2,
-          host_acc_email: "",
-          host_acc_password: "",
-          website_acc_email: "",
-          website_acc_password: "",
-          social_media: [{ link: "", email: "", password: "" }],
-          media_files: null,
-          specification_file: null,
-          logo: null,
-          other: null,
-        },
+        project_id: projectId,
+        client_id: 2,
+        host_acc_email: "",
+        host_acc_password: "",
+        website_acc_email: "",
+        website_acc_password: "",
+        social_media: [{ link: "", email: "", password: "" }],
+        media_files: null,
+        specification_file: null,
+        logo: null,
+        other: null,
+      },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -78,6 +78,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
   });
 
   const onSubmit = (data) => {
+    console.log("Form submitted with data:", data);
     if (isSubmitting || !startSubmit()) return;
 
     // Build payload with proper file handling
@@ -96,7 +97,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
           link: sm.link,
           email: sm.email,
           password: sm.password,
-        }))
+        })),
       ),
       // Handle file fields - keep arrays for multiple files, single file for logo
       media_files: data.media_files || null,
@@ -111,6 +112,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
       isEditMode ? { id: additionalData.id, data: payload } : payload,
       {
         onSuccess: () => {
+          console.log("Mutation successful");
           onSuccess?.();
 
           if (isEditMode) {
@@ -136,13 +138,21 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
             });
           }
         },
+        onError: (error) => {
+          console.error("Mutation error:", error);
+        },
         onSettled: () => endSubmit(),
-      }
+      },
     );
   };
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    handleSubmit(onSubmit)(e);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 h-screen">
+    <form onSubmit={handleFormSubmit} className="space-y-4 p-4 min-h-screen">
       <div className="flex w-full gap-4">
         <div className="w-[50%]">
           <Controller
@@ -165,6 +175,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
             render={({ field }) => (
               <FormField
                 label="Host Account Password"
+                type="password"
                 placeholder="Enter host password..."
                 error={errors.host_acc_password?.message}
                 {...field}
@@ -196,6 +207,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
             render={({ field }) => (
               <FormField
                 label="Website Account Password"
+                type="password"
                 placeholder="Enter website password..."
                 error={errors.website_acc_password?.message}
                 {...field}
@@ -245,6 +257,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
                 render={({ field }) => (
                   <FormField
                     label="Password"
+                    type="password"
                     placeholder="Enter password..."
                     className="w-full"
                     {...field}
@@ -254,6 +267,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
             </div>
 
             <Button
+              type="button"
               className="p-2"
               onClick={() => fields.length > 1 && remove(index)}
               disabled={fields.length === 1}
@@ -261,6 +275,7 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
               <Minus className="w-4 h-4" />
             </Button>
             <Button
+              type="button"
               className="p-2"
               onClick={() => append({ link: "", email: "", password: "" })}
             >

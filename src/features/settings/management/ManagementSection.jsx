@@ -3,7 +3,6 @@ import TeamManagement from "../team-management/TeamManagement";
 import UserManagement from "../user-management/UserManagement";
 import ProjectsManagement from "../projects-management/ProjectsManagement";
 import AgencyObjectives from "../agency-objectives/AgencyObjectives";
-import AdminTicketsPage from "@/pages/tickets/views/AdminTicketsPage";
 
 export default function ManagementSection({ section }) {
   switch (section) {
@@ -15,8 +14,6 @@ export default function ManagementSection({ section }) {
       return <ProjectsManagement />;
     case "agency_objectives":
       return <AgencyObjectives />;
-    case "tickets_management":
-      return <AdminTicketsPage />;
     default:
       return <div>Management section not found</div>;
   }

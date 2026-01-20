@@ -10,30 +10,23 @@ import {
   DollarSign,
   FileText,
   HomeIcon,
-  LogOutIcon,
   Package,
   PercentSquare,
   User,
-  Receipt,
   ReceiptCentIcon,
   Target,
   Calculator,
+  Layers,
+  Ticket,
+  TicketCheckIcon,
+  LifeBuoy,
+  MessageSquareWarning,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarRail,
-  useSidebar,
-} from "./ui/sidebar";
+import { Sidebar, SidebarContent, SidebarRail, useSidebar } from "./ui/sidebar";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { Button } from "./ui/button";
 export function AppSidebar(props) {
   const { role, logout } = useAuthContext();
   const sidebarData = {
@@ -68,31 +61,39 @@ export function AppSidebar(props) {
               url: `/${role}/receipt`,
               icon: ReceiptCentIcon,
             },
-          ]
+            {
+              title: "Projects",
+              url: `/${role}/projects`,
+              icon: BriefcaseIcon,
+            },
+          ],
         },
         {
           title: "Management",
           items: [
-            { title: "Projects", url: `/${role}/projects`, icon: BriefcaseIcon },
             { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
             { title: "Clients", url: `/${role}/clients`, icon: User },
             { title: "Plans", url: `/${role}/plans`, icon: Package },
-          ]
+          ],
         },
         {
           title: "Personal",
           items: [
             { title: "Objectives", url: `/${role}/objectives`, icon: Target },
-            { title: "Settings", url: `/${role}/settings`, icon: IconSettings },
-          ]
+            {
+              title: "Settings",
+              url: `/${role}/settings/company_basics`,
+              icon: IconSettings,
+            },
+          ],
         },
         {
           title: "Finance",
           items: [
             { title: "Expenses", url: `/${role}/expenses`, icon: DollarSign },
             { title: "Comptable", url: `/${role}/comptable`, icon: Calculator },
-          ]
-        }
+          ],
+        },
       ],
       navSecondary: [
         { title: "Tickets", url: `/${role}/tickets`, icon: IconInvoice },
@@ -134,32 +135,45 @@ export function AppSidebar(props) {
               url: `/${role}/receipt`,
               icon: ReceiptCentIcon,
             },
-          ]
+            {
+              title: "Projects",
+              url: `/${role}/projects`,
+              icon: BriefcaseIcon,
+            },
+          ],
         },
         {
           title: "Management",
           items: [
-            { title: "Projects", url: `/${role}/projects`, icon: BriefcaseIcon },
             { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
             { title: "Clients", url: `/${role}/clients`, icon: User },
             { title: "Services", url: `/${role}/services`, icon: Package },
-            { title: "Plans", url: `/${role}/plans`, icon: Package },
-          ]
+            { title: "Plans", url: `/${role}/plans`, icon: Layers },
+            {
+              title: "Tickets",
+              url: `/${role}/tickets`,
+              icon: MessageSquareWarning,
+            },
+          ],
         },
         {
           title: "Personal",
           items: [
             { title: "Objectives", url: `/${role}/objectives`, icon: Target },
-            { title: "Settings", url: `/${role}/settings`, icon: IconSettings },
-          ]
+            {
+              title: "Settings",
+              url: `/${role}/settings/company_basics`,
+              icon: IconSettings,
+            },
+          ],
         },
         {
           title: "Finance",
           items: [
             { title: "Expenses", url: `/${role}/expenses`, icon: DollarSign },
             { title: "Comptable", url: `/${role}/comptable`, icon: Calculator },
-          ]
-        }
+          ],
+        },
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },
