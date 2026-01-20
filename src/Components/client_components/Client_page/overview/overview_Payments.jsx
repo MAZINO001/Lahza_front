@@ -10,12 +10,12 @@ export default function Overview_Payments({ formatCurrency, currentId }) {
 
   const filteredData = Payments.filter(
     (payment) =>
-      payment.client_id === Number(currentId) && payment.status === "paid"
+      payment.client_id === Number(currentId) && payment.status === "paid",
   );
 
   return (
-    <Card className="p-0">
-      <CardContent className="p-4">
+    <Card>
+      <CardContent>
         <div>
           <h3 className="text-base font-semibold text-foreground mb-2">
             Receivables

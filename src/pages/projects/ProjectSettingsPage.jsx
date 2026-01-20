@@ -89,7 +89,7 @@ export default function ProjectSettingsPage() {
     }
   };
   return (
-    <div className="w-full p-4 h-screen">
+    <div className="w-full p-4 min-h-screen">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full ">
         <TabsList className="grid w-[40%] grid-cols-3 mb-2">
           <TabsTrigger value="info">Project Information</TabsTrigger>
@@ -98,28 +98,28 @@ export default function ProjectSettingsPage() {
         </TabsList>
 
         <TabsContent value="info" className="space-y-4">
-          <Card className="p-4">
-            <CardHeader className="px-0">
+          <Card className=" max-h-screen">
+            <CardHeader>
               <CardTitle>Project Details</CardTitle>
               <CardDescription>
                 View and edit basic project information
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-0">
+            <CardContent>
               <ProjectForm />
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="parameters" className="space-y-4">
-          <Card className="p-4">
-            <CardHeader className="px-0">
+          <Card>
+            <CardHeader>
               <CardTitle>Project Members</CardTitle>
               <CardDescription>
                 Manage team members assigned to this project
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-0 space-y-3">
+            <CardContent className="space-y-3">
               {membersLoading ? (
                 <div className="flex items-center justify-center p-8">
                   <Loader2 className="w-6 h-6 animate-spin" />
@@ -192,7 +192,7 @@ export default function ProjectSettingsPage() {
                           size="sm"
                           onClick={() =>
                             setEditingMember(
-                              editingMember === member.id ? null : member.id
+                              editingMember === member.id ? null : member.id,
                             )
                           }
                           className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
@@ -209,14 +209,14 @@ export default function ProjectSettingsPage() {
           </Card>
 
           {/* INVOICES CARD */}
-          <Card className="p-4">
-            <CardHeader className="px-0">
+          <Card>
+            <CardHeader>
               <CardTitle>Project Invoices</CardTitle>
               <CardDescription>
                 Manage invoices associated with this project
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-0 space-y-3">
+            <CardContent className="space-y-3">
               {invoicesLoading ? (
                 <div className="flex items-center justify-center p-8">
                   <Loader2 className="w-6 h-6 animate-spin" />
@@ -247,7 +247,7 @@ export default function ProjectSettingsPage() {
                               updateInvoice(
                                 invoice.id,
                                 "number",
-                                e.target.value
+                                e.target.value,
                               )
                             }
                             placeholder="Invoice Number"
@@ -260,7 +260,7 @@ export default function ProjectSettingsPage() {
                                 updateInvoice(
                                   invoice.id,
                                   "amount",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               placeholder="Amount"
@@ -273,7 +273,7 @@ export default function ProjectSettingsPage() {
                                 updateInvoice(
                                   invoice.id,
                                   "date",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               placeholder="Date"
@@ -286,7 +286,7 @@ export default function ProjectSettingsPage() {
                                 updateInvoice(
                                   invoice.id,
                                   "status",
-                                  e.target.value
+                                  e.target.value,
                                 )
                               }
                               placeholder="Status"
@@ -321,7 +321,7 @@ export default function ProjectSettingsPage() {
                         size="sm"
                         onClick={() =>
                           setEditingInvoice(
-                            editingInvoice === invoice.id ? null : invoice.id
+                            editingInvoice === invoice.id ? null : invoice.id,
                           )
                         }
                         className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
@@ -336,14 +336,14 @@ export default function ProjectSettingsPage() {
             </CardContent>
           </Card>
 
-          <Card className="p-4">
-            <CardHeader className="px-0 ">
+          <Card>
+            <CardHeader>
               <CardTitle>Related Services</CardTitle>
               <CardDescription>
                 Add or remove services associated with this project
               </CardDescription>
             </CardHeader>
-            <CardContent className="px-0 space-y-3">
+            <CardContent className="space-y-3">
               {servicesLoading ? (
                 <div className="flex items-center justify-center p-8">
                   <Loader2 className="w-6 h-6 animate-spin" />
@@ -396,17 +396,17 @@ export default function ProjectSettingsPage() {
         </TabsContent>
 
         <TabsContent value="tasks" className="space-y-4">
-          <Card className="p-4">
-            <CardHeader className="px-0">
+          <Card>
+            <CardHeader>
               <CardTitle>Project Tasks</CardTitle>
               <CardDescription>Manage tasks for this project</CardDescription>
             </CardHeader>
-            <CardContent className="px-0">
+            <CardContent>
               <TasksForm projectId={id} />
             </CardContent>
           </Card>
-          <Card className="p-0 overflow-hidden">
-            <CardContent className="px-4">
+          <Card className="overflow-hidden">
+            <CardContent>
               <TasksTable />
             </CardContent>
           </Card>

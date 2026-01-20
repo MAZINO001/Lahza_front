@@ -40,8 +40,8 @@ export function NavMain({ items }) {
       <SidebarGroup>
         <SidebarGroupContent className="flex flex-col ">
           <SidebarMenu>
-            <SidebarMenuItem className="flex items-center gap-2  ">
-              <Link to="/client/dashboard" className="flex items-center">
+            <SidebarMenuItem className="flex items-center mb-2">
+              <Link to="/client/dashboard" className="flex items-center ">
                 <img
                   src={
                     state === "collapsed"
@@ -65,7 +65,7 @@ export function NavMain({ items }) {
       {items.map((section) => (
         <SidebarGroup key={section.title}>
           {state !== "collapsed" && (
-            <SidebarGroupLabel className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            <SidebarGroupLabel className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
               {section.title}
             </SidebarGroupLabel>
           )}
@@ -80,7 +80,8 @@ export function NavMain({ items }) {
                       flex items-center rounded-sm
                       cursor-pointer
                       hover:text-primary/80
-                      text-xs
+                      text-[12px]
+                   
                       ${
                         isActive(item.url)
                           ? "bg-primary/20 text-primary/80"
@@ -89,7 +90,7 @@ export function NavMain({ items }) {
                       `}
                     >
                       <span>
-                        {item.icon && <item.icon className="w-4 h-4" />}
+                        {item.icon && <item.icon className="w-3.5 h-3.5" />}
                       </span>
                       <span>{item.title}</span>
                     </SidebarMenuButton>

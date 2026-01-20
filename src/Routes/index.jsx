@@ -21,10 +21,10 @@ const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
 const ProjectsPage = lazy(() => import("../pages/projects/ProjectsPage"));
 const ProjectViewPage = lazy(() => import("../pages/projects/ProjectViewPage"));
 const ProjectEditPage = lazy(
-  () => import("../pages/projects/ProjectSettingsPage")
+  () => import("../pages/projects/ProjectSettingsPage"),
 );
 const ProjectCreatePage = lazy(
-  () => import("../pages/projects/ProjectCreatePage")
+  () => import("../pages/projects/ProjectCreatePage"),
 );
 
 // Lazy load quote pages
@@ -35,23 +35,17 @@ const QuoteEditPage = lazy(() => import("../pages/quotes/QuoteEditPage"));
 
 // Lazy load ticket pages
 const TicketsPage = lazy(() => import("../pages/tickets/TicketsPage"));
-const AdminTicketsPage = lazy(
-  () => import("../pages/tickets/views/AdminTicketsPage")
-);
-const TicketAdminView = lazy(
-  () => import("../pages/tickets/views/TicketAdminView")
-);
 const TicketCreatePage = lazy(
-  () => import("../pages/tickets/TicketCreatePage")
+  () => import("../pages/tickets/TicketCreatePage"),
 );
 const TicketForm = lazy(
-  () => import("../features/tickets/components/TicketForm")
+  () => import("../features/tickets/components/TicketForm"),
 );
 // Lazy load invoice pages
 const InvoicesPage = lazy(() => import("../pages/invoices/InvoicesPage"));
 const InvoiceViewPage = lazy(() => import("../pages/invoices/InvoiceViewPage"));
 const InvoiceCreatePage = lazy(
-  () => import("../pages/invoices/InvoiceCreatePage")
+  () => import("../pages/invoices/InvoiceCreatePage"),
 );
 const InvoiceEditPage = lazy(() => import("../pages/invoices/InvoiceEditPage"));
 
@@ -59,14 +53,14 @@ const InvoiceEditPage = lazy(() => import("../pages/invoices/InvoiceEditPage"));
 const ServicesPage = lazy(() => import("../pages/services/ServicesPage"));
 const ServiceViewPage = lazy(() => import("../pages/services/ServiceViewPage"));
 const ServiceCreatePage = lazy(
-  () => import("../pages/services/ServiceCreatePage")
+  () => import("../pages/services/ServiceCreatePage"),
 );
 const ServiceEditPage = lazy(() => import("../pages/services/ServiceEditPage"));
 
 // Lazy load client pages
 const ClientsPage = lazy(() => import("../pages/clients/ClientsPage"));
 const ClientCreatePage = lazy(
-  () => import("../pages/clients/ClientCreatePage")
+  () => import("../pages/clients/ClientCreatePage"),
 );
 const ClientEditPage = lazy(() => import("../pages/clients/ClientEditPage"));
 const ClientViewPage = lazy(() => import("../pages/clients/ClientViewPage"));
@@ -79,7 +73,7 @@ const PaymentViewPage = lazy(() => import("../pages/payments/PaymentViewPage"));
 const ReceiptsPage = lazy(() => import("../pages/receipts/ReceiptsPage"));
 const ReceiptViewPage = lazy(() => import("../pages/receipts/ReceiptViewPage"));
 const ReceiptClientView = lazy(
-  () => import("../pages/receipts/views/ReceiptClientView")
+  () => import("../pages/receipts/views/ReceiptClientView"),
 );
 
 // Lazy load offer pages
@@ -90,10 +84,10 @@ const OfferEditPage = lazy(() => import("../pages/offers/OfferEditPage"));
 
 // Lazy load activity log pages
 const ActivityLogsPage = lazy(
-  () => import("@/pages/activityLogs/ActivityLogsPage")
+  () => import("@/pages/activityLogs/ActivityLogsPage"),
 );
 const ActivityLogViewPage = lazy(
-  () => import("@/pages/activityLogs/ActivityLogViewPage")
+  () => import("@/pages/activityLogs/ActivityLogViewPage"),
 );
 
 // Lazy load other pages
@@ -103,22 +97,31 @@ const TasksPage = lazy(() => import("@/pages/tasks/tasksPage"));
 const TaskCreatePage = lazy(() => import("@/pages/tasks/TaskCreatePage"));
 const TaskEditPage = lazy(() => import("@/pages/tasks/TaskEditPage"));
 const AdditionalDataViewPage = lazy(
-  () => import("@/pages/additional_data/AdditionalDataViewPage")
+  () => import("@/pages/additional_data/AdditionalDataViewPage"),
 );
 const AdditionalDataCreatePage = lazy(
-  () => import("@/pages/additional_data/AdditionalDataCreatePage")
+  () => import("@/pages/additional_data/AdditionalDataCreatePage"),
 );
 const AdditionalDataEditPage = lazy(
-  () => import("@/pages/additional_data/AdditionalDataEditPage")
+  () => import("@/pages/additional_data/AdditionalDataEditPage"),
 );
 const TeamUserViewPage = lazy(
-  () => import("@/features/settings/team-management/TeamManagement")
+  () => import("@/features/settings/team-management/TeamManagement"),
 );
 const UserManagementView = lazy(
-  () => import("@/features/settings/user-management/views/UserManagementView")
+  () => import("@/features/settings/user-management/views/UserManagementView"),
 );
 const UserManagementForm = lazy(
-  () => import("@/features/settings/user-management/views/UserManagementForm")
+  () => import("@/features/settings/user-management/views/UserManagementForm"),
+);
+const ObjectivesPage = lazy(
+  () => import("@/features/objectives/ObjectivesPage"),
+);
+const AdminTicketsPage = lazy(
+  () => import("../pages/tickets/views/AdminTicketsPage"),
+);
+const TicketAdminView = lazy(
+  () => import("../pages/tickets/views/TicketAdminView"),
 );
 
 // Lazy load profile page
@@ -126,7 +129,7 @@ const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
 
 // Lazy load notifications page
 const NotificationsPage = lazy(
-  () => import("@/pages/notifications/NotificationsPage")
+  () => import("@/pages/notifications/NotificationsPage"),
 );
 
 import AuthLayout from "@/app/layout/AuthLayout";
@@ -305,38 +308,49 @@ export default function AppRoutes() {
                 }
               />
 
-              {/* Tickets - Client Only */}
-              <Route element={<ProtectedRoute allowedRoles={["client"]} />}>
-                <Route
-                  path="tickets"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading tickets...</div>}>
+              <Route
+                path="tickets"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading tickets...</div>}>
+                      {role === "client" ? (
                         <TicketsPage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-              </Route>
+                      ) : (
+                        <AdminTicketsPage />
+                      )}
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              <Route
+                path="ticket/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading ticket details...</div>}>
+                      {role === "admin" ? <TicketAdminView /> : <TicketsPage />}
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
 
               <Route
                 path="ticket/new"
                 element={
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading ticket creation...</div>}>
-                      <TicketCreatePage />
+                      {role === "client" ? <TicketCreatePage /> : null}
                     </Suspense>
                   </ErrorBoundary>
                 }
               />
-
 
               <Route
                 path="ticket/:id/edit"
                 element={
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading ticket edit...</div>}>
-                      <TicketForm />
+                      {role === "client" ? <TicketForm /> : null}
                     </Suspense>
                   </ErrorBoundary>
                 }
@@ -533,6 +547,16 @@ export default function AppRoutes() {
               {/* Admin-only management routes */}
               <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
                 <Route
+                  path="objectives"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading objectives...</div>}>
+                        <ObjectivesPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
                   path="settings/team_management/:id"
                   element={
                     <ErrorBoundary>
@@ -589,31 +613,6 @@ export default function AppRoutes() {
                   </ErrorBoundary>
                 }
               />
-
-              {/* Admin-only routes */}
-              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-                <Route
-                  path="tickets"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading admin tickets...</div>}>
-                        <AdminTicketsPage />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="ticket/:id"
-                  element={
-                    <ErrorBoundary>
-                      <Suspense fallback={<div>Loading ticket details...</div>}>
-                        <TicketAdminView />
-                      </Suspense>
-                    </ErrorBoundary>
-                  }
-                />
-              </Route>
-
               {/* tasks */}
               <Route
                 path="project/:id/tasks"

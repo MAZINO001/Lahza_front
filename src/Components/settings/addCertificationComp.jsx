@@ -9,12 +9,10 @@ import {
 } from "../../features/settings/hooks/useSettingsAgencyInfoQuery";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Trash2 } from "lucide-react";
 import FormField from "@/components/Form/FormField";
 import TextareaField from "@/components/Form/TextareaField";
 import FileUploader from "@/components/Form/FileUploader";
 import SelectField from "@/components/Form/SelectField";
-import { StatusBadge } from "@/components/StatusBadge";
 export default function AddCertificationComp() {
   const createCertification = useCreateCertification();
   const updateCertification = useUpdateCertification();
@@ -45,11 +43,11 @@ export default function AddCertificationComp() {
 
   return (
     <div>
-      <Card className="p-0 gap-0">
-        <CardHeader className="p-4">
+      <Card>
+        <CardHeader>
           <CardTitle>Add New Certification</CardTitle>
         </CardHeader>
-        <CardContent className="px-4">
+        <CardContent>
           <div className="space-y-4">
             <div className="flex gap-4 w-full">
               <div className="space-y-2 w-1/2">

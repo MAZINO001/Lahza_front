@@ -33,7 +33,6 @@ export function AppSidebar(props) {
     client: {
       navMain: [
         {
-          title: "Workspace",
           items: [
             {
               title: "Dashboard",
@@ -66,32 +65,6 @@ export function AppSidebar(props) {
               url: `/${role}/projects`,
               icon: BriefcaseIcon,
             },
-          ],
-        },
-        {
-          title: "Management",
-          items: [
-            { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
-            { title: "Clients", url: `/${role}/clients`, icon: User },
-            { title: "Plans", url: `/${role}/plans`, icon: Package },
-          ],
-        },
-        {
-          title: "Personal",
-          items: [
-            { title: "Objectives", url: `/${role}/objectives`, icon: Target },
-            {
-              title: "Settings",
-              url: `/${role}/settings/company_basics`,
-              icon: IconSettings,
-            },
-          ],
-        },
-        {
-          title: "Finance",
-          items: [
-            { title: "Expenses", url: `/${role}/expenses`, icon: DollarSign },
-            { title: "Comptable", url: `/${role}/comptable`, icon: Calculator },
           ],
         },
       ],

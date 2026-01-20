@@ -93,7 +93,7 @@ export default function OfferPage({ currentId }) {
 
       <div className="p-4 w-full">
         <Card>
-          <CardContent className="space-y-6 py-4 px-4">
+          <CardContent className="space-y-6">
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-2">
                 Description

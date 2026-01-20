@@ -408,10 +408,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                          <p className="text-muted-foreground text-center py-4">
-                            No team members found
-                          </p>
-                        )}
+                        <p className="text-muted-foreground text-center py-4">
+                          No team members found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -431,12 +431,13 @@ export default function ProjectViewPage() {
                         >
                           <div className="flex items-center gap-4">
                             <div
-                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${tx?.payment_url
+                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${
+                                tx?.payment_url
                                   ? "hover:bg-blue-100"
                                   : tx?.payment_method === "bank"
                                     ? "hover:bg-green-100"
                                     : "hover:bg-gray-100"
-                                }`}
+                              }`}
                               title={
                                 tx?.payment_url
                                   ? "Go to payment"
@@ -512,10 +513,10 @@ export default function ProjectViewPage() {
                           </div>
                         </div>
                       )) || (
-                          <p className="text-muted-foreground text-center py-4">
-                            No transactions found
-                          </p>
-                        )}
+                        <p className="text-muted-foreground text-center py-4">
+                          No transactions found
+                        </p>
+                      )}
                     </div>
                   </div>
                 </TabsContent>
@@ -582,17 +583,17 @@ export default function ProjectViewPage() {
 
         <div className="w-[25%] flex flex-col gap-4">
           <div className="flex flex-col gap-4 w-full">
-            <Card className="p-2 w-full">
-              <CardContent className="p-2">
+            <Card>
+              <CardContent>
                 <CountDownComponent
                   startDate={project?.start_date}
                   endDate={project?.estimated_end_date}
                 />
               </CardContent>
             </Card>
-            <Card className="w-full p-0 bg-background">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+            <Card className="w-full bg-background">
+              <CardContent>
+                <div className="flex items-center justify-between ">
                   <div className="flex items-center gap-4">
                     <div className="relative w-24 h-24">
                       <svg
@@ -650,15 +651,19 @@ export default function ProjectViewPage() {
             </Card>
           </div>
 
-          <Calendar
-            mode="range"
-            defaultMonth={dateRange?.from}
-            selected={dateRange}
-            onSelect={setDateRange}
-            disabled={() => true}
-            numberOfMonths={1}
-            className="w-full! flex justify-center rounded-lg bg-background border"
-          />
+          <Card>
+            <CardContent>
+              <Calendar
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={setDateRange}
+                disabled={() => true}
+                numberOfMonths={1}
+                className="w-full! flex justify-center rounded-lg bg-background"
+              />
+            </CardContent>
+          </Card>
 
           <Card className="p-2">
             <CardContent className="p-2">

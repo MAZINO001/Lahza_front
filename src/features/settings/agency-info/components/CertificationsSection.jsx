@@ -61,7 +61,7 @@ export default function CertificationsSection() {
         <div className="grid gap-4">
           {certifications?.map((cert) => (
             <Card key={cert.id}>
-              <CardContent className="pt-4">
+              <CardContent>
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
@@ -110,7 +110,7 @@ export default function CertificationsSection() {
           ))}
 
           {certifications?.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground border rounded-lg">
+            <div className="text-center py-4 text-muted-foreground border rounded-lg">
               No certifications found. Add your first certification above.
             </div>
           )}

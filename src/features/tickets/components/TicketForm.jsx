@@ -143,7 +143,7 @@ export default function TicketCreatePage() {
   });
 
   const selectedCategory = ticketCategories.find(
-    (cat) => cat.id === watch("category")
+    (cat) => cat.id === watch("category"),
   );
 
   useEffect(() => {
@@ -204,14 +204,14 @@ export default function TicketCreatePage() {
   const removeAttachment = (index) => {
     setValue(
       "attachments",
-      watch("attachments").filter((_, i) => i !== index)
+      watch("attachments").filter((_, i) => i !== index),
     );
   };
 
   // Show loading state when fetching ticket data for edit
   if (isEditMode && isLoadingTicket) {
     return (
-      <div className="w-full p-4">
+      <div className="w-full p-4min-h-screen">
         <div className="flex items-center justify-center min-h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
@@ -225,8 +225,8 @@ export default function TicketCreatePage() {
   if (isSubmitted) {
     return (
       <div className="w-full p-4">
-        <Card className="text-center">
-          <CardContent className="p-4">
+        <Card className="text-center p-0">
+          <CardContent>
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-green-100 rounded-full">
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -263,7 +263,7 @@ export default function TicketCreatePage() {
   }
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full p-4 min-h-screen">
       {/* Header */}
       <div className="mb-4">
         <Button
@@ -285,7 +285,6 @@ export default function TicketCreatePage() {
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Category Selection */}
         <Card>
           <CardHeader>
             <CardTitle>Select Issue Category</CardTitle>

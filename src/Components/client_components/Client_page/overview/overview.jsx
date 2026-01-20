@@ -6,8 +6,8 @@ import Overview_ClientInfo from "./overview_ClientInfo";
 import Overview_Payments from "./overview_Payments";
 import { useClientHistory } from "@/features/clients/hooks/useClientsHistory";
 import { useState } from "react";
+import VerifiedCard from "@/components/hover-card-info-3";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 export default function Overview({ data, currentId }) {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
@@ -53,12 +53,12 @@ export default function Overview({ data, currentId }) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="space-y-4 ">
-        <Card className="bg-background rounded-lg border border-border py-4">
-          <CardHeader className="text-lg font-semibold text-foreground px-4">
+        <Card className="bg-background rounded-lg border border-border">
+          <CardHeader className="text-lg font-semibold text-foreground">
             {displayName}
           </CardHeader>
 
-          <CardContent className=" flex items-start gap-4 px-4 pb-4">
+          <CardContent className=" flex items-start gap-4">
             <Avatar className="w-12 h-12">
               <AvatarImage src="" alt={data?.client.user?.name || "unknown"} />
               <AvatarFallback className="bg-blue-100 text-blue-600 font-medium">
@@ -69,7 +69,7 @@ export default function Overview({ data, currentId }) {
             <div className="flex flex-col gap-2">
               <div className="text-base font-medium text-foreground gap-4 flex ">
                 <p>{data?.client.user?.name || "unknown"}</p>
-                <Badge>verified</Badge>
+                <VerifiedCard />
               </div>
               <div
                 className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"

@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export function LegalTaxBankingView({ data }) {
   return (
     <div className="space-y-6">
-      <Card className="p-4">
-        <CardHeader className="px-0">
+      <Card>
+        <CardHeader>
           <CardTitle className="text-lg font-semibold">
             Legal Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 px-0">
+        <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-500">
               Morocco ICE
@@ -76,13 +76,13 @@ export function LegalTaxBankingView({ data }) {
         </CardContent>
       </Card>
 
-      <Card className="p-4">
-        <CardHeader className="px-0">
+      <Card>
+        <CardHeader>
           <CardTitle className="text-lg font-semibold">
             Banking Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 px-0">
+        <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-500">
               Bank Name

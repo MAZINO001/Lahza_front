@@ -10,7 +10,6 @@ import {
   MessageSquare,
   Palette,
   Scale,
-  Target,
   Ticket,
   User,
 } from "lucide-react";
@@ -88,11 +87,6 @@ const sidebarItems = [
         value: "users_management",
         icon: <User className="w-4 h-4" />,
       },
-      {
-        name: "Agency Objectives",
-        value: "agency_objectives",
-        icon: <Target className="w-4 h-4" />,
-      },
     ],
   },
 ];
@@ -140,8 +134,8 @@ export default function SettingsSideBar() {
                         >
                           <div
                             className={`w-full text-left px-2 py-2 rounded-lg text-sm transition-colors ${isActive
-                                ? "bg-primary/20 text-primary/80"
-                                : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
+                              ? "bg-primary/20 text-primary/80"
+                              : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
                               }`}
                           >
                             <span className="flex gap-2">

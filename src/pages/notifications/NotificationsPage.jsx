@@ -133,7 +133,7 @@ export default function NotificationsPage() {
 
   const markAsRead = (id) => {
     setNotifications((prev) =>
-      prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif))
+      prev.map((notif) => (notif.id === id ? { ...notif, read: true } : notif)),
     );
   };
 
@@ -279,11 +279,12 @@ export default function NotificationsPage() {
             {filteredNotifications.map((notification) => (
               <Card
                 key={notification.id}
-                className={`cursor-pointer transition-all hover:shadow-md ${!notification.read ? "border-l-4 border-l-blue-500" : ""
-                  }`}
+                className={`cursor-pointer transition-all hover:shadow-md ${
+                  !notification.read ? "border-l-4 border-l-blue-500" : ""
+                }`}
                 onClick={() => handleNotificationClick(notification)}
               >
-                <CardContent className="p-4">
+                <CardContent>
                   <div className="flex items-start gap-4">
                     <div className="shrink-0 mt-1"></div>
 
@@ -292,10 +293,11 @@ export default function NotificationsPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
                             <h3
-                              className={`font-semibold text-lg ${!notification.read
+                              className={`font-semibold text-lg ${
+                                !notification.read
                                   ? "text-foreground"
                                   : "text-muted-foreground"
-                                }`}
+                              }`}
                             >
                               {notification.title}
                             </h3>

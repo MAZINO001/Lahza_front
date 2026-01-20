@@ -52,7 +52,7 @@ export const TasksTable = React.memo(function TasksTable() {
   });
 
   return (
-    <div className="w-full pt-4 bg-background">
+    <div className="w-full bg-background">
       {/* <div className="flex items-center justify-between mb-4">
         <div className="flex gap-4">
           <Link

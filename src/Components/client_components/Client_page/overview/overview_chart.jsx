@@ -69,8 +69,8 @@
 //   const totalIncome = chartData.reduce((sum, d) => sum + (d.income || 0), 0);
 
 //   return (
-//     <Card className="p-0">
-//       <CardHeader className="p-4">
+//     <Card>
+//       <CardHeader>
 //         <div className="flex items-start justify-between">
 //           <div>
 //             <CardTitle className="text-base font-semibold text-foreground">
@@ -218,7 +218,7 @@ export default function Overview_chart({ formatCurrency, currentId }) {
 
   const filteredData = Payments.filter(
     (payment) =>
-      payment.client_id === Number(currentId) && payment.status === "paid"
+      payment.client_id === Number(currentId) && payment.status === "paid",
   );
 
   const getMonthsCount = (period) => {
@@ -283,21 +283,21 @@ export default function Overview_chart({ formatCurrency, currentId }) {
   const monthsCount = getMonthsCount(selectedPeriod);
   const chartData = React.useMemo(
     () => transformPaymentsToChartData(filteredData, monthsCount),
-    [filteredData, selectedPeriod]
+    [filteredData, selectedPeriod],
   );
 
   const maxValue =
     Math.max(
       1,
-      ...chartData.map((d) => Math.max(d.income || 0, d.expense || 0))
+      ...chartData.map((d) => Math.max(d.income || 0, d.expense || 0)),
     ) * 0.8;
 
   const totalIncome = chartData.reduce((sum, d) => sum + (d.income || 0), 0);
   const totalExpense = chartData.reduce((sum, d) => sum + (d.expense || 0), 0);
 
   return (
-    <Card className="p-0">
-      <CardHeader className="p-4">
+    <Card>
+      <CardHeader>
         <div className="flex items-start justify-between">
           <div>
             <CardTitle className="text-base font-semibold text-foreground">

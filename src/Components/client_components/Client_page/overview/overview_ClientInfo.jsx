@@ -57,8 +57,8 @@ export default function ClientInfo({ id }) {
   }
 
   return (
-    <Card className="p-0">
-      <div className="flex items-center justify-between border-b border-border p-4">
+    <Card>
+      <div className="flex items-center justify-between border-b border-border px-4">
         <h3 className="text-lg font-semibold text-foreground">Client Info</h3>
         <button variant="outline" className="cursor-pointer">
           <Link

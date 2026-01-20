@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export function ContactAddressView({ data }) {
   return (
     <div className="space-y-6">
-      <Card className="p-4">
-        <CardHeader className="px-0">
+      <Card>
+        <CardHeader>
           <CardTitle className="text-lg font-semibold">
             Contact Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-0 space-y-4">
+        <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-500">Email</label>
             <p className="mt-1 text-sm text-gray-900">
@@ -92,13 +92,13 @@ export function ContactAddressView({ data }) {
         </CardContent>
       </Card>
 
-      <Card className="p-4">
-        <CardHeader className="px-0">
+      <Card>
+        <CardHeader>
           <CardTitle className="text-lg font-semibold">
             Address Information
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 px-0">
+        <CardContent className="space-y-4">
           <div>
             <label className="text-sm font-medium text-gray-500">
               Address Line 1

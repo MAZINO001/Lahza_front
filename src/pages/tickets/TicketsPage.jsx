@@ -117,7 +117,7 @@ export default function TicketsPage() {
   const handleDeleteTicket = async (ticketId) => {
     if (
       window.confirm(
-        "Are you sure you want to delete this ticket? This action cannot be undone."
+        "Are you sure you want to delete this ticket? This action cannot be undone.",
       )
     ) {
       try {
@@ -142,7 +142,7 @@ export default function TicketsPage() {
     setSelectedTickets((prev) =>
       prev.includes(ticketId)
         ? prev.filter((id) => id !== ticketId)
-        : [...prev, ticketId]
+        : [...prev, ticketId],
     );
   };
 
@@ -164,7 +164,7 @@ export default function TicketsPage() {
 
     if (
       window.confirm(
-        `Are you sure you want to delete ${selectedTickets.length} ticket(s)? This action cannot be undone.`
+        `Are you sure you want to delete ${selectedTickets.length} ticket(s)? This action cannot be undone.`,
       )
     ) {
       try {
@@ -174,7 +174,7 @@ export default function TicketsPage() {
         setSelectedTickets([]);
         setSelectAll(false);
         toast.success(
-          `Deleted ${selectedTickets.length} ticket(s) successfully`
+          `Deleted ${selectedTickets.length} ticket(s) successfully`,
         );
       } catch (error) {
         toast.error("Failed to delete tickets");
@@ -196,7 +196,7 @@ export default function TicketsPage() {
       setSelectedTickets([]);
       setSelectAll(false);
       toast.success(
-        `Updated ${selectedTickets.length} ticket(s) to ${newStatus}`
+        `Updated ${selectedTickets.length} ticket(s) to ${newStatus}`,
       );
     } catch (error) {
       toast.error("Failed to update tickets");
@@ -205,7 +205,7 @@ export default function TicketsPage() {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 min-h-screen">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">
@@ -277,9 +277,9 @@ export default function TicketsPage() {
       <div className="space-y-4">
         {filteredTickets.length === 0 ? (
           searchTerm ||
-            filterStatus !== "all" ||
-            filterPriority !== "all" ||
-            filterAssignment !== "all" ? (
+          filterStatus !== "all" ||
+          filterPriority !== "all" ||
+          filterAssignment !== "all" ? (
             <EmptySearch1 />
           ) : (
             <Card>
@@ -307,7 +307,7 @@ export default function TicketsPage() {
               className="hover:shadow-md transition-shadow cursor-pointer w-full"
               onClick={() => handleEditTicket(ticket.id)}
             >
-              <CardContent className="p-4">
+              <CardContent>
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                   <div className="flex items-center gap-3 w-full">
                     <input

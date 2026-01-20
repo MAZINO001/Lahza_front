@@ -139,18 +139,12 @@ export default function AdminTicketsPage() {
   });
   const deleteTicket = useDeleteTicket();
   const handleDeleteTicket = async (ticketId) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this ticket? This action cannot be undone."
-      )
-    ) {
-      try {
-        await deleteTicket.mutate(ticketId);
-        // Ticket will be automatically removed from the list due to React Query cache invalidation
-      } catch (error) {
-        // Error is already handled by the hook with toast notification
-        console.error("Failed to delete ticket:", error);
-      }
+    try {
+      await deleteTicket.mutate(ticketId);
+      // Ticket will be automatically removed from the list due to React Query cache invalidation
+    } catch (error) {
+      // Error is already handled by the hook with toast notification
+      console.error("Failed to delete ticket:", error);
     }
   };
 
@@ -180,7 +174,7 @@ export default function AdminTicketsPage() {
     setSelectedTickets((prev) =>
       prev.includes(ticketId)
         ? prev.filter((id) => id !== ticketId)
-        : [...prev, ticketId]
+        : [...prev, ticketId],
     );
   };
 
@@ -193,7 +187,7 @@ export default function AdminTicketsPage() {
   };
 
   return (
-    <div className="w-full  space-y-4">
+    <div className="w-full p-4  space-y-4 min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-6">
@@ -331,7 +325,7 @@ export default function AdminTicketsPage() {
       {/* Bulk Actions */}
       {selectedTickets?.length > 0 && (
         <Card className="border-blue-200 bg-blue-50 p-0">
-          <CardContent className="p-4">
+          <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-sm font-medium text-blue-800">
@@ -373,10 +367,10 @@ export default function AdminTicketsPage() {
       <div className="space-y-4">
         {filteredTickets?.length === 0 ? (
           searchTerm ||
-            filterStatus !== "all" ||
-            filterPriority !== "all" ||
-            filterCategory !== "all" ||
-            filterAssigned !== "all" ? (
+          filterStatus !== "all" ||
+          filterPriority !== "all" ||
+          filterCategory !== "all" ||
+          filterAssigned !== "all" ? (
             <EmptySearch1 />
           ) : (
             <Card>
@@ -395,8 +389,8 @@ export default function AdminTicketsPage() {
           )
         ) : (
           <>
-            <Card className="p-0 ">
-              <CardContent className="p-4">
+            <Card>
+              <CardContent>
                 <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
@@ -415,11 +409,8 @@ export default function AdminTicketsPage() {
 
             {/* Ticket Cards */}
             {filteredTickets?.map((ticket) => (
-              <Card
-                key={ticket.id}
-                className="hover:shadow-md transition-shadow"
-              >
-                <CardContent className="p-6">
+              <Card key={ticket.id}>
+                <CardContent>
                   <div className="flex flex-col lg:flex-row lg:items-start gap-4">
                     {/* Checkbox */}
                     <div className="flex items-center gap-3">

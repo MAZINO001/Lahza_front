@@ -40,19 +40,18 @@ export function CertificationsView() {
   }
 
   return (
-    <Card className="p-4">
-      <CardHeader className="px-0">
+    <Card>
+      <CardHeader>
         <CardTitle className="text-lg font-semibold">Certifications</CardTitle>
       </CardHeader>
-      <CardContent className="px-0">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <CardContent>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {certifications.map((cert) => (
             <div
               key={cert.id}
               className="group bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300"
             >
               <div className="flex h-48">
-                {/* Image Section - 50% */}
                 {cert.preview_image && (
                   <div className="w-1/2 bg-gray-100 overflow-hidden">
                     <img

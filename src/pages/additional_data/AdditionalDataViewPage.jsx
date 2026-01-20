@@ -116,11 +116,11 @@ export default function AdditionalDataViewPage() {
       </div>
 
       {/* Account Information Card */}
-      <Card className="p-0 border-border mb-4">
-        <CardHeader className="p-4 border-b border-border">
+      <Card className=" border-border mb-4">
+        <CardHeader className="border-b border-border">
           <CardTitle className="text-lg">Account Information</CardTitle>
         </CardHeader>
-        <CardContent className="p-4 space-y-4">
+        <CardContent className="space-y-4">
           {/* Host Accounts */}
           <div>
             <h3 className="text-sm font-semibold mb-3 text-foreground">
@@ -260,11 +260,11 @@ export default function AdditionalDataViewPage() {
       </Card>
 
       {/* Files & Resources Card */}
-      <Card className="p-0 border-border">
-        <CardHeader className="p-4 border-b border-border">
+      <Card className="border-border">
+        <CardHeader className="border-b border-border">
           <CardTitle className="text-lg">Files & Resources</CardTitle>
         </CardHeader>
-        <CardContent className="p-4">
+        <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
               <p className="text-xs font-medium text-muted-foreground mb-2">

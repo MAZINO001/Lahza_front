@@ -117,7 +117,7 @@ export function ProjectForm({ onSuccess }) {
 
   useEffect(() => {
     setDirectProject(
-      (isEditMode || isCloneModeActive) && project?.invoice_id === null
+      (isEditMode || isCloneModeActive) && project?.invoice_id === null,
     );
   }, [isEditMode, isCloneModeActive, project?.invoice_id]);
 
@@ -160,7 +160,7 @@ export function ProjectForm({ onSuccess }) {
   const selectedClientId = watch("customerName");
 
   const selectedClient = clients?.find(
-    (c) => selectedClientId && c.client?.id === Number(selectedClientId)
+    (c) => selectedClientId && c.client?.id === Number(selectedClientId),
   );
 
   const clientOptions = clients?.map((c) => ({

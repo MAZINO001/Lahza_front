@@ -118,7 +118,7 @@ export function ActivityLogsTable() {
 
   return (
     <div className="space-y-4 p-4">
-      <Card className="p-4">
+      <Card>
         <div className="lg:col-span-2">
           <Label>Search anything</Label>
           <Input

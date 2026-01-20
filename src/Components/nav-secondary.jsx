@@ -47,7 +47,8 @@ export function NavSecondary({ items, ...props }) {
             flex items-center gap-2 rounded-sm
             cursor-pointer
             hover:text-primary/80
-            text-xs
+               text-[12px]
+               mb-2
             ${
               isActive(item.url)
                 ? "bg-primary/20 text-primary/80"
@@ -55,7 +56,9 @@ export function NavSecondary({ items, ...props }) {
             }
           `}
                 >
-                  <span>{item.icon && <item.icon className="w-4 h-4" />}</span>
+                  <span>
+                    {item.icon && <item.icon className="w-3.5 h-3.5" />}
+                  </span>
                   <span>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>

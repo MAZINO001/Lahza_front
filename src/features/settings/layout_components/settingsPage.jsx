@@ -32,7 +32,6 @@ export default function SettingsMainContent() {
         "team_management",
         "projects_management",
         "users_management",
-        "agency_objectives",
       ].includes(id)
     ) {
       return <ManagementSection section={id} />;

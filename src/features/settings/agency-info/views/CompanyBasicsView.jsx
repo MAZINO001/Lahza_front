@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function CompanyBasicsView({ data }) {
   return (
-    <Card className="p-4">
-      <CardHeader className="px-0">
+    <Card >
+      <CardHeader >
         <CardTitle className="text-lg font-semibold">Company Basics</CardTitle>
       </CardHeader>
-      <CardContent className=" space-y-4 px-0">
+      <CardContent className=" space-y-4">
         <div>
           <label className="text-sm font-medium text-gray-500">
             Company Name
