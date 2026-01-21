@@ -23,7 +23,6 @@ export default function Transactions({ currentId }) {
       [section]: !prev[section],
     }));
   };
-
   const { data: invoices, isLoading: loadingInvoices } =
     useDocuments("invoices");
   const { data: projects, isLoading: loadingProjects } = useProjects();
@@ -38,13 +37,21 @@ export default function Transactions({ currentId }) {
       payments: paymentColumns(role, navigate),
       projects: ProjectColumns(role, navigate),
     }),
-    [role, navigate]
+    [role, navigate],
   );
 
-  const invoiceCount = invoices?.length
-  const projectsCount = projects?.length
-  const paymentsCount = payments?.length
-  const quotesCount = quotes?.length
+  const invoiceCount = invoices?.filter(
+    (invoice) => invoice.client_id === Number(currentId),
+  )?.length;
+  const projectsCount = projects?.filter(
+    (project) => project.client_id === Number(currentId),
+  )?.length;
+  const paymentsCount = payments?.filter(
+    (payment) => payment.client_id === Number(currentId),
+  )?.length;
+  const quotesCount = quotes?.filter(
+    (quote) => quote.client_id === Number(currentId),
+  )?.length;
 
   const sections = [
     {

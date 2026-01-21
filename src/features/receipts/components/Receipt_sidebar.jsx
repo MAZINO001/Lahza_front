@@ -37,7 +37,7 @@ export default function Receipt_sidebar() {
             .includes(searchTerm.toLowerCase()) ||
           formatId(payment.invoice_id || payment.id, "INVOICE")
             .toLowerCase()
-            .includes(searchTerm.toLowerCase())
+            .includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -149,7 +149,7 @@ export default function Receipt_sidebar() {
               onFocus={() => prefetchData(item.id)}
               className={`block mb-1 rounded-tr-lg rounded-br-lg p-2 cursor-pointer border-l-2 transition ${
                 item.id == currentId
-                  ? "bg-blue-50 border-l-blue-500"
+                  ? "bg-blue-50 dark:bg-accent dark border-l-blue-500 "
                   : "border-l-transparent hover:bg-accent-foreground/10"
               }`}
             >

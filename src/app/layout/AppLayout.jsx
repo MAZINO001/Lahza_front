@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Header from "@/Components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import { AppSidebar } from "../../Components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "../../Components/ui/sidebar";
 import { LoadingProvider } from "@/hooks/LoadingContext";
@@ -20,7 +21,7 @@ export default function AppLayout() {
           <header className="w-full border-b">
             <Header />
           </header>
-          <main>
+          <main className="flex-1">
             <LoadingProvider>
               <div className="bg-muted-foreground/7 ">
                 <BreadcrumbsWrapper />
@@ -28,6 +29,7 @@ export default function AppLayout() {
               </div>
             </LoadingProvider>
           </main>
+          <Footer />
           <ContactWidget />
         </div>
       </SidebarInset>

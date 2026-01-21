@@ -105,7 +105,7 @@ export default function ServicesSidebar({ type, currentId }) {
               onFocus={() => prefetchItem(item.id)}
               className={`block mb-1 rounded-tr-lg rounded-br-lg p-3 cursor-pointer border-l-2 transition-all ${
                 item.id == currentId
-                  ? "bg-blue-50 border-l-blue-500"
+                  ? "bg-blue-50 dark:bg-accent border-l-blue-500"
                   : "border-l-transparent hover:bg-accent-foreground/10"
               }`}
             >

@@ -11,6 +11,7 @@ import { Plus } from "lucide-react";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { ClientFormModal } from "../client_components/addNewClient";
 
 export default function AddClientModel() {
   const { role } = useAuthContext();
@@ -35,8 +36,8 @@ export default function AddClientModel() {
         <DialogHeader>
           <DialogTitle>Adding Client</DialogTitle>
         </DialogHeader>
-
-        <ClientForm handleClientCreatedByAdmin={handleClientCreatedByAdmin} />
+        <ClientFormModal onClose={() => setOpen(false)} />
+        {/* <ClientForm handleClientCreatedByAdmin={handleClientCreatedByAdmin} /> */}
       </DialogContent>
     </Dialog>
   );

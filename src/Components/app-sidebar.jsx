@@ -21,6 +21,7 @@ import {
   TicketCheckIcon,
   LifeBuoy,
   MessageSquareWarning,
+  Server,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -121,7 +122,19 @@ export function AppSidebar(props) {
             { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
             { title: "Clients", url: `/${role}/clients`, icon: User },
             { title: "Services", url: `/${role}/services`, icon: Package },
-            { title: "Plans", url: `/${role}/plans`, icon: Layers },
+            {
+              title: "Plans",
+              url: `/${role}/plans`,
+              icon: Layers,
+              children: [
+                { title: "Web Hosting", url: `/${role}/plans/web-hosting`, icon: Server },
+                { title: "SEO", url: `/${role}/plans/seo`, icon: Server },
+                { title: "Maintenance & Security", url: `/${role}/plans/maintenance-security`, icon: Server },
+                { title: "SAV", url: `/${role}/plans/sav`, icon: Server },
+                { title: "SM", url: `/${role}/plans/sm`, icon: Server },
+                { title: "Automation", url: `/${role}/plans/automation`, icon: Server },
+              ]
+            },
             {
               title: "Tickets",
               url: `/${role}/tickets`,

@@ -7,14 +7,17 @@ import FormField from "@/components/Form/FormField";
 import FileUploader from "@/components/Form/FileUploader";
 
 import {
+  useAdditionalData,
   useCreateAdditionalData,
   useUpdateAdditionalData,
 } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 import { Minus, Plus } from "lucide-react";
 
-export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
+export function AdditionalDataForm({ onSuccess, projectId }) {
   const navigate = useNavigate();
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
+  const { data: additionalData, isLoading } = useAdditionalData(projectId);
+
   const createMutation = useCreateAdditionalData();
   const updateMutation = useUpdateAdditionalData();
   const mutation = additionalData?.id ? updateMutation : createMutation;
@@ -36,40 +39,40 @@ export function AdditionalDataForm({ additionalData, onSuccess, projectId }) {
   } = useForm({
     defaultValues: additionalData
       ? (() => {
-        const hostAcc = parseJSON(additionalData.host_acc, {});
-        const websiteAcc = parseJSON(additionalData.website_acc, {});
-        const socialMedia = parseJSON(additionalData.social_media, []);
+          const hostAcc = parseJSON(additionalData.host_acc, {});
+          const websiteAcc = parseJSON(additionalData.website_acc, {});
+          const socialMedia = parseJSON(additionalData.social_media, []);
 
-        return {
-          project_id: additionalData.project_id,
-          client_id: additionalData.client_id,
-          host_acc_email: hostAcc.email || "",
-          host_acc_password: hostAcc.password || "",
-          website_acc_email: websiteAcc.email || "",
-          website_acc_password: websiteAcc.password || "",
-          social_media:
-            socialMedia.length > 0
-              ? socialMedia
-              : [{ link: "", email: "", password: "" }],
-          media_files: additionalData.media_files || null,
-          specification_file: additionalData.specification_file || null,
-          logo: additionalData.logo || null,
-          other: additionalData.other || null,
-        };
-      })()
+          return {
+            project_id: additionalData.project_id,
+            client_id: additionalData.client_id,
+            host_acc_email: hostAcc.email || "",
+            host_acc_password: hostAcc.password || "",
+            website_acc_email: websiteAcc.email || "",
+            website_acc_password: websiteAcc.password || "",
+            social_media:
+              socialMedia.length > 0
+                ? socialMedia
+                : [{ link: "", email: "", password: "" }],
+            media_files: additionalData.media_files || null,
+            specification_file: additionalData.specification_file || null,
+            logo: additionalData.logo || null,
+            other: additionalData.other || null,
+          };
+        })()
       : {
-        project_id: projectId,
-        client_id: 2,
-        host_acc_email: "",
-        host_acc_password: "",
-        website_acc_email: "",
-        website_acc_password: "",
-        social_media: [{ link: "", email: "", password: "" }],
-        media_files: null,
-        specification_file: null,
-        logo: null,
-        other: null,
-      },
+          project_id: projectId,
+          client_id: 2,
+          host_acc_email: "",
+          host_acc_password: "",
+          website_acc_email: "",
+          website_acc_password: "",
+          social_media: [{ link: "", email: "", password: "" }],
+          media_files: null,
+          specification_file: null,
+          logo: null,
+          other: null,
+        },
   });
 
   const { fields, append, remove } = useFieldArray({

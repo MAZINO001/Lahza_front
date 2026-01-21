@@ -1,23 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { AdditionalDataForm } from "@/features/additional_data/components/AdditionalDataForm";
-import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 
 export default function AdditionalDataEditPage() {
   const navigate = useNavigate();
   const currentPath = window.location.pathname;
   const pathMatch = currentPath.match(/\/project\/(\d+)/);
   const projectId = pathMatch ? pathMatch[1] : null;
-
-  const { data: additionalData, isLoading } = useAdditionalData(projectId);
-
-  if (isLoading) return <div>Loading...</div>;
-  if (!additionalData) return <div>Additional data not found</div>;
-
   return (
-    <AdditionalDataForm
-      additionalData={additionalData}
-      projectId={projectId}
-      onSuccess={() => navigate(-1)}
-    />
+    <AdditionalDataForm projectId={projectId} onSuccess={() => navigate(-1)} />
   );
 }

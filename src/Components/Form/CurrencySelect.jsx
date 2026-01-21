@@ -1,7 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-// CurrencySelect.tsx
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -10,13 +6,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useRegisterStore } from "@/hooks/registerStore";
-import InputError from "../InputError";
 
-const COMMON_CURRENCIES = [
-  { code: "USD", name: "Dollar américain", symbol: "$" },
+const CURRENCIES = [
+  { code: "USD", name: "US Dollar", symbol: "$" },
   { code: "EUR", name: "Euro", symbol: "€" },
-  { code: "MAD", name: "Dirham marocain", symbol: "د.م." },
+  { code: "MAD", name: "Moroccan Dirham", symbol: "د.م." },
 ];
 
 export default function CurrencySelect({
@@ -25,89 +19,54 @@ export default function CurrencySelect({
   disabled = false,
   error,
 }) {
-  const [search, setSearch] = useState("");
-  const registerStore = useRegisterStore();
-
-  // Sync selected currency with Zustand store whenever it changes
-  useEffect(() => {
-    if (value) {
-      registerStore.setField("currency", value);
-    }
-  }, [value]);
-
-  // Filter currencies based on search input
-  const filtered = COMMON_CURRENCIES.filter((c) => {
-    const lower = search.toLowerCase();
-    return (
-      c.code.toLowerCase().includes(lower) ||
-      c.name.toLowerCase().includes(lower) ||
-      c.symbol.toLowerCase().includes(lower)
-    );
-  });
-
-  const handleValueChange = (newValue) => {
-    // 1. Update React Hook Form (via Controller)
-    onChange?.(newValue);
-    // 2. Update Zustand store
-    registerStore.setField("currency", newValue);
-  };
+  const selectedCurrency = CURRENCIES.find((c) => c.code === value);
 
   return (
-    <div className="space-y-2 ">
-      <Label htmlFor="devise">Devise</Label>
+    <div>
+      <Label htmlFor="currency" className="text-sm font-medium pt-2">
+        Currency
+      </Label>
 
-      <Select
-        value={value}
-        onValueChange={handleValueChange}
-        disabled={disabled}
-      >
+      <Select value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger
-          className={`w-full ${
+          className={`w-full transition-colors bg-background  ${
             error
-              ? "border-destructive focus:ring-destructive "
-              : "border-border"
+              ? "border-destructive focus:ring-destructive"
+              : "focus:ring-primary"
           }`}
         >
-          <SelectValue placeholder="Sélectionnez une devise" />
+          {selectedCurrency ? (
+            <div className="flex items-center gap-2 ">
+              <span className="font-medium">{selectedCurrency.code}</span>
+              <span className="text-muted-foreground text-sm">
+                {selectedCurrency.symbol}
+              </span>
+            </div>
+          ) : (
+            <SelectValue placeholder="Select a currency" />
+          )}
         </SelectTrigger>
 
-        <SelectContent className="max-h-60">
-          {/* Search box */}
-          <div className="p-2 border-b border-border">
-            <Input
-              placeholder="Rechercher (code, nom, symbole)..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.stopPropagation()} // prevent Select from closing
-              className="h-9 bg-background"
-              disabled={disabled}
-            />
-          </div>
-
-          {/* Currency items */}
-          {filtered.length > 0 ? (
-            filtered.map((currency) => (
-              <SelectItem key={currency.code} value={currency.code}>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{currency.code}</span>
-                  <span className="text-muted-foreground">
-                    ({currency.symbol})
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    - {currency.name}
-                  </span>
-                </div>
-              </SelectItem>
-            ))
-          ) : (
-            <div className="px-3 py-2 text-sm text-muted-foreground">
-              Aucun résultat
-            </div>
-          )}
+        <SelectContent className="w-full" align="start" sideOffset={4}>
+          {CURRENCIES.map((currency) => (
+            <SelectItem
+              key={currency.code}
+              value={currency.code}
+              className="cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">{currency.code}</span>
+                <span className="text-muted-foreground">{currency.symbol}</span>
+                <span className="text-muted-foreground text-sm">
+                  {currency.name}
+                </span>
+              </div>
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
-      {error && <InputError message={error} className="mt-1" />}
+      {error && <p className="text-xs font-medium text-destructive">{error}</p>}
     </div>
   );
 }

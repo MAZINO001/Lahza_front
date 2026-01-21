@@ -13,7 +13,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useClient, useDeleteClient } from "@/features/clients/hooks/useClientsQuery";
+import {
+  useClient,
+  useDeleteClient,
+} from "@/features/clients/hooks/useClientsQuery";
 import ClientBanner from "@/components/ClientBanner";
 import { Controller, useForm } from "react-hook-form";
 import FileUploader from "@/components/Form/FileUploader";
@@ -72,9 +75,7 @@ export default function Client_Page({ currentId }) {
             <Controller
               name="client_files"
               control={control}
-              render={({ field }) => (
-                <ComboBoxWithStates3 />
-              )}
+              render={({ field }) => <ComboBoxWithStates3 />}
             />
 
             <Link to={`/${role}/invoice/new`} state={{ clientId: currentId }}>
@@ -100,9 +101,7 @@ export default function Client_Page({ currentId }) {
                 <AlertDialogDestructive
                   onDelete={handleDeleteClient}
                   trigger={
-                    <DropdownMenuItem
-                      className="text-red-600 focus:text-red-600"
-                    >
+                    <DropdownMenuItem className="text-red-600 focus:text-red-600">
                       Delete client
                     </DropdownMenuItem>
                   }
@@ -126,10 +125,11 @@ export default function Client_Page({ currentId }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === tab.id
-                ? "border-blue-500 text-blue-600"
-                : "border-transparent text-muted-foreground  hover:text-foreground "
-                }`}
+              className={`px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-muted-foreground  hover:text-foreground "
+              }`}
             >
               {tab.label}
             </button>

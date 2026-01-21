@@ -208,7 +208,7 @@ export function DocumentForm({ type, onSuccess }) {
           items:
             doc.quote_services?.map((s) => {
               const serviceDetails = services.find(
-                (srv) => Number(srv.id) === Number(s.service_id)
+                (srv) => Number(srv.id) === Number(s.service_id),
               );
               return {
                 serviceId: Number(s.service_id),
@@ -247,7 +247,7 @@ export function DocumentForm({ type, onSuccess }) {
             (isInvoice ? doc.invoice_services : doc.quote_services)?.map(
               (s) => {
                 const serviceDetails = services.find(
-                  (srv) => Number(srv.id) === Number(s.service_id)
+                  (srv) => Number(srv.id) === Number(s.service_id),
                 );
 
                 return {
@@ -259,7 +259,7 @@ export function DocumentForm({ type, onSuccess }) {
                   discount: 0,
                   amount: parseFloat(s.individual_total),
                 };
-              }
+              },
             ) || [],
         });
       }
@@ -289,7 +289,7 @@ export function DocumentForm({ type, onSuccess }) {
   const selectedClientId = watch("customerName");
 
   const selectedClient = clients?.find(
-    (c) => c.client?.id === Number(selectedClientId)
+    (c) => c.client?.id === Number(selectedClientId),
   );
 
   useEffect(() => {
@@ -520,47 +520,75 @@ export function DocumentForm({ type, onSuccess }) {
 
         {isInvoice ? (
           <>
-            <FormField
-              label="Invoice Id"
-              type="text"
-              value={"0001"}
-              placeholder="Type An Object"
-              disabled
-            />
-
-            <Controller
-              name="invoice_date"
-              control={control}
-              rules={{ required: "Invoice date is required" }}
-              render={({ field, fieldState: { error } }) => (
+            <div className="flex gap-4 w-full">
+              <div className="w-[8%]">
                 <FormField
-                  id="invoice_date"
-                  label="Invoice Date*"
-                  type="date"
-                  value={field.value || ""}
-                  onChange={(e) => field.onChange(e.target.value)}
-                  onBlur={field.onBlur}
-                  error={error?.message}
+                  label="Invoice Id"
+                  type="text"
+                  value={"00001"}
+                  placeholder="Type An Object"
+                  disabled
                 />
-              )}
-            />
+              </div>
+              <div className="w-[92%]">
+                {" "}
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormField
+                      id="description"
+                      label="Object"
+                      type="text"
+                      value={field.value || ""}
+                      placeholder="Type An Object"
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      error={error?.message}
+                    />
+                  )}
+                />
+              </div>
+            </div>
 
-            <Controller
-              name="due_date"
-              control={control}
-              rules={{ required: "Due date is required" }}
-              render={({ field, fieldState: { error } }) => (
-                <FormField
-                  id="due_date"
-                  label="Due Date*"
-                  type="date"
-                  value={field.value || ""}
-                  onChange={(e) => field.onChange(e.target.value)}
-                  onBlur={field.onBlur}
-                  error={error?.message}
+            <div className="flex gap-4 w-full">
+              <div className="w-[50%]">
+                <Controller
+                  name="invoice_date"
+                  control={control}
+                  rules={{ required: "Invoice date is required" }}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormField
+                      id="invoice_date"
+                      label="Invoice Date*"
+                      type="date"
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      error={error?.message}
+                    />
+                  )}
                 />
-              )}
-            />
+              </div>
+              <div className="w-[50%]">
+                <Controller
+                  name="due_date"
+                  control={control}
+                  rules={{ required: "Due date is required" }}
+                  render={({ field, fieldState: { error } }) => (
+                    <FormField
+                      id="due_date"
+                      label="Due Date*"
+                      type="date"
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      error={error?.message}
+                    />
+                  )}
+                />
+              </div>
+            </div>
           </>
         ) : (
           <>
@@ -582,22 +610,6 @@ export function DocumentForm({ type, onSuccess }) {
             />
           </>
         )}
-        <Controller
-          name="description"
-          control={control}
-          render={({ field, fieldState: { error } }) => (
-            <FormField
-              id="description"
-              label="Object"
-              type="text"
-              value={field.value || ""}
-              placeholder="Type An Object"
-              onChange={(e) => field.onChange(e.target.value)}
-              onBlur={field.onBlur}
-              error={error?.message}
-            />
-          )}
-        />
 
         <div className="mt-4">
           <span className="text-sm font-medium  text-foreground mb-4">
@@ -684,7 +696,7 @@ export function DocumentForm({ type, onSuccess }) {
                                 field.onChange(serviceId);
 
                                 const service = services.find(
-                                  (s) => Number(s.id) === serviceId
+                                  (s) => Number(s.id) === serviceId,
                                 );
                                 if (!service) return;
 
@@ -692,19 +704,19 @@ export function DocumentForm({ type, onSuccess }) {
                                 setValue(`items.${index}.rate`, unitPrice);
                                 setValue(
                                   `items.${index}.description`,
-                                  service.description
+                                  service.description,
                                 );
                                 setValue(`items.${index}.service`, serviceId);
 
                                 const quantity = Number(
-                                  watch(`items.${index}.quantity`) || 1
+                                  watch(`items.${index}.quantity`) || 1,
                                 );
 
                                 const tax_rate = Number(service.tax_rate);
                                 setValue(`items.${index}.tax_rate`, tax_rate);
 
                                 const discount = Number(
-                                  watch(`items.${index}.discount`) || 0
+                                  watch(`items.${index}.discount`) || 0,
                                 );
 
                                 const base = quantity * unitPrice;
@@ -717,7 +729,7 @@ export function DocumentForm({ type, onSuccess }) {
 
                                 setValue(
                                   `items.${index}.amount`,
-                                  Number(finalAmount.toFixed(2))
+                                  Number(finalAmount.toFixed(2)),
                                 );
                               }}
                               error={error?.message}
@@ -733,19 +745,19 @@ export function DocumentForm({ type, onSuccess }) {
                               className="mt-2 w-full border border-border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 font-mono"
                               rows={5}
                               value={formatToBullets(
-                                watch(`items.${index}.description`) || ""
+                                watch(`items.${index}.description`) || "",
                               )}
                               onChange={(e) => {
                                 const cleanText = e.target.value
                                   .split("\n")
                                   .map((line) =>
-                                    line.replace(/^•\s*/, "").trim()
+                                    line.replace(/^•\s*/, "").trim(),
                                   )
                                   .filter((line) => line.length > 0)
                                   .join(", ");
                                 setValue(
                                   `items.${index}.description`,
-                                  cleanText
+                                  cleanText,
                                 );
                               }}
                             />
@@ -915,7 +927,7 @@ export function DocumentForm({ type, onSuccess }) {
               <Label htmlFor="payment" className="mb-1">
                 Payment
               </Label>
-              <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-border p-4 rounded-lg">
+              <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-border px-4 pt-2 pb-4 rounded-lg">
                 <div className="w-full flex gap-4 items-center justify-between">
                   <Controller
                     name="payment_type"
@@ -1052,8 +1064,8 @@ export function DocumentForm({ type, onSuccess }) {
                   ? "sent"
                   : document?.client?.status === "confirmed"
                     ? "confirmed"
-                    : "sent"
-              )
+                    : "sent",
+              ),
             )}
             type="button"
             disabled={isSubmitting}

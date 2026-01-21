@@ -14,16 +14,16 @@ export const title = "Info with Icon and Badge";
 const Example = () => (
   <HoverCard>
     <HoverCardTrigger asChild>
-      <div className="flex items-center gap-1 cursor-pointer px-1 py-px rounded-full border border-border bg-secondary hover:bg-secondary/80 transition-colors w-fit">
+      {/* <div className="flex items-center gap-1 cursor-pointer px-1 py-px rounded-full border border-border bg-secondary hover:bg-secondary/80 transition-colors w-fit">
         <Shield className="h-3 w-3 text-muted-foreground" />
         <span className="text-sm font-medium text-secondary-foreground">
           Verified
         </span>
-      </div>
-      {/* <Badge className="cursor-pointer gap-1" variant="secondary">
+      </div> */}
+      <Badge className="cursor-pointer gap-1" variant="secondary">
         <Shield className="h-3 w-3" />
         Verified
-      </Badge> */}
+      </Badge>
     </HoverCardTrigger>
     <HoverCardContent>
       <div className="flex gap-3">
