@@ -74,50 +74,50 @@ export function getUserManagementColumns(role, navigate) {
       },
     },
 
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const user = row.original;
-        const { HandleEditUser, handleDeleteUser } = globalFnStore();
-        const [open, setOpen] = useState(false);
-        return (
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => HandleEditUser(user.id, navigate, role)}
-              className="cursor-pointer"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            {role === "admin" && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setOpen(true)}
-                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
-                >
-                  <Trash className="h-4 w-4" />
-                </Button>
+    // {
+    //   id: "actions",
+    //   header: "Actions",
+    //   cell: ({ row }) => {
+    //     const user = row.original;
+    //     const { HandleEditUser, handleDeleteUser } = globalFnStore();
+    //     const [open, setOpen] = useState(false);
+    //     return (
+    //       <div className="flex gap-2">
+    //         <Button
+    //           size="sm"
+    //           variant="ghost"
+    //           onClick={() => HandleEditUser(user.id, navigate, role)}
+    //           className="cursor-pointer"
+    //         >
+    //           <Pencil className="h-4 w-4" />
+    //         </Button>
+    //         {role === "admin" && (
+    //           <>
+    //             <Button
+    //               variant="ghost"
+    //               size="sm"
+    //               onClick={() => setOpen(true)}
+    //               className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+    //             >
+    //               <Trash className="h-4 w-4" />
+    //             </Button>
 
-                <ConfirmDialog
-                  open={open}
-                  onClose={() => setOpen(false)}
-                  onConfirm={() => {
-                    handleDeleteUser(user.id);
-                    setOpen(false);
-                  }}
-                  title="Remove User"
-                  description="Are you sure you want to remove this user? This action cannot be undone."
-                  action="cancel"
-                />
-              </>
-            )}
-          </div>
-        );
-      },
-    },
+    //             <ConfirmDialog
+    //               open={open}
+    //               onClose={() => setOpen(false)}
+    //               onConfirm={() => {
+    //                 handleDeleteUser(user.id);
+    //                 setOpen(false);
+    //               }}
+    //               title="Remove User"
+    //               description="Are you sure you want to remove this user? This action cannot be undone."
+    //               action="cancel"
+    //             />
+    //           </>
+    //         )}
+    //       </div>
+    //     );
+    //   },
+    // },
   ];
 }

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, X, GripVertical } from "lucide-react";
+import { Plus, X, GripVertical } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useSubmitProtection } from "@/hooks/spamBlocker";
@@ -20,10 +20,13 @@ import {
   useNoInvoiceProject,
   useUpdateDocument,
 } from "../hooks/useDocumentsQuery";
-import { useClients } from "@/features/clients/hooks/useClientsQuery";
-import { useServices } from "@/features/services/hooks/useServiceQuery";
+import { useClients } from "@/features/clients/hooks/useClients/useClients";
+import { useServices } from "@/features/services/hooks/useServices";
 import AddClientModel from "@/components/common/AddClientModel";
 import TextareaField from "@/components/Form/TextareaField";
+import DateField from "@/components/Form/DateField";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export function DocumentForm({ type, onSuccess }) {
   const navigate = useNavigate();
@@ -44,7 +47,6 @@ export function DocumentForm({ type, onSuccess }) {
   const documentType = quoteId ? "quotes" : type;
 
   const { data: document } = useDocument(documentId, documentType);
-
   const isInvoice = type === "invoices";
   const { data: clients, isLoading: clientsLoading } = useClients();
   const { data: services = [], isLoading: servicesLoading } = useServices();
@@ -72,11 +74,14 @@ export function DocumentForm({ type, onSuccess }) {
       customerName: clientId || "",
       ...(isInvoice
         ? {
-            invoice_date: new Date().toISOString().split("T")[0],
-            due_date: new Date().toISOString().split("T")[0],
+            invoice_date: "",
+            due_date: "",
+            // invoice_date: new Date().toISOString().split("T")[0],
+            // due_date: new Date().toISOString().split("T")[0],
           }
         : {
             quoteDate: new Date().toISOString().split("T")[0],
+            // attach_file:[];
           }),
       notes: "",
       payment_percentage: "50",
@@ -92,7 +97,8 @@ export function DocumentForm({ type, onSuccess }) {
           description: "",
           quantity: 1,
           rate: 0,
-          tax: 0,
+          // tax: 0,
+          tax_rate: 0,
           discount: 0,
           amount: 0,
         },
@@ -179,7 +185,6 @@ export function DocumentForm({ type, onSuccess }) {
   useEffect(() => {
     if (document && (isEditMode || isCloneMode || isConvertMode)) {
       const doc = document;
-      console.log(doc);
       let projectTitles = [];
       if (projects && projects.title && Array.isArray(projects.title)) {
         projectTitles = projects.title.filter((t) => t !== "");
@@ -210,12 +215,14 @@ export function DocumentForm({ type, onSuccess }) {
               const serviceDetails = services.find(
                 (srv) => Number(srv.id) === Number(s.service_id),
               );
+              console.log(s);
               return {
                 serviceId: Number(s.service_id),
                 description: serviceDetails?.description || "",
                 quantity: s.quantity,
                 rate: parseFloat(s.individual_total) / s.quantity || 0,
-                tax: Number(serviceDetails?.tax_rate) || 0,
+                // tax: Number(s?.tax) || 0,
+                tax_rate: Number(s?.tax) || 0,
                 discount: 0,
                 amount: parseFloat(s.individual_total),
               };
@@ -249,13 +256,15 @@ export function DocumentForm({ type, onSuccess }) {
                 const serviceDetails = services.find(
                   (srv) => Number(srv.id) === Number(s.service_id),
                 );
-
+                console.log(s);
+                console.log(serviceDetails);
                 return {
                   serviceId: Number(s.service_id),
                   description: serviceDetails?.description || "",
                   quantity: s.quantity,
                   rate: parseFloat(s.individual_total) / s.quantity || 0,
-                  tax: Number(serviceDetails?.tax_rate) || 0,
+                  // tax: Number(s?.tax) || 0,
+                  tax_rate: Number(s?.tax) || 0,
                   discount: 0,
                   amount: parseFloat(s.individual_total),
                 };
@@ -315,7 +324,8 @@ export function DocumentForm({ type, onSuccess }) {
       description: "",
       quantity: 1,
       rate: 0,
-      tax: 0,
+      // tax: 0,
+      tax_rate: 0,
       discount: 0,
       amount: 0,
     });
@@ -339,19 +349,21 @@ export function DocumentForm({ type, onSuccess }) {
     const tax = Number(watch(`items.${index}.tax_rate`) || 0);
     const discount = Number(watch(`items.${index}.discount`) || 0);
     const base = quantity * rate;
-    const taxAmount = base * (tax / 100);
-    const totalAfterTax = base + taxAmount;
-    const discountAmount = totalAfterTax * (discount / 100);
-    const finalAmount = totalAfterTax - discountAmount;
+
+    // Calculate HT amount (excluding tax)
+    const discountAmount = base * (discount / 100);
+    const finalAmount = base - discountAmount;
 
     setValue(`items.${index}.amount`, Number(finalAmount.toFixed(2)));
   };
 
   const calculateTotal = () =>
     items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
   const onSubmit = async (data, status) => {
     if (isSubmitting || !startSubmit()) return;
 
+    console.log(data);
     const payload = {
       client_id: Number(data.customerName),
 
@@ -360,6 +372,7 @@ export function DocumentForm({ type, onSuccess }) {
             invoice_date: data.invoice_date,
             due_date: data.due_date,
             status: status || "unpaid",
+            description: data.description,
             balance_due: Number(calculateTotal().toFixed(2)),
             ...(isConvertMode && { quote_id: quoteId }),
           }
@@ -380,12 +393,12 @@ export function DocumentForm({ type, onSuccess }) {
       payment_percentage: Number(data.payment_percentage),
       payment_status: data.payment_status,
       payment_type: data.payment_type,
-
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
         rate: Number(item.rate),
-        tax: Number(item.tax_rate),
+        // tax: item.tax_rate != null ? Number(item.tax_rate) : 0,
+        tax: Number(item.tax_rate) || 0,
         discount: Number(item.discount || 0),
         individual_total: Number(item.amount),
       })),
@@ -438,82 +451,139 @@ export function DocumentForm({ type, onSuccess }) {
           </div>
           <AddClientModel />
         </div>
-        {selectedClient && (
-          <div className="space-y-4 flex gap-4">
-            <div className="border rounded bg-background p-4">
-              <h3 className="font-bold text-base mb-3">Billing</h3>
-              <div className="space-y-2 text-sm">
-                <p>
-                  <span className="font-medium">Address:</span>{" "}
-                  {selectedClient?.client?.address}
-                </p>
-                <p>
-                  <span className="font-medium">City:</span>{" "}
-                  {selectedClient?.client?.city}
-                </p>
-                <p>
-                  <span className="font-medium">Country:</span>{" "}
-                  {selectedClient?.client?.country}
-                </p>
-                <p>
-                  <span className="font-medium">Currency:</span>{" "}
-                  {selectedClient?.client?.currency || "MAD"}
-                </p>
-                <p>
-                  <span className="font-medium">VAT:</span>{" "}
-                  {selectedClient?.client?.vat || "20%"}
-                </p>
-              </div>
-            </div>
 
-            <div className="border rounded bg-background p-4">
-              <h3 className="font-bold text-base mb-3">Personal Info</h3>
-              <div className="space-y-2 text-sm">
-                <p>
-                  <span className="font-medium">Name:</span>{" "}
-                  {selectedClient?.client?.user?.name}
-                </p>
-                <p>
-                  <span className="font-medium">Email:</span>{" "}
-                  {selectedClient?.client?.user?.email}
-                </p>
-                <p>
-                  <span className="font-medium">Phone:</span>{" "}
-                  {selectedClient?.client?.phone}
-                </p>
-                <p>
-                  <span className="font-medium">Client Type:</span>{" "}
-                  {selectedClient?.client?.client_type}
-                </p>
-              </div>
-            </div>
+        {selectedClient && (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="border-border bg-card text-card-foreground shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">Billing</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">
+                    Address
+                  </span>
+                  <span className="text-foreground">
+                    {selectedClient?.client?.address || "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">
+                    City
+                  </span>
+                  <span className="text-foreground">
+                    {selectedClient?.client?.city || "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">
+                    Country
+                  </span>
+                  <span className="text-foreground">
+                    {selectedClient?.client?.country || "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">
+                    Currency
+                  </span>
+                  <span className="text-foreground">
+                    {selectedClient?.client?.currency || "MAD"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">VAT</span>
+                  <span className="text-foreground">
+                    {selectedClient?.client?.vat || "20%"}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border bg-card text-card-foreground shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">
+                  Personal Info
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">
+                    Name
+                  </span>
+                  <span className="text-foreground">
+                    {selectedClient?.client?.user?.name || "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">
+                    Email
+                  </span>
+                  <span className="text-foreground break-all">
+                    {selectedClient?.client?.user?.email || "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">
+                    Phone
+                  </span>
+                  <span className="text-foreground">
+                    {selectedClient?.client?.phone || "—"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-muted-foreground">
+                    Client Type
+                  </span>
+                  <span className="text-foreground">
+                    {selectedClient?.client?.client_type || "—"}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
 
             {(selectedClient?.client?.company ||
               selectedClient?.client?.ice ||
               selectedClient?.client?.siren) && (
-              <div className="border rounded bg-background p-4">
-                <h3 className="font-bold text-base mb-3">Company Info</h3>
-                <div className="space-y-2 text-sm">
+              <Card className="border-border bg-card text-card-foreground shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">
+                    Company Info
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
                   {selectedClient?.client?.company && (
-                    <p>
-                      <span className="font-medium">Company:</span>{" "}
-                      {selectedClient?.client?.company}
-                    </p>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        Company
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.company}
+                      </span>
+                    </div>
                   )}
                   {selectedClient?.client?.ice && (
-                    <p>
-                      <span className="font-medium">ICE:</span>{" "}
-                      {selectedClient?.client?.ice}
-                    </p>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        ICE
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.ice}
+                      </span>
+                    </div>
                   )}
                   {selectedClient?.client?.siren && (
-                    <p>
-                      <span className="font-medium">SIREN:</span>{" "}
-                      {selectedClient?.client?.siren}
-                    </p>
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        SIREN
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.siren}
+                      </span>
+                    </div>
                   )}
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
           </div>
         )}
@@ -521,17 +591,17 @@ export function DocumentForm({ type, onSuccess }) {
         {isInvoice ? (
           <>
             <div className="flex gap-4 w-full">
-              <div className="w-[8%]">
+              <div className="w-[8%] ">
                 <FormField
                   label="Invoice Id"
                   type="text"
+                  className="opacity-80"
                   value={"00001"}
                   placeholder="Type An Object"
-                  disabled
+                  disabled={() => true}
                 />
               </div>
               <div className="w-[92%]">
-                {" "}
                 <Controller
                   name="description"
                   control={control}
@@ -558,14 +628,16 @@ export function DocumentForm({ type, onSuccess }) {
                   control={control}
                   rules={{ required: "Invoice date is required" }}
                   render={({ field, fieldState: { error } }) => (
-                    <FormField
+                    // <FormField
+                    <DateField
                       id="invoice_date"
                       label="Invoice Date*"
                       type="date"
                       value={field.value || ""}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      // onChange={(e) => field.onChange(e.target.value)}
                       onBlur={field.onBlur}
                       error={error?.message}
+                      {...field}
                     />
                   )}
                 />
@@ -576,14 +648,16 @@ export function DocumentForm({ type, onSuccess }) {
                   control={control}
                   rules={{ required: "Due date is required" }}
                   render={({ field, fieldState: { error } }) => (
-                    <FormField
+                    // <FormField
+                    <DateField
                       id="due_date"
                       label="Due Date*"
                       type="date"
                       value={field.value || ""}
-                      onChange={(e) => field.onChange(e.target.value)}
+                      // onChange={(e) => field.onChange(e.target.value)}
                       onBlur={field.onBlur}
                       error={error?.message}
+                      {...field}
                     />
                   )}
                 />
@@ -591,301 +665,330 @@ export function DocumentForm({ type, onSuccess }) {
             </div>
           </>
         ) : (
-          <>
-            <Controller
-              name="quoteDate"
-              control={control}
-              rules={{ required: "Quote date is required" }}
-              render={({ field, fieldState: { error } }) => (
-                <FormField
-                  id="quoteDate"
-                  label="Quote Date*"
-                  type="date"
-                  value={field.value || ""}
-                  onChange={(e) => field.onChange(e.target.value)}
-                  onBlur={field.onBlur}
-                  error={error?.message}
-                />
-              )}
-            />
-          </>
+          <div className="flex gap-4">
+            <div className="w-[30%]">
+              <Controller
+                name="quoteDate"
+                control={control}
+                rules={{ required: "Quote date is required" }}
+                render={({ field, fieldState: { error } }) => (
+                  // <FormField
+                  <DateField
+                    id="quoteDate"
+                    label="Quote Date*"
+                    type="date"
+                    value={field.value || ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    error={error?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+            <div className="w-[70%]">
+              <Controller
+                name="description"
+                control={control}
+                render={({ field, fieldState: { error } }) => (
+                  <FormField
+                    id="description"
+                    label="Object"
+                    type="text"
+                    value={field.value || ""}
+                    placeholder="Type An Object"
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={field.onBlur}
+                    error={error?.message}
+                  />
+                )}
+              />
+            </div>
+          </div>
         )}
 
-        <div className="mt-4">
-          <span className="text-sm font-medium  text-foreground mb-4">
-            Item Table
-          </span>
-          <div className="overflow-x-auto border rounded-md rounded-br-none">
-            <table className="w-full min-w-[500px] border-collapse">
-              <thead>
-                <tr className="bg-background">
-                  <th className="p-2 w-8"></th>
-                  <th className="p-2 text-left text-sm font-semibold text-foreground">
-                    ITEM DETAILS
-                  </th>
-                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
-                    QUANTITY
-                  </th>
-                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
-                    RATE
-                  </th>
-                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
-                    TAX
-                  </th>
-                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
-                    DISCOUNT
-                  </th>
-                  <th className="p-2 text-right text-sm font-semibold text-foreground w-30">
-                    AMOUNT
-                  </th>
-                  <th className="p-2 w-16"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {itemFields.map((field, index) => {
-                  const selectedService = watch(`items.${index}.serviceId`);
-                  const isDragging = draggedIndex === index;
-                  const isDragOver = dragOverIndex === index;
+        <div className="mt-1 space-y-4">
+          <h3 className="text-sm font-medium text-foreground">Items</h3>
 
-                  return (
-                    <tr
-                      key={field.id}
-                      className={`border-b border-border hover:bg-background transition-all ${
-                        isDragging ? "opacity-50" : ""
-                      } ${
-                        isDragOver
-                          ? "border-t-2 border-t-blue-500 bg-blue-50"
-                          : ""
-                      }`}
-                      draggable
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        handleDragOver(index);
-                      }}
-                      onDragLeave={handleDragLeave}
-                      onDrop={(e) => handleDrop(e, index)}
-                      onDragEnd={handleDragEnd}
-                      style={{
-                        cursor: isDragging ? "grabbing" : "grab",
-                      }}
-                    >
-                      <td className="p-2 text-center">
-                        <div
-                          className="cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600"
-                          onMouseDown={() => handleDragStart(index)}
-                        >
-                          <GripVertical size={16} />
-                        </div>
-                      </td>
-                      <td className="p-2">
-                        <Controller
-                          name={`items.${index}.serviceId`}
-                          control={control}
-                          rules={{
-                            required: "Service is required",
-                            validate: (value) =>
-                              !!value || "Service is required",
-                          }}
-                          render={({ field, fieldState: { error } }) => (
-                            <ServiceSelect
-                              services={services}
-                              value={field.value || ""}
-                              onChange={(val) => {
-                                const serviceId = Number(val);
-                                field.onChange(serviceId);
+          <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[800px] border-collapse">
+                <thead>
+                  <tr className="border-b bg-muted/40">
+                    <th className="w-10 p-3 text-center"></th>
+                    <th className="p-3 text-left text-sm font-semibold text-muted-foreground">
+                      ITEM / DESCRIPTION
+                    </th>
+                    <th className="p-3 text-left text-sm font-semibold text-muted-foreground w-29">
+                      QUANTITY
+                    </th>
+                    <th className="p-3 text-left text-sm font-semibold text-muted-foreground w-29">
+                      RATE
+                    </th>
+                    <th className="p-3 text-left text-sm font-semibold text-muted-foreground w-29">
+                      TAX %
+                    </th>
+                    <th className="p-3 text-left text-sm font-semibold text-muted-foreground w-29">
+                      DISCOUNT %
+                    </th>
+                    <th className="p-3 text-right text-sm font-semibold text-muted-foreground w-32">
+                      AMOUNT
+                    </th>
+                    <th className="w-14 p-3 text-center"></th>
+                  </tr>
+                </thead>
 
-                                const service = services.find(
-                                  (s) => Number(s.id) === serviceId,
-                                );
-                                if (!service) return;
+                <tbody>
+                  {itemFields.map((field, index) => {
+                    const selectedService = watch(`items.${index}.serviceId`);
+                    const isDragging = draggedIndex === index;
+                    const isDragOver = dragOverIndex === index;
 
-                                const unitPrice = Number(service.base_price);
-                                setValue(`items.${index}.rate`, unitPrice);
-                                setValue(
-                                  `items.${index}.description`,
-                                  service.description,
-                                );
-                                setValue(`items.${index}.service`, serviceId);
-
-                                const quantity = Number(
-                                  watch(`items.${index}.quantity`) || 1,
-                                );
-
-                                const tax_rate = Number(service.tax_rate);
-                                setValue(`items.${index}.tax_rate`, tax_rate);
-
-                                const discount = Number(
-                                  watch(`items.${index}.discount`) || 0,
-                                );
-
-                                const base = quantity * unitPrice;
-                                const taxAmount = base * (tax_rate / 100);
-                                const totalAfterTax = base + taxAmount;
-                                const discountAmount =
-                                  totalAfterTax * (discount / 100);
-                                const finalAmount =
-                                  totalAfterTax - discountAmount;
-
-                                setValue(
-                                  `items.${index}.amount`,
-                                  Number(finalAmount.toFixed(2)),
-                                );
-                              }}
-                              error={error?.message}
-                              placeholder="Select a service"
-                            />
-                          )}
-                        />
-                        {selectedService && (
-                          <div className="mt-2">
-                            <TextareaField
-                              {...register(`items.${index}.description`)}
-                              placeholder="Enter service description (comma or line separated)"
-                              className="mt-2 w-full border border-border p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-gray-400 font-mono"
-                              rows={5}
-                              value={formatToBullets(
-                                watch(`items.${index}.description`) || "",
-                              )}
-                              onChange={(e) => {
-                                const cleanText = e.target.value
-                                  .split("\n")
-                                  .map((line) =>
-                                    line.replace(/^•\s*/, "").trim(),
-                                  )
-                                  .filter((line) => line.length > 0)
-                                  .join(", ");
-                                setValue(
-                                  `items.${index}.description`,
-                                  cleanText,
-                                );
-                              }}
-                            />
-                          </div>
+                    return (
+                      <tr
+                        key={field.id}
+                        className={cn(
+                          "border-b last:border-b-0 hover:bg-muted/50 transition-colors ",
+                          isDragging && "opacity-60 bg-muted/70",
+                          isDragOver &&
+                            "border-t-2 border-t-primary bg-primary/5",
                         )}
-                      </td>
-                      <td className="p-2">
-                        <FormField
-                          type="number"
-                          value={watch(`items.${index}.quantity`) ?? ""}
-                          {...register(`items.${index}.quantity`, {
-                            required: "Quantity is required",
-                            min: {
-                              value: 1,
-                              message: "Quantity must be at least 1",
-                            },
-                            valueAsNumber: true,
-                          })}
-                          error={errors.items?.[index]?.quantity?.message}
-                          onChange={(e) => {
-                            updateItem(index, "quantity", e.target.value);
-                            trigger(`items.${index}.quantity`);
-                          }}
-                        />
-                      </td>
+                        draggable
+                        onDragStart={() => handleDragStart(index)}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          handleDragOver(index);
+                        }}
+                        onDragLeave={handleDragLeave}
+                        onDrop={(e) => handleDrop(e, index)}
+                        onDragEnd={handleDragEnd}
+                        style={{ cursor: isDragging ? "grabbing" : "grab" }}
+                      >
+                        {/* Drag handle */}
+                        <td className="p-3 text-center ">
+                          <GripVertical
+                            className="mx-auto h-5 w-5 text-muted-foreground hover:text-foreground transition-colors cursor-grab active:cursor-grabbing"
+                            onMouseDown={() => handleDragStart(index)}
+                          />
+                        </td>
 
-                      <td className="p-2">
-                        <FormField
-                          type="number"
-                          value={watch(`items.${index}.rate`) ?? ""}
-                          {...register(`items.${index}.rate`, {
-                            required: "Rate is required",
-                            min: {
-                              value: 0,
-                              message: "Rate cannot be negative",
-                            },
-                            valueAsNumber: true,
-                          })}
-                          error={errors.items?.[index]?.rate?.message}
-                          onChange={(e) => {
-                            updateItem(index, "rate", e.target.value);
-                            trigger(`items.${index}.rate`);
-                          }}
-                        />
-                      </td>
+                        {/* Service + Description */}
+                        <td className="p-3 ">
+                          <div className="space-y-3 ">
+                            <Controller
+                              name={`items.${index}.serviceId`}
+                              control={control}
+                              rules={{
+                                required: "Service is required",
+                                validate: (value) =>
+                                  !!value || "Service is required",
+                              }}
+                              render={({ field, fieldState: { error } }) => (
+                                <ServiceSelect
+                                  services={services}
+                                  value={field.value || ""}
+                                  onChange={(val) => {
+                                    const serviceId = Number(val);
+                                    field.onChange(serviceId);
 
-                      <td className="p-2">
-                        <FormField
-                          type="number"
-                          value={
-                            watch(`items.${index}.tax_rate`) ??
-                            watch(`items.${index}.tax`)
-                          }
-                          {...register(`items.${index}.tax_rate`, {
-                            min: {
-                              value: 0,
-                              message: "Tax cannot be negative",
-                            },
-                            max: {
-                              value: 100,
-                              message: "Tax cannot exceed 100%",
-                            },
-                            valueAsNumber: true,
-                          })}
-                          error={errors.items?.[index]?.tax_rate?.message}
-                          onChange={(e) => {
-                            updateItem(index, "tax_rate", e.target.value);
-                            trigger(`items.${index}.tax_rate`);
-                          }}
-                        />
-                      </td>
+                                    const service = services.find(
+                                      (s) => Number(s.id) === serviceId,
+                                    );
+                                    if (!service) return;
 
-                      <td className="p-2">
-                        <FormField
-                          type="number"
-                          value={watch(`items.${index}.discount`) ?? ""}
-                          {...register(`items.${index}.discount`, {
-                            required: "discount is required",
-                            min: {
-                              value: 0,
-                              message: "discount cannot be negative",
-                            },
-                            max: {
-                              value: 100,
-                              message: "discount cannot exceed 100%",
-                            },
-                            valueAsNumber: true,
-                          })}
-                          error={errors.items?.[index]?.discount?.message}
-                          onChange={(e) => {
-                            updateItem(index, "discount", e.target.value);
-                            trigger(`items.${index}.discount`);
-                          }}
-                        />
-                      </td>
-                      <td className="p-2 text-right font-medium text-foreground">
-                        {(watch(`items.${index}.amount`) || 0).toFixed(2)}
-                      </td>
+                                    const unitPrice = Number(
+                                      service.base_price,
+                                    );
+                                    setValue(`items.${index}.rate`, unitPrice);
+                                    setValue(
+                                      `items.${index}.description`,
+                                      service.description,
+                                    );
+                                    setValue(
+                                      `items.${index}.service`,
+                                      serviceId,
+                                    );
 
-                      <td className="p-2 text-center">
-                        <button
-                          type="button"
-                          onClick={() => deleteRow(index)}
-                          className="text-muted-foreground hover:text-red-600 transition-colors p-1"
-                          disabled={itemFields.length === 1}
-                        >
-                          <X size={20} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-          <div className="flex flex-row items-center justify-between">
-            <Button
-              type="button"
-              onClick={addNewRow}
-              className="flex items-center gap-2 text-white cursor-pointer text-sm font-medium mt-3"
-            >
-              <Plus size={18} /> Add New Row
-            </Button>
+                                    const quantity =
+                                      Number(
+                                        watch(`items.${index}.quantity`) || 1,
+                                      ) || 1;
 
-            <div className="border-border md:w-[50%] w-full px-2 rounded-bl-lg rounded-br-lg border-b border-x">
-              <div className="flex justify-between py-3 text-lg font-semibold">
-                <span className="text-foreground">Total ( $ )</span>
-                <span className="text-foreground">
+                                    const tax_rate = Number(service.tax_rate);
+                                    setValue(
+                                      `items.${index}.tax_rate`,
+                                      tax_rate,
+                                    );
+
+                                    const discount =
+                                      Number(
+                                        watch(`items.${index}.discount`) || 0,
+                                      ) || 0;
+
+                                    const base = quantity * unitPrice;
+
+                                    // Calculate HT amount (excluding tax)
+                                    const discountAmount =
+                                      base * (discount / 100);
+                                    const finalAmount = base - discountAmount;
+
+                                    setValue(
+                                      `items.${index}.amount`,
+                                      Number(finalAmount.toFixed(2)),
+                                    );
+                                  }}
+                                  error={error?.message}
+                                  placeholder="Select a service"
+                                />
+                              )}
+                            />
+
+                            {selectedService && (
+                              <TextareaField
+                                {...register(`items.${index}.description`)}
+                                placeholder="Service description (one per line)"
+                                rows={4}
+                                value={formatToBullets(
+                                  watch(`items.${index}.description`) || "",
+                                )}
+                                onChange={(e) => {
+                                  const cleanText = e.target.value
+                                    .split("\n")
+                                    .map((line) =>
+                                      line.replace(/^•\s*/, "").trim(),
+                                    )
+                                    .filter((line) => line.length > 0)
+                                    .join(", ");
+                                  setValue(
+                                    `items.${index}.description`,
+                                    cleanText,
+                                  );
+                                }}
+                                error={
+                                  errors.items?.[index]?.description?.message
+                                }
+                              />
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Quantity */}
+                        <td className="p-3">
+                          <FormField
+                            type="number"
+                            value={watch(`items.${index}.quantity`) ?? ""}
+                            error={errors.items?.[index]?.quantity?.message}
+                            {...register(`items.${index}.quantity`, {
+                              required: "Required",
+                              min: { value: 1, message: "≥ 1" },
+                              valueAsNumber: true,
+                            })}
+                            onChange={(e) => {
+                              updateItem(index, "quantity", e.target.value);
+                              trigger(`items.${index}.quantity`);
+                            }}
+                          />
+                        </td>
+
+                        {/* Rate */}
+                        <td className="p-3">
+                          <FormField
+                            type="number"
+                            value={watch(`items.${index}.rate`) ?? ""}
+                            error={errors.items?.[index]?.rate?.message}
+                            {...register(`items.${index}.rate`, {
+                              required: "Required",
+                              min: { value: 0, message: "≥ 0" },
+                              valueAsNumber: true,
+                            })}
+                            onChange={(e) => {
+                              updateItem(index, "rate", e.target.value);
+                              trigger(`items.${index}.rate`);
+                            }}
+                          />
+                        </td>
+
+                        {/* Tax */}
+                        <td className="p-3">
+                          <FormField
+                            type="number"
+                            value={
+                              watch(`items.${index}.tax_rate`) ??
+                              watch(`items.${index}.tax`) ??
+                              ""
+                            }
+                            error={errors.items?.[index]?.tax_rate?.message}
+                            {...register(`items.${index}.tax_rate`, {
+                              min: { value: 0, message: "≥ 0" },
+                              max: { value: 100, message: "≤ 100" },
+                              valueAsNumber: true,
+                            })}
+                            onChange={(e) => {
+                              updateItem(index, "tax_rate", e.target.value);
+                              trigger(`items.${index}.tax_rate`);
+                            }}
+                          />
+                        </td>
+
+                        {/* Discount */}
+                        <td className="p-3">
+                          <FormField
+                            type="number"
+                            value={watch(`items.${index}.discount`) ?? ""}
+                            error={errors.items?.[index]?.discount?.message}
+                            {...register(`items.${index}.discount`, {
+                              required: "Required",
+                              min: { value: 0, message: "≥ 0" },
+                              max: { value: 100, message: "≤ 100" },
+                              valueAsNumber: true,
+                            })}
+                            onChange={(e) => {
+                              updateItem(index, "discount", e.target.value);
+                              trigger(`items.${index}.discount`);
+                            }}
+                          />
+                        </td>
+
+                        {/* Amount (calculated) */}
+                        <td className="p-3 text-right font-medium text-foreground">
+                          {(watch(`items.${index}.amount`) || 0).toFixed(2)}
+                        </td>
+
+                        {/* Delete */}
+                        <td className="p-3 text-center">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => deleteRow(index)}
+                            disabled={itemFields.length === 1}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer with Add + Total */}
+            <div className="flex items-center justify-between border-t bg-muted/30 px-4 py-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addNewRow}
+                className="gap-1.5"
+              >
+                <Plus className="h-4 w-4" />
+                Add Row
+              </Button>
+
+              <div className="flex items-center gap-6 text-sm font-medium">
+                <span className="text-muted-foreground">Total (MAD)</span>
+                <span className="text-lg font-semibold text-foreground">
                   {calculateTotal().toFixed(2)}
                 </span>
               </div>
@@ -924,71 +1027,74 @@ export function DocumentForm({ type, onSuccess }) {
           )}
           {isInvoice && (
             <div className="w-[50%]">
-              <Label htmlFor="payment" className="mb-1">
-                Payment
-              </Label>
-              <div className="flex md:flex-row flex-col gap-4 items-end justify-between border border-border px-4 pt-2 pb-4 rounded-lg">
+              <div className="flex md:flex-row flex-col gap-4 items-end justify-between rounded-lg">
                 <div className="w-full flex gap-4 items-center justify-between">
-                  <Controller
-                    name="payment_type"
-                    control={control}
-                    render={({ field, fieldState: { error } }) => (
-                      <SelectField
-                        id="payment_type"
-                        label="Payment Type"
-                        type="select"
-                        value={field.value || ""}
-                        options={[
-                          { value: "bank", label: "Bank" },
-                          { value: "cash", label: "Cash" },
-                          { value: "cheque", label: "Cheque" },
-                          { value: "stripe", label: "Stripe" },
-                        ]}
-                        onChange={(e) => field.onChange(e)}
-                        onBlur={field.onBlur}
-                        error={error?.message}
-                      />
-                    )}
-                  />
+                  <div className="w-[33%]">
+                    <Controller
+                      name="payment_type"
+                      control={control}
+                      render={({ field, fieldState: { error } }) => (
+                        <SelectField
+                          id="payment_type"
+                          label="Type"
+                          type="select"
+                          value={field.value || ""}
+                          options={[
+                            { value: "bank", label: "Bank" },
+                            { value: "cash", label: "Cash" },
+                            { value: "cheque", label: "Cheque" },
+                            { value: "stripe", label: "Stripe" },
+                          ]}
+                          onChange={(e) => field.onChange(e)}
+                          onBlur={field.onBlur}
+                          error={error?.message}
+                        />
+                      )}
+                    />
+                  </div>
 
-                  <Controller
-                    name="payment_percentage"
-                    control={control}
-                    rules={{ required: "Amount is required" }}
-                    render={({ field, fieldState: { error } }) => (
-                      <FormField
-                        id="payment_percentage"
-                        label="Percentage Paid"
-                        min="1"
-                        max="100"
-                        type="number"
-                        value={field.value || ""}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        onBlur={field.onBlur}
-                        error={error?.message}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="payment_status"
-                    control={control}
-                    rules={{ required: "Status is required" }}
-                    render={({ field, fieldState: { error } }) => (
-                      <SelectField
-                        id="payment_status"
-                        label="Payment Status"
-                        type="select"
-                        value={field.value || ""}
-                        options={[
-                          { value: "pending", label: "Pending" },
-                          { value: "paid", label: "Paid" },
-                        ]}
-                        onChange={(e) => field.onChange(e)}
-                        onBlur={field.onBlur}
-                        error={error?.message}
-                      />
-                    )}
-                  />
+                  <div className="w-[33%]">
+                    <Controller
+                      name="payment_percentage"
+                      control={control}
+                      rules={{ required: "Amount is required" }}
+                      render={({ field, fieldState: { error } }) => (
+                        <FormField
+                          id="payment_percentage"
+                          label="Percentage"
+                          min="1"
+                          max="100"
+                          type="number"
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          onBlur={field.onBlur}
+                          error={error?.message}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="w-[33%]">
+                    <Controller
+                      name="payment_status"
+                      control={control}
+                      rules={{ required: "Status is required" }}
+                      render={({ field, fieldState: { error } }) => (
+                        <SelectField
+                          id="payment_status"
+                          label="Status"
+                          type="select"
+                          value={field.value || ""}
+                          options={[
+                            { value: "pending", label: "Pending" },
+                            { value: "paid", label: "Paid" },
+                          ]}
+                          onChange={(e) => field.onChange(e)}
+                          onBlur={field.onBlur}
+                          error={error?.message}
+                        />
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -1030,7 +1136,7 @@ export function DocumentForm({ type, onSuccess }) {
                     name="Attach File"
                     label="Attach File(s) to Quote"
                     placeholder="Add Your Attach File"
-                    error={errors.media_files?.message}
+                    error={errors.attach_file?.message}
                     {...field}
                   />
                 )}
@@ -1067,7 +1173,7 @@ export function DocumentForm({ type, onSuccess }) {
                     : "sent",
               ),
             )}
-            type="button"
+            type="submit"
             disabled={isSubmitting}
           >
             {isEditMode

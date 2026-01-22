@@ -7,7 +7,8 @@ import FormSection from "@/components/Form/FormSection";
 export function ContactAddressSection({ control, errors }) {
   return (
     <form className="flex flex-col gap-4">
-      <h1 className="font-semibold text-lg">Contact & Address</h1>
+      <h1 className="font-semibold text-lg mb-6">Contact & Address</h1>
+
       <div className="grid grid-cols-2 gap-4">
         {/* Contact */}
         <div className="space-y-2">

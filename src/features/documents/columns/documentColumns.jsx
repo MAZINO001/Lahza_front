@@ -125,8 +125,74 @@ export function DocumentsColumns(role, navigate, currentSection) {
 
     ...(isInvoice
       ? [
-        {
-          accessorKey: "balance_due",
+          {
+            accessorKey: "balance_due",
+            header: ({ column }) => (
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
+              >
+                Balance Due <ArrowUpDown className="ml-1 h-4 w-4" />
+              </Button>
+            ),
+            cell: ({ row }) => {
+              const invoice = row.original;
+              const balanceDue = parseFloat(invoice.balance_due) || 0;
+              const totalAmount = parseFloat(invoice.total_amount) || 0;
+
+              const percentage =
+                totalAmount > 0
+                  ? ((balanceDue / totalAmount) * 100).toFixed(1)
+                  : 0;
+
+              const formatted = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: "MAD",
+              }).format(balanceDue);
+
+              return (
+                <div className="ml-3">
+                  <div className="font-medium">{formatted}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {percentage}% remaining
+                  </div>
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
+
+    isInvoice
+      ? {
+          accessorKey: "due_date",
+          header: ({ column }) => {
+            return (
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
+              >
+                Due Date
+                <ArrowUpDown />
+              </Button>
+            );
+          },
+          cell: ({ row }) => {
+            const date = new Date(row.getValue("due_date"));
+            const formatted = date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            });
+            return <div className="ml-3">{formatted}</div>;
+          },
+        }
+      : {
+          accessorKey: "quotation_date",
           header: ({ column }) => (
             <Button
               variant="ghost"
@@ -134,88 +200,22 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
             >
-              Balance Due <ArrowUpDown className="ml-1 h-4 w-4" />
+              Quotation Date <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
           ),
           cell: ({ row }) => {
-            const invoice = row.original;
-            const balanceDue = parseFloat(invoice.balance_due) || 0;
-            const totalAmount = parseFloat(invoice.total_amount) || 0;
+            const value = row.getValue("quotation_date");
+            if (!value)
+              return <div className="ml-3 text-muted-foreground">N/A</div>;
 
-            const percentage =
-              totalAmount > 0
-                ? ((balanceDue / totalAmount) * 100).toFixed(1)
-                : 0;
-
-            const formatted = new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: "MAD",
-            }).format(balanceDue);
-
-            return (
-              <div className="ml-3">
-                <div className="font-medium">{formatted}</div>
-                <div className="text-xs text-muted-foreground">
-                  {percentage}% remaining
-                </div>
-              </div>
-            );
+            const formatted = new Date(value).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            });
+            return <div className="ml-3">{formatted}</div>;
           },
         },
-      ]
-      : []),
-
-    isInvoice
-      ? {
-        accessorKey: "due_date",
-        header: ({ column }) => {
-          return (
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-            >
-              Due Date
-              <ArrowUpDown />
-            </Button>
-          );
-        },
-        cell: ({ row }) => {
-          const date = new Date(row.getValue("due_date"));
-          const formatted = date.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
-          return <div className="ml-3">{formatted}</div>;
-        },
-      }
-      : {
-        accessorKey: "quotation_date",
-        header: ({ column }) => (
-          <Button
-            variant="ghost"
-            onClick={() =>
-              column.toggleSorting(column.getIsSorted() === "asc")
-            }
-          >
-            Quotation Date <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        ),
-        cell: ({ row }) => {
-          const value = row.getValue("quotation_date");
-          if (!value)
-            return <div className="ml-3 text-muted-foreground">N/A</div>;
-
-          const formatted = new Date(value).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          });
-          return <div className="ml-3">{formatted}</div>;
-        },
-      },
 
     {
       accessorKey: "status",
@@ -287,25 +287,17 @@ export function DocumentsColumns(role, navigate, currentSection) {
             toast.success("Signature uploaded successfully!");
 
             if (!isInvoice && role === "client") {
-              const shouldCreateInvoice = confirm(
-                "Would you like to create an invoice from this signed quote?",
-              );
-
-              if (shouldCreateInvoice) {
-                try {
-                  await createInvoice.mutateAsync(document.id);
-                  toast.success(
-                    "Quote signed and invoice created successfully!",
-                  );
-                } catch (err) {
-                  console.error("Failed to create invoice:", err);
-                  toast.error(
-                    "Quote signed, but invoice creation failed. Please try again.",
-                  );
-                }
-              } else {
-                toast.success("Quote signature uploaded successfully!");
+              try {
+                await createInvoice.mutateAsync(document.id);
+                toast.success("Quote signed and invoice created successfully!");
+              } catch (err) {
+                console.error("Failed to create invoice:", err);
+                toast.error(
+                  "Quote signed, but invoice creation failed. Please try again.",
+                );
               }
+            } else {
+              toast.success("Quote signature uploaded successfully!");
             }
 
             setIsSignDialogOpen(false);
@@ -317,9 +309,6 @@ export function DocumentsColumns(role, navigate, currentSection) {
         };
 
         const handleRemoveSignature = async () => {
-          if (!confirm("Are you sure you want to remove the signature?"))
-            return;
-
           try {
             const type = "client_signature";
             const endpoint = isInvoice ? "invoices" : "quotes";
@@ -343,14 +332,9 @@ export function DocumentsColumns(role, navigate, currentSection) {
                   invoicesResponse.data ||
                   [];
 
-                console.log("Looking for invoice with quote_id:", document.id);
-                console.log("Available invoices:", invoices);
-
                 const associatedInvoice = invoices.find(
                   (invoice) => invoice.quote_id === document.id,
                 );
-
-                console.log("Found associated invoice:", associatedInvoice);
 
                 if (associatedInvoice) {
                   await deleteInvoice.mutateAsync(associatedInvoice.id);
@@ -393,7 +377,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
             document.status === "overdue" ||
             document.status === "unpaid"
           ) {
-            alert(`Opening payment for ${document.id}`);
+            toast.info(`Opening payment for ${document.id}`);
           }
         };
         return (
@@ -424,56 +408,52 @@ export function DocumentsColumns(role, navigate, currentSection) {
               </Button>
             )}
 
-            {role === "client" && (
-              <Dialog
-                open={isSignDialogOpen}
-                onOpenChange={setIsSignDialogOpen}
-              >
-                <DialogTrigger asChild>
+            <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 cursor-pointer"
+                >
+                  <FileSignature className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogTitle>add you signature</DialogTitle>
+                <DialogHeader>
+                  <DialogDescription className="space-y-6 mt-4">
+                    <p className="text-center text-base">
+                      Please upload a{" "}
+                      <strong className="">clear black signature</strong> on a{" "}
+                      <strong className="">pure white background</strong>.
+                    </p>
+
+                    <SignatureExamples />
+
+                    <p className="text-sm text-center text-muted-foreground pt-4">
+                      Accepted formats: PNG, JPG, JPEG • Max size: 5MB
+                    </p>
+                  </DialogDescription>
+                </DialogHeader>
+
+                <SignUploader onFileChange={handleSignatureUpload} />
+                <DialogFooter>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="h-8 cursor-pointer"
+                    onClick={() => setIsSignDialogOpen(false)}
                   >
-                    <FileSignature className="h-4 w-4" />
+                    Cancel
                   </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogTitle>add you signature</DialogTitle>
-                  <DialogHeader>
-                    <DialogDescription className="space-y-6 mt-4">
-                      <p className="text-center text-base">
-                        Please upload a{" "}
-                        <strong className="">clear black signature</strong> on a{" "}
-                        <strong className="">pure white background</strong>.
-                      </p>
+                  <Button
+                    onClick={handleSubmitSignature}
+                    disabled={!signatureFile}
+                  >
+                    Submit Signature
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
-                      <SignatureExamples />
-
-                      <p className="text-sm text-center text-muted-foreground pt-4">
-                        Accepted formats: PNG, JPG, JPEG • Max size: 5MB
-                      </p>
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <SignUploader onFileChange={handleSignatureUpload} />
-                  <DialogFooter>
-                    <Button
-                      variant="ghost"
-                      onClick={() => setIsSignDialogOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleSubmitSignature}
-                      disabled={!signatureFile}
-                    >
-                      Submit Signature
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
             {role === "admin" && (
               <>
                 <Button

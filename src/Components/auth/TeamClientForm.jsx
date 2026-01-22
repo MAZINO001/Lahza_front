@@ -1,4 +1,3 @@
-
 import { Tabs, TabsContent } from "../ui/tabs";
 import { Button } from "../ui/button";
 import FormSection from "../Form/FormSection";
@@ -13,6 +12,7 @@ import TagsField from "../Form/TagsField";
 import api from "@/lib/utils/axios";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
+import DateField from "../Form/DateField";
 
 export function TeamClientForm() {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ export function TeamClientForm() {
     setSubmitting(true);
 
     const filledData = Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v != null && v !== "")
+      Object.entries(data).filter(([_, v]) => v != null && v !== ""),
     );
 
     try {
@@ -79,15 +79,15 @@ export function TeamClientForm() {
         <RoleTabs />
 
         {/* ==================== ACCOUNT INFO ==================== */}
-        <FormSection title="Informations du compte">
+        <FormSection title="Account Information">
           <Controller
             name="name"
             control={control}
-            rules={{ required: "Le nom est requis" }}
+            rules={{ required: "Name is required" }}
             render={({ field }) => (
               <FormField
                 id="name"
-                label="Nom complet"
+                label="Full Name"
                 placeholder="Enter your name"
                 error={errors.name?.message}
                 {...field}
@@ -99,16 +99,16 @@ export function TeamClientForm() {
             name="email"
             control={control}
             rules={{
-              required: "L'email est requis",
+              required: "Email is required",
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Adresse email invalide",
+                message: "Invalid email address",
               },
             }}
             render={({ field }) => (
               <FormField
                 id="email"
-                label="Adresse email"
+                label="Email Address"
                 type="email"
                 placeholder="Enter your email"
                 error={errors.email?.message}
@@ -122,13 +122,13 @@ export function TeamClientForm() {
               name="password"
               control={control}
               rules={{
-                required: "Le mot de passe est requis",
-                minLength: { value: 6, message: "Minimum 6 caractères" },
+                required: "Password is required",
+                minLength: { value: 6, message: "Minimum 6 characters" },
               }}
               render={({ field }) => (
                 <FormField
                   id="password"
-                  label="Mot de passe"
+                  label="Password"
                   type="password"
                   placeholder="Enter your password"
                   error={errors.password?.message}
@@ -141,15 +141,15 @@ export function TeamClientForm() {
               name="password_confirmation"
               control={control}
               rules={{
-                required: "La confirmation est requise",
+                required: "Password confirmation is required",
                 validate: (val) =>
                   val === watch("password") ||
-                  "Les mots de passe ne correspondent pas",
+                  "Passwords do not match",
               }}
               render={({ field }) => (
                 <FormField
                   id="password_confirmation"
-                  label="Confirmer le mot de passe"
+                  label="Confirm Password"
                   type="password"
                   placeholder="Confirm your password"
                   error={errors.password_confirmation?.message}
@@ -161,16 +161,16 @@ export function TeamClientForm() {
         </FormSection>
         {/* ==================== TEAM TAB ==================== */}
         <TabsContent value="team">
-          <FormSection title="Détails de l'équipe">
+          <FormSection title="Team Details">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
                 name="poste"
                 control={control}
-                rules={{ required: "Le poste est requis" }}
+                rules={{ required: "Position is required" }}
                 render={({ field }) => (
                   <SelectField
                     id="poste"
-                    label="Rôle / Poste"
+                    label="Role / Position"
                     value={field.value || ""}
                     onChange={(val) => {
                       field.onChange(val);
@@ -194,11 +194,11 @@ export function TeamClientForm() {
               <Controller
                 name="department"
                 control={control}
-                rules={{ required: "Le département est requis" }}
+                rules={{ required: "Department is required" }}
                 render={({ field }) => (
                   <SelectField
                     id="department"
-                    label="Département"
+                    label="Department"
                     value={field.value || ""}
                     onChange={(val) => {
                       field.onChange(val);
@@ -224,16 +224,17 @@ export function TeamClientForm() {
 
         {/* ==================== INTERN TAB ==================== */}
         <TabsContent value="intern">
-          <FormSection title="Détails du stage">
+          <FormSection title="Internship Details">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
                 name="start_date"
                 control={control}
-                rules={{ required: "Date de début requise" }}
+                rules={{ required: "Start date is required" }}
                 render={({ field }) => (
-                  <FormField
+                  // <FormField
+                  <DateField
                     id="start_date"
-                    label="Date de début"
+                    label="Start Date"
                     type="date"
                     error={errors.start_date?.message}
                     {...field}
@@ -244,11 +245,12 @@ export function TeamClientForm() {
               <Controller
                 name="end_date"
                 control={control}
-                rules={{ required: "Date de fin requise" }}
+                rules={{ required: "End date is required" }}
                 render={({ field }) => (
-                  <FormField
+                  // <FormField
+                  <DateField
                     id="end_date"
-                    label="Date de fin"
+                    label="End Date"
                     type="date"
                     error={errors.end_date?.message}
                     {...field}
@@ -259,11 +261,11 @@ export function TeamClientForm() {
               <Controller
                 name="department"
                 control={control}
-                rules={{ required: "Le département est requis" }}
+                rules={{ required: "Department is required" }}
                 render={({ field }) => (
                   <SelectField
                     id="department"
-                    label="Département"
+                    label="Department"
                     value={field.value || ""}
                     onChange={(val) => {
                       field.onChange(val);
@@ -292,7 +294,7 @@ export function TeamClientForm() {
                     value:
                       /^(https?:\/\/)?(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$/,
                     message:
-                      "Format LinkedIn invalide (ex: www.linkedin.com/in/username)",
+                      "Invalid LinkedIn format (ex: www.linkedin.com/in/username)",
                   },
                 }}
                 render={({ field }) => (
@@ -327,7 +329,7 @@ export function TeamClientForm() {
                   pattern: {
                     value: /^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/?$/,
                     message:
-                      "Format GitHub invalide (ex: https://github.com/username)",
+                      "Invalid GitHub format (ex: https://github.com/username)",
                   },
                 }}
                 render={({ field }) => (
@@ -345,7 +347,7 @@ export function TeamClientForm() {
             <Controller
               name="cv"
               control={control}
-              rules={{ required: "CV requis pour un stagiaire" }}
+              rules={{ required: "CV required for intern" }}
               render={({ field }) => (
                 <CVUploader
                   onChange={(file) => {
@@ -362,7 +364,7 @@ export function TeamClientForm() {
 
         {/* ==================== OTHER TAB ==================== */}
         <TabsContent value="other">
-          <FormSection title="Autres détails">
+          <FormSection title="Other Details">
             <Controller
               name="tags"
               control={control}
@@ -389,7 +391,7 @@ export function TeamClientForm() {
                   label="Description"
                   {...register("description")}
                   error={errors.description?.message}
-                  placeholder="Veuillez fournir une brève description de votre rôle ou de vos besoins."
+                  placeholder="Please provide a brief description of your role or needs."
                   {...field}
                 />
               )}
@@ -403,7 +405,7 @@ export function TeamClientForm() {
         disabled={submitting}
         className="w-full bg-primary hover:bg-[color-mix(in oklch, var(--primary) 80%, black)] text-primary-foreground font-semibold py-6 rounded-lg transition-colors mt-8"
       >
-        {submitting ? "Inscription en cours..." : "S'inscrire"}
+        {submitting ? "Registering..." : "Register"}
       </Button>
     </form>
   );

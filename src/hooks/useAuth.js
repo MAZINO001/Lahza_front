@@ -82,6 +82,7 @@
 
 import { useState, useEffect } from "react";
 import api from "@/lib/utils/axios";
+import { toast } from "sonner";
 
 export function useAuth() {
     const [user, setUser] = useState(null);
@@ -155,7 +156,7 @@ export function useAuth() {
                 }
             );
         } catch (error) {
-            alert("Logout error:", error);
+            toast.error("Logout error:", error);
         } finally {
             localStorage.removeItem('isAuthenticated');
             setUser(null);

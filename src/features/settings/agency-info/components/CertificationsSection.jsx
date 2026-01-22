@@ -53,7 +53,8 @@ export default function CertificationsSection() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div className="w-full">
-          <h1 className="font-semibold text-lg mb-4">Certifications</h1>
+          <h1 className="font-semibold text-lg mb-6">Certifications</h1>
+
           <AddCertificationComp />
         </div>
       </div>

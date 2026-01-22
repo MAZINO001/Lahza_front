@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ChevronDown } from "lucide-react";
-import { useDocsByService } from "@/features/services/hooks/useServiceQuery";
+import { useDocsByService } from "@/features/services/hooks/useServicesData";
 
 export default function Transactions({ currentId }) {
   const [selectedStatus, setSelectedStatus] = useState("invoices");
@@ -21,12 +21,12 @@ export default function Transactions({ currentId }) {
 
   const { data: invoices, isLoading: loadingInvoices } = useDocsByService(
     currentId,
-    selectedStatus
+    selectedStatus,
   );
 
   const { data: quotes, isLoading: loadingQuotes } = useDocsByService(
     currentId,
-    selectedStatus
+    selectedStatus,
   );
 
   console.log(invoices);
@@ -37,7 +37,7 @@ export default function Transactions({ currentId }) {
       invoices: DocumentsColumns(role, navigate, "invoice"),
       quotes: DocumentsColumns(role, navigate, "quote"),
     }),
-    [role, navigate]
+    [role, navigate],
   );
 
   const sections = [

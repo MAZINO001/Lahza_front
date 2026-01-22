@@ -41,10 +41,8 @@ const PaymentTable = React.memo(function PaymentTable() {
       paymentColumns(role, {
         onEditPaidAt: handleEditPaidAt,
       }),
-    [role]
+    [role],
   );
-
-  // const columns = React.useMemo(() => paymentColumns(role), [role]);
 
   const table = useReactTable({
     data: payments,
@@ -100,6 +98,6 @@ const PaymentTable = React.memo(function PaymentTable() {
   );
 });
 
-PaymentTable.displayName = 'PaymentTable';
+PaymentTable.displayName = "PaymentTable";
 
 export default PaymentTable;

@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -36,6 +30,7 @@ import {
   Paperclip,
   Trash,
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useAuthContext } from "@/hooks/AuthContext";
 import {
@@ -43,6 +38,11 @@ import {
   useTickets,
 } from "@/features/tickets/hooks/useTickets";
 import EmptySearch1 from "@/components/empty-search-1";
+import { Label } from "@/components/ui/label";
+import SelectField from "@/components/Form/SelectField";
+import FormField from "@/components/Form/FormField";
+import { cn } from "@/lib/utils";
+import { formatId } from "@/lib/utils/formatId";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -99,6 +99,7 @@ export default function AdminTicketsPage() {
 
   const { data: tickets } = useTickets();
 
+  console.log("Tickets:", tickets);
   // Calculate statistics
   const stats = {
     total: tickets?.length,
@@ -186,145 +187,163 @@ export default function AdminTicketsPage() {
     }
   };
 
+  const statusOptions = [
+    { value: "all", label: "All Status" },
+    { value: "open", label: "Open" },
+    { value: "in_progress", label: "In Progress" },
+    { value: "resolved", label: "Resolved" },
+  ];
+
+  const priorityOptions = [
+    { value: "all", label: "All Priority" },
+    { value: "urgent", label: "Urgent" },
+    { value: "high", label: "High" },
+    { value: "medium", label: "Medium" },
+    { value: "low", label: "Low" },
+  ];
+
+  const categoryOptions = [
+    { value: "all", label: "All Categories" },
+    { value: "website", label: "Website" },
+    { value: "hosting", label: "Hosting" },
+    { value: "billing", label: "Billing" },
+    { value: "general", label: "General" },
+  ];
+
+  const assignedOptions = [
+    { value: "all", label: "All Assignment" },
+    { value: "assigned", label: "Assigned" },
+    { value: "unassigned", label: "Unassigned" },
+  ];
+
   return (
     <div className="w-full p-4  space-y-4 min-h-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+        <Card className="border-none bg-card/60 backdrop-blur-sm hover:bg-card transition-colors">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Total Tickets
-                </p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats.total}
-                </p>
+                <p className="text-sm text-muted-foreground">Total Tickets</p>
+                <p className="mt-1.5 text-2xl font-bold">{stats.total}</p>
               </div>
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <BarChart3 className="h-6 w-6 text-blue-600" />
-              </div>
+              <BarChart3 className="h-8 w-8 text-primary/70" />
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+
+        <Card className="border-none bg-card/60 backdrop-blur-sm hover:bg-card transition-colors">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-sm text-muted-foreground">
                   Open & In Progress
                 </p>
-                <p className="text-2xl font-bold text-foreground">
+                <p className="mt-1.5 text-2xl font-bold">
                   {stats.open + stats.inProgress}
                 </p>
               </div>
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Clock className="h-6 w-6 text-orange-600" />
-              </div>
+              <Clock className="h-8 w-8 text-orange-500/70" />
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+
+        <Card className="border-none bg-card/60 backdrop-blur-sm hover:bg-card transition-colors">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  urgent Issues
-                </p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats.urgent}
-                </p>
+                <p className="text-sm text-muted-foreground">Urgent Issues</p>
+                <p className="mt-1.5 text-2xl font-bold">{stats.urgent}</p>
               </div>
-              <div className="p-2 bg-red-100 rounded-lg">
-                <AlertCircle className="h-6 w-6 text-red-600" />
-              </div>
+              <AlertCircle className="h-8 w-8 text-red-500/70" />
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
+
+        <Card className="border-none bg-card/60 backdrop-blur-sm hover:bg-card transition-colors">
+          <CardContent className="p-5">
+            <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">
-                  Unassigned
-                </p>
-                <p className="text-2xl font-bold text-foreground">
-                  {stats.unassigned}
-                </p>
+                <p className="text-sm text-muted-foreground">Unassigned</p>
+                <p className="mt-1.5 text-2xl font-bold">{stats.unassigned}</p>
               </div>
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Users className="h-6 w-6 text-purple-600" />
-              </div>
+              <Users className="h-8 w-8 text-purple-500/70" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Advanced Filters */}
       <Card>
         <CardHeader>
           <CardTitle>Advanced Filters</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col lg:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
+            <div className="w-[50%]">
+              <Label
+                htmlFor="search"
+                className="text-sm font-medium text-foreground block "
+              >
+                Search
+              </Label>
+              <div className="w-full">
+                <FormField
+                  id="search"
                   placeholder="Search tickets, customers, or emails..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
                 />
               </div>
             </div>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="all">All Status</option>
-              <option value="open">Open</option>
-              <option value="in_progress">In Progress</option>
-              <option value="resolved">resolved</option>
-            </select>
-            <select
-              value={filterPriority}
-              onChange={(e) => setFilterPriority(e.target.value)}
-              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="all">All Priority</option>
-              <option value="urgent">urgent</option>
-              <option value="high">High</option>
-              <option value="medium">Medium</option>
-              <option value="low">Low</option>
-            </select>
-            <select
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="all">All Categories</option>
-              <option value="website">Website</option>
-              <option value="hosting">Hosting</option>
-              <option value="billing">Billing</option>
-              <option value="general">General</option>
-            </select>
-            <select
-              value={filterAssigned}
-              onChange={(e) => setFilterAssigned(e.target.value)}
-              className="px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            >
-              <option value="all">All Assignment</option>
-              <option value="assigned">Assigned</option>
-              <option value="unassigned">Unassigned</option>
-            </select>
+
+            <div className="flex-1 min-w-[150px]">
+              <SelectField
+                id="status-filter"
+                label="Status"
+                value={filterStatus}
+                onChange={setFilterStatus}
+                options={statusOptions}
+                placeholder="All Status"
+              />
+            </div>
+
+            <div className="flex-1 min-w-[150px]">
+              <SelectField
+                id="priority-filter"
+                label="Priority"
+                value={filterPriority}
+                onChange={setFilterPriority}
+                options={priorityOptions}
+                placeholder="All Priority"
+              />
+            </div>
+
+            <div className="flex-1 min-w-[150px]">
+              <SelectField
+                id="category-filter"
+                label="Category"
+                value={filterCategory}
+                onChange={setFilterCategory}
+                options={categoryOptions}
+                placeholder="All Categories"
+              />
+            </div>
+
+            <div className="flex-1 min-w-[150px]">
+              <SelectField
+                id="assigned-filter"
+                label="Assignment"
+                value={filterAssigned}
+                onChange={setFilterAssigned}
+                options={assignedOptions}
+                placeholder="All Assignment"
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Bulk Actions */}
       {selectedTickets?.length > 0 && (
-        <Card className="border-blue-200 bg-blue-50 p-0">
+        <Card className="border-blue-200 bg-blue-50">
           <CardContent>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -363,8 +382,7 @@ export default function AdminTicketsPage() {
         </Card>
       )}
 
-      {/* Tickets List */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {filteredTickets?.length === 0 ? (
           searchTerm ||
           filterStatus !== "all" ||
@@ -373,153 +391,181 @@ export default function AdminTicketsPage() {
           filterAssigned !== "all" ? (
             <EmptySearch1 />
           ) : (
-            <Card>
-              <CardContent className="p-12 text-center">
-                <div className="mx-auto w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+            <Card className="border-border bg-card/60">
+              <CardContent className="py-16 text-center">
+                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-muted/50">
                   <AlertCircle className="h-8 w-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
+                <h3 className="text-xl font-semibold text-foreground mb-2">
                   No tickets found
                 </h3>
-                <p className="text-muted-foreground mb-4">
-                  No tickets in the system yet
+                <p className="text-base text-muted-foreground">
+                  There are no tickets in the system yet.
                 </p>
               </CardContent>
             </Card>
           )
         ) : (
           <>
-            <Card>
-              <CardContent>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectedTickets?.length === filteredTickets?.length
-                    }
-                    onChange={handleSelectAll}
-                    className="rounded border-border"
-                  />
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Select All ({filteredTickets?.length})
-                  </span>
-                </div>
+            <Card className="border-border bg-card shadow-sm">
+              <CardContent className="flex items-center gap-3 py-3 px-4">
+                <Checkbox
+                  id="select-all"
+                  checked={selectedTickets?.length === filteredTickets?.length}
+                  onCheckedChange={handleSelectAll}
+                  className="h-5 w-5 rounded border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                />
+                <label
+                  htmlFor="select-all"
+                  className="text-sm font-medium text-muted-foreground cursor-pointer"
+                >
+                  Select All ({filteredTickets?.length})
+                </label>
               </CardContent>
             </Card>
 
-            {/* Ticket Cards */}
-            {filteredTickets?.map((ticket) => (
-              <Card key={ticket.id}>
-                <CardContent>
-                  <div className="flex flex-col lg:flex-row lg:items-start gap-4">
-                    {/* Checkbox */}
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
+            <div className="space-y-4">
+              {filteredTickets?.map((ticket) => (
+                <Card
+                  key={ticket.id}
+                  className={cn(
+                    "border-border bg-card shadow-sm hover:shadow-md transition-shadow",
+                    selectedTickets?.includes(ticket.id) &&
+                      "ring-2 ring-primary/50",
+                  )}
+                >
+                  <CardContent>
+                    <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+                      <Checkbox
                         checked={selectedTickets?.includes(ticket.id)}
-                        onChange={() => handleSelectTicket(ticket.id)}
-                        className="rounded border-border mt-1"
+                        onCheckedChange={() => handleSelectTicket(ticket.id)}
+                        className="mt-1.5 h-5 w-5 rounded border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground shrink-0"
                       />
-                    </div>
 
-                    {/* Main Content */}
-                    <div className="flex-1">
-                      <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 mb-3">
-                        <div className="flex-1">
-                          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
-                            <h3 className="font-semibold text-foreground text-lg">
-                              {ticket.title}
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                              <Badge className={getStatusColor(ticket.status)}>
-                                {ticket.status.replace("-", " ")}
-                              </Badge>
-                              <Badge
-                                className={getPriorityColor(ticket.priority)}
-                              >
-                                {ticket.priority}
-                              </Badge>
-                              <Badge
-                                className={getCategoryColor(ticket.category)}
-                              >
-                                {ticket.category}
-                              </Badge>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
+                              <h3 className="text-lg font-semibold text-foreground truncate">
+                                {ticket.title}
+                              </h3>
+
+                              <div className="flex flex-wrap gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className={cn(
+                                    "px-2.5 py-0.5 text-xs font-medium",
+                                    getStatusColor(ticket.status),
+                                  )}
+                                >
+                                  {ticket.status.replace("-", " ")}
+                                </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className={cn(
+                                    "px-2.5 py-0.5 text-xs font-medium",
+                                    getPriorityColor(ticket.priority),
+                                  )}
+                                >
+                                  {ticket.priority}
+                                </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className={cn(
+                                    "px-2.5 py-0.5 text-xs font-medium",
+                                    getCategoryColor(ticket.category),
+                                  )}
+                                >
+                                  {ticket.category}
+                                </Badge>
+                              </div>
+                            </div>
+
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {ticket.description}
+                            </p>
+                          </div>
+
+                          <div className="flex gap-2 shrink-0">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleViewTicket(ticket.id)}
+                              className="gap-1.5"
+                            >
+                              <Eye className="h-4 w-4" />
+                              View
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteTicket(ticket.id);
+                              }}
+                            >
+                              <Trash className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-muted-foreground">
+                              {formatId(ticket.id, "TICKET")}
+                            </span>
+                            <span className="text-muted-foreground">•</span>
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <time className="text-muted-foreground">
+                              {new Date(ticket.created_at).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                },
+                              )}
+                            </time>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <User className="h-4 w-4 text-muted-foreground" />
+                            <div className="min-w-0">
+                              <p className="font-medium text-foreground truncate">
+                                {ticket.user?.name}
+                              </p>
                             </div>
                           </div>
-                          <p className="text-muted-foreground mb-3 line-clamp-2">
-                            {ticket.description}
-                          </p>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewTicket(ticket.id)}
-                          >
-                            <Eye className="h-4 w-4 mr-2" />
-                            View
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteTicket(ticket.id);
-                            }}
-                          >
-                            <Trash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
 
-                      {/* Ticket Details Grid */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-muted-foreground">
-                            #{ticket.id}
-                          </span>
-                          <span className="text-muted-foreground">•</span>
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">
-                            {new Date(ticket.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <User className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium text-foreground">
-                              {ticket.user?.name}
-                            </p>
-                            <p className="text-muted-foreground">
-                              {ticket.user?.company}
-                            </p>
+                          <div className="flex items-center gap-2">
+                            <Users className="h-4 w-4 text-muted-foreground" />
+                            <div className="min-w-0">
+                              <p className="font-medium text-foreground truncate">
+                                {ticket.assigned_to?.name || "Unassigned"}
+                              </p>
+                              <p className="text-xs text-muted-foreground truncate">
+                                {ticket.assigned_to?.role || "No assignee"}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium text-foreground">
-                              {ticket.assigned_to?.name || "Unassigned"}
-                            </p>
-                            <p className="text-muted-foreground">
-                              {ticket.assigned_to?.role || "No assignee"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-3 mt-3">
+
                         {ticket.attachments > 0 && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Paperclip className="h-3 w-3" />
-                            <span>{ticket.attachments} attachment(s)</span>
+                          <div className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Paperclip className="h-3.5 w-3.5" />
+                            <span>
+                              {ticket.attachments} attachment
+                              {ticket.attachments > 1 ? "s" : ""}
+                            </span>
                           </div>
                         )}
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </>
         )}
       </div>

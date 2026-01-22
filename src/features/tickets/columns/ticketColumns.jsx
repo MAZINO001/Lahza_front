@@ -157,27 +157,13 @@ export const getTicketColumns = (role, navigate) => [
               View Details
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() =>
-                navigate(`/${role}/tickets/new?edit=${ticket.id}`)
-              }
+              onClick={() => navigate(`/${role}/tickets/new?edit=${ticket.id}`)}
             >
               <Edit className="mr-2 h-4 w-4" />
               Edit Ticket
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-red-600"
-              onClick={() => {
-                if (
-                  window.confirm(
-                    `Are you sure you want to delete ticket ${ticket.id}?`
-                  )
-                ) {
-                  // TODO: Implement delete functionality
-                  console.log("Deleting ticket:", ticket.id);
-                }
-              }}
-            >
+            <DropdownMenuItem className="text-red-600">
               <Trash2 className="mr-2 h-4 w-4" />
               Delete Ticket
             </DropdownMenuItem>

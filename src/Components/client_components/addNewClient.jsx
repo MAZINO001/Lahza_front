@@ -13,12 +13,9 @@ import { useRegisterStore } from "@/hooks/registerStore";
 import api from "@/lib/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { toast } from "sonner";
+import { useCreateClient } from "@/features/clients/hooks/useClients/useCreateClient";
 
-export function ClientFormModal({
-  onClientCreated,
-  onClose,
-  handleClientCreatedByAdmin,
-}) {
+export function ClientFormModal({ onClientCreated, onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const { role } = useAuthContext();
   const registerStore = useRegisterStore();
@@ -48,14 +45,90 @@ export function ClientFormModal({
       registerStore.setField("ice", "");
     }
   }, [paysValue]);
+  const { mutateAsync: createClient, isPending } = useCreateClient();
 
-  const onSubmit = async (data) => {
+  // const onSubmit = async (data) => {
+  //   setSubmitting(true);
+
+  //   let tempPassword = "";
+
+  //   const year = new Date().getFullYear();
+  //   tempPassword = registerStore.name
+  //     ? `${registerStore.name.trim().toLowerCase().replace(/\s+/g, "")}${year}`
+  //     : "";
+
+  //   console.log("🔐 Temp password generated:", tempPassword);
+
+  //   const validFields = [
+  //     "user_type",
+  //     "name",
+  //     "email",
+  //     "password",
+  //     "password_confirmation",
+  //     "position",
+  //     "department",
+  //     "specialty",
+  //     "linkedin",
+  //     "portfolio",
+  //     "github",
+  //     "start_date",
+  //     "end_date",
+  //     "description",
+  //     "tags",
+  //     "resume",
+  //     "company",
+  //     "address",
+  //     "zip",
+  //     "phone",
+  //     "city",
+  //     "country",
+  //     "client_type",
+  //     "vat",
+  //     "siren",
+  //     "ice",
+  //     "currency",
+  //   ];
+
+  //   const filledData = validFields.reduce((acc, field) => {
+  //     const value = registerStore[field];
+  //     if (value !== "" && value != null) {
+  //       acc[field] = value;
+  //     }
+  //     return acc;
+  //   }, {});
+
+  //   filledData.password = tempPassword;
+  //   filledData.password_confirmation = tempPassword;
+
+  //   console.log("📤 Data being sent to backend:", filledData);
+
+  //   try {
+  //     const response = await api.post(
+  //       `${import.meta.env.VITE_BACKEND_URL}/register`,
+  //       filledData,
+  //     );
+
+  //     onClientCreated?.(response?.data?.client_id);
+  //     registerStore.reset();
+  //     reset();
+  //     toast.success("Client created successfully!");
+  //     onClose?.();
+  //   } catch (error) {
+  //     console.error("Registration failed:", error.response?.data);
+  //     toast.error(
+  //       error.response?.data?.message ||
+  //         "Failed to create client. Please try again.",
+  //     );
+  //   } finally {
+  //     setSubmitting(false);
+  //   }
+  // };
+
+  const onSubmit = async () => {
     setSubmitting(true);
 
-    let tempPassword = "";
-
     const year = new Date().getFullYear();
-    tempPassword = registerStore.name
+    const tempPassword = registerStore.name
       ? `${registerStore.name.trim().toLowerCase().replace(/\s+/g, "")}${year}`
       : "";
 
@@ -65,8 +138,6 @@ export function ClientFormModal({
       "user_type",
       "name",
       "email",
-      "password",
-      "password_confirmation",
       "position",
       "department",
       "specialty",
@@ -105,22 +176,15 @@ export function ClientFormModal({
     console.log("📤 Data being sent to backend:", filledData);
 
     try {
-      const response = await api.post(
-        `${import.meta.env.VITE_BACKEND_URL}/register`,
-        filledData,
-      );
+      const response = await createClient(filledData);
 
-      onClientCreated?.(response?.data?.client_id);
+      onClientCreated?.(response?.client_id);
       registerStore.reset();
       reset();
-      toast.success("Client created successfully!");
       onClose?.();
     } catch (error) {
-      console.error("Registration failed:", error.response?.data);
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to create client. Please try again.",
-      );
+      // error toast already handled inside the mutation
+      console.error("Registration failed:", error);
     } finally {
       setSubmitting(false);
     }

@@ -1,6 +1,8 @@
 
 import api from "@/lib/utils/axios";
+import { toast } from "sonner";
 import { create } from "zustand";
+
 
 export const globalFnStore = create((set) => ({
     handleSendInvoice_Quote: (id, email, type) => {
@@ -11,12 +13,12 @@ export const globalFnStore = create((set) => ({
             id: id,
             subject: "Your Invoice from LAHZA HM",
         }
-
         try {
             const req = api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, payload)
-            alert(type + " is sent to " + email)
+            toast.success(type + " is sent to " + email)
         } catch (error) {
-            alert(error)
+            console.log(error)
+            toast.error("Failed to send " + type)
         }
     },
     handleDownloadInvoice_Quotes: async (id, type) => {
@@ -36,10 +38,10 @@ export const globalFnStore = create((set) => ({
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            alert(`${type} downloaded successfully`);
+            toast.success(`${type} downloaded successfully`);
         } catch (error) {
             console.error('Download error:', error);
-            alert(`Failed to download ${type}`);
+            toast.error(`Failed to download ${type}`);
         }
     },
 
@@ -50,14 +52,24 @@ export const globalFnStore = create((set) => ({
         });
     },
 
-    handleDeleteService: async (id, reloadCallback) => {
-        try {
-            await api.delete(`${import.meta.env.VITE_BACKEND_URL}/services/${id}`);
-            if (reloadCallback) reloadCallback();
-        } catch (error) {
-            alert(error);
-        }
+
+    handleDeleteService: (id, deleteMutation, reloadCallback) => {
+        deleteMutation.mutate(id, {
+            onSuccess: () => {
+                if (reloadCallback) reloadCallback();
+            },
+        });
     },
+
+    // handleDeleteService: async (id, reloadCallback) => {
+    //     try {
+    //         await api.delete(`${import.meta.env.VITE_BACKEND_URL}/services/${id}`);
+    //         if (reloadCallback) reloadCallback();
+    //     } catch (error) {
+    //         alert(error);
+    //     }
+    // },
+
     HandleEditOffer: async (id, navigate, role) => {
         navigate(`/${role}/offer/${id}/edit`, {
             state: { editId: id },
@@ -83,7 +95,8 @@ export const globalFnStore = create((set) => ({
             await api.delete(`${import.meta.env.VITE_BACKEND_URL}/offers/${id}`);
             if (reloadCallback) reloadCallback();
         } catch (error) {
-            alert(error);
+            console.log(error);
+            toast.error("Failed to delete offer");
         }
     },
 
@@ -110,7 +123,8 @@ export const globalFnStore = create((set) => ({
             await api.delete(`${import.meta.env.VITE_BACKEND_URL}/projects/tasks/${projectId}/${id}`);
             if (reloadCallback) reloadCallback();
         } catch (error) {
-            alert(error);
+            console.log(error);
+            toast.error("Failed to delete task");
         }
     },
 

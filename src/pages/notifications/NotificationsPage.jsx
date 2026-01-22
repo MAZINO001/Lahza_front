@@ -171,7 +171,7 @@ export default function NotificationsPage() {
   });
 
   return (
-    <div className="p-4  min-h-screen">
+    <div className="p-4 min-h-screen">
       <div className="flex flex-col space-y-4">
         <div className="flex items-center justify-between">
           <div>

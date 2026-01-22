@@ -13,7 +13,8 @@ import {
   useOffer,
   useUpdateOffer,
 } from "@/features/offers/hooks/useOffersQuery";
-import { useServices } from "@/features/services/hooks/useServiceQuery";
+import { useServices } from "@/features/services/hooks/useServices";
+import DateField from "@/components/Form/DateField";
 
 export function OfferForm({ offerId, onSuccess }) {
   const { data: offer, isLoading } = useOffer(offerId);
@@ -183,7 +184,8 @@ export function OfferForm({ offerId, onSuccess }) {
             control={control}
             rules={{ required: "Start date is required" }}
             render={({ field }) => (
-              <FormField
+              // <FormField
+              <DateField
                 type="date"
                 label="Start Date"
                 error={errors.start_date?.message}
@@ -198,7 +200,8 @@ export function OfferForm({ offerId, onSuccess }) {
             control={control}
             rules={{ required: "End date is required" }}
             render={({ field }) => (
-              <FormField
+              // <FormField
+              <DateField
                 type="date"
                 label="End Date"
                 error={errors.end_date?.message}
@@ -246,7 +249,7 @@ export function OfferForm({ offerId, onSuccess }) {
                           field.onChange([...placementValues, "header"]);
                         } else {
                           field.onChange(
-                            placementValues.filter((p) => p !== "header")
+                            placementValues.filter((p) => p !== "header"),
                           );
                         }
                       }}
@@ -266,7 +269,7 @@ export function OfferForm({ offerId, onSuccess }) {
                           field.onChange([...placementValues, "calendar"]);
                         } else {
                           field.onChange(
-                            placementValues.filter((p) => p !== "calendar")
+                            placementValues.filter((p) => p !== "calendar"),
                           );
                         }
                       }}

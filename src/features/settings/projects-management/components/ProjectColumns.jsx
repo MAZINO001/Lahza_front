@@ -78,7 +78,7 @@ function StatusCell({ row, table }) {
                   <Check
                     className={cn(
                       "h-4 w-4",
-                      s === value ? "opacity-100" : "opacity-0"
+                      s === value ? "opacity-100" : "opacity-0",
                     )}
                   />
                   <span className="ml-2">{formatStatusLabel(s)}</span>
@@ -113,16 +113,16 @@ function DeliveryDateCell({ row, table }) {
           type="button"
           className={cn(
             "group inline-flex items-center gap-2 text-sm text-foreground hover:underline",
-            !value && "text-muted-foreground"
+            !value && "text-muted-foreground",
           )}
         >
           <span className="truncate">
             {value
               ? new Date(value).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })
               : "Pick a date"}
           </span>
         </button>
@@ -138,7 +138,7 @@ function DeliveryDateCell({ row, table }) {
             setDate(d);
             table?.options?.meta?.updateProjectDate?.(
               row.original.id,
-              format(d, "yyyy-MM-dd")
+              format(d, "yyyy-MM-dd"),
             );
             setOpen(false);
           }}
@@ -232,7 +232,7 @@ function AccessCell({ row }) {
                               onClick={() =>
                                 copyToClipboard(
                                   item.email || "",
-                                  "Email copied"
+                                  "Email copied",
                                 )
                               }
                             >
@@ -253,7 +253,7 @@ function AccessCell({ row }) {
                               onClick={() =>
                                 copyToClipboard(
                                   item.password || "",
-                                  "Password copied"
+                                  "Password copied",
                                 )
                               }
                             >
@@ -279,7 +279,7 @@ function AccessCell({ row }) {
                               onClick={() =>
                                 copyToClipboard(
                                   parsed.email || "",
-                                  "Email copied"
+                                  "Email copied",
                                 )
                               }
                             >
@@ -300,7 +300,7 @@ function AccessCell({ row }) {
                               onClick={() =>
                                 copyToClipboard(
                                   parsed.password || "",
-                                  "Password copied"
+                                  "Password copied",
                                 )
                               }
                             >
@@ -409,7 +409,7 @@ function MembersCell({ row, table }) {
                     <Check
                       className={cn(
                         "h-4 w-4",
-                        isSelected ? "opacity-100" : "opacity-0"
+                        isSelected ? "opacity-100" : "opacity-0",
                       )}
                     />
                     <div className="ml-2">

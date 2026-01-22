@@ -3,30 +3,34 @@ import { Button } from "@/components/ui/button";
 import { Edit2, Trash2, X, AlertCircle, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
-import api from "@/lib/utils/axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useService } from "@/features/services/hooks/useServiceQuery";
+import { useService } from "@/features/services/hooks/useServices";
 import Transactions from "@/components/services_offers/services/service_Transactions";
 import Overview from "@/components/services_offers/services/overview";
+import { useDeleteService } from "@/features/services/hooks/useServicesData";
 
 export default function ServicePage({ currentId }) {
   const { data, isLoading, isError } = useService(currentId);
   const [activeTab, setActiveTab] = useState("overview");
   const { role } = useAuthContext();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const deleteMutation = useMutation({
-    mutationFn: () =>
-      api.delete(`${import.meta.env.VITE_BACKEND_URL}/services/${currentId}`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["services"] });
-      toast.success("Service deleted successfully");
-      navigate(`/${role}/services`);
-    },
-    onError: () => toast.error("Failed to delete service"),
-  });
+  const deleteMutation = useDeleteService();
+
+  const handleDeleteService = () => {
+    if (!currentId) {
+      toast.error("Service ID not found");
+      return;
+    }
+    deleteMutation.mutate(currentId, {
+      onSuccess: () => {
+        navigate(`/${role}/services`);
+      },
+      onError: () => {
+        console.error("Deletion failed");
+      },
+    });
+  };
 
   const tabs = [
     { id: "overview", label: "Overview" },
@@ -70,11 +74,7 @@ export default function ServicePage({ currentId }) {
 
           <Button
             variant="destructive"
-            onClick={() => {
-              if (confirm("Are you sure you want to delete this service?")) {
-                deleteMutation.mutate();
-              }
-            }}
+            onClick={handleDeleteService}
             disabled={deleteMutation.isPending}
             className="flex-1 sm:flex-none"
           >

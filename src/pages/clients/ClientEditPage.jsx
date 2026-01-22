@@ -11,7 +11,7 @@ import ClientTypeRadio from "@/Components/Form/ClientTypeRadio";
 import {
   useClient,
   useUpdateClient,
-} from "@/features/clients/hooks/useClientsQuery";
+} from "@/features/clients/hooks/useClients/useClients";
 
 export default function ClientEditPage() {
   const navigate = useNavigate();
@@ -110,7 +110,7 @@ export default function ClientEditPage() {
           setSubmitting(false);
           console.error("Update failed:", error);
         },
-      }
+      },
     );
   };
   const handleCancel = () => {

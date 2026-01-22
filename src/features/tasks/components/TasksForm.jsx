@@ -10,6 +10,7 @@ import {
   useCreateTask,
   useUpdateTask,
 } from "@/features/tasks/hooks/useTasksQuery";
+import DateField from "@/components/Form/DateField";
 
 export function TasksForm({ task, projectId, onCancel }) {
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
@@ -52,7 +53,7 @@ export function TasksForm({ task, projectId, onCancel }) {
           if (!isEditMode) reset();
         },
         onSettled: () => endSubmit(),
-      }
+      },
     );
     onCancel();
   };
@@ -93,7 +94,8 @@ export function TasksForm({ task, projectId, onCancel }) {
             control={control}
             rules={{ required: "Start Date is required" }}
             render={({ field }) => (
-              <FormField
+              // <FormField
+              <DateField
                 label="Start Date"
                 type="date"
                 placeholder="e.g. Complete frontend development"
@@ -109,7 +111,8 @@ export function TasksForm({ task, projectId, onCancel }) {
             control={control}
             rules={{ required: "End Date is required" }}
             render={({ field }) => (
-              <FormField
+              // <FormField
+              <DateField
                 label="End Date"
                 type="date"
                 placeholder="e.g. Complete frontend development"

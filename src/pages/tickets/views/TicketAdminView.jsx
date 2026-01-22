@@ -8,12 +8,6 @@ import {
   ArrowLeft,
   Calendar,
   Clock,
-  User,
-  Mail,
-  Paperclip,
-  MessageSquare,
-  Edit,
-  Trash2,
   CheckCircle,
   XCircle,
   AlertCircle,
@@ -86,7 +80,7 @@ export default function TicketAdminView() {
   const { updateTicket } = useTicketsLegacy();
 
   const [selectedAssignee, setSelectedAssignee] = useState(
-    ticket?.assigned_to?.id || ""
+    ticket?.assigned_to?.id || "",
   );
 
   useEffect(() => {
@@ -126,7 +120,7 @@ export default function TicketAdminView() {
   const handleDownloadAttachment = async (ticketId, fileId, fileName) => {
     try {
       const response = await fetch(
-        `/api/tickets/${ticketId}/download/${fileId}`
+        `/api/tickets/${ticketId}/download/${fileId}`,
       );
 
       if (!response.ok) throw new Error("Download failed");
@@ -333,7 +327,7 @@ export default function TicketAdminView() {
                               ticket.id,
                               attachment.id,
                               attachment.original_name ||
-                                `file_${attachment.id}`
+                                `file_${attachment.id}`,
                             )
                           }
                         >

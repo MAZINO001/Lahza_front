@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Phone, Percent, DollarSign, Edit2 } from "lucide-react";
-import { useClient } from "@/features/clients/hooks/useClientsQuery";
+import { useClient } from "@/features/clients/hooks/useClients/useClients";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { Card } from "@/components/ui/card";

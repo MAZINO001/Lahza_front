@@ -13,6 +13,7 @@ import FormField from "@/components/Form/FormField";
 import TextareaField from "@/components/Form/TextareaField";
 import FileUploader from "@/components/Form/FileUploader";
 import SelectField from "@/components/Form/SelectField";
+import DateField from "../Form/DateField";
 export default function AddCertificationComp() {
   const createCertification = useCreateCertification();
   const updateCertification = useUpdateCertification();
@@ -104,7 +105,8 @@ export default function AddCertificationComp() {
                   name="expires_at"
                   control={control}
                   render={({ field }) => (
-                    <FormField
+                    // <FormField
+                    <DateField
                       {...field}
                       type="date"
                       label="Expiry Date (Optional)"
@@ -119,7 +121,8 @@ export default function AddCertificationComp() {
                   name="issued_at"
                   control={control}
                   render={({ field }) => (
-                    <FormField
+                    // <FormField
+                    <DateField
                       {...field}
                       type="date"
                       label="Issuing Date"

@@ -16,9 +16,9 @@ import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
 import CsvUploadModal from "@/components/common/CsvUploadModal";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { getServiceColumns } from "../columns/serviceColumns"; // ← your columns
+import { getServiceColumns } from "../columns/serviceColumns";
 import { DataTable } from "@/components/table/DataTable";
-import { useServices } from "../hooks/useServiceQuery";
+import { useServices } from "@/features/services/hooks/useServicesData";
 
 export function ServiceTable() {
   const [sorting, setSorting] = useState([]);
@@ -31,8 +31,10 @@ export function ServiceTable() {
   const { data: services, isLoading } = useServices();
   const columns = React.useMemo(
     () => getServiceColumns(role, navigate),
-    [role, navigate]
+    [role, navigate],
   );
+
+  console.log(services);
 
   const table = useReactTable({
     data: services,
@@ -59,7 +61,11 @@ export function ServiceTable() {
           className="w-full sm:max-w-sm"
         />
         <div className="flex flex-col sm:flex-row gap-2">
-          <Button onClick={() => setShowUploadModal(true)} variant="outline" className="w-full sm:w-auto">
+          <Button
+            onClick={() => setShowUploadModal(true)}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
             <Upload className="mr-2 h-4 w-4" /> Upload CSV
           </Button>
           <Link to={`/${role}/service/new`}>

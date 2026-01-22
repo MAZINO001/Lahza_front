@@ -78,26 +78,24 @@ export default function CalendarPage() {
           setDetailsOpen(false);
           setOpen(false);
         },
-      }
+      },
     );
   };
 
   const handleEventDelete = (event) => {
-    if (window.confirm(`Are you sure you want to delete "${event.title}"?`)) {
-      const baseId = event.id.includes("-")
-        ? parseInt(event.id.split("-")[0])
-        : parseInt(event.id);
+    const baseId = event.id.includes("-")
+      ? parseInt(event.id.split("-")[0])
+      : parseInt(event.id);
 
-      deleteMutation.mutate(
-        { id: baseId },
-        {
-          onSuccess: () => {
-            setDetailsOpen(false);
-            setOpen(false);
-          },
-        }
-      );
-    }
+    deleteMutation.mutate(
+      { id: baseId },
+      {
+        onSuccess: () => {
+          setDetailsOpen(false);
+          setOpen(false);
+        },
+      },
+    );
   };
 
   return (

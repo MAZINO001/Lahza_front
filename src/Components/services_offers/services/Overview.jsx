@@ -1,59 +1,78 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function overview({ data }) {
+export default function Overview({ data }) {
   return (
-    <div>
-      <Card className="w-full p-0">
-        <CardContent className="space-y-4 p-4">
+    <Card className="border-border bg-card shadow-sm">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-lg font-semibold">
+          Service Overview
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent className="space-y-6 pt-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+          {/* Left: Image (≈50%) */}
           {data?.image && (
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">
-                Image
+            <div className="space-y-2 order-1 md:order-0">
+              <p className="text-sm font-medium text-muted-foreground">
+                Preview
               </p>
-              <img
-                src={data.image}
-                alt={data.name}
-                className="w-full max-w-md h-48 object-cover rounded-lg"
-              />
+              <div className="overflow-hidden rounded-lg border bg-muted/40 aspect-video">
+                <img
+                  src={data.image}
+                  alt={data.name || "Service preview"}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
             </div>
           )}
 
-          <div>
-            <p className="text-sm font-medium text-muted-foreground mb-2">
+          {/* Right: Description (≈50%) */}
+          <div className="space-y-2 order-2 md:order-0">
+            <p className="text-sm font-medium text-muted-foreground">
               Description
             </p>
-            <div className="text-md text-foreground whitespace-pre-wrap">
-              {data?.description ? (
-                <div dangerouslySetInnerHTML={{ __html: data.description }} />
-              ) : (
-                <span className="text-muted-foreground italic">
-                  No description provided
-                </span>
-              )}
+
+            {data?.description ? (
+              <div
+                className="text-sm leading-relaxed text-foreground prose prose-sm max-w-none dark:prose-invert"
+                dangerouslySetInnerHTML={{ __html: data.description }}
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground italic">
+                No description provided.
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Pricing - full width below */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-muted-foreground">
+              Base Price
+            </p>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-3xl font-bold tracking-tight text-primary">
+                {data?.base_price ? Number(data.base_price).toFixed(2) : "0.00"}
+              </span>
+              <span className="text-lg font-medium text-muted-foreground">
+                MAD
+              </span>
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">
-                Base Price
-              </p>
-              <p className="text-3xl font-bold text-blue-600">
-                {data?.base_price ? Number(data.base_price).toFixed(2) : "0.00"}{" "}
-                MAD
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">
-                Tax Rate
-              </p>
-              <p className="text-3xl font-bold text-foreground">
-                {data?.tax_rate ? `${data.tax_rate}%` : "0%"}
-              </p>
-            </div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-muted-foreground">
+              Tax Rate
+            </p>
+            <p className="text-3xl font-bold tracking-tight">
+              {data?.tax_rate ?? 0}%
+            </p>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

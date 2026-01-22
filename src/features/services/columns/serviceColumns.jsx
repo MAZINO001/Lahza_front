@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { ArrowUpDown, Pencil, Trash, Trash2 } from "lucide-react";
+import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
-import { useState } from "react";
-import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
 import { Badge } from "@/components/ui/badge";
+import AlertDialogDestructive from "@/components/alert-dialog-destructive-1";
+import { useDeleteService } from "@/features/services/hooks/useServicesData";
+
 export function getServiceColumns(role, navigate) {
   return [
     {
@@ -99,13 +100,13 @@ export function getServiceColumns(role, navigate) {
       cell: ({ row }) => {
         const service = row.original;
         const { HandleEditService, handleDeleteService } = globalFnStore();
-        const [open, setOpen] = useState(false);
         const onEdit = () => {
           HandleEditService(service.id, navigate, role);
         };
 
+        const deleteMutation = useDeleteService();
         const onDelete = async () => {
-          await handleDeleteService(service.id);
+          await handleDeleteService(service.id, deleteMutation);
         };
 
         return (
@@ -119,28 +120,18 @@ export function getServiceColumns(role, navigate) {
               <Pencil className="h-4 w-4" />
             </Button>
             {role === "admin" && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setOpen(true)}
-                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
-                >
-                  <Trash className="h-4 w-4" />
-                </Button>
-
-                <ConfirmDialog
-                  open={open}
-                  onClose={() => setOpen(false)}
-                  onConfirm={() => {
-                    onDelete();
-                    setOpen(false);
-                  }}
-                  title="Remove Signature"
-                  description="Are you sure you want to remove this signature? This action cannot be undone."
-                  action="cancel"
-                />
-              </>
+              <AlertDialogDestructive
+                onDelete={() => onDelete()}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                }
+              />
             )}
           </div>
         );

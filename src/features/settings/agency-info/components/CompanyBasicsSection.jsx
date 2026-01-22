@@ -6,40 +6,43 @@ import TextareaField from "@/components/Form/TextareaField";
 export function CompanyBasicsSection({ control, errors }) {
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="font-semibold text-lg">Company Basics</h1>
-      <div className="space-y-2">
-        <Controller
-          name="company_name"
-          rules={{ required: "Company name is required" }}
-          control={control}
-          render={({ field }) => (
-            <FormField
-              {...field}
-              type="text"
-              label="Company Name"
-              id="company_name"
-              placeholder="Company name"
-              error={errors.company_name?.message}
-            />
-          )}
-        />
-      </div>
+      <h1 className="font-semibold text-lg mb-6">Company Basics</h1>
 
-      <div className="space-y-2">
-        <Controller
-          name="tagline"
-          control={control}
-          render={({ field }) => (
-            <FormField
-              {...field}
-              type="text"
-              label="Tagline"
-              id="tagline"
-              placeholder="Tagline"
-              error={errors.tagline?.message}
-            />
-          )}
-        />
+      <div className=" flex gap-4">
+        <div className="space-y-2 w-[35%]">
+          <Controller
+            name="company_name"
+            rules={{ required: "Company name is required" }}
+            control={control}
+            render={({ field }) => (
+              <FormField
+                {...field}
+                type="text"
+                label="Company Name"
+                id="company_name"
+                placeholder="Company name"
+                error={errors.company_name?.message}
+              />
+            )}
+          />
+        </div>
+
+        <div className="space-y-2 w-[65%]">
+          <Controller
+            name="tagline"
+            control={control}
+            render={({ field }) => (
+              <FormField
+                {...field}
+                type="text"
+                label="Tagline"
+                id="tagline"
+                placeholder="Tagline"
+                error={errors.tagline?.message}
+              />
+            )}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -64,11 +67,11 @@ export function CompanyBasicsSection({ control, errors }) {
           control={control}
           render={({ field }) => (
             <TextareaField
-            label="Terms And Conditions"
-            id="terms_and_conditions"
-            placeholder="Terms And Conditions"
-            error={errors.terms_and_conditions?.message}
-            {...field}
+              label="Terms And Conditions"
+              id="terms_and_conditions"
+              placeholder="Terms And Conditions"
+              error={errors.terms_and_conditions?.message}
+              {...field}
             />
           )}
         />

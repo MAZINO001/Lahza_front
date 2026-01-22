@@ -5,6 +5,7 @@ import FormField from "@/components/Form/FormField";
 import SelectField from "@/components/Form/SelectField";
 import TextareaField from "@/components/Form/TextareaField";
 import { useAuthContext } from "@/hooks/AuthContext";
+import DateField from "@/components/Form/DateField";
 
 export default function ObjectivesForm({
   open,
@@ -107,7 +108,8 @@ export default function ObjectivesForm({
             name="start_date"
             control={control}
             render={({ field }) => (
-              <FormField
+              // <FormField
+              <DateField
                 label="Start Date"
                 type="date"
                 error={errors.start_date?.message}
@@ -120,7 +122,8 @@ export default function ObjectivesForm({
             name="end_date"
             control={control}
             render={({ field }) => (
-              <FormField
+              // <FormField
+              <DateField
                 label="End Date"
                 type="date"
                 error={errors.end_date?.message}

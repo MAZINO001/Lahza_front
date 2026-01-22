@@ -19,15 +19,17 @@ export function ReceiptTable() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
 
-  // Filter only paid payments for receipts
-  const paidPayments = payments.filter((payment) => payment.status === "paid");
+  const paidPayments = React.useMemo(
+    () => payments.filter((payment) => payment.status === "paid"),
+    [payments],
+  );
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
 
   const columns = React.useMemo(
     () => getReceiptColumns(role, navigate),
-    [role, navigate]
+    [role, navigate],
   );
 
   const table = useReactTable({

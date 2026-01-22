@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -10,15 +11,16 @@ export function getClientColumns(role) {
   return [
     {
       id: "full_name",
-      header: "Full Name",
-      accessorFn: (row) => row.client.user?.name ?? "-",
+      header: () => <Button variant="ghost">Full Name</Button>,
+      // header: "Full Name",
+      accessorFn: (row) => row.client?.user?.name ?? "-",
       cell: ({ row, getValue }) => {
-        const clientId = row.original.client.id;
+        const clientId = row.original?.client?.id;
 
         return (
           <Link
             to={`/${role}/client/${clientId}`}
-            className="font-medium text-foreground hover:underline"
+            className="font-medium text-foreground hover:underline ml-3"
           >
             {getValue()}
           </Link>
@@ -28,13 +30,13 @@ export function getClientColumns(role) {
 
     {
       header: "Company",
-      accessorFn: (row) => row.client.company ?? "-",
+      accessorFn: (row) => row.client?.company ?? "-",
       cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
     },
 
     {
       header: "Email",
-      accessorFn: (row) => row.client.user?.email ?? "-",
+      accessorFn: (row) => row.client?.user?.email ?? "-",
       cell: ({ getValue }) => (
         <p
           onClick={() => copyToClipboard(getValue(), "Client Email")}
@@ -47,7 +49,7 @@ export function getClientColumns(role) {
 
     {
       header: "Phone",
-      accessorFn: (row) => row.client.phone ?? "-",
+      accessorFn: (row) => row.client?.phone ?? "-",
       cell: ({ getValue }) => (
         <span className="text-foreground">{getValue()}</span>
       ),
@@ -55,7 +57,7 @@ export function getClientColumns(role) {
 
     {
       header: "Total Paid",
-      accessorFn: (row) => row.totalPaid,
+      accessorFn: (row) => row?.totalPaid,
       cell: ({ getValue }) => (
         <span className="text-muted-foreground">
           {Number(getValue()).toFixed(2)} MAD
@@ -65,7 +67,7 @@ export function getClientColumns(role) {
 
     {
       header: "Balance Due",
-      accessorFn: (row) => row.balanceDue,
+      accessorFn: (row) => row?.balanceDue,
       cell: ({ getValue }) => (
         <span className="text-muted-foreground">
           {Number(getValue()).toFixed(2)} MAD

@@ -57,22 +57,20 @@ export default function CalendarTable() {
           setDetailsOpen(false);
           setEditFormOpen(false);
         },
-      }
+      },
     );
   };
 
   const handleEventDelete = (event) => {
-    if (window.confirm(`Are you sure you want to delete "${event.title}"?`)) {
-      deleteMutation.mutate(
-        { id: parseInt(event.id) },
-        {
-          onSuccess: () => {
-            setDetailsOpen(false);
-            setEditFormOpen(false);
-          },
-        }
-      );
-    }
+    deleteMutation.mutate(
+      { id: parseInt(event.id) },
+      {
+        onSuccess: () => {
+          setDetailsOpen(false);
+          setEditFormOpen(false);
+        },
+      },
+    );
   };
 
   const table = useReactTable({

@@ -15,6 +15,8 @@ import FormField from "@/components/Form/FormField";
 import SelectField from "@/components/Form/SelectField";
 import TextareaField from "@/components/Form/TextareaField";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useCalendarQuery";
+import DateField from "@/components/Form/DateField";
+import { toast } from "sonner";
 
 function EventForm({
   open,
@@ -201,7 +203,7 @@ function EventForm({
         endTime:
           selectedDate.getHours() > 0
             ? new Date(
-                selectedDate.getTime() + 60 * 60 * 1000
+                selectedDate.getTime() + 60 * 60 * 1000,
               ).toLocaleTimeString("en-CA", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -253,7 +255,7 @@ function EventForm({
 
   const onSubmit = (formData) => {
     if (!formData.title || !formData.startDate) {
-      alert("Please fill in at least title and start date");
+      toast.info("Please fill in at least title and start date");
       return;
     }
 
@@ -358,7 +360,8 @@ function EventForm({
                 name="startDate"
                 control={control}
                 render={({ field }) => (
-                  <FormField
+                  // <FormField
+                  <DateField
                     id="startDate"
                     label="startDate"
                     type="date"
@@ -367,6 +370,7 @@ function EventForm({
                       field.onChange(e.target.value);
                     }}
                     error={errors.startDate?.message}
+                    {...field}
                   />
                 )}
               />
@@ -376,7 +380,8 @@ function EventForm({
                 name="endDate"
                 control={control}
                 render={({ field }) => (
-                  <FormField
+                  // <FormField
+                  <DateField
                     id="endDate"
                     label="endDate"
                     type="date"
@@ -385,6 +390,7 @@ function EventForm({
                       field.onChange(e.target.value);
                     }}
                     error={errors.endDate?.message}
+                    {...field}
                   />
                 )}
               />
@@ -453,7 +459,7 @@ function EventForm({
               </div>
             )}
           />
-{/* 
+          {/* 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Event Color
@@ -540,7 +546,7 @@ function EventForm({
                               type="button"
                               onClick={() =>
                                 field.onChange(
-                                  field.value.filter((id) => id !== guestId)
+                                  field.value.filter((id) => id !== guestId),
                                 )
                               }
                               className="text-muted-foreground hover:text-red-400"

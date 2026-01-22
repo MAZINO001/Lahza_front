@@ -4,7 +4,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
+  import.meta.url,
 ).toString();
 
 export default function PdfPreview({ src }) {
@@ -67,7 +67,8 @@ export default function PdfPreview({ src }) {
                 pageNumber={page}
                 renderTextLayer={false}
                 renderAnnotationLayer={false}
-                scale={1.5}
+                scale={1.7}
+                // scale={1.5}
               />
             </div>
           ))}

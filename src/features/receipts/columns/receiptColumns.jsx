@@ -1,11 +1,22 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatId } from "@/lib/utils/formatId";
+import { ArrowUpDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export const getReceiptColumns = (role, navigate) => [
   {
     accessorKey: "id",
-    header: "Receipt ID",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Receipt ID
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    // header: "Receipt ID",
     cell: ({ row }) => {
       const payment = row.original;
       const id = payment.id;
@@ -21,22 +32,36 @@ export const getReceiptColumns = (role, navigate) => [
   },
   {
     accessorKey: "invoice_id",
-    header: "Invoice ID",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Invoice ID
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const payment = row.original;
       const invoiceId = payment.invoice_id;
       return invoiceId ? (
-        <div className="font-medium">
-          {formatId(invoiceId, "INVOICE")}
-        </div>
+        <div className="font-medium ml-3">{formatId(invoiceId, "INVOICE")}</div>
       ) : (
-        <div className="text-muted-foreground">—</div>
+        <div className="text-muted-foreground ml-3">—</div>
       );
     },
   },
   {
     accessorKey: "amount",
-    header: "Amount",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Amount
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const payment = row.original;
       const amount = parseFloat(row.getValue("amount"));
@@ -44,11 +69,7 @@ export const getReceiptColumns = (role, navigate) => [
         style: "currency",
         currency: "MAD",
       }).format(amount);
-      return (
-        <div className="font-medium">
-          {formatted}
-        </div>
-      );
+      return <div className="font-medium ml-3">{formatted}</div>;
     },
   },
   {
@@ -58,7 +79,9 @@ export const getReceiptColumns = (role, navigate) => [
       const method = row.getValue("payment_method");
       return (
         <div className="flex items-center">
-          <span className="capitalize">{method ? method.replace(/_/g, " ") : '—'}</span>
+          <span className="capitalize">
+            {method ? method.replace(/_/g, " ") : "—"}
+          </span>
         </div>
       );
     },
@@ -83,7 +106,15 @@ export const getReceiptColumns = (role, navigate) => [
   },
   {
     accessorKey: "created_at",
-    header: "Date",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Date
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     cell: ({ row }) => {
       const date = new Date(row.getValue("created_at"));
       const formatted = date.toLocaleDateString("en-US", {
@@ -91,7 +122,7 @@ export const getReceiptColumns = (role, navigate) => [
         month: "short",
         day: "numeric",
       });
-      return !isNaN(date) ? formatted : "—";
+      return <div className="ml-3">{!isNaN(date) ? formatted : "—"}</div>;
     },
   },
 ];

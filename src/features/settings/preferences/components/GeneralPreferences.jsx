@@ -65,31 +65,28 @@ export default function GeneralPreferences() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-      <h1 className="font-semibold text-lg">General</h1>
-      <FormSection title="Preferences">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="space-y-1">
-              <Label className="text-sm font-medium">Dark Mode</Label>
-            </div>
-            <Controller
-              name="dark_mode"
-              control={control}
-              render={({ field }) => (
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              )}
-            />
+      <h1 className="font-semibold text-lg mb-6">General</h1>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">Dark Mode</Label>
           </div>
+          <Controller
+            name="dark_mode"
+            control={control}
+            render={({ field }) => (
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
+            )}
+          />
+        </div>
 
-          <div>
-            <h3 className="text-sm font-semibold text-muted-foreground mb-4">
-              Language & Region
-            </h3>
+        <div>
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+            Language & Region
+          </h3>
 
-            <div className="rounded-lg border p-4 space-y-4">
+          <div className="rounded-lg space-y-4 flex gap-4">
+            <div className="w-[50%]">
               <Controller
                 name="language"
                 control={control}
@@ -110,7 +107,8 @@ export default function GeneralPreferences() {
                   );
                 }}
               />
-
+            </div>
+            <div className="w-[50%]">
               <Controller
                 name="currency"
                 control={control}
@@ -130,7 +128,7 @@ export default function GeneralPreferences() {
             </div>
           </div>
         </div>
-      </FormSection>
+      </div>
       <div className="mt-4 flex justify-end">
         <Button type="submit" disabled={updatePreferences.isPending}>
           {updatePreferences.isPending ? "Saving..." : "Save Preferences"}

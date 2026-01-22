@@ -26,7 +26,7 @@ export function getOfferColumns(role, navigate) {
         return (
           <Link
             to={`/${role}/offer/${offer.id}`}
-            className="font-medium hover:underline"
+            className="font-medium hover:underline ml-3"
           >
             {offer.title}
           </Link>

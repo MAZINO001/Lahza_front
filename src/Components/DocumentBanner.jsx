@@ -30,7 +30,7 @@ export default function WhatsNextBanner({
   content,
   clientId,
   currentSection,
-  
+
   projectId,
   DocId,
 }) {
@@ -74,23 +74,17 @@ export default function WhatsNextBanner({
       toast.success("Signature uploaded successfully!");
 
       if (role === "client") {
-        const shouldCreateInvoice = confirm(
-          "Would you like to create an invoice from this signed quote?"
-        );
-
-        if (shouldCreateInvoice) {
-          try {
-            await createInvoice.mutateAsync(document.id);
-            toast.success("Quote signed and invoice created successfully!");
-          } catch (err) {
-            console.error("Failed to create invoice:", err);
-            toast.error(
-              "Quote signed, but invoice creation failed. Please try again."
-            );
-          }
-        } else {
-          toast.success("Quote signature uploaded successfully!");
+        try {
+          await createInvoice.mutateAsync(document.id);
+          toast.success("Quote signed and invoice created successfully!");
+        } catch (err) {
+          console.error("Failed to create invoice:", err);
+          toast.error(
+            "Quote signed, but invoice creation failed. Please try again.",
+          );
         }
+      } else {
+        toast.success("Quote signature uploaded successfully!");
       }
 
       setIsSignDialogOpen(false);
@@ -107,7 +101,7 @@ export default function WhatsNextBanner({
     }
 
     if (action === "Check or Add Additional Data") {
-      navigate(`/${role}/project/${projectId}/additional-data`);
+      navigate(`/${role}/projects`);
     }
 
     if (action === "Sign Quote") {

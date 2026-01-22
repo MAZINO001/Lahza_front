@@ -115,18 +115,12 @@ export default function TicketsPage() {
   };
 
   const handleDeleteTicket = async (ticketId) => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this ticket? This action cannot be undone.",
-      )
-    ) {
-      try {
-        await deleteTicket.mutate(ticketId);
-        // Ticket will be automatically removed from the list due to React Query cache invalidation
-      } catch (error) {
-        // Error is already handled by the hook with toast notification
-        console.error("Failed to delete ticket:", error);
-      }
+    try {
+      await deleteTicket.mutate(ticketId);
+      // Ticket will be automatically removed from the list due to React Query cache invalidation
+    } catch (error) {
+      // Error is already handled by the hook with toast notification
+      console.error("Failed to delete ticket:", error);
     }
   };
 
@@ -161,25 +155,16 @@ export default function TicketsPage() {
       toast.error("No tickets selected");
       return;
     }
-
-    if (
-      window.confirm(
-        `Are you sure you want to delete ${selectedTickets.length} ticket(s)? This action cannot be undone.`,
-      )
-    ) {
-      try {
-        for (const ticketId of selectedTickets) {
-          await deleteTicket.mutate(ticketId);
-        }
-        setSelectedTickets([]);
-        setSelectAll(false);
-        toast.success(
-          `Deleted ${selectedTickets.length} ticket(s) successfully`,
-        );
-      } catch (error) {
-        toast.error("Failed to delete tickets");
-        console.error("Bulk delete error:", error);
+    try {
+      for (const ticketId of selectedTickets) {
+        await deleteTicket.mutate(ticketId);
       }
+      setSelectedTickets([]);
+      setSelectAll(false);
+      toast.success(`Deleted ${selectedTickets.length} ticket(s) successfully`);
+    } catch (error) {
+      toast.error("Failed to delete tickets");
+      console.error("Bulk delete error:", error);
     }
   };
 

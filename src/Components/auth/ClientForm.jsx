@@ -148,14 +148,14 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
     const step1Fields = handleClientCreatedByAdmin
       ? ["client_type", "name", "email", "phone", "company"]
       : [
-          "client_type",
-          "name",
-          "email",
-          "password",
-          "password_confirmation",
-          "phone",
-          "company",
-        ];
+        "client_type",
+        "name",
+        "email",
+        "password",
+        "password_confirmation",
+        "phone",
+        "company",
+      ];
 
     const fieldsToValidate =
       currentStep === 1 ? step1Fields : ["address", "zip", "city", "country"];
@@ -195,12 +195,12 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
       {/* STEP 1 */}
       {currentStep === 1 && (
         <>
-          <FormSection title="Informations du client">
+          <FormSection title="Client Information">
             <Controller
               name="client_type"
               control={control}
               rules={{
-                required: "Le type de client est requise",
+                required: "Client type is required",
               }}
               render={({ field }) => (
                 <ClientTypeRadio
@@ -218,11 +218,11 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               <Controller
                 name="name"
                 control={control}
-                rules={{ required: "Le nom est requis" }}
+                rules={{ required: "Name is required" }}
                 render={({ field }) => (
                   <FormField
                     id="name"
-                    label="Nom complet"
+                    label="Full Name"
                     value={field.value}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -236,11 +236,11 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               <Controller
                 name="company"
                 control={control}
-                rules={{ required: "Le nom est requis" }}
+                rules={{ required: "Company name is required" }}
                 render={({ field }) => (
                   <FormField
                     id="company"
-                    label="Nom de l'entreprise"
+                    label="Company Name"
                     value={field.value}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -258,17 +258,17 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                 name="email"
                 control={control}
                 rules={{
-                  required: "L'email est requis",
+                  required: "Email is required",
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Adresse email invalide",
+                    message: "Invalid email address",
                   },
                 }}
                 render={({ field }) => (
                   <FormField
                     id="email"
                     type="email"
-                    label="Adresse email"
+                    label="Email Address"
                     value={field.value}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -282,11 +282,11 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               <Controller
                 name="phone"
                 control={control}
-                rules={{ required: "Téléphone est requis" }}
+                rules={{ required: "Phone is required" }}
                 render={({ field }) => (
                   <FormField
                     id="phone"
-                    label="Téléphone"
+                    label="Phone"
                     value={field.value}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -305,14 +305,14 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                   name="password"
                   control={control}
                   rules={{
-                    required: "Le mot de passe est requis",
-                    minLength: { value: 6, message: "Minimum 6 caractères" },
+                    required: "Password is required",
+                    minLength: { value: 6, message: "Minimum 6 characters" },
                   }}
                   render={({ field }) => (
                     <FormField
                       id="password"
                       type="password"
-                      label="Mot de passe"
+                      label="Password"
                       value={field.value}
                       onChange={(e) => {
                         field.onChange(e.target.value);
@@ -327,16 +327,16 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                   name="password_confirmation"
                   control={control}
                   rules={{
-                    required: "La confirmation est requise",
+                    required: "Password confirmation is required",
                     validate: (val) =>
                       val === watch("password") ||
-                      "Les mots de passe ne correspondent pas",
+                      "Passwords do not match",
                   }}
                   render={({ field }) => (
                     <FormField
                       id="password_confirmation"
                       type="password"
-                      label="Confirmer le mot de passe"
+                      label="Confirm Password"
                       value={field.value}
                       onChange={(e) => {
                         field.onChange(e.target.value);
@@ -359,7 +359,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               onClick={handleNextStep}
               className="w-full md:w-auto bg-primary hover:bg-[color-mix(in oklch,var(--primary)80%,black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors mt-8"
             >
-              Suivant
+              Next
             </Button>
           </div>
         </>
@@ -368,19 +368,19 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
       {/* STEP 2 */}
       {currentStep === 2 && (
         <>
-          <FormSection title="Adresse et Informations">
+          <FormSection title="Address and Information">
             {/* Adresse + Zip */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
                 name="address"
                 control={control}
                 rules={{
-                  required: "L'adresse est requise",
+                  required: "Address is required",
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <FormField
                     id="address"
-                    label="Adresse"
+                    label="Address"
                     {...field}
                     onChange={(e) => {
                       field.onChange(e);
@@ -395,12 +395,12 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                 name="zip"
                 control={control}
                 rules={{
-                  required: "Le code postal est requis",
+                  required: "Postal code is required",
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <FormField
                     id="zip"
-                    label="Code postal"
+                    label="Postal Code"
                     {...field}
                     onChange={(e) => {
                       field.onChange(e);
@@ -418,12 +418,12 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                 name="city"
                 control={control}
                 rules={{
-                  required: "La ville est requise",
+                  required: "City is required",
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <FormField
                     id="city"
-                    label="Ville"
+                    label="City"
                     {...field}
                     onChange={(e) => {
                       field.onChange(e);
@@ -438,7 +438,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                 name="country"
                 control={control}
                 rules={{
-                  required: "Le pays est requis",
+                  required: "Country is required",
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <CountrySelect
@@ -463,7 +463,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                       name="ice"
                       control={control}
                       rules={{
-                        required: "L'ICE est requis",
+                        required: "ICE is required",
                       }}
                       render={({ field, fieldState: { error } }) => (
                         <FormField
@@ -482,7 +482,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                     {/* VAT - read only */}
                     <FormField
                       id="vat"
-                      label="TVA"
+                      label="VAT"
                       value={registerStore.vat}
                       disabled
                       readOnly
@@ -497,7 +497,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                       name="siren"
                       control={control}
                       rules={{
-                        required: "Le SIREN est requis",
+                        required: "SIREN is required",
                       }}
                       render={({ field, fieldState: { error } }) => (
                         <FormField
@@ -517,7 +517,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                       name="currency"
                       control={control}
                       rules={{
-                        required: "La devise est requise",
+                        required: "Currency is required",
                       }}
                       render={({ field }) => (
                         <CurrencySelect
@@ -540,14 +540,14 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               variant="outline"
               className="w-full md:w-auto"
             >
-              Précédent
+              Previous
             </Button>
             <Button
               type="submit"
               disabled={submitting}
               className="w-full md:w-auto bg-primary hover:bg-[color-mix(in oklch,var(--primary)80%,black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors"
             >
-              {submitting ? "Inscription en cours..." : "S'inscrire"}
+              {submitting ? "Registering..." : "Register"}
             </Button>
           </div>
         </>

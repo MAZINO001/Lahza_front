@@ -51,16 +51,27 @@ export function paymentColumns(role, { onEditPaidAt }) {
 
       cell: ({ row }) => {
         const id = row.getValue("id");
-        return <div>{formatId(id, "PAYMENT")}</div>;
+        return <div className="ml-3">{formatId(id, "PAYMENT")}</div>;
       },
     },
     {
       accessorKey: "invoice_id",
-      header: "Invoice ID",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Invoice ID
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      // header: "Invoice ID",
       cell: ({ row }) => {
         const id = row.getValue("invoice_id");
         return (
-          <Link to={`/${role}/invoice/${id}`}>{formatId(id, "INVOICE")}</Link>
+          <Link to={`/${role}/invoice/${id}`} className="ml-3">
+            {formatId(id, "INVOICE")}
+          </Link>
         );
       },
     },
@@ -78,11 +89,10 @@ export function paymentColumns(role, { onEditPaidAt }) {
       header: ({ column }) => (
         <Button
           variant="ghost"
-          className="float-right"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Total
-          <ArrowUpDown className="ml-2 h-4 w-4" />
+          <ArrowUpDown className=" h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
@@ -163,7 +173,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
           month: "short",
           day: "numeric",
         });
-        return <div className="text-sm">{formatted}</div>;
+        return <div className="text-sm ml-3">{formatted}</div>;
       },
     },
     {
@@ -188,7 +198,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
 
         return (
           <div
-            className="text-sm cursor-pointer hover:underline"
+            className="text-sm cursor-pointer hover:underline ml-3"
             onDoubleClick={() => onEditPaidAt(payment)}
           >
             {formatted}
@@ -208,17 +218,13 @@ export function paymentColumns(role, { onEditPaidAt }) {
           if (payment.stripe_session_id) {
             window.open(
               `https://dashboard.stripe.com/test/payments/${payment.stripe_payment_intent_id || payment.stripe_session_id}`,
-              "_blank"
+              "_blank",
             );
           }
         };
 
         if (role === "client") {
-          return (
-            <div className="text-muted-foreground">
-              —
-            </div>
-          );
+          return <div className="text-muted-foreground">—</div>;
         }
 
         const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
@@ -226,9 +232,14 @@ export function paymentColumns(role, { onEditPaidAt }) {
         const cancelPayment = useCancelPayment();
 
         return (
-          <div className="flex gap-2">
+          <div className="flex">
             {payment.stripe_session_id && row.getValue("status") === "paid" && (
-              <Button variant="ghost" size="sm" onClick={handleViewSession} className="cursor-pointer">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleViewSession}
+                className="cursor-pointer"
+              >
                 <Eye />
               </Button>
             )}
@@ -247,7 +258,7 @@ export function paymentColumns(role, { onEditPaidAt }) {
                       if (payment.payment_method === "bank") {
                         copyToClipboard(
                           "007 640 0014332000000260 29",
-                          "Payment Url"
+                          "Payment Url",
                         );
                       }
                     }}

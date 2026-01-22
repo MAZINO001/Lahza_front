@@ -14,6 +14,7 @@ import {
   useTeamAdditionalData,
 } from "../../hooks/useTeamAdditionalDataQuery";
 import { useTeams } from "../../hooks/useTeamsQuery";
+import DateField from "@/components/Form/DateField";
 
 export default function AdditionalTeamDetails() {
   const { user } = useAuthContext();
@@ -22,7 +23,7 @@ export default function AdditionalTeamDetails() {
 
   // Find current user's team member ID
   const currentUserTeamId = teamsMembers?.data?.find(
-    (member) => member.user_id === user.id
+    (member) => member.user_id === user.id,
   )?.id;
 
   const {
@@ -114,9 +115,9 @@ export default function AdditionalTeamDetails() {
       <div className="space-y-8">
         {role === "admin" && (
           <div className="">
-            <h2 className="text-md font-semibold text-foreground mb-2">
+            <h3 className="text-sm font-semibold text-muted-foreground mb-4">
               Select Team Member
-            </h2>
+            </h3>
             <div className="space-y-2">
               <Controller
                 name="team_user_id"
@@ -145,10 +146,10 @@ export default function AdditionalTeamDetails() {
         )}
 
         <div className="">
-          <h2 className="text-md font-semibold text-foreground mb-2">
-            Banking Information
-          </h2>
-          <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+            Bank Information
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
               <Controller
                 name="bank_name"
@@ -233,9 +234,9 @@ export default function AdditionalTeamDetails() {
         </div>
 
         <div className="">
-          <h2 className="text-md font-semibold text-foreground mb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
             Contract Information
-          </h2>
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Controller
@@ -298,7 +299,8 @@ export default function AdditionalTeamDetails() {
                   required: "Start date is required",
                 }}
                 render={({ field }) => (
-                  <FormField
+                  // <FormField
+                  <DateField
                     {...field}
                     type="date"
                     label="Start Date"
@@ -317,7 +319,8 @@ export default function AdditionalTeamDetails() {
                   required: "End date is required",
                 }}
                 render={({ field }) => (
-                  <FormField
+                  // <FormField
+                  <DateField
                     {...field}
                     type="date"
                     label="End Date"
@@ -379,9 +382,9 @@ export default function AdditionalTeamDetails() {
         </div>
 
         <div className="">
-          <h2 className="text-md font-semibold text-foreground mb-2">
-            Emergency Contact
-          </h2>
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
+            Emergency Contact Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Controller
@@ -443,10 +446,11 @@ export default function AdditionalTeamDetails() {
         </div>
 
         <div className="">
-          <h2 className="text-md font-semibold text-foreground mb-2">
+          <h3 className="text-sm font-semibold text-muted-foreground mb-4">
             Professional Information
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          </h3>
+
+          <div className="grid grid-cols-1 items-end md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Controller
                 name="portfolio"
@@ -471,7 +475,7 @@ export default function AdditionalTeamDetails() {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 ">
               <Controller
                 name="github"
                 control={control}

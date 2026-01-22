@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { useClients } from "../hooks/useClientsQuery";
+import { useClients } from "../hooks/useClients/useClients";
 import { getClientColumns } from "../columns/clientColumns";
 import CSVUploadModal from "@/components/common/CSVUploadModal";
 import { ChevronDown, Plus, Upload } from "lucide-react";
@@ -39,7 +39,7 @@ export function ClientTable() {
 
   const columns = React.useMemo(
     () => getClientColumns(role, navigate),
-    [role, navigate]
+    [role, navigate],
   );
 
   const clientOrder = ["A-Z", "Z-A"];
@@ -55,7 +55,7 @@ export function ClientTable() {
 
     if (clientType !== "all") {
       filtered = filtered.filter(
-        (client) => client.client.client_type === clientType
+        (client) => client.client.client_type === clientType,
       );
     }
 
@@ -69,11 +69,11 @@ export function ClientTable() {
 
     if (selectedStatus === "A-Z") {
       filtered.sort((a, b) =>
-        (a.client?.user?.name || "").localeCompare(b.client?.user?.name || "")
+        (a.client?.user?.name || "").localeCompare(b.client?.user?.name || ""),
       );
     } else if (selectedStatus === "Z-A") {
       filtered.sort((a, b) =>
-        (b.client?.user?.name || "").localeCompare(a.client?.user?.name || "")
+        (b.client?.user?.name || "").localeCompare(a.client?.user?.name || ""),
       );
     }
 

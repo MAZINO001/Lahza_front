@@ -2,6 +2,7 @@ import { ArrowUpDown, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { StatusBadge } from "@/components/StatusBadge";
+import { toast } from "sonner";
 export const dashBoardTableColumns = (role) => {
   return [
     {
@@ -116,7 +117,9 @@ export const dashBoardTableColumns = (role) => {
         if (status === "overdue") {
           const daysOverdue = Math.max(
             0,
-            Math.ceil((new Date() - new Date(due_date)) / (1000 * 60 * 60 * 24))
+            Math.ceil(
+              (new Date() - new Date(due_date)) / (1000 * 60 * 60 * 24),
+            ),
           );
 
           return (
@@ -145,12 +148,12 @@ export const dashBoardTableColumns = (role) => {
             invoice.status === "partially_paid" ||
             invoice.status === "overdue"
           ) {
-            alert(`Opening payment for ${invoice.id}`);
+            toast.info(`Opening payment for ${invoice.id}`);
           }
         };
 
         const handleDownload = () => {
-          alert(`Downloading invoice ${invoice.id}`);
+          toast.info(`Downloading invoice ${invoice.id}`);
         };
         return (
           <div className="flex items-center gap-2">

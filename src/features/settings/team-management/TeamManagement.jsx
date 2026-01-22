@@ -6,6 +6,8 @@ import TeamTable from "./components/TeamTable";
 export default function TeamManagement() {
   return (
     <div>
+      <h1 className="font-semibold text-lg mb-6">Team Management</h1>
+
       <Tabs defaultValue="additional" className="w-ful">
         <TabsList className="grid w-[25%] md:w-[40%] grid-cols-2">
           <TabsTrigger value="additional">Additional Team Data</TabsTrigger>

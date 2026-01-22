@@ -8,8 +8,7 @@ import { useSubmitProtection } from "@/hooks/spamBlocker";
 import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
 import TextareaField from "@/Components/Form/TextareaField";
-import api from "@/lib/utils/axios";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useDocuments,
   useNoInvoiceProject,
@@ -21,8 +20,10 @@ import {
 } from "../hooks/useProjects";
 import { formatId } from "@/lib/utils/formatId";
 import Checkbox from "@/components/Checkbox";
-import { useClients } from "@/features/clients/hooks/useClientsQuery";
+import { useClients } from "@/features/clients/hooks/useClients/useClients";
 import AddClientModel from "@/components/common/AddClientModel";
+import DateField from "@/components/Form/DateField";
+import { cn } from "@/lib/utils";
 
 export function ProjectForm({ onSuccess }) {
   const [directProject, setDirectProject] = useState(false);
@@ -200,85 +201,132 @@ export function ProjectForm({ onSuccess }) {
         <AddClientModel />
       </div>
       {selectedClient && (
-        <div className="space-y-4 flex gap-4">
-          <div className="border rounded bg-background p-4">
-            <h3 className="font-bold text-base mb-3">Billing</h3>
-            <div className="space-y-2 text-sm">
-              <p>
-                <span className="font-medium">Address:</span>{" "}
-                {selectedClient?.client?.address}
-              </p>
-              <p>
-                <span className="font-medium">City:</span>{" "}
-                {selectedClient?.client?.city}
-              </p>
-              <p>
-                <span className="font-medium">Country:</span>{" "}
-                {selectedClient?.client?.country}
-              </p>
-              <p>
-                <span className="font-medium">Currency:</span>{" "}
-                {selectedClient?.client?.currency || "MAD"}
-              </p>
-              <p>
-                <span className="font-medium">VAT:</span>{" "}
-                {selectedClient?.client?.vat || "20%"}
-              </p>
-            </div>
-          </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="border-border bg-card text-card-foreground shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">Billing</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">
+                  Address
+                </span>
+                <span className="text-foreground">
+                  {selectedClient?.client?.address || "—"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">City</span>
+                <span className="text-foreground">
+                  {selectedClient?.client?.city || "—"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">
+                  Country
+                </span>
+                <span className="text-foreground">
+                  {selectedClient?.client?.country || "—"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">
+                  Currency
+                </span>
+                <span className="text-foreground">
+                  {selectedClient?.client?.currency || "MAD"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">VAT</span>
+                <span className="text-foreground">
+                  {selectedClient?.client?.vat || "20%"}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="border rounded bg-background p-4">
-            <h3 className="font-bold text-base mb-3">Personal Info</h3>
-            <div className="space-y-2 text-sm">
-              <p>
-                <span className="font-medium">Name:</span>{" "}
-                {selectedClient?.client?.user?.name}
-              </p>
-              <p>
-                <span className="font-medium">Email:</span>{" "}
-                {selectedClient?.client?.user?.email}
-              </p>
-              <p>
-                <span className="font-medium">Phone:</span>{" "}
-                {selectedClient?.client?.phone}
-              </p>
-              <p>
-                <span className="font-medium">Client Type:</span>{" "}
-                {selectedClient?.client?.client_type}
-              </p>
-            </div>
-          </div>
+          <Card className="border-border bg-card text-card-foreground shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">
+                Personal Info
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">Name</span>
+                <span className="text-foreground">
+                  {selectedClient?.client?.user?.name || "—"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">Email</span>
+                <span className="text-foreground break-all">
+                  {selectedClient?.client?.user?.email || "—"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">Phone</span>
+                <span className="text-foreground">
+                  {selectedClient?.client?.phone || "—"}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium text-muted-foreground">
+                  Client Type
+                </span>
+                <span className="text-foreground">
+                  {selectedClient?.client?.client_type || "—"}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
 
           {(selectedClient?.client?.company ||
             selectedClient?.client?.ice ||
             selectedClient?.client?.siren) && (
-            <div className="border rounded bg-background p-4">
-              <h3 className="font-bold text-base mb-3">Company Info</h3>
-              <div className="space-y-2 text-sm">
+            <Card className="border-border bg-card text-card-foreground shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">
+                  Company Info
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
                 {selectedClient?.client?.company && (
-                  <p>
-                    <span className="font-medium">Company:</span>{" "}
-                    {selectedClient?.client?.company}
-                  </p>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-muted-foreground">
+                      Company
+                    </span>
+                    <span className="text-foreground">
+                      {selectedClient.client.company}
+                    </span>
+                  </div>
                 )}
                 {selectedClient?.client?.ice && (
-                  <p>
-                    <span className="font-medium">ICE:</span>{" "}
-                    {selectedClient?.client?.ice}
-                  </p>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-muted-foreground">
+                      ICE
+                    </span>
+                    <span className="text-foreground">
+                      {selectedClient.client.ice}
+                    </span>
+                  </div>
                 )}
                 {selectedClient?.client?.siren && (
-                  <p>
-                    <span className="font-medium">SIREN:</span>{" "}
-                    {selectedClient?.client?.siren}
-                  </p>
+                  <div className="flex justify-between">
+                    <span className="font-medium text-muted-foreground">
+                      SIREN
+                    </span>
+                    <span className="text-foreground">
+                      {selectedClient.client.siren}
+                    </span>
+                  </div>
                 )}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           )}
         </div>
       )}
-
       {invoicesLoading && (
         <p className="text-sm text-muted-foreground">Loading invoices...</p>
       )}
@@ -328,16 +376,22 @@ export function ProjectForm({ onSuccess }) {
               />
             </div>
             <div
+              className={cn(
+                "flex items-center space-x-3 rounded-md border bg-card p-2 max-h-9 w-[24%]",
+                "hover:bg-accent/50 transition-colors cursor-pointer select-none",
+                "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+              )}
               onClick={() => setDirectProject((prev) => !prev)}
-              className="flex gap-4 w-[24%] border border-border rounded-md p-[5.5px] cursor-pointer select-none"
+              role="button"
+              tabIndex={0}
             >
               <Checkbox
                 checked={directProject}
-                onCheckedChange={(v) => setDirectProject(v)}
-                className="w-6 h-6 rounded-md"
+                onCheckedChange={setDirectProject}
                 onClick={(e) => e.stopPropagation()}
+                className="h-5 w-5 rounded"
               />
-              <span>Direct Project</span>
+              <span className="text-sm font-medium">Direct Project</span>
             </div>
           </div>
         </div>
@@ -365,7 +419,8 @@ export function ProjectForm({ onSuccess }) {
             control={control}
             rules={{ required: "Start date is required" }}
             render={({ field }) => (
-              <FormField
+              // <FormField
+              <DateField
                 type="date"
                 label="Start Date"
                 error={errors.start_date?.message}
@@ -381,7 +436,8 @@ export function ProjectForm({ onSuccess }) {
             control={control}
             rules={{ required: "Estimated end date is required" }}
             render={({ field }) => (
-              <FormField
+              // <FormField
+              <DateField
                 type="date"
                 label="Estimated End Date"
                 error={errors.estimated_end_date?.message}

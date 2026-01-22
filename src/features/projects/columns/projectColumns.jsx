@@ -22,7 +22,7 @@ export function ProjectColumns(role, navigate) {
         return (
           <Link
             to={`/${role}/project/${id}`}
-            className="font-medium text-foreground hover:underline"
+            className="font-medium text-foreground hover:underline ml-3"
           >
             {formatId(id, "PROJECT")}
           </Link>
@@ -38,17 +38,24 @@ export function ProjectColumns(role, navigate) {
       ),
     },
 
-    {
-      accessorKey: "client_id",
-      header: "Client",
-      cell: ({ row }) => {
-        const id = row.getValue("client_id");
+    ...(role !== "client"
+      ? [
+          {
+            accessorKey: "client_id",
+            header: "Client",
+            cell: ({ row }) => {
+              const id = row.getValue("client_id");
 
-        return (
-          <Link to={`/${role}/client/${id}`}>{formatId(id, "CLIENT")}</Link>
-        );
-      },
-    },
+              return (
+                <Link to={`/${role}/client/${id}`}>
+                  {formatId(id, "CLIENT")}
+                </Link>
+              );
+            },
+          },
+        ]
+      : []),
+
     {
       accessorKey: "status",
       header: "Status",

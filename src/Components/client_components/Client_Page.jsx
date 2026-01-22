@@ -16,7 +16,7 @@ import {
 import {
   useClient,
   useDeleteClient,
-} from "@/features/clients/hooks/useClientsQuery";
+} from "@/features/clients/hooks/useClients/useClientsData";
 import ClientBanner from "@/components/ClientBanner";
 import { Controller, useForm } from "react-hook-form";
 import FileUploader from "@/components/Form/FileUploader";

@@ -25,7 +25,7 @@ import GanttComponent from "@/features/projects/components/GanttComponent";
 import Comments from "@/components/client_components/Client_page/comments/Comments";
 import TimelineComponent from "@/components/timeline";
 import { useProjectHistory } from "@/features/projects/hooks/useProjectHistory";
-import { useClient } from "@/features/clients/hooks/useClientsQuery";
+import { useClient } from "@/features/clients/hooks/useClients/useClients";
 import { Calendar } from "@/components/ui/calendar";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";

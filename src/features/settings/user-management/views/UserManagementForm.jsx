@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Save } from "lucide-react";
 import SelectField from "@/components/Form/SelectField";
 import FormField from "@/components/Form/FormField";
+import { toast } from "sonner";
 
 export default function UserManagementForm() {
   const navigate = useNavigate();
@@ -69,9 +70,9 @@ export default function UserManagementForm() {
   const onSubmit = (data) => {
     console.log("Form Data:", data);
     if (isEditMode) {
-      alert("User updated successfully");
+      toast.success("User updated successfully");
     } else {
-      alert("User created successfully");
+      toast.success("User created successfully");
     }
     navigate("/admin/settings/users_management");
   };

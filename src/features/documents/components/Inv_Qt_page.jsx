@@ -1,3 +1,215 @@
+// import { Download, Edit2, Filter, Printer, Send, X } from "lucide-react";
+// import DocumentBanner from "@/components/DocumentBanner";
+// import { Button } from "@/components/ui/button";
+// import { useAuthContext } from "@/hooks/AuthContext";
+// import { Link, useNavigate } from "react-router-dom";
+// import api from "@/lib/utils/axios";
+// import { globalFnStore } from "@/hooks/GlobalFnStore";
+// import {
+//   useDocument,
+//   useCreateDocument,
+// } from "@/features/documents/hooks/useDocumentsQuery";
+// import { MoreVertical } from "lucide-react";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+// import PdfPreview from "./PdfPreview";
+
+// export default function Inv_Qt_page({ type, currentId }) {
+//   const isInvoice = type === "invoices";
+//   const currentSection = type === "invoices" ? "invoice" : "quote";
+//   const { role, user } = useAuthContext();
+//   const navigate = useNavigate();
+//   const {
+//     data: document,
+//     isLoading: documentLoading,
+//     isError: documentError,
+//   } = useDocument(currentId, type);
+//   const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =
+//     globalFnStore();
+//   const createInvoiceMutation = useCreateDocument("invoices");
+
+//   const handleSendPdf = () => {
+//     handleSendInvoice_Quote(document.id, user.email, `${type}`);
+//   };
+
+//   const handleDownloadPdf = () => {
+//     handleDownloadInvoice_Quotes(document.id, `${currentSection}`);
+//   };
+
+//   const handlePrintPdf = async () => {
+//     try {
+//       const response = await api.get(
+//         `http://127.0.0.1:8000/api/pdf/${currentSection}/${currentId}`,
+//         {
+//           responseType: "blob",
+//           withCredentials: true,
+//         }
+//       );
+//       const blob = response.data;
+//       console.log(blob);
+//       const url = window.URL.createObjectURL(blob);
+
+//       const printWindow = window.open(url);
+//       if (printWindow) {
+//         printWindow.onload = () => {
+//           printWindow.focus();
+//           printWindow.print();
+//         };
+//       } else {
+//         alert("Please allow popups to print the document.");
+//       }
+//     } catch (error) {
+//       console.error("Print error:", error);
+//       alert(`Failed to print ${type}`);
+//     }
+//   };
+//   const handleInvoiceConversion = async () => {
+//     const quoteId = document?.id;
+//     navigate(`/${role}/invoice/new`, { state: { quoteId } });
+//   };
+//   const handleClone = () => {
+//     navigate(`/${role}/${currentSection}/new`, {
+//       state: { cloneFromId: currentId },
+//     });
+//   };
+
+//   return (
+//     <div className="flex-1 flex flex-col h-screen">
+//       <div className="px-2 py-4 border-b border-t gap-3 flex items-center justify-between">
+//         <div className="text-lg font-semibold">
+//           {isInvoice ? "INVOICE" : "QUOTE"}-000{currentId}
+//         </div>
+//         <div className="flex items-center gap-2 ">
+//           {role === "admin" && (
+//             <Link
+//               to={`/${role}/${currentSection}/${currentId}/edit`}
+//               state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
+//             >
+//               <Button variant="outline" className="h-8 w-8 cursor-pointer">
+//                 <Edit2 size={20} />
+//               </Button>
+//             </Link>
+//           )}
+//           <Button
+//             onClick={handleDownloadPdf}
+//             variant="outline"
+//             className="h-8 w-8 cursor-pointer"
+//           >
+//             <Download size={20} />
+//           </Button>
+//           <Button
+//             onClick={handlePrintPdf}
+//             variant="outline"
+//             className="h-8 w-8 cursor-pointer"
+//           >
+//             <Printer size={20} />
+//           </Button>
+//           {role === "admin" ? (
+//             <>
+//               <Button
+//                 onClick={handleSendPdf}
+//                 variant="outline"
+//                 className="h-8 w-8 cursor-pointer"
+//               >
+//                 <Send size={20} />
+//               </Button>
+//               <DropdownMenu>
+//                 <DropdownMenuTrigger asChild>
+//                   <button className="p-2 border border-border rounded-md bg-background">
+//                     <MoreVertical className="h-4 w-4" />
+//                   </button>
+//                 </DropdownMenuTrigger>
+//                 <DropdownMenuContent align="start">
+//                   <DropdownMenuItem
+//                     onClick={() => {
+//                       handleClone();
+//                     }}
+//                   >
+//                     Clone
+//                   </DropdownMenuItem>
+//                 </DropdownMenuContent>
+//               </DropdownMenu>
+//             </>
+//           ) : (
+//             ""
+//           )}
+
+//           {type === "quotes" &&
+//           role === "admin" &&
+//           document?.status !== "confirmed" ? (
+//             <>
+//               <div className="w-px h-4 bg-gray-300 mx-2"></div>
+//               <div>
+//                 <Button
+//                   onClick={handleInvoiceConversion}
+//                   variant="outline"
+//                   className="text-sm cursor-pointer"
+//                 >
+//                   Convert to Invoice
+//                 </Button>
+//               </div>
+//             </>
+//           ) : (
+//             ""
+//           )}
+//           <div className="w-px h-4 bg-gray-300 mx-2"></div>
+//           <button variant="outline" className="h-8 w-8 cursor-pointer">
+//             <Link
+//               to={`/${role}/${type}`}
+//               state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
+//             >
+//               <Button variant="outline" className="h-8 w-8 cursor-pointer">
+//                 <X size={20} />
+//               </Button>
+//             </Link>
+//           </button>
+//         </div>
+//       </div>
+//       <div className="flex flex-col h-full p-4 gap-4 overflow-auto">
+//         <div className="shrink-0">
+//           <DocumentBanner
+//             type={type}
+//             action={
+//               role === "admin"
+//                 ? type === "quotes"
+//                   ? "Duplicate Quote"
+//                   : "Check or Add Additional Data"
+//                 : type === "quotes"
+//                   ? "Sign Quote"
+//                   : ["paid", "partially_paid"].includes(document?.status)
+//                     ? "Go to Project Page"
+//                     : "Go to Payment Page"
+//             }
+//             content={
+//               role === "admin"
+//                 ? type === "quotes"
+//                   ? "Create a duplicate of this quote for easy editing"
+//                   : "Review or complete missing invoice details"
+//                 : type === "quotes"
+//                   ? "Sign this quote to approve it"
+//                   : ["paid", "partially_paid"].includes(document?.status)
+//                     ? "View progress and project details"
+//                     : "Proceed to payment to complete the invoice"
+//             }
+//             clientId={currentId}
+//             currentSection={currentSection}
+//             DocId={document?.id}
+//           />
+//         </div>
+
+//         <div className="min-h-0 w-full">
+//           <PdfPreview
+//             src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}`}
+//           />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 import { Download, Edit2, Filter, Printer, Send, X } from "lucide-react";
 import DocumentBanner from "@/components/DocumentBanner";
 import { Button } from "@/components/ui/button";
@@ -17,7 +229,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import PdfPreview from "./PdfPreview";
-
+import { formatId } from "@/lib/utils/formatId";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
 export default function Inv_Qt_page({ type, currentId }) {
   const isInvoice = type === "invoices";
   const currentSection = type === "invoices" ? "invoice" : "quote";
@@ -47,7 +261,7 @@ export default function Inv_Qt_page({ type, currentId }) {
         {
           responseType: "blob",
           withCredentials: true,
-        }
+        },
       );
       const blob = response.data;
       console.log(blob);
@@ -60,11 +274,11 @@ export default function Inv_Qt_page({ type, currentId }) {
           printWindow.print();
         };
       } else {
-        alert("Please allow popups to print the document.");
+        toast.info("Please allow popups to print the document.");
       }
     } catch (error) {
       console.error("Print error:", error);
-      alert(`Failed to print ${type}`);
+      toast.error(`Failed to print ${type}`);
     }
   };
   const handleInvoiceConversion = async () => {
@@ -79,97 +293,102 @@ export default function Inv_Qt_page({ type, currentId }) {
 
   return (
     <div className="flex-1 flex flex-col h-screen">
-      <div className="px-2 py-4 border-b border-t gap-3 flex items-center justify-between">
-        <div className="text-lg font-semibold">
-          {isInvoice ? "INVOICE" : "QUOTE"}-000{currentId}
+      <div className="sticky top-0 z-10 border-b backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-4">
+        <div className="text-xl font-semibold tracking-tight text-foreground">
+          {isInvoice ? "Invoice" : "Quote"} —{" "}
+          {formatId(currentId, isInvoice ? "INVOICE" : "QUOTE")}
         </div>
-        <div className="flex items-center gap-2 ">
+
+        <div className="flex items-center gap-2">
+          {/* Edit - Admin only */}
           {role === "admin" && (
-            <Link
-              to={`/${role}/${currentSection}/${currentId}/edit`}
-              state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
-            >
-              <Button variant="outline" className="h-8 w-8 cursor-pointer">
-                <Edit2 size={20} />
-              </Button>
-            </Link>
-          )}
-          <Button
-            onClick={handleDownloadPdf}
-            variant="outline"
-            className="h-8 w-8 cursor-pointer"
-          >
-            <Download size={20} />
-          </Button>
-          <Button
-            onClick={handlePrintPdf}
-            variant="outline"
-            className="h-8 w-8 cursor-pointer"
-          >
-            <Printer size={20} />
-          </Button>
-          {role === "admin" ? (
-            <>
-              <Button
-                onClick={handleSendPdf}
-                variant="outline"
-                className="h-8 w-8 cursor-pointer"
+            <Button variant="outline" size="icon" asChild title="Edit">
+              <Link
+                to={`/${role}/${currentSection}/${currentId}/edit`}
+                state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
               >
-                <Send size={20} />
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="p-2 border border-border rounded-md bg-background">
-                    <MoreVertical className="h-4 w-4" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      handleClone();
-                    }}
-                  >
-                    Clone
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          ) : (
-            ""
+                <Edit2 className="h-4 w-4" />
+              </Link>
+            </Button>
           )}
 
-          {type === "quotes" &&
-          role === "admin" &&
-          document?.status !== "confirmed" ? (
-            <>
-              <div className="w-px h-6 bg-gray-300 mx-2"></div>
-              <div>
-                <Button
-                  onClick={handleInvoiceConversion}
-                  variant="outline"
-                  className="text-sm cursor-pointer"
-                >
-                  Convert to Invoice
-                </Button>
-              </div>
-            </>
-          ) : (
-            ""
-          )}
-          <div className="w-px h-6 bg-gray-300 mx-2"></div>
-          <button variant="outline" className="h-8 w-8 cursor-pointer">
-            <Link
-              to={`/${role}/${type}`}
-              state={{ [isInvoice ? "invoiceId" : "quoteId"]: currentId }}
+          {/* Download */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleDownloadPdf}
+            title="Download PDF"
+          >
+            <Download className="h-4 w-4" />
+          </Button>
+
+          {/* Print */}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handlePrintPdf}
+            title="Print"
+          >
+            <Printer className="h-4 w-4" />
+          </Button>
+
+          {/* Send - Admin only */}
+          {role === "admin" && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleSendPdf}
+              title="Send"
             >
-              <Button variant="outline" className="h-8 w-8 cursor-pointer">
-                <X size={20} />
+              <Send className="h-4 w-4" />
+            </Button>
+          )}
+
+          {/* More actions - Admin only */}
+          {role === "admin" && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" title="More">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleClone}>
+                  <Copy className="mr-2 h-4 w-4" />
+                  Clone
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+
+          <div className="h-5 w-px bg-border mx-2" />
+
+          {/* Convert to Invoice - Admin + Quotes only */}
+          {type === "quotes" &&
+            role === "admin" &&
+            document?.status !== "confirmed" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleInvoiceConversion}
+                className="gap-1.5"
+              >
+                Convert to Invoice
               </Button>
+            )}
+          <div className="h-5 w-px bg-border mx-2" />
+          {/* Close */}
+          <Button variant="outline" size="icon" asChild title="Close">
+            <Link to={`/${role}/${type}`}>
+              <X className="h-5 w-5" />
             </Link>
-          </button>
+          </Button>
         </div>
       </div>
-      <div className="flex flex-col h-full p-4 gap-4 overflow-auto">
+
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {/* Banner / Call to Action */}
         <div className="shrink-0">
           <DocumentBanner
             type={type}
@@ -201,9 +420,10 @@ export default function Inv_Qt_page({ type, currentId }) {
           />
         </div>
 
-        <div className="min-h-0 w-full">
+        <div className="flex-1 min-h-0 w-full">
           <PdfPreview
             src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}`}
+            className="w-full h-full"
           />
         </div>
       </div>

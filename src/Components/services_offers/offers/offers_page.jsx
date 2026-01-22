@@ -54,97 +54,109 @@ export default function OfferPage({ currentId }) {
 
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="border-b border-t px-4 py-4 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">
+      <div className="sticky top-0 z-10 border-b border-t backdrop-blur-sm px-4 py-4 flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground truncate max-w-[60%]">
           {data?.title || "Untitled Offer"}
         </h1>
 
-        <div className="flex items-center gap-2">
-          <Button variant="outline" asChild>
+        <div className="flex items-center gap-3 shrink-0">
+          <Button variant="outline" size="sm" asChild>
             <Link
               to={`/${role}/offer/${currentId}/edit`}
               state={{ editId: currentId }}
             >
-              <Edit2 className="w-4 h-4 mr-2" /> Edit
+              <Edit2 className="mr-2 h-4 w-4" />
+              Edit
             </Link>
           </Button>
 
           <Button
-            variant="destructive"
+            variant="outline"
+            size="sm"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10"
             onClick={() => {
-              if (confirm("Are you sure you want to delete this offer?")) {
-                deleteMutation.mutate();
-              }
+              deleteMutation.mutate();
             }}
             disabled={deleteMutation.isPending}
           >
-            <Trash2 className="w-4 h-4 mr-2" /> Delete
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
           </Button>
 
-          <div className="w-px h-6 bg-gray-300 mx-2"></div>
+          <div className="h-5 w-px bg-border mx-1" />
 
-          <Button variant="outline" className="h-8 w-8">
+          <Button variant="ghost" size="icon" asChild>
             <Link to={`/${role}/offers`}>
-              <X className="w-5 h-5" />
+              <X className="h-5 w-5" />
+              <span className="sr-only">Close</span>
             </Link>
           </Button>
         </div>
       </div>
 
-      <div className="p-4 w-full">
-        <Card>
-          <CardContent className="space-y-6">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">
+      {/* Main Content */}
+      <div className="p-4 max-w-5xl mx-auto">
+        <Card className="border-border shadow-sm">
+          <CardContent className="pt-4 space-y-8">
+            {/* Description */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                 Description
-              </p>
-              <div className="text-md text-foreground whitespace-pre-wrap">
-                {data?.description ? (
-                  <div dangerouslySetInnerHTML={{ __html: data.description }} />
-                ) : (
-                  <span className="text-muted-foreground italic">
-                    No description provided
-                  </span>
-                )}
-              </div>
+              </h3>
+              {data?.description ? (
+                <div
+                  className="text-sm leading-relaxed text-foreground prose prose-sm max-w-none dark:prose-invert"
+                  dangerouslySetInnerHTML={{ __html: data.description }}
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  No description provided.
+                </p>
+              )}
             </div>
 
-            <div className="flex gap-8">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">
+            {/* Dates */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                   Start Date
-                </p>
-                <p className="text-md">
-                  {data?.start_date ? formatDate(data.start_date) : "N/A"}
+                </h3>
+                <p className="text-base font-medium">
+                  {data?.start_date ? formatDate(data.start_date) : "—"}
                 </p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">
+
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                   End Date
-                </p>
-                <p className="text-md">
-                  {data?.end_date ? formatDate(data.end_date) : "N/A"}
+                </h3>
+                <p className="text-base font-medium">
+                  {data?.end_date ? formatDate(data.end_date) : "—"}
                 </p>
               </div>
             </div>
 
-            <div className="flex gap-8 mt-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">
+            {/* Discount */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                   Discount Type
-                </p>
-                <p className="text-md capitalize">
-                  {data?.discount_type || "N/A"}
+                </h3>
+                <p className="text-base font-medium capitalize">
+                  {data?.discount_type || "—"}
                 </p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">
+
+              <div className="space-y-1">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                   Discount Value
-                </p>
-                <p className="text-md">
+                </h3>
+                <p className="text-base font-medium">
                   {data?.discount_type === "percent"
-                    ? `${data?.discount_value || 0} %`
-                    : `MAD ${data?.discount_value || 0}`}
+                    ? `${data?.discount_value || 0}%`
+                    : data?.discount_value
+                      ? `${Number(data.discount_value).toFixed(2)} MAD`
+                      : "—"}
                 </p>
               </div>
             </div>

@@ -2,6 +2,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
 import { useUpdatePaymentDate } from "../hooks/usePaymentQuery";
+import DateField from "@/components/Form/DateField";
 
 export default function EditPayment({ PaymentId, date, onClose }) {
   const {
@@ -20,7 +21,7 @@ export default function EditPayment({ PaymentId, date, onClose }) {
       { id: PaymentId, paid_at: data.paid_at },
       {
         onSuccess: () => onClose(),
-      }
+      },
     );
   };
 
@@ -30,7 +31,8 @@ export default function EditPayment({ PaymentId, date, onClose }) {
         name="paid_at"
         control={control}
         render={({ field }) => (
-          <FormField label="Paid At" type="date" {...field} />
+          // <FormField
+          <DateField label="Paid At" type="date" {...field} />
         )}
       />
 

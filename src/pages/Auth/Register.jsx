@@ -14,9 +14,7 @@ import { ClientForm } from "../../Components/auth/ClientForm";
 import { TeamClientForm } from "../../Components/auth/TeamClientForm";
 import Login from "./Login";
 
-export default function Register({
-  auth = { user: { name: "John Doe", email: "john@example.com" } },
-}) {
+export default function Register() {
   const [mode, setMode] = useState("welcome");
 
   const contentVariants = {
@@ -28,13 +26,13 @@ export default function Register({
   const getTitle = () => {
     switch (mode) {
       case "client_form":
-        return "Inscription Client";
+        return "Client Registration";
       case "worker_form":
-        return "Inscription Travailleur";
+        return "Worker Registration";
       case "login":
-        return "Connexion";
+        return "Login";
       default:
-        return "Bienvenue sur Lahza";
+        return "Welcome to Lahza";
     }
   };
 
@@ -59,10 +57,10 @@ export default function Register({
             <Card className="bg-card text-foreground border-none shadow-none">
               <CardHeader className="text-center space-y-3 p-6 sm:p-8">
                 <CardTitle className="text-4xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-primary to-(--primary-gradient-end)">
-                  Bienvenue sur Lahza
+                  Welcome to Lahza
                 </CardTitle>
                 <CardDescription className="text-muted-foreground text-lg">
-                  Choisissez comment vous souhaitez poursuivre votre parcours
+                  Choose how you want to continue your journey
                 </CardDescription>
               </CardHeader>
 
@@ -80,18 +78,18 @@ export default function Register({
                   </div>
 
                   <h3 className="font-bold text-xl mb-2 text-primary">
-                    Je suis un client
+                    I am a client
                   </h3>
                   <p className="text-sm text-muted-foreground mb-5">
-                    À la recherche de services ou pour publier de nouveaux
-                    projets.
+                    Looking for services or to publish new
+                    projects.
                   </p>
 
                   <Button
                     onClick={() => setMode("client_form")}
                     className="w-full bg-primary hover:bg-[color-mix(in oklch, var(--primary) 85%, black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors"
                   >
-                    Continuer en tant que client
+                    Continue as client
                   </Button>
                 </motion.div>
 
@@ -108,35 +106,35 @@ export default function Register({
                   </div>
 
                   <h3 className="font-bold text-xl mb-2 text-foreground">
-                    Je suis un travailleur
+                    I am a worker
                   </h3>
                   <p className="text-sm text-muted-foreground mb-5">
-                    Prêt à accepter de nouveaux emplois, tâches ou projets.
+                    Ready to accept new jobs, tasks or projects.
                   </p>
 
                   <Button
                     onClick={() => setMode("worker_form")}
                     className="w-full bg-secondary hover:bg-[color-mix(in oklch, var(--secondary) 75%, black)] text-foreground font-semibold py-2 px-4 rounded-lg transition-colors"
                   >
-                    Continuer en tant que travailleur
+                    Continue as worker
                   </Button>
                 </motion.div>
               </CardContent>
 
               <Separator className="my-6 border-border" />
               <p className="text-center text-sm text-muted-foreground pb-6">
-                Vous avez déjà un compte ?{" "}
+                Already have an account?{" "}
                 <span
                   onClick={() => setMode("login")}
                   className="text-primary font-semibold hover:underline hover:text-[color-mix(in oklch, var(--primary) 70%, black)] transition-colors cursor-pointer"
                 >
-                  Se connecter
+                  Sign in
                 </span>
                 <Link
                   href={"/login"}
                   className="text-primary font-semibold hover:underline hover:text-[color-mix(in oklch, var(--primary) 70%, black)] transition-colors"
                 >
-                  Se connecter
+                  Sign in
                 </Link>
               </p>
             </Card>
@@ -147,41 +145,41 @@ export default function Register({
         {(mode === "client_form" ||
           mode === "worker_form" ||
           mode === "login") && (
-          <motion.div
-            key={mode}
-            variants={contentVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            transition={{ duration: 0.4 }}
-            className={`relative z-20 ${getCardWidthClass()} px-2 sm:px-4`}
-          >
-            <Card className="w-full max-w-full shadow-2xl border border-border bg-card text-foreground backdrop-blur-md rounded-2xl">
-              <CardHeader className="flex flex-row items-center justify-between p-6 sm:p-8 pb-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setMode("welcome")}
-                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-(--card)/10 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" /> Retour
-                </Button>
-                <CardTitle
-                  className="text-2xl font-bold text-transparent bg-clip-text
+            <motion.div
+              key={mode}
+              variants={contentVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              transition={{ duration: 0.4 }}
+              className={`relative z-20 ${getCardWidthClass()} px-2 sm:px-4`}
+            >
+              <Card className="w-full max-w-full shadow-2xl border border-border bg-card text-foreground backdrop-blur-md rounded-2xl">
+                <CardHeader className="flex flex-row items-center justify-between p-6 sm:p-8 pb-4">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setMode("welcome")}
+                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-(--card)/10 transition-colors"
+                  >
+                    <ArrowLeft className="w-4 h-4" /> Back
+                  </Button>
+                  <CardTitle
+                    className="text-2xl font-bold text-transparent bg-clip-text
                              bg-linear-to-r from-primary to-(--primary-gradient-end)"
-                >
-                  {getTitle()}
-                </CardTitle>
-              </CardHeader>
+                  >
+                    {getTitle()}
+                  </CardTitle>
+                </CardHeader>
 
-              <CardContent className="p-6 sm:p-8 pt-0">
-                {mode === "client_form" && <ClientForm />}
-                {mode === "worker_form" && <TeamClientForm />}
-                {mode === "login" && <Login />}
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+                <CardContent className="p-6 sm:p-8 pt-0">
+                  {mode === "client_form" && <ClientForm />}
+                  {mode === "worker_form" && <TeamClientForm />}
+                  {mode === "login" && <Login />}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
       </AnimatePresence>
     </div>
   );

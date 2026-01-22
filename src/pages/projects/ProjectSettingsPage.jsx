@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,10 +25,19 @@ import {
 } from "@/features/projects/hooks/useProjectSettings";
 import { Loader2 } from "lucide-react";
 import AlertDialogDestructive from "@/components/alert-dialog-destructive-1.jsx";
+import FormField from "@/components/Form/FormField";
 
 export default function ProjectSettingsPage() {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("info");
+
+  const {
+    control: invoiceControl,
+    handleSubmit: handleInvoiceSubmit,
+    formState: { errors: invoiceErrors },
+  } = useForm({
+    defaultValues: {},
+  });
 
   const {
     data: members = [],
@@ -241,56 +251,84 @@ export default function ProjectSettingsPage() {
                     <div className="flex-1">
                       {editingInvoice === invoice.id ? (
                         <div className="space-y-2">
-                          <Input
-                            value={`INV-${invoice.id}`}
-                            onChange={(e) =>
-                              updateInvoice(
-                                invoice.id,
-                                "number",
-                                e.target.value,
-                              )
-                            }
-                            placeholder="Invoice Number"
-                            className="h-8 text-sm"
+                          <Controller
+                            name={`invoice_${invoice.id}_number`}
+                            control={invoiceControl}
+                            render={({ field }) => (
+                              <FormField
+                                value={`INV-${invoice.id}`}
+                                onChange={(e) => {
+                                  field.onChange(e.target.value);
+                                  updateInvoice(
+                                    invoice.id,
+                                    "number",
+                                    e.target.value,
+                                  );
+                                }}
+                                placeholder="Invoice Number"
+                                className="h-8 text-sm"
+                              />
+                            )}
                           />
                           <div className="grid grid-cols-3 gap-2">
-                            <Input
-                              value={invoice.total_amount || ""}
-                              onChange={(e) =>
-                                updateInvoice(
-                                  invoice.id,
-                                  "amount",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Amount"
-                              type="number"
-                              className="h-8 text-sm"
+                            <Controller
+                              name={`invoice_${invoice.id}_amount`}
+                              control={invoiceControl}
+                              render={({ field }) => (
+                                <FormField
+                                  value={invoice.total_amount || ""}
+                                  onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                    updateInvoice(
+                                      invoice.id,
+                                      "amount",
+                                      e.target.value,
+                                    );
+                                  }}
+                                  placeholder="Amount"
+                                  type="number"
+                                  className="h-8 text-sm"
+                                />
+                              )}
                             />
-                            <Input
-                              value={invoice.invoice_date || ""}
-                              onChange={(e) =>
-                                updateInvoice(
-                                  invoice.id,
-                                  "date",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Date"
-                              type="date"
-                              className="h-8 text-sm"
+                            <Controller
+                              name={`invoice_${invoice.id}_date`}
+                              control={invoiceControl}
+                              render={({ field }) => (
+                                <FormField
+                                  value={invoice.invoice_date || ""}
+                                  onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                    updateInvoice(
+                                      invoice.id,
+                                      "date",
+                                      e.target.value,
+                                    );
+                                  }}
+                                  placeholder="Date"
+                                  type="date"
+                                  className="h-8 text-sm"
+                                />
+                              )}
                             />
-                            <Input
-                              value={invoice.status || ""}
-                              onChange={(e) =>
-                                updateInvoice(
-                                  invoice.id,
-                                  "status",
-                                  e.target.value,
-                                )
-                              }
-                              placeholder="Status"
-                              className="h-8 text-sm"
+                            <Controller
+                              name={`invoice_${invoice.id}_status`}
+                              control={invoiceControl}
+                              render={({ field }) => (
+                                <FormField
+                                  value={invoice.status || ""}
+                                  onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                    updateInvoice(
+                                      invoice.id,
+                                      "status",
+                                      e.target.value,
+                                    );
+                                  }}
+                                  placeholder="Status"
+                                  className="h-8 text-sm"
+                                />
+                              )}
                             />
                           </div>
                         </div>

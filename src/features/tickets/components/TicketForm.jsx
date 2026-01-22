@@ -11,21 +11,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  AlertCircle,
-  ArrowLeft,
-  CheckCircle,
-  Upload,
-  Paperclip,
-} from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, CheckCircle } from "lucide-react";
 import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
 import TextareaField from "@/Components/Form/TextareaField";
 import { useTicketsLegacy } from "../hooks/useTickets";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useTicket } from "../hooks/useTickets";
-
+import FileUploader from "@/components/Form/FileUploader";
 const ticketCategories = [
   {
     id: "website",
@@ -174,41 +167,80 @@ export default function TicketCreatePage() {
     }
   }, [isEditMode, ticket, setValue, user?.id]);
 
+  const attachments = watch("attachments");
+  console.log("Current attachments value:", attachments);
+
+  // const onSubmit = async (data) => {
+  //   try {
+  //     const ticketData = {
+  //       ...data,
+  //       user_id: Number(user?.id),
+  //     };
+  //     console.log(ticketData);
+  //     let response;
+  //     if (isEditMode) {
+  //       response = await updateTicket(id, ticketData);
+  //     } else {
+  //       response = await createTicket(ticketData);
+  //     }
+
+  //     setTicketId(response.id || response.ticket?.id);
+
+  //     setIsSubmitted(true);
+  //   } catch (error) {
+  //     console.error("Ticket operation failed:", error);
+  //   }
+  // };
+
   const onSubmit = async (data) => {
     try {
-      const ticketData = {
-        ...data,
-        user_id: Number(user?.id),
-      };
-      console.log(ticketData);
-      let response;
-      if (isEditMode) {
-        response = await updateTicket(id, ticketData);
-      } else {
-        response = await createTicket(ticketData);
+      const formData = new FormData();
+
+      formData.append("user_id", Number(user?.id));
+      formData.append("category", data.category);
+      formData.append("subcategory", data.subcategory);
+      formData.append("subject", data.subject);
+      formData.append("description", data.description);
+      formData.append("priority", data.priority);
+      if (data.attachments instanceof FileList && data.attachments.length > 0) {
+        for (let i = 0; i < data.attachments.length; i++) {
+          formData.append("attachments", data.attachments[i]);
+        }
       }
 
-      setTicketId(response.id || response.ticket?.id);
+      console.log("FormData fields (text):", {
+        user_id: data.user_id,
+        category: data.category,
+        subject: data.subject,
+        priority: data.priority,
+        // etc.
+      });
 
+      if (data.attachments?.length) {
+        console.log(`Sending ${data.attachments.length} file(s)`);
+        if (data.attachments instanceof FileList) {
+          for (let file of data.attachments) {
+            console.log("File:", file.name, file.size, file.type);
+          }
+        }
+      } else {
+        console.log("No files attached");
+      }
+
+      let response;
+      if (isEditMode) {
+        response = await updateTicket(id, formData);
+      } else {
+        response = await createTicket(formData);
+      }
+
+      setTicketId(response.id || response.ticket?.id || response.data?.id);
       setIsSubmitted(true);
     } catch (error) {
-      console.error("Ticket operation failed:", error);
+      console.error("Ticket submit failed:", error);
     }
   };
 
-  const handleFileUpload = (e) => {
-    const files = Array.from(e.target.files);
-    setValue("attachments", [...watch("attachments"), ...files]);
-  };
-
-  const removeAttachment = (index) => {
-    setValue(
-      "attachments",
-      watch("attachments").filter((_, i) => i !== index),
-    );
-  };
-
-  // Show loading state when fetching ticket data for edit
   if (isEditMode && isLoadingTicket) {
     return (
       <div className="w-full p-4min-h-screen">
@@ -225,7 +257,7 @@ export default function TicketCreatePage() {
   if (isSubmitted) {
     return (
       <div className="w-full p-4">
-        <Card className="text-center p-0">
+        <Card className="text-center">
           <CardContent>
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-green-100 rounded-full">
@@ -265,7 +297,7 @@ export default function TicketCreatePage() {
   return (
     <div className="w-full p-4 min-h-screen">
       {/* Header */}
-      <div className="mb-4">
+      <div className="">
         <Button
           variant="ghost"
           onClick={() => navigate("/client/tickets")}
@@ -274,14 +306,6 @@ export default function TicketCreatePage() {
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Tickets
         </Button>
-        <h1 className="text-3xl font-bold text-foreground">
-          {isEditMode ? "Edit Support Ticket" : "Create Support Ticket"}
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          {isEditMode
-            ? "Update your ticket information below."
-            : "Fill out the form below and we'll get back to you as soon as possible."}
-        </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -353,28 +377,49 @@ export default function TicketCreatePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <Controller
-                name="subject"
-                control={control}
-                rules={{
-                  required: "Subject is required",
-                  minLength: {
-                    value: 5,
-                    message: "Subject must be at least 5 characters",
-                  },
-                }}
-                render={({ field }) => (
-                  <FormField
-                    {...field}
-                    id="subject"
-                    label="Subject"
-                    type="text"
-                    placeholder="Brief description of your issue"
-                    error={errors.subject?.message}
-                  />
-                )}
-              />
+            <div className="w-full flex gap-4">
+              <div className="w-[50%]">
+                <Controller
+                  name="priority"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectField
+                      {...field}
+                      id="priority"
+                      label="Priority"
+                      placeholder="Select priority level"
+                      options={priorityLevels.map((priority) => ({
+                        value: priority.id,
+                        label: priority.label,
+                      }))}
+                      error={errors.priority?.message}
+                    />
+                  )}
+                />
+              </div>
+              <div className="w-[50%]">
+                <Controller
+                  name="subject"
+                  control={control}
+                  rules={{
+                    required: "Subject is required",
+                    minLength: {
+                      value: 5,
+                      message: "Subject must be at least 5 characters",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <FormField
+                      {...field}
+                      id="subject"
+                      label="Subject"
+                      type="text"
+                      placeholder="Brief description of your issue"
+                      error={errors.subject?.message}
+                    />
+                  )}
+                />
+              </div>
             </div>
 
             <div>
@@ -399,26 +444,6 @@ export default function TicketCreatePage() {
                 )}
               />
             </div>
-
-            <div>
-              <Controller
-                name="priority"
-                control={control}
-                render={({ field }) => (
-                  <SelectField
-                    {...field}
-                    id="priority"
-                    label="Priority"
-                    placeholder="Select priority level"
-                    options={priorityLevels.map((priority) => ({
-                      value: priority.id,
-                      label: priority.label,
-                    }))}
-                    error={errors.priority?.message}
-                  />
-                )}
-              />
-            </div>
           </CardContent>
         </Card>
 
@@ -430,57 +455,21 @@ export default function TicketCreatePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="border-2 border-dashed border-border rounded-lg p-6 text-center">
-              <input
-                type="file"
-                id="attachments"
-                multiple
-                onChange={handleFileUpload}
-                className="hidden"
-                accept="image/*,.pdf,.doc,.docx,.txt"
+            <div className="h-full">
+              <Controller
+                name="attachments"
+                control={control}
+                render={({ field }) => (
+                  <FileUploader
+                    name="Attach File"
+                    label="Attach File(s) to Ticket"
+                    placeholder="Add Your Attach File"
+                    error={errors.attachments?.message}
+                    {...field}
+                  />
+                )}
               />
-              <label htmlFor="attachments" className="cursor-pointer">
-                <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground mb-2">
-                  Click to upload files or drag and drop
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  PNG, JPG, PDF, DOC up to 10MB
-                </p>
-              </label>
             </div>
-
-            {watch("attachments").length > 0 && (
-              <div className="mt-4 space-y-2">
-                <p className="text-sm font-medium text-foreground">
-                  Attached Files:
-                </p>
-                {watch("attachments").map((file, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-2 bg-muted rounded"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Paperclip className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-foreground">
-                        {file.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        ({(file.size / 1024).toFixed(1)} KB)
-                      </span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeAttachment(index)}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
           </CardContent>
         </Card>
 
