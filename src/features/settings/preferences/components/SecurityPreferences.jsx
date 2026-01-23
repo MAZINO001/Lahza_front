@@ -173,11 +173,7 @@ export default function SecurityPreferences() {
           )}
         />
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={updateEmailMutation.isPending}
-            variant="outline"
-          >
+          <Button type="submit" disabled={updateEmailMutation.isPending}>
             {updateEmailMutation.isPending ? "Updating..." : "Update Email"}
           </Button>
         </div>

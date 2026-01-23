@@ -1,3 +1,4 @@
+import { useClients } from '@/features/clients/hooks/useClients/useClientsData';
 import { useServices } from '@/features/services/hooks/useServicesData';
 // import { useClients } from '@/hooks/useClients';
 // import { useProjects } from '@/hooks/useProjects';
@@ -10,7 +11,7 @@ export function useAppInitialization() {
     // Load all main data tables at app startup
     // These load ONCE and stay cached for the entire session
     const servicesQuery = useServices();
-    // const clientsQuery = useClients();
+    const clientsQuery = useClients();
     // const projectsQuery = useProjects();
     // const tasksQuery = useTasks();
     // const invoicesQuery = useInvoices();
@@ -19,9 +20,8 @@ export function useAppInitialization() {
 
     // Determine if any are still loading
     const isLoading =
-        servicesQuery.isLoading
-    // servicesQuery.isLoading ||
-    // clientsQuery.isLoading ||
+        servicesQuery.isLoading ||
+        clientsQuery.isLoading
     // projectsQuery.isLoading ||
     // tasksQuery.isLoading ||
     // invoicesQuery.isLoading ||
@@ -33,7 +33,7 @@ export function useAppInitialization() {
         isLoading,
         // Optional: expose individual queries if you need them
         servicesQuery,
-        // clientsQuery,
+        clientsQuery,
         // projectsQuery,
         // tasksQuery,
         // invoicesQuery,

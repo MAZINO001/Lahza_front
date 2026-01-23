@@ -1,5 +1,6 @@
 import { ArrowUpDown, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TooltipButton } from "@/components/common/TooltipButton";
 import { Link } from "react-router-dom";
 import { StatusBadge } from "@/components/StatusBadge";
 import { toast } from "sonner";
@@ -160,24 +161,24 @@ export const dashBoardTableColumns = (role) => {
             {role === "client" &&
               (invoice.status === "partially_paid" ||
                 invoice.status === "overdue") && (
-                <Button
-                  variant="default"
+                <TooltipButton
+                  variant="outline"
                   size="sm"
                   onClick={handlePay}
                   className="h-8"
                 >
                   Pay
-                </Button>
+                </TooltipButton>
               )}
 
-            <Button
+            <TooltipButton
               variant="outline"
               size="sm"
               onClick={handleDownload}
               className="h-8"
             >
               <Download className="h-4 w-4" />
-            </Button>
+            </TooltipButton>
           </div>
         );
       },

@@ -23,29 +23,38 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ClientForm } from "@/components/auth/ClientForm";
+import { AddProjectModal } from "@/components/common/AddProjectModal";
+import { AddInvoiceModal } from "@/components/common/AddInvoiceModal";
+import { AddQuoteModal } from "@/components/common/AddQuoteModal";
+import { AddTaskModal } from "@/components/common/AddTaskModal";
+import { ClientFormModal } from "./client_components/addNewClient";
 
 export const title = "Command Dialog Actions Menu";
 
 const Example = () => {
   const [open, setOpen] = useState(false);
   const [clientDialogOpen, setClientDialogOpen] = useState(false);
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
+  const [invoiceModalOpen, setInvoiceModalOpen] = useState(false);
+  const [quoteModalOpen, setQuoteModalOpen] = useState(false);
+  const [taskModalOpen, setTaskModalOpen] = useState(false);
   const navigate = useNavigate();
   const { role } = useAuthContext();
   const basePath = role || "client";
 
   const handleCreateInvoice = () => {
     setOpen(false);
-    navigate(`/${basePath}/invoice/new`);
+    setInvoiceModalOpen(true);
   };
 
   const handleCreateQuote = () => {
     setOpen(false);
-    navigate(`/${basePath}/quote/new`);
+    setQuoteModalOpen(true);
   };
 
   const handleCreateProject = () => {
     setOpen(false);
-    navigate(`/${basePath}/project/new`);
+    setProjectModalOpen(true);
   };
 
   const handleAddClient = () => {
@@ -60,8 +69,7 @@ const Example = () => {
 
   const handleCreateTask = () => {
     setOpen(false);
-    // Navigate to tasks page or project selection for task creation
-    navigate(`/${basePath}/calendar`);
+    setTaskModalOpen(true);
   };
 
   return (
@@ -94,7 +102,7 @@ const Example = () => {
             </CommandItem>
             <CommandItem onSelect={handleCreateTask}>
               <CheckSquare />
-              <span>Create Task</span>
+              <span>Add Event</span>
               <CommandShortcut>⌘T</CommandShortcut>
             </CommandItem>
           </CommandGroup>
@@ -107,9 +115,45 @@ const Example = () => {
           <DialogHeader>
             <DialogTitle>Adding Client</DialogTitle>
           </DialogHeader>
-          <ClientForm handleClientCreatedByAdmin={handleClientCreatedByAdmin} />
+          <ClientFormModal onClose={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
+
+      {/* Add Project Modal */}
+      <AddProjectModal
+        open={projectModalOpen}
+        onOpenChange={setProjectModalOpen}
+        onSuccess={() => {
+          // Optional: Refresh data or show success message
+        }}
+      />
+
+      {/* Add Invoice Modal */}
+      <AddInvoiceModal
+        open={invoiceModalOpen}
+        onOpenChange={setInvoiceModalOpen}
+        onSuccess={() => {
+          // Optional: Refresh data or show success message
+        }}
+      />
+
+      {/* Add Quote Modal */}
+      <AddQuoteModal
+        open={quoteModalOpen}
+        onOpenChange={setQuoteModalOpen}
+        onSuccess={() => {
+          // Optional: Refresh data or show success message
+        }}
+      />
+
+      {/* Add Task Modal */}
+      <AddTaskModal
+        open={taskModalOpen}
+        onOpenChange={setTaskModalOpen}
+        onSuccess={() => {
+          // Optional: Refresh data or show success message
+        }}
+      />
     </>
   );
 };

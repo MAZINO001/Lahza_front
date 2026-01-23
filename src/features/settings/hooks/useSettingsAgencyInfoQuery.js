@@ -7,10 +7,6 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 const buildFormData = (data, fileKeys = [], isUpdate = false) => {
     const formData = new FormData();
 
-    if (isUpdate) {
-        formData.append('_method', 'PUT');
-    }
-
     Object.entries(data).forEach(([key, value]) => {
         if (fileKeys.includes(key)) {
             if (Array.isArray(value) && value[0]) {

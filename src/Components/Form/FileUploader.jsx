@@ -438,8 +438,6 @@ export default function FileUploadField({
         return {
           name: f.file.name,
           size: f.file.size,
-          type: f.file.type,
-          file: f.file,
         };
       });
       registerStore.setField("cv", fileArray);

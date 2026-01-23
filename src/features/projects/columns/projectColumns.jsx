@@ -1,5 +1,6 @@
 import { ArrowUpDown, CopyPlus, Pencil, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
+import { TooltipButton } from "@/components/common/TooltipButton";
 import { Button } from "@/components/ui/button";
 import { formatId } from "@/lib/utils/formatId";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -104,25 +105,15 @@ export function ProjectColumns(role, navigate) {
 
         return (
           <div className="flex gap-2">
-            {/* <Button
-              size="sm"
-              variant="outline"
-              onClick={() =>
-                HandleEditProject(row.getValue("id"), navigate, role)
-              }
-            >
-              <Settings className="h-4 w-4" />
-            </Button> */}
-            <Button
-              size="sm"
-              variant="ghost"
+            <TooltipButton
+              tooltip="Clone Project"
               onClick={() =>
                 HandleCloneProject(row.getValue("id"), navigate, role)
               }
               className="cursor-pointer"
             >
               <CopyPlus className="h-4 w-4" />
-            </Button>
+            </TooltipButton>
           </div>
         );
       },

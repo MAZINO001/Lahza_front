@@ -57,14 +57,14 @@ export function ProjectForm({ onSuccess }) {
     defaultValues: isCloneModeActive
       ? {}
       : project || {
-          customerName: "",
-          name: "",
-          description: "",
-          invoice_id: "",
-          start_date: "",
-          estimated_end_date: "",
-          status: "pending",
-        },
+        customerName: "",
+        name: "",
+        description: "",
+        invoice_id: "",
+        start_date: "",
+        estimated_end_date: "",
+        status: "pending",
+      },
   });
 
   const { data: currentProject, isLoading: isCloneLoading } =
@@ -146,7 +146,6 @@ export function ProjectForm({ onSuccess }) {
       onSuccess: () => {
         onSuccess?.();
         if (!isEditMode || isCloneModeActive) reset();
-        navigate(`/${role}/projects`);
       },
       onSettled: () => endSubmit(),
     });
@@ -285,46 +284,46 @@ export function ProjectForm({ onSuccess }) {
           {(selectedClient?.client?.company ||
             selectedClient?.client?.ice ||
             selectedClient?.client?.siren) && (
-            <Card className="border-border bg-card text-card-foreground shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold">
-                  Company Info
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                {selectedClient?.client?.company && (
-                  <div className="flex justify-between">
-                    <span className="font-medium text-muted-foreground">
-                      Company
-                    </span>
-                    <span className="text-foreground">
-                      {selectedClient.client.company}
-                    </span>
-                  </div>
-                )}
-                {selectedClient?.client?.ice && (
-                  <div className="flex justify-between">
-                    <span className="font-medium text-muted-foreground">
-                      ICE
-                    </span>
-                    <span className="text-foreground">
-                      {selectedClient.client.ice}
-                    </span>
-                  </div>
-                )}
-                {selectedClient?.client?.siren && (
-                  <div className="flex justify-between">
-                    <span className="font-medium text-muted-foreground">
-                      SIREN
-                    </span>
-                    <span className="text-foreground">
-                      {selectedClient.client.siren}
-                    </span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+              <Card className="border-border bg-card text-card-foreground shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">
+                    Company Info
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  {selectedClient?.client?.company && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        Company
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.company}
+                      </span>
+                    </div>
+                  )}
+                  {selectedClient?.client?.ice && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        ICE
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.ice}
+                      </span>
+                    </div>
+                  )}
+                  {selectedClient?.client?.siren && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        SIREN
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.siren}
+                      </span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
         </div>
       )}
       {invoicesLoading && (
@@ -453,7 +452,7 @@ export function ProjectForm({ onSuccess }) {
         <Button
           type="button"
           variant="outline"
-          onClick={() => navigate(`/${role}/projects`)}
+          onClick={onSuccess || (() => navigate(`/${role}/projects`))}
         >
           Cancel
         </Button>

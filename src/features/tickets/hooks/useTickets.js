@@ -35,7 +35,7 @@ const apiTickets = {
 
 
         if (hasFile) {
-            return api.post(`${API_URL}/tickets/${id}?_method=PUT`, data, {
+            return api.post(`${API_URL}/tickets/${id}`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -238,8 +238,6 @@ export const useTicketsLegacy = () => {
                 formData.append('attachment', ticketData.attachments[0]);
             }
 
-
-            formData.append('_method', 'PUT');
 
             return updateTicketMutation.mutateAsync({ id, data: formData });
         }

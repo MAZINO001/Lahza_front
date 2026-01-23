@@ -1,6 +1,7 @@
 // src/features/additional_data/columns/additionalDataColumns.jsx
 import { ArrowUpDown, Pencil, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TooltipButton } from "@/components/common/TooltipButton";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 
 export const getAdditionalDataColumns = (navigate, role, projectId) => [
@@ -113,7 +114,7 @@ export const getAdditionalDataColumns = (navigate, role, projectId) => [
 
       return (
         <div className="flex gap-2">
-          <Button
+          <TooltipButton
             size="sm"
             variant="ghost"
             onClick={() =>
@@ -122,8 +123,8 @@ export const getAdditionalDataColumns = (navigate, role, projectId) => [
             className="cursor-pointer"
           >
             <Eye className="h-4 w-4" />
-          </Button>
-          <Button
+          </TooltipButton>
+          <TooltipButton
             size="sm"
             variant="ghost"
             onClick={() =>
@@ -132,8 +133,8 @@ export const getAdditionalDataColumns = (navigate, role, projectId) => [
             className="cursor-pointer"
           >
             <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
+          </TooltipButton>
+          <TooltipButton
             size="sm"
             variant="destructive"
             onClick={() =>
@@ -141,7 +142,7 @@ export const getAdditionalDataColumns = (navigate, role, projectId) => [
             }
           >
             <Trash2 className="h-4 w-4" />
-          </Button>
+          </TooltipButton>
         </div>
       );
     },

@@ -1,6 +1,6 @@
 // src/features/tickets/columns/ticketColumns.jsx
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { TooltipButton } from "@/components/common/TooltipButton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -137,10 +137,14 @@ export const getTicketColumns = (role, navigate) => [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <TooltipButton
+              tooltip="Actions"
+              variant="ghost"
+              className="h-8 w-8 p-0"
+            >
               <span className="sr-only">Open menu</span>
               <MoreHorizontal className="h-4 w-4" />
-            </Button>
+            </TooltipButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>

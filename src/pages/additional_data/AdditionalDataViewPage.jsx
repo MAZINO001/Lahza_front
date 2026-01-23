@@ -2,41 +2,16 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, Download, Copy } from "lucide-react";
+import { ArrowLeft, Edit, Download, Copy, Loader2 } from "lucide-react";
 import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
+import { useDownloadFile } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { toast } from "sonner";
 
 export default function AdditionalDataViewPage() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
-
-  const downloadFile = async (filePath, fileName) => {
-    // try {
-    //   const response = await api.get(`${API_URL}/download`, {
-    //     params: { file: filePath },
-    //     responseType: "blob",
-    //   });
-    //   const url = window.URL.createObjectURL(new Blob([response.data]));
-    //   const link = document.createElement("a");
-    //   link.href = url;
-    //   link.setAttribute("download", fileName || "download");
-    //   document.body.appendChild(link);
-    //   link.click();
-    //   link.parentNode.removeChild(link);
-    //   window.URL.revokeObjectURL(url);
-    // } catch (error) {
-    //   toast.error("Failed to download file");
-    //   console.error("Download error:", error);
-    // }
-  };
-
-  const copyToClipboard = (text, label) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copied!`, {
-      duration: 3000,
-    });
-  };
+  const downloadFile = useDownloadFile();
 
   const currentPath = window.location.pathname;
   const pathMatch = currentPath.match(/\/project\/(\d+)/);
@@ -48,12 +23,29 @@ export default function AdditionalDataViewPage() {
     error,
   } = useAdditionalData(projectId);
 
+  console.log(additionalData);
+
   if (isLoading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4">Error loading additional data</div>;
   if (!additionalData) {
     navigate(`/${role}/project/${projectId}/additional-data/new`);
     return null;
   }
+
+  const copyToClipboard = (text, label) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`${label} copied!`, {
+      duration: 3000,
+    });
+  };
+
+  const handleDownload = (type, fileable_type, fileable_id) => {
+    downloadFile.mutate({
+      type,
+      fileable_type,
+      fileable_id,
+    });
+  };
 
   const renderFileField = (label, value) => {
     if (!value)
@@ -68,9 +60,14 @@ export default function AdditionalDataViewPage() {
           size="sm"
           variant="ghost"
           className="h-8 w-8 p-0"
-          onClick={() => downloadFile(value, "filename.ext")}
+          disabled={downloadFile.isPending}
+          onClick={() => handleDownload(value, label)}
         >
-          <Download className="h-4 w-4" />
+          {downloadFile.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
         </Button>
       </div>
     );
@@ -94,7 +91,7 @@ export default function AdditionalDataViewPage() {
   );
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="min-h-screen p-4 ">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <Link
@@ -114,188 +111,197 @@ export default function AdditionalDataViewPage() {
           Edit
         </Button>
       </div>
-
-      {/* Account Information Card */}
-      <Card className=" border-border mb-4">
-        <CardHeader className="border-b border-border">
-          <CardTitle className="text-lg">Account Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Host Accounts */}
-          <div>
-            <h3 className="text-sm font-semibold mb-3 text-foreground">
-              Host Accounts
-            </h3>
-            {(() => {
-              try {
-                const hostAcc = JSON.parse(additionalData.host_acc || "{}");
-                return (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <AccountField
-                      label="Email"
-                      value={hostAcc.email}
-                      onCopy={() =>
-                        copyToClipboard(hostAcc.email, "host email")
-                      }
-                    />
-                    <AccountField
-                      label="Password"
-                      value={hostAcc.password ? "••••••••••••••••" : ""}
-                      onCopy={() =>
-                        copyToClipboard(hostAcc.password, "host password")
-                      }
-                    />
-                  </div>
-                );
-              } catch {
-                return (
-                  <div className="text-sm text-muted-foreground p-2 rounded border border-border">
-                    Not provided
-                  </div>
-                );
-              }
-            })()}
-          </div>
-
-          {/* Website Accounts */}
-          <div className="pt-3 border-t border-border">
-            <h3 className="text-sm font-semibold mb-3 text-foreground">
-              Website Accounts
-            </h3>
-            {(() => {
-              try {
-                const websiteAcc = JSON.parse(
-                  additionalData.website_acc || "{}",
-                );
-                return (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <AccountField
-                      label="Email"
-                      value={websiteAcc.email}
-                      onCopy={() =>
-                        copyToClipboard(websiteAcc.email, "website email")
-                      }
-                    />
-                    <AccountField
-                      label="Password"
-                      value={websiteAcc.password ? "••••••••••••••••" : ""}
-                      onCopy={() =>
-                        copyToClipboard(websiteAcc.password, "website password")
-                      }
-                    />
-                  </div>
-                );
-              } catch {
-                return (
-                  <div className="text-sm text-muted-foreground p-2 rounded border border-border">
-                    Not provided
-                  </div>
-                );
-              }
-            })()}
-          </div>
-
-          {/* Social Media */}
-          <div className="pt-3 border-t border-border">
-            <h3 className="text-sm font-semibold mb-3 text-foreground">
-              Social Media
-            </h3>
-            {(() => {
-              try {
-                const socialMedia = JSON.parse(
-                  additionalData.social_media || "[]",
-                );
-                if (!Array.isArray(socialMedia) || socialMedia.length === 0) {
-                  return (
-                    <div className="text-sm text-muted-foreground p-2 rounded border border-border">
-                      Not provided
-                    </div>
-                  );
-                }
-                return (
-                  <div className="space-y-4">
-                    {socialMedia.map((acc, idx) => (
-                      <div
-                        key={idx}
-                        className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-4 last:pb-0 border-b border-border last:border-0"
-                      >
-                        <AccountField
-                          label="Link"
-                          value={acc.link}
-                          onCopy={() =>
-                            copyToClipboard(acc.link, "social media link")
-                          }
-                        />
+      <div className="flex gap-4 w-full">
+        <div className="w-[70%]">
+          {/* Account Information Card */}
+          <Card className="border-border mb-4">
+            <CardHeader className="border-b border-border">
+              <CardTitle className="text-lg">Account Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Host Accounts */}
+              <div>
+                <h3 className="text-sm font-semibold mb-3 text-foreground">
+                  Host Accounts
+                </h3>
+                {(() => {
+                  try {
+                    const hostAcc = JSON.parse(additionalData.host_acc || "{}");
+                    return (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <AccountField
                           label="Email"
-                          value={acc.email}
+                          value={hostAcc.email}
                           onCopy={() =>
-                            copyToClipboard(acc.email, "social media email")
+                            copyToClipboard(hostAcc.email, "host email")
                           }
                         />
                         <AccountField
                           label="Password"
-                          value={acc.password ? "••••••••••••••••" : ""}
+                          value={hostAcc.password ? "••••••••••••••••" : ""}
+                          onCopy={() =>
+                            copyToClipboard(hostAcc.password, "host password")
+                          }
+                        />
+                      </div>
+                    );
+                  } catch {
+                    return (
+                      <div className="text-sm text-muted-foreground p-2 rounded border border-border">
+                        Not provided
+                      </div>
+                    );
+                  }
+                })()}
+              </div>
+
+              {/* Website Accounts */}
+              <div className="pt-3 border-t border-border">
+                <h3 className="text-sm font-semibold mb-3 text-foreground">
+                  Website Accounts
+                </h3>
+                {(() => {
+                  try {
+                    const websiteAcc = JSON.parse(
+                      additionalData.website_acc || "{}",
+                    );
+                    return (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <AccountField
+                          label="Email"
+                          value={websiteAcc.email}
+                          onCopy={() =>
+                            copyToClipboard(websiteAcc.email, "website email")
+                          }
+                        />
+                        <AccountField
+                          label="Password"
+                          value={websiteAcc.password ? "••••••••••••••••" : ""}
                           onCopy={() =>
                             copyToClipboard(
-                              acc.password,
-                              "social media password",
+                              websiteAcc.password,
+                              "website password",
                             )
                           }
                         />
                       </div>
-                    ))}
-                  </div>
-                );
-              } catch {
-                return (
-                  <div className="text-sm text-muted-foreground p-2 rounded border border-border">
-                    Not provided
-                  </div>
-                );
-              }
-            })()}
-          </div>
-        </CardContent>
-      </Card>
+                    );
+                  } catch {
+                    return (
+                      <div className="text-sm text-muted-foreground p-2 rounded border border-border">
+                        Not provided
+                      </div>
+                    );
+                  }
+                })()}
+              </div>
 
-      {/* Files & Resources Card */}
-      <Card className="border-border">
-        <CardHeader className="border-b border-border">
-          <CardTitle className="text-lg">Files & Resources</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                Media Files
-              </p>
-              {renderFileField("Media Files", additionalData.media_files)}
-            </div>
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                Specification File
-              </p>
-              {renderFileField(
-                "Specification File",
-                additionalData.specification_file,
-              )}
-            </div>
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                Logo
-              </p>
-              {renderFileField("Logo", additionalData.logo)}
-            </div>
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                Other Files
-              </p>
-              {renderFileField("Other", additionalData.other)}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+              {/* Social Media */}
+              <div className="pt-3 border-t border-border">
+                <h3 className="text-sm font-semibold mb-3 text-foreground">
+                  Social Media
+                </h3>
+                {(() => {
+                  try {
+                    const socialMedia = JSON.parse(
+                      additionalData.social_media || "[]",
+                    );
+                    if (
+                      !Array.isArray(socialMedia) ||
+                      socialMedia.length === 0
+                    ) {
+                      return (
+                        <div className="text-sm text-muted-foreground p-2 rounded border border-border">
+                          Not provided
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="space-y-4">
+                        {socialMedia.map((acc, idx) => (
+                          <div
+                            key={idx}
+                            className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-4 last:pb-0 border-b border-border last:border-0"
+                          >
+                            <AccountField
+                              label="Link"
+                              value={acc.link}
+                              onCopy={() =>
+                                copyToClipboard(acc.link, "social media link")
+                              }
+                            />
+                            <AccountField
+                              label="Email"
+                              value={acc.email}
+                              onCopy={() =>
+                                copyToClipboard(acc.email, "social media email")
+                              }
+                            />
+                            <AccountField
+                              label="Password"
+                              value={acc.password ? "••••••••••••••••" : ""}
+                              onCopy={() =>
+                                copyToClipboard(
+                                  acc.password,
+                                  "social media password",
+                                )
+                              }
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  } catch {
+                    return (
+                      <div className="text-sm text-muted-foreground p-2 rounded border border-border">
+                        Not provided
+                      </div>
+                    );
+                  }
+                })()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="w-[30%]">
+          <Card className="border-border">
+            <CardHeader className="border-b border-border">
+              <CardTitle className="text-lg">Files & Resources</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-4 gap-4">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    Media Files
+                  </p>
+                  {renderFileField("Media Files", additionalData.media_files)}
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    Specification File
+                  </p>
+                  {renderFileField(
+                    "Specification File",
+                    additionalData.specification_file,
+                  )}
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    Logo
+                  </p>
+                  {renderFileField("Logo", additionalData.logo)}
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground mb-2">
+                    Other Files
+                  </p>
+                  {renderFileField("Other", additionalData.other)}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

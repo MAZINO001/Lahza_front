@@ -1,3 +1,5 @@
+"use client";
+
 import { useEmailVerification } from "@/features/auth/hooks/useEmailVerification";
 import {
   Loader2,
@@ -7,6 +9,16 @@ import {
   Mail,
   ArrowRight,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function VerifyEmailPage() {
   const {
@@ -21,97 +33,121 @@ export default function VerifyEmailPage() {
 
   const content = renderContent();
 
+  const isLoading = content.icon === "loader";
+  const isSuccess = content.icon === "success";
+  const isError = content.icon === "error";
+  const isWarning = content.icon === "warning";
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 w-full">
-      <div className="w-full max-w-md border border-gray-200 bg-white rounded-lg shadow-lg">
-        <div className="px-6 py-8 space-y-2 text-center border-b border-gray-200">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-gray-100 rounded-lg">
-              <Mail className="h-6 w-6 text-gray-600" />
-            </div>
+    <div className="min-h-screen  flex items-center justify-center bg-background px-4 py-12 w-full">
+      <Card className="w-full max-w-md border-border shadow-sm">
+        <CardHeader className="space-y-3 text-center pb-6">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+            <Mail className="h-6 w-6 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <CardTitle className="text-2xl font-bold tracking-tight">
             Verify your email
-          </h2>
-          <p className="text-sm text-gray-600">
+          </CardTitle>
+          <CardDescription className="text-base">
             {email ? (
               <>
-                We sent a verification link to <br />
-                <span className="font-semibold text-gray-900">{email}</span>
+                We sent a verification link to{" "}
+                <span className="font-medium text-foreground">{email}</span>
               </>
             ) : (
               "Confirming your email address..."
             )}
-          </p>
-        </div>
+          </CardDescription>
+        </CardHeader>
 
-        <div className="px-6 py-8">
-          {content.icon === "loader" && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900">
-                {content.title}
-              </h3>
-              <p className="text-sm text-gray-500 mt-2">
+        <CardContent className="space-y-6 pt-2">
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
+              <h3 className="text-lg font-semibold">{content.title}</h3>
+              <p className="text-sm text-muted-foreground mt-2 max-w-xs">
                 {content.subtitle}
               </p>
             </div>
           )}
 
-          {content.icon === "success" && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="relative mb-4">
-                <div className="absolute inset-0 bg-green-100 rounded-full blur-md opacity-50" />
-                <CheckCircle2 className="relative h-12 w-12 text-green-600" />
+          {/* Success State */}
+          {isSuccess && (
+            <div className="flex flex-col items-center justify-center py-8 text-center space-y-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-green-100/60 dark:bg-green-950/40 rounded-full blur-xl" />
+                <CheckCircle2 className="relative h-16 w-16 text-green-600 dark:text-green-500 mx-auto" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">
-                {content.title}
-              </h3>
-              <p className="text-sm text-gray-600 mt-2">{content.subtitle}</p>
-              <button
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold tracking-tight">
+                  {content.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {content.subtitle}
+                </p>
+              </div>
+              <Button
                 onClick={content.primaryAction}
-                className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-md font-medium text-sm hover:bg-gray-800 transition-colors"
+                size="lg"
+                className="gap-2"
               >
-                {content.primaryActionText} <ArrowRight className="h-4 w-4" />
-              </button>
+                {content.primaryActionText}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </div>
           )}
 
-          {(content.icon === "warning" || content.icon === "error") && (
+          {/* Error / Warning State */}
+          {(isError || isWarning) && (
             <div className="space-y-6">
-              <div className={`border ${content.icon === "warning" ? "border-red-200 bg-red-50" : "border-red-200 bg-red-50"} rounded-md p-4 flex gap-3`}>
-                {content.icon === "warning" ? (
-                  <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <Alert variant={isError ? "destructive" : "default"}>
+                {isWarning ? (
+                  <AlertTriangle className="h-5 w-5" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <XCircle className="h-5 w-5" />
                 )}
-                <div>
-                  <p className="text-sm font-medium text-red-800">
-                    {content.title}
-                  </p>
-                  <p className="text-sm text-red-700 mt-1">{content.subtitle}</p>
-                </div>
-              </div>
+                <AlertTitle>{content.title}</AlertTitle>
+                <AlertDescription>{content.subtitle}</AlertDescription>
+              </Alert>
+
               <div className="flex flex-col gap-3">
-                <button
+                <Button
                   onClick={content.primaryAction}
-                  className="w-full px-4 py-2 bg-black text-white rounded-md font-medium text-sm hover:bg-gray-800 transition-colors"
+                  variant={isError ? "destructive" : "default"}
+                  size="lg"
                 >
                   {content.primaryActionText}
-                </button>
-                {content.secondaryAction && (
-                  <button
+                </Button>
+
+                {content.secondaryAction && content.secondaryActionText && (
+                  <Button
                     onClick={content.secondaryAction}
-                    className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-md font-medium text-sm hover:bg-gray-50 transition-colors"
+                    variant="outline"
+                    size="lg"
                   >
                     {content.secondaryActionText}
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
           )}
-        </div>
-      </div>
+        </CardContent>
+
+        {/* Optional Footer – e.g. resend link if needed */}
+        {isLoading && (
+          <div className="px-6 pb-6 text-center text-sm text-muted-foreground">
+            Didn't receive the email?{" "}
+            <Button
+              variant="link"
+              className="p-0 h-auto font-medium"
+              onClick={goToResendVerification}
+            >
+              Resend verification link
+            </Button>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

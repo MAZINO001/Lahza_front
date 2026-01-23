@@ -186,7 +186,7 @@ export default function ServicesSidebar({ type, currentId }) {
   };
 
   return (
-    <div className="w-[280px] border-r border-border  flex flex-col">
+    <div className="w-[25%] md:w-[20%] border-r border-border  flex flex-col">
       <div className="border-b border-t px-4 py-4 flex items-center justify-between gap-3">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -246,7 +246,7 @@ export default function ServicesSidebar({ type, currentId }) {
         ) : (
           <div className="space-y-1">
             {filteredData.map((item) => {
-              const isActive = item.id === currentId;
+              const isActive = Number(item.id) === Number(currentId);
               const name = isService ? item.name : item.title;
 
               return (
@@ -256,7 +256,7 @@ export default function ServicesSidebar({ type, currentId }) {
                   onMouseEnter={() => prefetchItem(item.id)}
                   onFocus={() => prefetchItem(item.id)}
                   className={cn(
-                    "group flex flex-col gap-2 rounded-lg px-4 py-3 text-sm transition-all duration-200 border-l-4",
+                    "group flex flex-col gap-2 rounded-lg p-3 text-sm transition-all duration-200",
                     isActive
                       ? "bg-primary/10 border-l-primary text-primary font-medium shadow-sm"
                       : "border-l-transparent text-muted-foreground hover:bg-background/70 hover:text-foreground hover:shadow-sm",

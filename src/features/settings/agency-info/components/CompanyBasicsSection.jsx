@@ -9,7 +9,7 @@ export function CompanyBasicsSection({ control, errors }) {
       <h1 className="font-semibold text-lg mb-6">Company Basics</h1>
 
       <div className=" flex gap-4">
-        <div className="space-y-2 w-[35%]">
+        <div className="space-y-2 w-[50%]">
           <Controller
             name="company_name"
             rules={{ required: "Company name is required" }}
@@ -27,7 +27,7 @@ export function CompanyBasicsSection({ control, errors }) {
           />
         </div>
 
-        <div className="space-y-2 w-[65%]">
+        <div className="space-y-2 w-[50%]">
           <Controller
             name="tagline"
             control={control}
@@ -44,37 +44,40 @@ export function CompanyBasicsSection({ control, errors }) {
           />
         </div>
       </div>
+      <div className="flex gap-4 w-full h-full">
+        <div className="w-[50%] flex flex-col min-h-0">
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <TextareaField
+                {...field}
+                label="Description"
+                id="description"
+                className="flex-1 flex flex-col"
+                placeholder="Description"
+                error={errors.description?.message}
+              />
+            )}
+          />
+        </div>
 
-      <div className="space-y-2">
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => (
-            <TextareaField
-              {...field}
-              label="Description"
-              id="description"
-              placeholder="Description"
-              error={errors.description?.message}
-            />
-          )}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Controller
-          name="terms_and_conditions"
-          control={control}
-          render={({ field }) => (
-            <TextareaField
-              label="Terms And Conditions"
-              id="terms_and_conditions"
-              placeholder="Terms And Conditions"
-              error={errors.terms_and_conditions?.message}
-              {...field}
-            />
-          )}
-        />
+        <div className="w-[50%] flex flex-col min-h-0">
+          <Controller
+            name="terms_and_conditions"
+            control={control}
+            render={({ field }) => (
+              <TextareaField
+                label="Terms And Conditions"
+                id="terms_and_conditions"
+                className="flex-1 flex flex-col"
+                placeholder="Terms And Conditions"
+                error={errors.terms_and_conditions?.message}
+                {...field}
+              />
+            )}
+          />
+        </div>
       </div>
     </div>
   );

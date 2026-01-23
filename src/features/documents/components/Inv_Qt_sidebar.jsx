@@ -232,9 +232,8 @@ export default function Inv_Qt_sidebar({ type }) {
       staleTime: 0,
     });
   };
-
   return (
-    <div className="w-[280px] border-t border-r border-border flex flex-col">
+    <div className="w-[25%] md:w-[20%] border-t border-r border-border flex flex-col">
       <div className="border-b px-4 py-4 flex items-center justify-between gap-3">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -283,7 +282,7 @@ export default function Inv_Qt_sidebar({ type }) {
         ) : (
           <div className="space-y-1">
             {filteredData.map((item) => {
-              const isActive = item.id === currentId;
+              const isActive = Number(item.id) === Number(currentId);
               const name = item?.client?.user?.name || "Unnamed Client";
               const amount = Number(item.total_amount || 0);
 
@@ -294,7 +293,7 @@ export default function Inv_Qt_sidebar({ type }) {
                   onMouseEnter={() => prefetchData(item.id)}
                   onFocus={() => prefetchData(item.id)}
                   className={cn(
-                    "group relative flex flex-col gap-2 rounded-lg px-4 py-3 text-sm transition-all duration-200 border-l-4",
+                    "group relative flex flex-col gap-2 rounded-lg p-3 text-sm transition-all duration-200",
                     isActive
                       ? "bg-primary/10 border-l-primary text-primary font-medium shadow-sm"
                       : "border-l-transparent text-muted-foreground hover:bg-background/70 hover:text-foreground hover:shadow-sm",

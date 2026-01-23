@@ -14,6 +14,7 @@ import {
 import { formatId } from "@/lib/utils/formatId";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
+import { TooltipButton } from "@/components/common/TooltipButton";
 import { Badge } from "@/components/ui/badge";
 import EditPayment from "../components/EditPayment";
 import {
@@ -234,20 +235,22 @@ export function paymentColumns(role, { onEditPaidAt }) {
         return (
           <div className="flex">
             {payment.stripe_session_id && row.getValue("status") === "paid" && (
-              <Button
+              <TooltipButton
+                tooltip="View Stripe Session"
                 variant="ghost"
                 size="sm"
                 onClick={handleViewSession}
                 className="cursor-pointer"
               >
                 <Eye />
-              </Button>
+              </TooltipButton>
             )}
             {row.getValue("status") === "pending" &&
               (row.getValue("payment_method") === "stripe" ||
                 row.getValue("payment_method") === "bank") && (
                 <div className="text-sm">
-                  <Button
+                  <TooltipButton
+                    tooltip="Copy Payment Info"
                     variant="ghost"
                     size="sm"
                     onClick={() => {
@@ -265,20 +268,21 @@ export function paymentColumns(role, { onEditPaidAt }) {
                     className="cursor-pointer"
                   >
                     <Copy className="mr-1 h-4 w-4" />
-                  </Button>
+                  </TooltipButton>
                 </div>
               )}
             {row.getValue("payment_method") === "bank" &&
               row.getValue("status") === "pending" &&
               role === "admin" && (
                 <>
-                  <Button
-                    onClick={() => setOpen(true)}
+                  <TooltipButton
+                    tooltip="Confirm Payment"
                     variant="ghost"
+                    onClick={() => setOpen(true)}
                     className="cursor-pointer"
                   >
                     <CircleCheck className="h-4 w-4" />
-                  </Button>
+                  </TooltipButton>
                   <ConfirmDialog
                     open={open}
                     onClose={() => setOpen(false)}
@@ -296,13 +300,14 @@ export function paymentColumns(role, { onEditPaidAt }) {
               row.getValue("status") === "paid" &&
               role === "admin" && (
                 <>
-                  <Button
-                    onClick={() => setOpen(true)}
+                  <TooltipButton
+                    tooltip="Cancel Payment"
                     variant="ghost"
+                    onClick={() => setOpen(true)}
                     className="cursor-pointer"
                   >
                     <CircleX className="h-4 w-4" />
-                  </Button>
+                  </TooltipButton>
 
                   <ConfirmDialog
                     open={open}
@@ -323,9 +328,14 @@ export function paymentColumns(role, { onEditPaidAt }) {
                 onOpenChange={setIsSignDialogOpen}
               >
                 <DialogTrigger asChild>
-                  <Button size="sm" variant="ghost" className="cursor-pointer">
+                  <TooltipButton
+                    tooltip="Edit Payment"
+                    size="sm"
+                    variant="ghost"
+                    className="cursor-pointer"
+                  >
                     <Pencil className="h-4 w-4" />
-                  </Button>
+                  </TooltipButton>
                 </DialogTrigger>
 
                 <DialogContent

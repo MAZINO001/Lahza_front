@@ -2,6 +2,7 @@
 import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { TooltipButton } from "@/components/common/TooltipButton";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { Badge } from "@/components/ui/badge";
 import AlertDialogDestructive from "@/components/alert-dialog-destructive-1";
@@ -111,25 +112,27 @@ export function getServiceColumns(role, navigate) {
 
         return (
           <div className="flex items-center gap-2">
-            <Button
+            <TooltipButton
+              tooltip="Edit Service"
               size="sm"
               variant="ghost"
               onClick={onEdit}
               className="cursor-pointer"
             >
               <Pencil className="h-4 w-4" />
-            </Button>
+            </TooltipButton>
             {role === "admin" && (
               <AlertDialogDestructive
                 onDelete={() => onDelete()}
                 trigger={
-                  <Button
+                  <TooltipButton
+                    tooltip="Delete Service"
                     variant="ghost"
                     size="sm"
                     className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                   >
                     <Trash2 className="h-4 w-4" />
-                  </Button>
+                  </TooltipButton>
                 }
               />
             )}

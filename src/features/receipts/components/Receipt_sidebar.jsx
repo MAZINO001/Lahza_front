@@ -269,7 +269,7 @@ export default function Receipt_sidebar() {
   };
 
   return (
-    <div className="w-[280px] border-t border-r border-border flex flex-col">
+    <div className="w-[25%] md:w-[20%] border-t border-r border-border flex flex-col">
       {/* Search + Sort Controls */}
       <div className="border-b px-4 py-4 space-y-3">
         <FormField
@@ -335,7 +335,7 @@ export default function Receipt_sidebar() {
         ) : (
           <div className="space-y-1">
             {filteredData?.map((item) => {
-              const isActive = item.id === currentId;
+              const isActive = Number(item.id) === Number(currentId);
 
               return (
                 <Link
@@ -344,7 +344,7 @@ export default function Receipt_sidebar() {
                   onMouseEnter={() => prefetchData(item.id)}
                   onFocus={() => prefetchData(item.id)}
                   className={cn(
-                    "group relative flex flex-col gap-2 rounded-lg px-4 py-3 text-sm transition-all duration-200 border-l-4",
+                    "group relative flex flex-col gap-2 rounded-lg p-3 text-sm transition-all duration-200",
                     isActive
                       ? "bg-primary/10 border-l-primary text-primary font-medium shadow-sm"
                       : "border-l-transparent text-muted-foreground hover:bg-background/70 hover:text-foreground hover:shadow-sm",

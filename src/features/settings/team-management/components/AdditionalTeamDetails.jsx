@@ -21,7 +21,6 @@ export default function AdditionalTeamDetails() {
   const { role } = useAuthContext();
   const { data: teamsMembers } = useTeams();
 
-  // Find current user's team member ID
   const currentUserTeamId = teamsMembers?.data?.find(
     (member) => member.user_id === user.id,
   )?.id;
@@ -238,145 +237,147 @@ export default function AdditionalTeamDetails() {
             Contract Information
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Controller
-                name="contract_type"
-                control={control}
-                rules={{
-                  required: "Contract type is required",
-                }}
-                render={({ field }) => (
-                  <SelectField
-                    id="contract_type"
-                    label="Contract Type"
-                    value={field.value}
-                    onChange={field.onChange}
-                    options={[
-                      { value: "CDI", label: "CDI" },
-                      { value: "CDD", label: "CDD" },
-                      { value: "Freelance", label: "Freelance" },
-                      { value: "Intern", label: "Intern" },
-                    ]}
-                    error={errors.contract_type?.message}
-                  />
-                )}
-              />
-            </div>
+            <div className="flex flex-col justify-between w-full h-full ">
+              <div className="space-y-2">
+                <Controller
+                  name="job_title"
+                  control={control}
+                  rules={{
+                    required: "Job title is required",
+                    minLength: {
+                      value: 2,
+                      message: "Job title must be at least 2 characters",
+                    },
+                    maxLength: {
+                      value: 100,
+                      message: "Job title cannot exceed 100 characters",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <FormField
+                      {...field}
+                      type="text"
+                      label="Job Title"
+                      id="job_title"
+                      placeholder="Job title"
+                      error={errors.job_title?.message}
+                    />
+                  )}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Controller
-                name="job_title"
-                control={control}
-                rules={{
-                  required: "Job title is required",
-                  minLength: {
-                    value: 2,
-                    message: "Job title must be at least 2 characters",
-                  },
-                  maxLength: {
-                    value: 100,
-                    message: "Job title cannot exceed 100 characters",
-                  },
-                }}
-                render={({ field }) => (
-                  <FormField
-                    {...field}
-                    type="text"
-                    label="Job Title"
-                    id="job_title"
-                    placeholder="Job title"
-                    error={errors.job_title?.message}
-                  />
-                )}
-              />
-            </div>
+              <div className="space-y-2">
+                <Controller
+                  name="contract_start_date"
+                  control={control}
+                  rules={{
+                    required: "Start date is required",
+                  }}
+                  render={({ field }) => (
+                    // <FormField
+                    <DateField
+                      {...field}
+                      type="date"
+                      label="Start Date"
+                      id="contract_start_date"
+                      error={errors.contract_start_date?.message}
+                    />
+                  )}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Controller
-                name="contract_start_date"
-                control={control}
-                rules={{
-                  required: "Start date is required",
-                }}
-                render={({ field }) => (
-                  // <FormField
-                  <DateField
-                    {...field}
-                    type="date"
-                    label="Start Date"
-                    id="contract_start_date"
-                    error={errors.contract_start_date?.message}
-                  />
-                )}
-              />
-            </div>
+              <div className="space-y-2">
+                <Controller
+                  name="contract_end_date"
+                  control={control}
+                  rules={{
+                    required: "End date is required",
+                  }}
+                  render={({ field }) => (
+                    // <FormField
+                    <DateField
+                      {...field}
+                      type="date"
+                      label="End Date"
+                      id="contract_end_date"
+                      error={errors.contract_end_date?.message}
+                    />
+                  )}
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Controller
-                name="contract_end_date"
-                control={control}
-                rules={{
-                  required: "End date is required",
-                }}
-                render={({ field }) => (
-                  // <FormField
-                  <DateField
-                    {...field}
-                    type="date"
-                    label="End Date"
-                    id="contract_end_date"
-                    error={errors.contract_end_date?.message}
-                  />
-                )}
-              />
+              <div className="space-y-2">
+                <Controller
+                  name="salary"
+                  control={control}
+                  rules={{
+                    required: "Salary is required",
+                    min: {
+                      value: 0,
+                      message: "Salary cannot be negative",
+                    },
+                    max: {
+                      value: 1000000,
+                      message: "Salary cannot exceed 1,000,000",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <FormField
+                      {...field}
+                      type="number"
+                      label="Salary"
+                      id="salary"
+                      placeholder="0.00"
+                      step="1"
+                      min="0"
+                      max="1000000"
+                      error={errors.salary?.message}
+                    />
+                  )}
+                />
+              </div>
             </div>
-
-            <div className="space-y-2">
-              <Controller
-                name="salary"
-                control={control}
-                rules={{
-                  required: "Salary is required",
-                  min: {
-                    value: 0,
-                    message: "Salary cannot be negative",
-                  },
-                  max: {
-                    value: 1000000,
-                    message: "Salary cannot exceed 1,000,000",
-                  },
-                }}
-                render={({ field }) => (
-                  <FormField
-                    {...field}
-                    type="number"
-                    label="Salary"
-                    id="salary"
-                    placeholder="0.00"
-                    step="1"
-                    min="0"
-                    max="1000000"
-                    error={errors.salary?.message}
-                  />
-                )}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Controller
-                name="contract_file"
-                control={control}
-                render={({ field }) => (
-                  <FileUploader
-                    {...field}
-                    label="Contract File"
-                    id="contract_file"
-                    accept=".pdf,.doc,.docx"
-                    onChange={field.onChange}
-                    description="Upload your contract document"
-                  />
-                )}
-              />
+            <div className="flex flex-col justify-between w-full h-full">
+              <div className="space-y-2">
+                <Controller
+                  name="contract_type"
+                  control={control}
+                  rules={{
+                    required: "Contract type is required",
+                  }}
+                  render={({ field }) => (
+                    <SelectField
+                      id="contract_type"
+                      label="Contract Type"
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={[
+                        { value: "CDI", label: "CDI" },
+                        { value: "CDD", label: "CDD" },
+                        { value: "Freelance", label: "Freelance" },
+                        { value: "Intern", label: "Intern" },
+                      ]}
+                      error={errors.contract_type?.message}
+                    />
+                  )}
+                />
+              </div>
+              <div className="space-y-2">
+                <Controller
+                  name="contract_file"
+                  control={control}
+                  render={({ field }) => (
+                    <FileUploader
+                      {...field}
+                      label="Contract File"
+                      id="contract_file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={field.onChange}
+                      description="Upload your contract document"
+                    />
+                  )}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -451,92 +452,96 @@ export default function AdditionalTeamDetails() {
           </h3>
 
           <div className="grid grid-cols-1 items-end md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Controller
-                name="portfolio"
-                control={control}
-                rules={{
-                  pattern: {
-                    value: /^https?:\/\/.+$/,
-                    message:
-                      "Please enter a valid URL starting with http:// or https://",
-                  },
-                }}
-                render={({ field }) => (
-                  <FormField
-                    type="url"
-                    label="Portfolio"
-                    id="portfolio"
-                    placeholder="https://..."
-                    error={errors.portfolio?.message}
-                    {...field}
-                  />
-                )}
-              />
+            <div className="flex flex-col justify-between w-full h-full ">
+              <div className="space-y-2">
+                <Controller
+                  name="portfolio"
+                  control={control}
+                  rules={{
+                    pattern: {
+                      value: /^https?:\/\/.+$/,
+                      message:
+                        "Please enter a valid URL starting with http:// or https://",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <FormField
+                      type="url"
+                      label="Portfolio"
+                      id="portfolio"
+                      placeholder="https://..."
+                      error={errors.portfolio?.message}
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2 ">
+                <Controller
+                  name="github"
+                  control={control}
+                  rules={{
+                    pattern: {
+                      value: /^https?:\/\/(www\.)?github\.com\/.+$/,
+                      message: "Please enter a valid GitHub URL",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <FormField
+                      type="url"
+                      label="GitHub"
+                      id="github"
+                      placeholder="https://github.com/..."
+                      error={errors.github?.message}
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Controller
+                  name="linkedin"
+                  control={control}
+                  rules={{
+                    pattern: {
+                      value: /^https?:\/\/(www\.)?linkedin\.com\/.+$/,
+                      message: "Please enter a valid LinkedIn URL",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <FormField
+                      type="url"
+                      label="LinkedIn"
+                      id="linkedin"
+                      placeholder="https://linkedin.com/..."
+                      error={errors.linkedin?.message}
+                      {...field}
+                    />
+                  )}
+                />
+              </div>
             </div>
 
-            <div className="space-y-2 ">
-              <Controller
-                name="github"
-                control={control}
-                rules={{
-                  pattern: {
-                    value: /^https?:\/\/(www\.)?github\.com\/.+$/,
-                    message: "Please enter a valid GitHub URL",
-                  },
-                }}
-                render={({ field }) => (
-                  <FormField
-                    type="url"
-                    label="GitHub"
-                    id="github"
-                    placeholder="https://github.com/..."
-                    error={errors.github?.message}
-                    {...field}
-                  />
-                )}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Controller
-                name="linkedin"
-                control={control}
-                rules={{
-                  pattern: {
-                    value: /^https?:\/\/(www\.)?linkedin\.com\/.+$/,
-                    message: "Please enter a valid LinkedIn URL",
-                  },
-                }}
-                render={({ field }) => (
-                  <FormField
-                    type="url"
-                    label="LinkedIn"
-                    id="linkedin"
-                    placeholder="https://linkedin.com/..."
-                    error={errors.linkedin?.message}
-                    {...field}
-                  />
-                )}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Controller
-                name="cv"
-                control={control}
-                render={({ field }) => (
-                  <FileUploader
-                    {...field}
-                    label="CV"
-                    id="cv"
-                    onChange={field.onChange}
-                    accept=".pdf,.doc,.docx"
-                    error={errors.cv?.message}
-                    description="Upload your curriculum vitae"
-                  />
-                )}
-              />
+            <div className="flex flex-col justify-between w-full h-full ">
+              <div className="space-y-2">
+                <Controller
+                  name="cv"
+                  control={control}
+                  render={({ field }) => (
+                    <FileUploader
+                      {...field}
+                      label="CV"
+                      id="cv"
+                      onChange={field.onChange}
+                      accept=".pdf,.doc,.docx"
+                      error={errors.cv?.message}
+                      description="Upload your curriculum vitae"
+                    />
+                  )}
+                />
+              </div>
             </div>
 
             <div className="space-y-2 md:col-span-2">

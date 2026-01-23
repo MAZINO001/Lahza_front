@@ -12,8 +12,8 @@ const Login = lazy(() => import("../pages/Auth/Login"));
 const Register = lazy(() => import("../pages/Auth/Register"));
 const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword"));
 const ForgotPassword = lazy(() => import("../pages/Auth/ForgotPassword"));
-const ConfirmPassword = lazy(() => import("../pages/Auth/ConfirmPassword"));
 const EmailVerification = lazy(() => import("../pages/Auth/EmailVerification"));
+const ConfirmOtp = lazy(() => import("../pages/Auth/ConfirmOtp"));
 
 // Lazy load dashboard
 const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
@@ -145,7 +145,9 @@ const NotificationsPage = lazy(
 const PlansPage = lazy(() => import("../pages/plans"));
 const WebHostingPage = lazy(() => import("../pages/plans/web-hosting"));
 const SEOPage = lazy(() => import("../pages/plans/seo"));
-const MaintenanceSecurityPage = lazy(() => import("../pages/plans/maintenance-security"));
+const MaintenanceSecurityPage = lazy(
+  () => import("../pages/plans/maintenance-security"),
+);
 const SAVPage = lazy(() => import("../pages/plans/sav"));
 const SMPage = lazy(() => import("../pages/plans/sm"));
 const AutomationPage = lazy(() => import("../pages/plans/automation"));
@@ -215,21 +217,23 @@ export default function AppRoutes() {
                 }
               />
               <Route
-                path="confirm-password"
+                path="verify-email"
                 element={
                   <ErrorBoundary>
-                    <Suspense fallback={<div>Loading confirm password...</div>}>
-                      <ConfirmPassword />
+                    <Suspense
+                      fallback={<div>Loading email verification...</div>}
+                    >
+                      <EmailVerification />
                     </Suspense>
                   </ErrorBoundary>
                 }
               />
               <Route
-                path="verify-email"
+                path="confirm-otp"
                 element={
                   <ErrorBoundary>
-                    <Suspense fallback={<div>Loading email verification...</div>}>
-                      <EmailVerification />
+                    <Suspense fallback={<div>Loading OTP confirmation...</div>}>
+                      <ConfirmOtp />
                     </Suspense>
                   </ErrorBoundary>
                 }
@@ -573,7 +577,9 @@ export default function AppRoutes() {
                 path="plans/web-hosting"
                 element={
                   <ErrorBoundary>
-                    <Suspense fallback={<div>Loading web hosting plans...</div>}>
+                    <Suspense
+                      fallback={<div>Loading web hosting plans...</div>}
+                    >
                       <WebHostingPage />
                     </Suspense>
                   </ErrorBoundary>
@@ -593,7 +599,11 @@ export default function AppRoutes() {
                 path="plans/maintenance-security"
                 element={
                   <ErrorBoundary>
-                    <Suspense fallback={<div>Loading maintenance & security plans...</div>}>
+                    <Suspense
+                      fallback={
+                        <div>Loading maintenance & security plans...</div>
+                      }
+                    >
                       <MaintenanceSecurityPage />
                     </Suspense>
                   </ErrorBoundary>
@@ -613,7 +623,9 @@ export default function AppRoutes() {
                 path="plans/sm"
                 element={
                   <ErrorBoundary>
-                    <Suspense fallback={<div>Loading social media plans...</div>}>
+                    <Suspense
+                      fallback={<div>Loading social media plans...</div>}
+                    >
                       <SMPage />
                     </Suspense>
                   </ErrorBoundary>

@@ -293,7 +293,7 @@ export default function Inv_Qt_page({ type, currentId }) {
 
   return (
     <div className="flex-1 flex flex-col h-screen">
-      <div className="sticky top-0 z-10 border-b backdrop-blur-sm px-4 py-3 flex items-center justify-between gap-4">
+      <div className="sticky top-0 z-10 border-b  border-t backdrop-blur-sm p-4 flex items-center justify-between gap-4">
         <div className="text-xl font-semibold tracking-tight text-foreground">
           {isInvoice ? "Invoice" : "Quote"} —{" "}
           {formatId(currentId, isInvoice ? "INVOICE" : "QUOTE")}

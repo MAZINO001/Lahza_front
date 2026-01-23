@@ -1,9 +1,9 @@
 // src/features/tasks/columns/taskColumns.jsx
 import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { TooltipButton } from "@/components/common/TooltipButton";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import AlertDialogDestructive from "@/components/alert-dialog-destructive-1.jsx";
-
+import { Button } from "@/components/ui/button";
 export function getTaskColumns(navigate, role, projectId) {
   return [
     {
@@ -63,13 +63,12 @@ export function getTaskColumns(navigate, role, projectId) {
 
         return (
           <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
+            <TooltipButton
+              tooltip="Edit Task"
               onClick={() => HandleEditTask(task.id, navigate, role)}
             >
               <Pencil className="h-4 w-4" />
-            </Button>
+            </TooltipButton>
             <AlertDialogDestructive
               onDelete={() => handleDeleteTask(projectId, task.id)}
             />

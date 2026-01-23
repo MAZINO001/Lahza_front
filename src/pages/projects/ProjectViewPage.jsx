@@ -38,6 +38,11 @@ import { ChartBarDefault } from "@/features/projects/components/overViewChart";
 import { useTransActions } from "@/features/payments/hooks/usePaymentQuery";
 import { formatId } from "@/lib/utils/formatId";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import AlertDialogConfirmation from "@/components/alert-dialog-confirmation-6";
 
 export default function ProjectViewPage() {
@@ -295,12 +300,20 @@ export default function ProjectViewPage() {
                     <span className="text-lg font-bold text-foreground">
                       {client?.client?.company || client?.client?.name}
                     </span>
+
                     <span>
-                      <Badge>Development</Badge>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge>Development</Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Development Department</p>
+                        </TooltipContent>
+                      </Tooltip>
                     </span>
                   </div>
                   <span className="font-semibold text-sm text-muted-foreground">
-                    {client?.client?.name}
+                    {client?.client?.user?.name}
                   </span>
                 </div>
               </div>

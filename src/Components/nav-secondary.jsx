@@ -44,17 +44,17 @@ export function NavSecondary({ items, ...props }) {
                 <SidebarMenuButton
                   tooltip={item.title}
                   className={`
-            flex items-center gap-2 rounded-sm
-            cursor-pointer
-            hover:text-primary/80
-               text-[12px]
-               mb-2
-            ${
-              isActive(item.url)
-                ? "bg-primary/20 text-primary/80"
-                : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
-            }
-          `}
+                    flex items-center gap-2 rounded-sm
+                    cursor-pointer
+                    hover:text-primary/80
+                    text-[13px]
+                    mb-2
+                    ${
+                    isActive(item.url)
+                    ? "bg-primary/20 text-primary/80"
+                    : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
+                    }
+                    `}
                 >
                   <span>
                     {item.icon && <item.icon className="w-3.5 h-3.5" />}

@@ -127,13 +127,25 @@ export function AppSidebar(props) {
               url: `/${role}/plans`,
               icon: Layers,
               children: [
-                { title: "Web Hosting", url: `/${role}/plans/web-hosting`, icon: Server },
+                {
+                  title: "Web Hosting",
+                  url: `/${role}/plans/web-hosting`,
+                  icon: Server,
+                },
                 { title: "SEO", url: `/${role}/plans/seo`, icon: Server },
-                { title: "Maintenance & Security", url: `/${role}/plans/maintenance-security`, icon: Server },
+                {
+                  title: "Maintenance & Security",
+                  url: `/${role}/plans/maintenance-security`,
+                  icon: Server,
+                },
                 { title: "SAV", url: `/${role}/plans/sav`, icon: Server },
                 { title: "SM", url: `/${role}/plans/sm`, icon: Server },
-                { title: "Automation", url: `/${role}/plans/automation`, icon: Server },
-              ]
+                {
+                  title: "Automation",
+                  url: `/${role}/plans/automation`,
+                  icon: Server,
+                },
+              ],
             },
             {
               title: "Tickets",
@@ -173,7 +185,6 @@ export function AppSidebar(props) {
   };
 
   const roleData = sidebarData[role];
-  const { state } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" {...props} className="p-1 border-r">

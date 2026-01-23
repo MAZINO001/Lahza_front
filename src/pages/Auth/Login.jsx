@@ -67,7 +67,7 @@ export default function Login({ status, canResetPassword }) {
               <div className="text-center mb-8">
                 <h1 className="text-2xl font-bold mb-2">Welcome back</h1>
                 <p className="text-muted-foreground">
-                  Sign in to your account to continue
+                  Log in to your account to continue
                 </p>
               </div>
 
@@ -147,7 +147,11 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 {/* Login Button */}
-                <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={loginMutation.isPending}
+                >
                   {loginMutation.isPending ? "Signing in..." : "Login"}
                 </Button>
                 <div className="text-center text-sm text-muted-foreground">

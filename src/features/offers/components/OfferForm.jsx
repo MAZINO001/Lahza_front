@@ -38,20 +38,20 @@ export function OfferForm({ offerId, onSuccess }) {
   } = useForm({
     defaultValues: offer
       ? {
-          ...offer,
-          placement: offer.placement || [], // Handle existing placement data from backend
-        }
+        ...offer,
+        placement: offer.placement || [], // Handle existing placement data from backend
+      }
       : {
-          title: "",
-          description: "",
-          service_id: "",
-          discount_type: "percent",
-          discount_value: 0,
-          start_date: "",
-          end_date: "",
-          status: "active",
-          placement: [],
-        },
+        title: "",
+        description: "",
+        service_id: "",
+        discount_type: "percent",
+        discount_value: 0,
+        start_date: "",
+        end_date: "",
+        status: "active",
+        placement: [],
+      },
   });
 
   const onSubmit = (data) => {

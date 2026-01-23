@@ -15,8 +15,9 @@ import FormField from "@/components/Form/FormField";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { getUserManagementColumns } from "./UserColumns";
 import { DataTable } from "@/components/table/DataTable";
-import { Upload, UserPlus } from "lucide-react";
+import { Upload } from "lucide-react";
 import { useUsers } from "@/features/settings/hooks/useUsersQuery";
+import AddClientModel from "@/components/common/AddClientModel";
 
 export default function UserTable() {
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -64,12 +65,7 @@ export default function UserTable() {
             <Button onClick={() => setShowUploadModal(true)} variant="outline">
               <Upload className="mr-2 h-4 w-4" /> Upload CSV
             </Button>
-            <Link to={`/${role}/user/new`}>
-              <Button>
-                <UserPlus className="mr-2 h-4 w-4" />
-                Add New User
-              </Button>
-            </Link>
+            <AddClientModel />
           </div>
         </div>
 

@@ -36,8 +36,10 @@ export default function AddClientModel() {
         <DialogHeader>
           <DialogTitle>Adding Client</DialogTitle>
         </DialogHeader>
-        <ClientFormModal onClose={() => setOpen(false)} />
-        {/* <ClientForm handleClientCreatedByAdmin={handleClientCreatedByAdmin} /> */}
+        <div className="mt-4">
+          <ClientFormModal onClose={() => setOpen(false)} />
+          {/* <ClientForm handleClientCreatedByAdmin={handleClientCreatedByAdmin} /> */}
+        </div>
       </DialogContent>
     </Dialog>
   );

@@ -5,7 +5,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { ArrowLeft, Edit, FileText, Calendar, DollarSign, CreditCard, User, Building, FileText as FileIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  FileText,
+  Calendar,
+  DollarSign,
+  CreditCard,
+  User,
+  Building,
+  FileText as FileIcon,
+} from "lucide-react";
 
 export default function ExpenseViewPage() {
   const { id } = useParams();
@@ -45,9 +55,8 @@ export default function ExpenseViewPage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 min-h-screen">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -57,12 +66,15 @@ export default function ExpenseViewPage() {
             <ArrowLeft className="h-4 w-4" />
             Back to Expenses
           </Button>
-          <h1 className="text-2xl font-bold">Expense Details</h1>
         </div>
 
         {role === "admin" && (
           <Button
-            onClick={() => navigate(`/${role}/expense/${id}/edit`, { state: { expenseId: id } })}
+            onClick={() =>
+              navigate(`/${role}/expense/${id}/edit`, {
+                state: { expenseId: id },
+              })
+            }
             className="flex items-center gap-2"
           >
             <Edit className="h-4 w-4" />
@@ -71,12 +83,9 @@ export default function ExpenseViewPage() {
         )}
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Main Info */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Title and Status */}
-          <div className="bg-white p-6 rounded-lg border">
+      <div className="grid grid-cols-1 gap-4 ">
+        <div className="lg:col-span-2 space-y-4">
+          <div className="bg-white p-4 rounded-lg border">
             <div className="flex items-start justify-between mb-4">
               <h2 className="text-xl font-semibold">{expense.title}</h2>
               <Badge className={getStatusColor(expense.status)}>
@@ -85,7 +94,7 @@ export default function ExpenseViewPage() {
             </div>
 
             {expense.description && (
-              <p className="text-gray-600 mb-4">{expense.description}</p>
+              <p className="text-gray-400 mb-4">{expense.description}</p>
             )}
 
             <div className="grid grid-cols-2 gap-4">
@@ -110,26 +119,33 @@ export default function ExpenseViewPage() {
             </div>
           </div>
 
-          {/* Additional Details */}
-          <div className="bg-white p-6 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
+          <div className="bg-white p-4 rounded-lg border">
+            <h3 className="text-lg font-semibold mb-4">
+              Additional Information
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <span className="text-sm text-gray-500">Category</span>
-                <p className="font-medium capitalize">{expense.category || "—"}</p>
+                <p className="font-medium capitalize">
+                  {expense.category || "—"}
+                </p>
               </div>
 
               <div>
                 <span className="text-sm text-gray-500">Payment Method</span>
                 <p className="font-medium capitalize">
-                  {expense.payment_method ? expense.payment_method.replace(/_/g, " ") : "—"}
+                  {expense.payment_method
+                    ? expense.payment_method.replace(/_/g, " ")
+                    : "—"}
                 </p>
               </div>
 
               <div>
-                <span className="text-sm text-gray-500">Repeats</span>
+                <span className="text-sm text-gray-500 mr-2">Repeats</span>
                 <Badge
-                  variant={expense.repeatedly === "none" ? "outline" : "default"}
+                  variant={
+                    expense.repeatedly === "none" ? "outline" : "default"
+                  }
                   className="capitalize"
                 >
                   {expense.repeatedly}
@@ -143,18 +159,19 @@ export default function ExpenseViewPage() {
             </div>
           </div>
 
-          {/* Relations */}
-          <div className="bg-white p-6 rounded-lg border">
+          <div className="bg-white p-4 rounded-lg border">
             <h3 className="text-lg font-semibold mb-4">Related Items</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {expense.project_id && (
                 <div className="flex items-center gap-2">
                   <Building className="h-4 w-4 text-gray-500" />
                   <div>
-                    <span className="text-sm text-gray-500">Project</span>
+                    <span className="text-sm text-gray-500 mr-2">Project</span>
                     <Button
                       variant="link"
-                      onClick={() => navigate(`/${role}/project/${expense.project_id}`)}
+                      onClick={() =>
+                        navigate(`/${role}/project/${expense.project_id}`)
+                      }
                       className="p-0 h-auto font-medium"
                     >
                       View Project
@@ -167,10 +184,12 @@ export default function ExpenseViewPage() {
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4 text-gray-500" />
                   <div>
-                    <span className="text-sm text-gray-500">Client</span>
+                    <span className="text-sm text-gray-500 mr-2">Client</span>
                     <Button
                       variant="link"
-                      onClick={() => navigate(`/${role}/client/${expense.client_id}`)}
+                      onClick={() =>
+                        navigate(`/${role}/client/${expense.client_id}`)
+                      }
                       className="p-0 h-auto font-medium"
                     >
                       View Client
@@ -183,10 +202,12 @@ export default function ExpenseViewPage() {
                 <div className="flex items-center gap-2">
                   <FileIcon className="h-4 w-4 text-gray-500" />
                   <div>
-                    <span className="text-sm text-gray-500">Invoice</span>
+                    <span className="text-sm text-gray-500 mr-2">Invoice</span>
                     <Button
                       variant="link"
-                      onClick={() => navigate(`/${role}/invoice/${expense.invoice_id}`)}
+                      onClick={() =>
+                        navigate(`/${role}/invoice/${expense.invoice_id}`)
+                      }
                       className="p-0 h-auto font-medium"
                     >
                       View Invoice
@@ -196,17 +217,17 @@ export default function ExpenseViewPage() {
               )}
             </div>
 
-            {!expense.project_id && !expense.client_id && !expense.invoice_id && (
-              <p className="text-gray-500">No related items</p>
-            )}
+            {!expense.project_id &&
+              !expense.client_id &&
+              !expense.invoice_id && (
+                <p className="text-gray-500">No related items</p>
+              )}
           </div>
         </div>
 
-        {/* Right Column - Sidebar Info */}
-        <div className="space-y-6">
-          {/* Paid By */}
+        <div className="space-y-4">
           {expense.paid_by && (
-            <div className="bg-white p-6 rounded-lg border">
+            <div className="bg-white p-4 rounded-lg border">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <User className="h-4 w-4" />
                 Paid By
@@ -215,9 +236,8 @@ export default function ExpenseViewPage() {
             </div>
           )}
 
-          {/* Attachment */}
           {expense.attachment && (
-            <div className="bg-white p-6 rounded-lg border">
+            <div className="bg-white p-4 rounded-lg border">
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <FileText className="h-4 w-4" />
                 Attachment
@@ -225,8 +245,8 @@ export default function ExpenseViewPage() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  if (typeof expense.attachment === 'string') {
-                    window.open(expense.attachment, '_blank');
+                  if (typeof expense.attachment === "string") {
+                    window.open(expense.attachment, "_blank");
                   }
                 }}
                 className="w-full"
@@ -235,29 +255,6 @@ export default function ExpenseViewPage() {
               </Button>
             </div>
           )}
-
-          {/* Quick Actions */}
-          <div className="bg-white p-6 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-            <div className="space-y-2">
-              <Button
-                variant="outline"
-                onClick={() => navigate(`/${role}/expenses`)}
-                className="w-full"
-              >
-                Back to Expenses
-              </Button>
-
-              {role === "admin" && (
-                <Button
-                  onClick={() => navigate(`/${role}/expense/${id}/edit`, { state: { expenseId: id } })}
-                  className="w-full"
-                >
-                  Edit Expense
-                </Button>
-              )}
-            </div>
-          </div>
         </div>
       </div>
     </div>

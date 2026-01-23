@@ -81,8 +81,7 @@ export default function Register() {
                     I am a client
                   </h3>
                   <p className="text-sm text-muted-foreground mb-5">
-                    Looking for services or to publish new
-                    projects.
+                    Looking for services or to publish new projects.
                   </p>
 
                   <Button
@@ -128,13 +127,13 @@ export default function Register() {
                   onClick={() => setMode("login")}
                   className="text-primary font-semibold hover:underline hover:text-[color-mix(in oklch, var(--primary) 70%, black)] transition-colors cursor-pointer"
                 >
-                  Sign in
+                  Log in
                 </span>
                 <Link
                   href={"/login"}
                   className="text-primary font-semibold hover:underline hover:text-[color-mix(in oklch, var(--primary) 70%, black)] transition-colors"
                 >
-                  Sign in
+                  Log in
                 </Link>
               </p>
             </Card>
@@ -145,41 +144,41 @@ export default function Register() {
         {(mode === "client_form" ||
           mode === "worker_form" ||
           mode === "login") && (
-            <motion.div
-              key={mode}
-              variants={contentVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.4 }}
-              className={`relative z-20 ${getCardWidthClass()} px-2 sm:px-4`}
-            >
-              <Card className="w-full max-w-full shadow-2xl border border-border bg-card text-foreground backdrop-blur-md rounded-2xl">
-                <CardHeader className="flex flex-row items-center justify-between p-6 sm:p-8 pb-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setMode("welcome")}
-                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-(--card)/10 transition-colors"
-                  >
-                    <ArrowLeft className="w-4 h-4" /> Back
-                  </Button>
-                  <CardTitle
-                    className="text-2xl font-bold text-transparent bg-clip-text
+          <motion.div
+            key={mode}
+            variants={contentVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            transition={{ duration: 0.4 }}
+            className={`relative z-20 ${getCardWidthClass()} px-2 sm:px-4`}
+          >
+            <Card className="w-full max-w-full shadow-2xl border border-border bg-card text-foreground backdrop-blur-md rounded-2xl">
+              <CardHeader className="flex flex-row items-center justify-between p-6 sm:p-8 pb-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setMode("welcome")}
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground hover:bg-(--card)/10 transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Back
+                </Button>
+                <CardTitle
+                  className="text-2xl font-bold text-transparent bg-clip-text
                              bg-linear-to-r from-primary to-(--primary-gradient-end)"
-                  >
-                    {getTitle()}
-                  </CardTitle>
-                </CardHeader>
+                >
+                  {getTitle()}
+                </CardTitle>
+              </CardHeader>
 
-                <CardContent className="p-6 sm:p-8 pt-0">
-                  {mode === "client_form" && <ClientForm />}
-                  {mode === "worker_form" && <TeamClientForm />}
-                  {mode === "login" && <Login />}
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
+              <CardContent className="p-6 sm:p-8 pt-0">
+                {mode === "client_form" && <ClientForm />}
+                {mode === "worker_form" && <TeamClientForm />}
+                {mode === "login" && <Login />}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

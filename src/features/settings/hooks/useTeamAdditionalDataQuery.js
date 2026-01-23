@@ -34,7 +34,6 @@ const teamAdditionalDataApi = {
 
     update: (teamUserId, data) => {
         const formData = new FormData();
-        formData.append('_method', 'PUT');
         Object.keys(data).forEach(key => {
             if (key === 'contract_file' || key === 'cv') {
                 if (data[key] instanceof File) {

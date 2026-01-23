@@ -12,7 +12,7 @@ import {
 } from "@/features/tasks/hooks/useTasksQuery";
 import DateField from "@/components/Form/DateField";
 
-export function TasksForm({ task, projectId, onCancel }) {
+export function TasksForm({ task, projectId, onCancel, onSuccess }) {
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const createMutation = useCreateTask();
   const updateMutation = useUpdateTask();
@@ -30,7 +30,7 @@ export function TasksForm({ task, projectId, onCancel }) {
       description: "",
       percentage: 0,
       estimated_time: 0,
-      project_id: 1,
+      project_id: projectId || 1,
     },
   });
 
@@ -51,11 +51,11 @@ export function TasksForm({ task, projectId, onCancel }) {
       {
         onSuccess: () => {
           if (!isEditMode) reset();
+          onSuccess?.();
         },
         onSettled: () => endSubmit(),
       },
     );
-    onCancel();
   };
 
   return (

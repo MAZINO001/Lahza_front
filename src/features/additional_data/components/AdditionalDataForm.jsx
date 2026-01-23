@@ -84,7 +84,6 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
     console.log("Form submitted with data:", data);
     if (isSubmitting || !startSubmit()) return;
 
-    // Build payload with proper file handling
     const payload = {
       project_id: Number(data.project_id),
       host_acc: JSON.stringify({
@@ -102,10 +101,10 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
           password: sm.password,
         })),
       ),
-      // Handle file fields - keep arrays for multiple files, single file for logo
+
       media_files: data.media_files || null,
       specification_file: data.specification_file || null,
-      logo: Array.isArray(data.logo) ? data.logo[0] : data.logo, // Take first file if array
+      logo: Array.isArray(data.logo) ? data.logo[0] : data.logo,
       other: data.other || null,
     };
 
@@ -115,7 +114,7 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
       isEditMode ? { id: additionalData.id, data: payload } : payload,
       {
         onSuccess: () => {
-          console.log("Mutation successful");
+          console.log("Mutation successful", payload);
           onSuccess?.();
 
           if (isEditMode) {

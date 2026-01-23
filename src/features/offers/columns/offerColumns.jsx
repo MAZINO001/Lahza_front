@@ -2,12 +2,12 @@
 // src/features/offers/columns/offerColumns.js
 import { ArrowUpDown, Pencil, Trash, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { TooltipButton } from "@/components/common/TooltipButton";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
-
+import { Button } from "@/components/ui/button";
 export function getOfferColumns(role, navigate) {
   return [
     {
@@ -100,24 +100,24 @@ export function getOfferColumns(role, navigate) {
         const [open, setOpen] = useState(false);
         return (
           <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="ghost"
+            <TooltipButton
+              tooltip="Edit Offer"
               onClick={() => HandleEditOffer(offer.id, navigate, role)}
               className="cursor-pointer"
             >
               <Pencil className="h-4 w-4" />
-            </Button>
+            </TooltipButton>
             {role === "admin" && (
               <>
-                <Button
+                <TooltipButton
+                  tooltip="Delete Offer"
                   variant="ghost"
                   size="sm"
                   onClick={() => setOpen(true)}
                   className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
                 >
                   <Trash className="h-4 w-4" />
-                </Button>
+                </TooltipButton>
 
                 <ConfirmDialog
                   open={open}

@@ -12,6 +12,7 @@ import {
   Scale,
   Ticket,
   User,
+  CreditCard,
 } from "lucide-react";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -87,6 +88,11 @@ const sidebarItems = [
         value: "users_management",
         icon: <User className="w-4 h-4" />,
       },
+      {
+        name: "Plans Management",
+        value: "plans_management",
+        icon: <CreditCard className="w-4 h-4" />,
+      },
     ],
   },
 ];
@@ -98,7 +104,7 @@ export default function SettingsSideBar() {
   // Get the current settings section from the URL
   const currentSection = location.pathname.split("/").pop() || "company_basics";
   return (
-    <aside className="w-60 shrink-0 border border-border rounded-lg h-screen overflow-auto bg-background">
+    <aside className="w-60 shrink-0 border border-border rounded-lg h-screen overflow-auto bg-background ">
       <div className="bg-background backdrop-blur-sm ">
         <div className="p-4">
           <h2 className="mb-4 text-lg font-semibold text-foreground">
@@ -113,10 +119,10 @@ export default function SettingsSideBar() {
 
               return (
                 <div key={group.section}>
-                  <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground ">
                     {group.section}
                   </p>
-                  <ul className="space-y-1">
+                  <ul className="space-y-2 ">
                     {group.items.map((item) => {
                       // Hide branding & assets from non-admin users
                       if (
@@ -133,10 +139,11 @@ export default function SettingsSideBar() {
                           key={item.value}
                         >
                           <div
-                            className={`w-full text-left px-2 py-2 rounded-lg text-sm transition-colors ${isActive
-                              ? "bg-primary/20 text-primary/80"
-                              : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
-                              }`}
+                            className={`w-full text-left px-2 py-2 rounded-lg text-sm transition-colors mb-1 ${
+                              isActive
+                                ? "bg-primary/20 text-primary/80"
+                                : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
+                            }`}
                           >
                             <span className="flex gap-2">
                               {item.icon}

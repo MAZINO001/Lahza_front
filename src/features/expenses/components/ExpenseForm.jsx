@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import FormField from "@/components/Form/FormField";
 import SelectField from "@/components/Form/SelectField";
-import FormSection from "@/components/Form/FormSection";
 import CurrencySelect from "@/components/Form/CurrencySelect";
 import {
   useExpense,
@@ -52,24 +51,23 @@ export function ExpenseForm({
     },
   });
 
-  // Update form when expense data loads
   useEffect(() => {
     if (expense?.id) {
       reset({
-        title: expense.title || "",
-        description: expense.description || "",
-        amount: expense.amount || "",
-        currency: expense.currency || "USD",
-        date: expense.date || "",
-        project_id: expense.project_id || "",
-        client_id: expense.client_id || "",
-        invoice_id: expense.invoice_id || "",
-        paid_by: expense.paid_by || "",
-        category: expense.category || "",
-        payment_method: expense.payment_method || "",
-        status: expense.status || "pending",
-        attachment: expense.attachment || null,
-        repeatedly: expense.repeatedly || "none",
+        title: expense?.title || "",
+        description: expense?.description || "",
+        amount: expense?.amount || "",
+        currency: expense?.currency || "USD",
+        date: expense?.date || "",
+        project_id: expense?.project_id || "",
+        client_id: expense?.client_id || "",
+        invoice_id: expense?.invoice_id || "",
+        paid_by: expense?.paid_by || "",
+        category: expense?.category || "",
+        payment_method: expense?.payment_method || "",
+        status: expense?.status || "pending",
+        attachment: expense?.attachment || null,
+        repeatedly: expense?.repeatedly || "none",
       });
     }
   }, [expense, reset]);
@@ -232,6 +230,7 @@ export function ExpenseForm({
                     value={field.value}
                     onChange={field.onChange}
                     error={errors.invoice_id?.message}
+                    {...field}
                   />
                 )}
               />
@@ -249,6 +248,7 @@ export function ExpenseForm({
                     onChange={field.onChange}
                     error={errors.description?.message}
                     className="flex-1 flex flex-col"
+                    {...field}
                   />
                 )}
               />

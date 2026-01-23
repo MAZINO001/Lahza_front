@@ -1,5 +1,6 @@
 import { useAuthContext } from "@/hooks/AuthContext";
 import { formatId } from "@/lib/utils/formatId";
+
 import { Link } from "react-router-dom";
 
 export default function TeamColumns() {

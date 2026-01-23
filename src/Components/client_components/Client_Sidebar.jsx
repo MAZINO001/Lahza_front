@@ -220,7 +220,7 @@ export default function Client_Sidebar({ currentId }) {
   }
 
   return (
-    <div className="w-[25%] border-t border-r border-border flex flex-col">
+    <div className="w-[25%] md:w-[20%] border-t border-r border-border flex flex-col">
       {/* Header */}
       <div className="border-b px-4 py-4 flex items-center justify-between gap-3">
         <DropdownMenu>
@@ -278,13 +278,13 @@ export default function Client_Sidebar({ currentId }) {
           <div className="space-y-1">
             {filteredData.map((item) => {
               const client = item?.client;
-              const isActive = client?.id === currentId;
+              const isActive = Number(client.id) === Number(currentId);
 
               return (
                 <div
                   key={client?.id}
                   className={cn(
-                    "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all duration-150 border-l-4",
+                    "group flex items-start  gap-3 rounded-lg p-3 text-sm transition-all duration-150",
                     isActive
                       ? "bg-primary/10 border-l-primary text-primary font-medium shadow-sm"
                       : "border-l-transparent text-muted-foreground hover:bg-background/70 hover:text-foreground hover:shadow-sm",
@@ -305,7 +305,7 @@ export default function Client_Sidebar({ currentId }) {
                       {client?.user?.name ?? "Unnamed Client"}
                     </div>
 
-                    <div className="text-xs text-muted-foreground mt-0.5">
+                    <div className="text-sm text-muted-foreground mt-2">
                       {Number(item.totalPaid || 0).toFixed(2)} MAD
                     </div>
                   </Link>

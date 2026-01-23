@@ -327,14 +327,14 @@ function EventForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-background text-foreground max-w-2xl max-h-[90vh] flex flex-col">
+      <DialogContent className="bg-background text-foreground max-h-[90vh] flex flex-col ">
         <DialogHeader>
           <DialogTitle>
             {editMode ? "Edit Event" : "New Event"}{" "}
             {selectedDate?.toLocaleDateString()}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-4 bg-background text-foreground overflow-y-auto flex-1">
+        <div className="space-y-4 py-4 bg-background text-foreground overflow-y-auto flex-1 p-4">
           <div className="space-y-2">
             <Controller
               name="title"

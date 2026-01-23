@@ -86,7 +86,7 @@ export function NavMain({ items }) {
       {items.map((section) => (
         <SidebarGroup key={section.title}>
           {state !== "collapsed" && (
-            <SidebarGroupLabel className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+            <SidebarGroupLabel className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
               {section.title}
             </SidebarGroupLabel>
           )}
@@ -101,8 +101,7 @@ export function NavMain({ items }) {
                         flex items-center rounded-sm
                         cursor-pointer
                         hover:text-primary/80
-                        text-[12px]
-                     
+                        text-[13px]
                         ${
                           isActive(item.url)
                             ? "bg-primary/20 text-primary/80"
@@ -131,7 +130,7 @@ export function NavMain({ items }) {
                           flex items-center rounded-sm
                           cursor-pointer
                           hover:text-primary/80
-                          text-[12px]
+                          text-[13px]
                        
                           ${
                             isActive(item.url)
@@ -159,7 +158,7 @@ export function NavMain({ items }) {
                               flex items-center rounded-sm
                               cursor-pointer
                               hover:text-primary/80
-                              text-[11px]
+                              text-[12px]
                               py-1
                            
                               ${
@@ -172,7 +171,7 @@ export function NavMain({ items }) {
                               <Link to={child.url}>
                                 <span>
                                   {child.icon && (
-                                    <child.icon className="w-3 h-3" />
+                                    <child.icon className="w-3.5 h-3.5" />
                                   )}
                                 </span>
                                 <span>{child.title}</span>
