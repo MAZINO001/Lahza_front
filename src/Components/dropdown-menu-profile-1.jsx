@@ -67,7 +67,7 @@ const Example = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive">
+        <DropdownMenuItem>
           <Button
             variant="ghost"
             onClick={() => logout()}

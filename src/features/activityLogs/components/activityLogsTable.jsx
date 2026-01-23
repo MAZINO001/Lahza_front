@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -88,7 +88,7 @@ export function ActivityLogsTable() {
       if (dateRange === "today") {
         const today = format(now, "yyyy-MM-dd");
         filtered = filtered.filter(
-          (log) => format(logDate(log.created_at), "yyyy-MM-dd") === today
+          (log) => format(logDate(log.created_at), "yyyy-MM-dd") === today,
         );
       } else if (dateRange === "7d") {
         const weekAgo = new Date(now.setDate(now.getDate() - 7));
@@ -96,7 +96,7 @@ export function ActivityLogsTable() {
       } else if (dateRange === "30d") {
         const monthAgo = new Date(now.setDate(now.getDate() - 30));
         filtered = filtered.filter(
-          (log) => logDate(log.created_at) >= monthAgo
+          (log) => logDate(log.created_at) >= monthAgo,
         );
       }
     }
@@ -119,127 +119,129 @@ export function ActivityLogsTable() {
   return (
     <div className="space-y-4 p-4">
       <Card>
-        <div className="lg:col-span-2">
-          <Label>Search anything</Label>
-          <Input
-            placeholder="User, IP, table..."
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-            className="mt-1"
-          />
-        </div>
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <Label>Action</Label>
-            <Select value={actionFilter} onValueChange={setActionFilter}>
-              <SelectTrigger className="mt-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Actions</SelectItem>
-                <SelectItem value="created">
-                  <div className="flex items-center gap-2">
-                    <PlusCircle className="h-3.5 w-3.5 text-green-600" />{" "}
-                    Created
-                  </div>
-                </SelectItem>
-                <SelectItem value="updated">
-                  <div className="flex items-center gap-2">
-                    <Edit3 className="h-3.5 w-3.5 text-blue-600" /> Updated
-                  </div>
-                </SelectItem>
-                <SelectItem value="deleted">
-                  <div className="flex items-center gap-2">
-                    <Trash2 className="h-3.5 w-3.5 text-red-600" /> Deleted
-                  </div>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+        <CardContent>
+          <div className="lg:col-span-2">
+            <Label>Search anything</Label>
+            <Input
+              placeholder="User, IP, table..."
+              value={globalFilter}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+              className="mt-1"
+            />
           </div>
-
-          <div>
-            <Label>Table</Label>
-            <Select value={tableFilter} onValueChange={setTableFilter}>
-              <SelectTrigger className="mt-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Tables</SelectItem>
-                {[
-                  "offers",
-                  "quotes",
-                  "invoices",
-                  "services",
-                  "clients",
-                  "payments",
-                  "projects",
-                  "tickets",
-                  "settings",
-                ].map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t}
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <Label>Action</Label>
+              <Select value={actionFilter} onValueChange={setActionFilter}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Actions</SelectItem>
+                  <SelectItem value="created">
+                    <div className="flex items-center gap-2">
+                      <PlusCircle className="h-3.5 w-3.5 text-green-600" />{" "}
+                      Created
+                    </div>
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                  <SelectItem value="updated">
+                    <div className="flex items-center gap-2">
+                      <Edit3 className="h-3.5 w-3.5 text-blue-600" /> Updated
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="deleted">
+                    <div className="flex items-center gap-2">
+                      <Trash2 className="h-3.5 w-3.5 text-red-600" /> Deleted
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <Label>Date Range</Label>
-            <Select value={dateRange} onValueChange={setDateRange}>
-              <SelectTrigger className="mt-1">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">
-                  <div className="flex items-center gap-2">
-                    <CalendarDays className="h-3.5 w-3.5" /> All Time
-                  </div>
-                </SelectItem>
-                <SelectItem value="today">
-                  <div className="flex items-center gap-2">
-                    <Sun className="h-3.5 w-3.5 text-orange-600" /> Today
-                  </div>
-                </SelectItem>
-                <SelectItem value="7d">Last 7 Days</SelectItem>
-                <SelectItem value="30d">Last 30 Days</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            <div>
+              <Label>Table</Label>
+              <Select value={tableFilter} onValueChange={setTableFilter}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Tables</SelectItem>
+                  {[
+                    "offers",
+                    "quotes",
+                    "invoices",
+                    "services",
+                    "clients",
+                    "payments",
+                    "projects",
+                    "tickets",
+                    "settings",
+                  ].map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <Label>From</Label>
-            <Input
-              type="date"
-              value={fromDate}
-              onChange={(e) => {
-                setFromDate(e.target.value);
-                if (dateRange !== "all") setDateRange("all");
-              }}
-            />
+            <div>
+              <Label>Date Range</Label>
+              <Select value={dateRange} onValueChange={setDateRange}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    <div className="flex items-center gap-2">
+                      <CalendarDays className="h-3.5 w-3.5" /> All Time
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="today">
+                    <div className="flex items-center gap-2">
+                      <Sun className="h-3.5 w-3.5 text-orange-600" /> Today
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="7d">Last 7 Days</SelectItem>
+                  <SelectItem value="30d">Last 30 Days</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label>From</Label>
+              <Input
+                type="date"
+                value={fromDate}
+                onChange={(e) => {
+                  setFromDate(e.target.value);
+                  if (dateRange !== "all") setDateRange("all");
+                }}
+              />
+            </div>
+            <div>
+              <Label>To</Label>
+              <Input
+                type="date"
+                value={toDate}
+                min={fromDate}
+                onChange={(e) => {
+                  setToDate(e.target.value);
+                  if (dateRange !== "all") setDateRange("all");
+                }}
+              />
+            </div>
+            <div>
+              <Label>Reset</Label>
+              <Button
+                onClick={resetFilters}
+                className="w-full mt-1 cursor-pointer"
+              >
+                <RotateCcw className="mr-2 h-4 w-4" /> Reset
+              </Button>
+            </div>
           </div>
-          <div>
-            <Label>To</Label>
-            <Input
-              type="date"
-              value={toDate}
-              min={fromDate}
-              onChange={(e) => {
-                setToDate(e.target.value);
-                if (dateRange !== "all") setDateRange("all");
-              }}
-            />
-          </div>
-          <div>
-            <Label>Reset</Label>
-            <Button
-              onClick={resetFilters}
-              className="w-full mt-1 cursor-pointer"
-            >
-              <RotateCcw className="mr-2 h-4 w-4" /> Reset
-            </Button>
-          </div>
-        </div>
+        </CardContent>
       </Card>
 
       <DataTable

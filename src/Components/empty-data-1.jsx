@@ -68,6 +68,12 @@ const getTableConfig = (tableType) => {
       description: "There are no clients in this table yet. Add your first client to get started.",
       buttonText: "Add New Client",
       route: (role) => `/${role}/client/new`
+    },
+    expenses: {
+      title: "No expenses to display",
+      description: "There are no expenses in this table yet. Add your first expense to get started.",
+      buttonText: "Add New Expense",
+      route: (role) => `/${role}/expense/new`
     }
   };
 

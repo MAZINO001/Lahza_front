@@ -12,10 +12,11 @@ import { Mail, ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import FormField from "@/components/Form/FormField";
+import { useForgotPassword } from "@/features/auth/hooks/useForgotPassword";
 
 export default function ForgotPassword() {
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const forgotPasswordMutation = useForgotPassword();
 
   const {
     control,
@@ -27,13 +28,13 @@ export default function ForgotPassword() {
   });
 
   const handleForgotPassword = async (data) => {
-    setIsLoading(true);
-    console.log(data);
-    setTimeout(() => {
+    try {
+      await forgotPasswordMutation.mutateAsync(data);
       setIsSuccess(true);
-      setIsLoading(false);
       toast.success("Reset link sent to your email!");
-    }, 2000);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to send reset link");
+    }
   };
 
   const handleSendToAnotherEmail = () => {
@@ -115,9 +116,9 @@ export default function ForgotPassword() {
             <Button
               onClick={handleSubmit(handleForgotPassword)}
               className="w-full "
-              disabled={isLoading}
+              disabled={forgotPasswordMutation.isPending}
             >
-              {isLoading ? "Sending..." : "Send Reset Link"}
+              {forgotPasswordMutation.isPending ? "Sending..." : "Send Reset Link"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>

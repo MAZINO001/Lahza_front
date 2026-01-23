@@ -34,6 +34,7 @@ export default {
                 lg: "var(--radius)",
                 xl: "calc(var(--radius) + 4px)",
             },
+            
         },
     },
     plugins: [require("tailwindcss-animate")],

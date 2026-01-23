@@ -12,13 +12,14 @@ import { Eye, EyeOff, ArrowRight, CheckCircle, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import FormField from "@/components/Form/FormField";
+import { useConfirmPassword } from "@/features/auth/hooks/useConfirmPassword";
 
 export default function ConfirmPassword() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const confirmPasswordMutation = useConfirmPassword();
 
   const {
     control,
@@ -67,12 +68,13 @@ export default function ConfirmPassword() {
   const passwordStrength = getPasswordStrength(newPassword);
 
   const handleConfirmPassword = async (data) => {
-    setIsLoading(true);
-    setTimeout(() => {
+    try {
+      await confirmPasswordMutation.mutateAsync(data);
       setIsSuccess(true);
-      setIsLoading(false);
       toast.success("Password updated successfully!");
-    }, 2000);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update password");
+    }
   };
 
   if (isSuccess) {
@@ -183,13 +185,12 @@ export default function ConfirmPassword() {
                           Password strength:
                         </span>
                         <span
-                          className={`font-medium ${
-                            passwordStrength.strength <= 2
-                              ? "text-orange-600"
-                              : passwordStrength.strength <= 3
-                                ? "text-yellow-600"
-                                : "text-green-600"
-                          }`}
+                          className={`font-medium ${passwordStrength.strength <= 2
+                            ? "text-orange-600"
+                            : passwordStrength.strength <= 3
+                              ? "text-yellow-600"
+                              : "text-green-600"
+                            }`}
                         >
                           {passwordStrength.text}
                         </span>
@@ -243,9 +244,9 @@ export default function ConfirmPassword() {
             <Button
               onClick={handleSubmit(handleConfirmPassword)}
               className="w-full cursor-pointer"
-              disabled={isLoading}
+              disabled={confirmPasswordMutation.isPending}
             >
-              {isLoading ? "Updating..." : "Update Password"}
+              {confirmPasswordMutation.isPending ? "Updating..." : "Update Password"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>

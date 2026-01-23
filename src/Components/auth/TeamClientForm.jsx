@@ -9,15 +9,16 @@ import { useForm, Controller } from "react-hook-form";
 import { useState } from "react";
 import CVUploader from "../Form/CVUploader";
 import TagsField from "../Form/TagsField";
-import api from "@/lib/utils/axios";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
 import DateField from "../Form/DateField";
+import { useRegister } from "@/features/auth/hooks/useRegister";
+import { toast } from "sonner";
 
 export function TeamClientForm() {
   const navigate = useNavigate();
-  const [submitting, setSubmitting] = useState(false);
   const registerStore = useRegisterStore();
+  const registerMutation = useRegister();
 
   const {
     register,
@@ -32,8 +33,6 @@ export function TeamClientForm() {
   const theRole = watch("user_type");
 
   const onSubmit = async (data) => {
-    setSubmitting(true);
-
     const filledData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v != null && v !== ""),
     );
@@ -50,15 +49,12 @@ export function TeamClientForm() {
         }
       });
 
-      await api.post(`${import.meta.env.VITE_BACKEND_URL}/register`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await registerMutation.mutateAsync(formData);
 
       navigate("/auth/login");
     } catch (error) {
       console.error("Registration failed:", error.response?.data);
-    } finally {
-      setSubmitting(false);
+      toast.error(error.response?.data?.message || "Registration failed");
     }
   };
 
@@ -402,10 +398,10 @@ export function TeamClientForm() {
 
       <Button
         type="submit"
-        disabled={submitting}
+        disabled={registerMutation.isPending}
         className="w-full bg-primary hover:bg-[color-mix(in oklch, var(--primary) 80%, black)] text-primary-foreground font-semibold py-6 rounded-lg transition-colors mt-8"
       >
-        {submitting ? "Registering..." : "Register"}
+        {registerMutation.isPending ? "Registering..." : "Register"}
       </Button>
     </form>
   );

@@ -11,8 +11,7 @@ import ClientTypeRadio from "@/Components/Form/ClientTypeRadio";
 import {
   useClient,
   useUpdateClient,
-} from "@/features/clients/hooks/useClients/useClients";
-
+} from "@/features/clients/hooks/useClients/useClientsData";
 export default function ClientEditPage() {
   const navigate = useNavigate();
   const { state } = useLocation();

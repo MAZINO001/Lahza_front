@@ -5,7 +5,7 @@ import { QUERY_KEYS } from '@/lib/queryKeys';
 
 export function useClients() {
     return useQuery({
-        queryKey: QUERY_KEYS.client,
+        queryKey: QUERY_KEYS.clients,
         queryFn: () => apiClient.getAll(),
         staleTime: Infinity,
         refetchOnMount: false,
@@ -19,7 +19,7 @@ export function useClients() {
 
 export function useClient(id) {
     return useQuery({
-        queryKey: QUERY_KEYS.client(id), 
+        queryKey: QUERY_KEYS.client(id),
         queryFn: () => apiClient.getById(id),
         enabled: !!id,
         staleTime: Infinity,
@@ -34,5 +34,5 @@ export function useClient(id) {
 
 export function useClientsFromCache(id) {
     const queryClient = useQueryClient();
-    return queryClient.getQueryData(QUERY_KEYS.client(id)); 
+    return queryClient.getQueryData(QUERY_KEYS.client(id));
 }

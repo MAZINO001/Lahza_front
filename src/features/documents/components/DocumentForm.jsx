@@ -591,7 +591,7 @@ export function DocumentForm({ type, onSuccess }) {
         {isInvoice ? (
           <>
             <div className="flex gap-4 w-full">
-              <div className="w-[8%] ">
+              <div className="w-[8%]">
                 <FormField
                   label="Invoice Id"
                   type="text"

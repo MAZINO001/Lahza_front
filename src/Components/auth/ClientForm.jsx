@@ -12,16 +12,17 @@ import ClientTypeRadio from "@/Components/Form/ClientTypeRadio";
 import { Controller, useForm } from "react-hook-form";
 import { useRegisterStore } from "@/hooks/registerStore";
 import { useNavigate } from "react-router-dom";
-import api from "@/lib/utils/axios";
 import { useAuthContext } from "@/hooks/AuthContext";
+import { useRegister } from "@/features/auth/hooks/useRegister";
+import { toast } from "sonner";
 
 export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const { role } = useAuthContext();
   const registerStore = useRegisterStore();
+  const registerMutation = useRegister();
 
   const {
     handleSubmit,
@@ -61,8 +62,6 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
   const steps = [1, 2];
 
   const onSubmit = async (data) => {
-    setSubmitting(true);
-
     let tempPassword = "";
 
     // Generate temp password only if admin is creating the client
@@ -122,22 +121,18 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
     console.log("📤 Data being sent to backend:", filledData);
 
     try {
-      const response = await api.post(
-        `${import.meta.env.VITE_BACKEND_URL}/register`,
-        filledData
-      );
+      const response = await registerMutation.mutateAsync(filledData);
 
       if (role === "admin") {
         onClientCreated?.();
-        handleClientCreatedByAdmin?.(response?.data?.client_id);
+        handleClientCreatedByAdmin?.(response?.client_id);
         registerStore.reset();
       } else {
         navigate("/auth/login");
       }
     } catch (error) {
       console.error("Registration failed:", error.response?.data);
-    } finally {
-      setSubmitting(false);
+      toast.error(error.response?.data?.message || "Registration failed");
     }
   };
 
@@ -544,10 +539,10 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
             </Button>
             <Button
               type="submit"
-              disabled={submitting}
+              disabled={registerMutation.isPending}
               className="w-full md:w-auto bg-primary hover:bg-[color-mix(in oklch,var(--primary)80%,black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors"
             >
-              {submitting ? "Registering..." : "Register"}
+              {registerMutation.isPending ? "Registering..." : "Register"}
             </Button>
           </div>
         </>

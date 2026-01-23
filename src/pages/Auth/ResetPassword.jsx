@@ -12,12 +12,13 @@ import { Lock, Eye, EyeOff, ArrowRight, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import FormField from "@/components/Form/FormField";
 import { Link } from "react-router-dom";
+import { useResetPassword } from "@/features/auth/hooks/useResetPassword";
 
 export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const resetPasswordMutation = useResetPassword();
 
   const {
     control,
@@ -34,13 +35,13 @@ export default function ResetPassword() {
     confirmPassword === password || "Passwords do not match";
 
   const handleReset = async (data) => {
-    setIsLoading(true);
-    console.log(data);
-    setTimeout(() => {
+    try {
+      await resetPasswordMutation.mutateAsync(data);
       setIsSuccess(true);
-      setIsLoading(false);
       toast.success("Password reset successfully!");
-    }, 2000);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to reset password");
+    }
   };
 
   if (isSuccess) {
@@ -152,9 +153,9 @@ export default function ResetPassword() {
             <Button
               onClick={handleSubmit(handleReset)}
               className="w-full"
-              disabled={isLoading}
+              disabled={resetPasswordMutation.isPending}
             >
-              {isLoading ? "Resetting..." : "Reset Password"}
+              {resetPasswordMutation.isPending ? "Resetting..." : "Reset Password"}
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </div>

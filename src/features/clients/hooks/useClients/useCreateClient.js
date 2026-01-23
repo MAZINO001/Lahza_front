@@ -23,22 +23,21 @@ export function useCreateClient() {
             return { previousClients, tempId };
         },
 
-        onSuccess: (newClient) => {
-            queryClient.setQueryData(QUERY_KEYS.client, (old = []) => [...old, newClient]);
-            toast.success("Client created!");
+        onSuccess: (res, variables, context) => {
+            const newClientItem = {
+                client: res.data[0].client,
+                totalPaid: 0,
+                balanceDue: 0,
+            }
+
+            queryClient.setQueryData(QUERY_KEYS.clients, (old = []) => {
+                return old.map(client =>
+                    client.id === context?.tempId
+                        ? { ...newClientItem, id: res.data[0].id }
+                        : client
+                );
+            })
         },
-
-        // onSuccess: async (response) => {
-        //     try {
-        //         // fetch the full client object from the backend
-        //         const fullClient = await apiClient.getById(response.client_id.id);
-
-        //         queryClient.setQueryData(QUERY_KEYS.client, (old = []) => [...old, fullClient]);
-        //         toast.success("Client created!");
-        //     } catch (err) {
-        //         toast.error("Client created but failed to load full data");
-        //     }
-        // },
 
         onError: (error, variables, context) => {
             if (context?.previousClients) {

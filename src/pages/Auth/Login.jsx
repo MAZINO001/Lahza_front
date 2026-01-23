@@ -5,17 +5,16 @@ import { Card, CardContent } from "@/Components/ui/card";
 import { Input } from "@/Components/ui/input";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { t } from "i18next";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import api from "@/lib/utils/axios";
 import FormField from "@/components/Form/FormField";
 import { toast } from "sonner";
 import { Github } from "lucide-react";
+import { useLogin } from "@/features/auth/hooks/useLogin";
 export default function Login({ status, canResetPassword }) {
-  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { role, login } = useAuthContext();
+  const loginMutation = useLogin();
 
   const {
     register,
@@ -34,26 +33,15 @@ export default function Login({ status, canResetPassword }) {
   const watchedValues = watch();
 
   const onSubmit = async (data) => {
-    setSubmitting(true);
-
     try {
-      const res = await api.post(
-        `${import.meta.env.VITE_BACKEND_URL}/login`,
-        data,
-        {
-          headers: { Accept: "application/json" },
-        }
-      );
+      const result = await loginMutation.mutateAsync(data);
 
-      const token = res.data.token;
+      const token = result.token;
       localStorage.setItem("token", token);
-      login(res.data.user);
+      login(result.user);
       navigate(`/${role}/dashboard`, { replace: true });
     } catch (error) {
-      console.error(error);
       toast.error(error.response?.data?.message || "Login failed");
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -159,8 +147,8 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 {/* Login Button */}
-                <Button type="submit" className="w-full" disabled={submitting}>
-                  {submitting ? "Signing in..." : "Login"}
+                <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+                  {loginMutation.isPending ? "Signing in..." : "Login"}
                 </Button>
                 <div className="text-center text-sm text-muted-foreground">
                   Don't have an account?{" "}

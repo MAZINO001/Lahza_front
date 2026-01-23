@@ -13,6 +13,7 @@ const Register = lazy(() => import("../pages/Auth/Register"));
 const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword"));
 const ForgotPassword = lazy(() => import("../pages/Auth/ForgotPassword"));
 const ConfirmPassword = lazy(() => import("../pages/Auth/ConfirmPassword"));
+const EmailVerification = lazy(() => import("../pages/Auth/EmailVerification"));
 
 // Lazy load dashboard
 const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
@@ -64,6 +65,14 @@ const ClientCreatePage = lazy(
 );
 const ClientEditPage = lazy(() => import("../pages/clients/ClientEditPage"));
 const ClientViewPage = lazy(() => import("../pages/clients/ClientViewPage"));
+
+// Lazy load expense pages
+const ExpensesPage = lazy(() => import("../pages/expenses/ExpensesPage"));
+const ExpenseCreatePage = lazy(
+  () => import("../pages/expenses/ExpenseCreatePage"),
+);
+const ExpenseEditPage = lazy(() => import("../pages/expenses/ExpenseEditPage"));
+const ExpenseViewPage = lazy(() => import("../pages/expenses/ExpenseViewPage"));
 
 // Lazy load payment pages
 const PaymentsPage = lazy(() => import("../pages/payments/PaymentsPage"));
@@ -131,6 +140,15 @@ const ProfilePage = lazy(() => import("@/pages/profile/ProfilePage"));
 const NotificationsPage = lazy(
   () => import("@/pages/notifications/NotificationsPage"),
 );
+
+// Lazy load plan pages
+const PlansPage = lazy(() => import("../pages/plans"));
+const WebHostingPage = lazy(() => import("../pages/plans/web-hosting"));
+const SEOPage = lazy(() => import("../pages/plans/seo"));
+const MaintenanceSecurityPage = lazy(() => import("../pages/plans/maintenance-security"));
+const SAVPage = lazy(() => import("../pages/plans/sav"));
+const SMPage = lazy(() => import("../pages/plans/sm"));
+const AutomationPage = lazy(() => import("../pages/plans/automation"));
 
 import AuthLayout from "@/app/layout/AuthLayout";
 import AppLayout from "@/app/layout/AppLayout";
@@ -202,6 +220,16 @@ export default function AppRoutes() {
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading confirm password...</div>}>
                       <ConfirmPassword />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="verify-email"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading email verification...</div>}>
+                      <EmailVerification />
                     </Suspense>
                   </ErrorBoundary>
                 }
@@ -400,6 +428,28 @@ export default function AppRoutes() {
                 }
               />
 
+              {/* Expenses */}
+              <Route
+                path="expenses"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading expenses...</div>}>
+                      <ExpensesPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="expense/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading expense details...</div>}>
+                      <ExpenseViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
               {/* Payments */}
               <Route
                 path="payments"
@@ -503,6 +553,78 @@ export default function AppRoutes() {
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading service details...</div>}>
                       <ServiceViewPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              {/* Plans */}
+              <Route
+                path="plans"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading plans...</div>}>
+                      <PlansPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="plans/web-hosting"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading web hosting plans...</div>}>
+                      <WebHostingPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="plans/seo"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading SEO plans...</div>}>
+                      <SEOPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="plans/maintenance-security"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading maintenance & security plans...</div>}>
+                      <MaintenanceSecurityPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="plans/sav"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading SAV plans...</div>}>
+                      <SAVPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="plans/sm"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading social media plans...</div>}>
+                      <SMPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+              <Route
+                path="plans/automation"
+                element={
+                  <ErrorBoundary>
+                    <Suspense fallback={<div>Loading automation plans...</div>}>
+                      <AutomationPage />
                     </Suspense>
                   </ErrorBoundary>
                 }
@@ -817,6 +939,30 @@ export default function AppRoutes() {
                     <ErrorBoundary>
                       <Suspense fallback={<div>Loading client editor...</div>}>
                         <ClientEditPage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+
+                {/* Expenses */}
+                <Route
+                  path="expense/new"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense
+                        fallback={<div>Loading expense creation...</div>}
+                      >
+                        <ExpenseCreatePage />
+                      </Suspense>
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="expense/:id/edit"
+                  element={
+                    <ErrorBoundary>
+                      <Suspense fallback={<div>Loading expense editor...</div>}>
+                        <ExpenseEditPage />
                       </Suspense>
                     </ErrorBoundary>
                   }

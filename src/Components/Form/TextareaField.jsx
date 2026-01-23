@@ -48,30 +48,32 @@ export default function TextareaField({
   rows = 4, // more reasonable default than min-h-[100px]
 }) {
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-2 ", className)}>
       <Label htmlFor={id} className="text-sm font-medium text-foreground">
         {label}
       </Label>
+      <div className="flex-1 flex flex-col">
+        <Textarea
+          id={id}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          disabled={disabled}
+          rows={rows}
+          className={cn(
+            // "resize-y min-h-[100px]",
+            "flex-1 resize-y min-h-[120px]",
+            error && "border-destructive focus-visible:ring-destructive",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            disabled && "opacity-50 cursor-not-allowed",
+            "bg-background text-foreground placeholder:text-muted-foreground",
+          )}
+        />
 
-      <Textarea
-        id={id}
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        disabled={disabled}
-        rows={rows}
-        className={cn(
-          "resize-y min-h-[100px]",
-          error && "border-destructive focus-visible:ring-destructive",
-          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-          disabled && "opacity-50 cursor-not-allowed",
-          "bg-background text-foreground placeholder:text-muted-foreground",
+        {error && (
+          <InputError message={error} className="text-sm text-destructive" />
         )}
-      />
-
-      {error && (
-        <InputError message={error} className="text-sm text-destructive" />
-      )}
+      </div>
     </div>
   );
 }
