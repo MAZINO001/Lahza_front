@@ -86,7 +86,7 @@ export default function TransactionSection({
         <Link
           to={`/${role}/${title.toLowerCase() === "invoices" ? "invoice" : title.toLowerCase() === "quotes" ? "quote" : title.toLowerCase() === "projects" ? "project" : title.toLowerCase()}/new`}
         >
-          {title.toLowerCase() !== "payments" && (
+          {role !== "client" && title.toLowerCase() !== "payments" && (
             <Button size="sm">
               <Plus className="h-4 w-4 mr-1" />
               New
@@ -103,6 +103,8 @@ export default function TransactionSection({
                 columns={columns}
                 isInvoiceTable={title === "Invoices"}
                 isLoading={isLoading}
+                tableType={title?.toLowerCase()}
+                role={role}
               />
             )}
           </div>

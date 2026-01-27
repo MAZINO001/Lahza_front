@@ -52,6 +52,11 @@ export function AppSidebar(props) {
             },
             { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
             {
+              title: "Projects",
+              url: `/${role}/projects`,
+              icon: BriefcaseIcon,
+            },
+            {
               title: "Payments",
               url: `/${role}/payments`,
               icon: DollarSign,
@@ -60,11 +65,6 @@ export function AppSidebar(props) {
               title: "Receipt",
               url: `/${role}/receipt`,
               icon: ReceiptCentIcon,
-            },
-            {
-              title: "Projects",
-              url: `/${role}/projects`,
-              icon: BriefcaseIcon,
             },
           ],
         },
@@ -100,6 +100,11 @@ export function AppSidebar(props) {
             },
             { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
             {
+              title: "Projects",
+              url: `/${role}/projects`,
+              icon: BriefcaseIcon,
+            },
+            {
               title: "Payments",
               url: `/${role}/payments`,
               icon: DollarSign,
@@ -108,11 +113,6 @@ export function AppSidebar(props) {
               title: "Receipt",
               url: `/${role}/receipt`,
               icon: ReceiptCentIcon,
-            },
-            {
-              title: "Projects",
-              url: `/${role}/projects`,
-              icon: BriefcaseIcon,
             },
           ],
         },

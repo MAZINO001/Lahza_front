@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "@/lib/utils/axios"; // ← Use your configured instance!
+import api from "@/lib/utils/axios";
 import { Document, Page, pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(

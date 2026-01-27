@@ -103,7 +103,7 @@ export const EmptyData = ({ tableType, role, customComponent }) => {
         <EmptyContent>
           {customComponent}
         </EmptyContent>
-      ) : config.buttonText && role ? (
+      ) : config.buttonText && role && role !== "client" ? (
         <EmptyContent>
           <Link to={config.route(role)}>
             <Button>

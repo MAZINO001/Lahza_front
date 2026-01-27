@@ -102,6 +102,7 @@ export default function Transactions({ currentId }) {
           columns={columnsBySection[section.id]}
           isLoading={section.isLoading}
           currentId={currentId}
+          role={role}
         />
       ))}
     </div>

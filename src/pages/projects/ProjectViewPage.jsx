@@ -1,14 +1,8 @@
-import {
-  CheckCircle,
-  Database,
-  CreditCard,
-  Building2,
-  Wallet,
-  Copy,
-  Check,
-} from "lucide-react";
+import { CheckCircle, Database, Download, Users } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
+import { saveAs } from "file-saver";
+
 import {
   useMarkAsComplete,
   useProject,
@@ -16,34 +10,39 @@ import {
   useProjectTeam,
 } from "@/features/projects/hooks/useProjects";
 import { useEffect, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 import { useTasks } from "@/features/tasks/hooks/useTasksQuery";
-import GanttComponent from "@/features/projects/components/GanttComponent";
+import GanttComponent from "@/features/projects/components/projectView/GanttComponent";
 import Comments from "@/components/client_components/Client_page/comments/Comments";
-import TimelineComponent from "@/components/timeline";
 import { useProjectHistory } from "@/features/projects/hooks/useProjectHistory";
 import { useClient } from "@/features/clients/hooks/useClients/useClients";
 import { Calendar } from "@/components/ui/calendar";
+import {
+  Overview,
+  Members,
+  Transactions,
+  Attachments,
+  History,
+} from "@/features/projects/components/projectView";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { FileText, Paperclip } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import EmptyData5 from "@/components/empty-data-5";
-import CountDownComponent from "@/features/projects/components/CountDownComponent";
-import { StatusBadge } from "@/components/StatusBadge";
-import { ChartBarDefault } from "@/features/projects/components/overViewChart";
+import CountDownComponent from "@/features/projects/components/projectView/CountDownComponent";
 import { useTransActions } from "@/features/payments/hooks/usePaymentQuery";
-import { formatId } from "@/lib/utils/formatId";
-import { Badge } from "@/components/ui/badge";
+import { useMultipleFileSearch } from "@/features/additional_data/hooks/multipeSearchHook";
+import AlertDialogConfirmation from "@/components/alert-dialog-confirmation-6";
+import { StatusBadge } from "@/components/StatusBadge";
+import { FileText } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import AlertDialogConfirmation from "@/components/alert-dialog-confirmation-6";
+
+import { Badge } from "@/components/ui/badge";
+import api from "@/lib/utils/axios";
 
 export default function ProjectViewPage() {
   const { id } = useParams();
@@ -52,9 +51,20 @@ export default function ProjectViewPage() {
   const { data: project, isLoading } = useProject(id);
   const { data: projectTeam } = useProjectTeam(id);
   const { data: additionalData } = useAdditionalData(id);
-  const { data: history } = useProjectHistory(id);
+  // const { data: history } = useProjectHistory(id);
   const { data: tasks } = useTasks(id);
   const { data: transactions } = useTransActions(id);
+
+  const {
+    logoFiles,
+    mediaFiles,
+    otherFiles,
+    specificFiles,
+    isLoading: filesLoading,
+  } = useMultipleFileSearch(
+    "App\\Models\\ProjectAdditionalData",
+    additionalData?.id,
+  );
 
   const doneTasks = tasks?.filter((task) => task.status === "done").length || 0;
 
@@ -68,14 +78,6 @@ export default function ProjectViewPage() {
   } else {
     destination = "additional-data";
   }
-
-  const { data: progress, isLoading: progressLoading } = useProjectProgress(id);
-
-  const [completionPercentage, setCompletionPercentage] = useState(0);
-  useEffect(() => {
-    const percentage = progress?.accumlated_percentage || 0;
-    setCompletionPercentage(percentage);
-  }, [progress]);
 
   const navigate = useNavigate();
   const useMarkCompleteMutate = useMarkAsComplete();
@@ -116,100 +118,128 @@ export default function ProjectViewPage() {
     );
   }
 
-  // Helper functions to parse additionalData
-  const getAllFiles = () => {
-    if (!additionalData?.project_additional_data?.[0]) return [];
+  const backendOrigin = (() => {
+    const base = import.meta.env.VITE_BACKEND_URL;
+    const fallback = "http://localhost:8000";
+    if (!base) return fallback;
+    try {
+      const url = new URL(base);
+      const origin = `${url.protocol}//${url.host}`;
+      return origin || fallback;
+    } catch {
+      const cleaned = String(base)
+        .replace(/\/api\/?$/, "")
+        .replace(/\/$/, "");
+      if (/^https?:\/\//i.test(cleaned)) return cleaned;
+      return fallback;
+    }
+  })();
 
-    const data = additionalData.project_additional_data[0];
-    const files = [];
-
-    // Parse media_files
-    if (data.media_files) {
-      try {
-        const mediaFiles = JSON.parse(data.media_files);
-        mediaFiles.forEach((file, index) => {
-          files.push({
-            name: `Media File ${index + 1}`,
-            filename: file.split("/").pop(),
-            path: file,
-            type: "media",
-          });
-        });
-      } catch (e) {
-        console.error("Error parsing media_files:", e);
-      }
+  const downloadFile = async (fileUrl, filename) => {
+    if (!fileUrl) {
+      toast.error("No file URL provided");
+      return;
     }
 
-    // Parse specification_file
-    if (data.specification_file) {
-      try {
-        const specFiles = JSON.parse(data.specification_file);
-        specFiles.forEach((file, index) => {
-          files.push({
-            name: `Specification File ${index + 1}`,
-            filename: file.split("/").pop(),
-            path: file,
-            type: "specification",
-          });
-        });
-      } catch (e) {
-        console.error("Error parsing specification_file:", e);
-      }
-    }
+    const safeFilename = filename || fileUrl.split("/").pop() || "download";
 
-    // Add logo if exists
-    if (data.logo) {
-      files.push({
-        name: "Logo",
-        filename: data.logo.split("/").pop(),
-        path: data.logo,
-        type: "logo",
+    try {
+      const urlObj = new URL(fileUrl);
+      let path = urlObj.pathname.replace(/^\/storage/, "/storage");
+      const response = await api.get(path, {
+        responseType: "blob",
       });
-    }
 
-    // Parse other files
-    if (data.other) {
-      try {
-        const otherFiles = JSON.parse(data.other);
-        otherFiles.forEach((file, index) => {
-          files.push({
-            name: `Other File ${index + 1}`,
-            filename: file.split("/").pop(),
-            path: file,
-            type: "other",
-          });
-        });
-      } catch (e) {
-        console.error("Error parsing other files:", e);
-      }
+      saveAs(response.data, safeFilename);
+      toast.success("file downloaded");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Download failed");
     }
-
-    return files;
   };
 
-  const getAllFilesCount = () => {
-    return getAllFiles().length;
-  };
+  const normalizeExistingFiles = (result, folder) => {
+    if (!result) return [];
 
-  const copyRIB = () => {
-    const rib = "007640001433200000026029";
-    navigator.clipboard
-      .writeText(rib)
-      .then(() => {
-        toast.success("RIB copied to clipboard!");
+    const list = Array.isArray(result)
+      ? result
+      : Array.isArray(result?.data)
+        ? result.data
+        : Array.isArray(result?.files)
+          ? result.files
+          : result
+            ? [result]
+            : [];
+
+    return list
+      .map((item, index) => {
+        // Priority: use the url from the hook response first (it's already complete)
+        const url =
+          item?.url ??
+          item?.full_url ??
+          item?.download_url ??
+          item?.link ??
+          item?.path ??
+          item?.file_url ??
+          (typeof item === "string" ? item : null) ??
+          "";
+
+        const name =
+          item?.name ??
+          item?.original_name ??
+          item?.filename ??
+          item?.file_name ??
+          (url ? String(url).split("/").pop() : "") ??
+          `file-${index}`;
+
+        let resolvedUrl = url;
+
+        // If URL is relative, prepend backend origin
+        if (resolvedUrl && !/^https?:\/\//i.test(resolvedUrl)) {
+          if (resolvedUrl.startsWith("/")) {
+            resolvedUrl = `${backendOrigin}${resolvedUrl}`;
+          } else if (backendOrigin) {
+            resolvedUrl = `${backendOrigin}/${resolvedUrl}`;
+          }
+        }
+
+        // Fix URLs that have localhost without port - add port from backendOrigin
+        if (resolvedUrl && resolvedUrl.includes("http://localhost/")) {
+          try {
+            const backendUrl = new URL(backendOrigin);
+            const backendPort = backendUrl.port;
+            if (backendPort) {
+              resolvedUrl = resolvedUrl.replace(
+                "http://localhost/",
+                `http://localhost:${backendPort}/`,
+              );
+            }
+          } catch (e) {
+            console.error("Error parsing backend origin:", e);
+          }
+        }
+
+        // Clean up storage paths
+        if (resolvedUrl) {
+          resolvedUrl = String(resolvedUrl).replace(
+            /\/storage\/public\//,
+            "/storage/",
+          );
+        }
+
+        const id =
+          item?.id ??
+          item?.uuid ??
+          item?.file_id ??
+          `${name || "file"}-${index}`;
+
+        return {
+          id: String(id),
+          url: resolvedUrl,
+          name,
+        };
       })
-      .catch(() => {
-        toast.error("Failed to copy RIB");
-      });
-  };
-
-  // Handle Stripe payment redirect
-  const handleStripePayment = (paymentUrl) => {
-    if (paymentUrl) {
-      window.open(paymentUrl, "_blank");
-    } else {
-      toast.error("Payment URL not available");
-    }
+      .filter((f) => f.url);
   };
 
   const formatDate = (dateString) => {
@@ -350,13 +380,7 @@ export default function ProjectViewPage() {
                   <TabsTrigger value="history">History</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview" className="h-full overflow-auto">
-                  <div className="space-y-4">
-                    <ChartBarDefault
-                      startDate={project.start_date}
-                      endDate={project.estimated_end_date}
-                      tasks={tasks}
-                    />
-                  </div>
+                  <Overview project={project} tasks={tasks} />
                 </TabsContent>
                 <TabsContent
                   value="description"
@@ -382,206 +406,35 @@ export default function ProjectViewPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="members" className="h-full overflow-auto">
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-foreground mb-4">
-                      Team Members ({projectTeam?.length || 0})
-                    </h3>
-                    <div className="space-y-3">
-                      {projectTeam?.map((teamMember) => (
-                        <div
-                          key={teamMember?.id}
-                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border  transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <Avatar className="w-9 h-9">
-                              <AvatarFallback className="bg-primary text-primary-foreground">
-                                {teamMember?.team_user?.name
-                                  ?.split(" ")
-                                  .map((n) => n[0])
-                                  .join("")
-                                  .toUpperCase()
-                                  .slice(0, 2) || "TM"}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <p className="text-sm font-medium text-foreground">
-                                {teamMember?.team_user?.user?.name}
-                              </p>
-
-                              <p className="text-sm text-muted-foreground">
-                                {teamMember?.team_user?.poste}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-sm text-muted-foreground">
-                              {teamMember?.team_user?.department ||
-                                "Development"}
-                            </p>
-                          </div>
-                        </div>
-                      )) || (
-                        <p className="text-muted-foreground text-center py-4">
-                          No team members found
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  <Members
+                    projectTeam={projectTeam}
+                    role={role}
+                    projectId={id}
+                  />
                 </TabsContent>
                 <TabsContent
                   value="transactions"
                   className="h-full overflow-auto"
                 >
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-foreground mb-4">
-                      Transactions
-                    </h3>
-                    <div className="space-y-2">
-                      {transactions?.map((tx) => (
-                        <div
-                          key={tx?.id}
-                          className="flex items-center justify-between p-3 bg-secondary rounded-lg border transition-colors"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div
-                              className={`w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center cursor-pointer hover:bg-primary/20 transition-all hover:scale-105 ${
-                                tx?.payment_url
-                                  ? "hover:bg-blue-100"
-                                  : tx?.payment_method === "bank"
-                                    ? "hover:bg-green-100"
-                                    : "hover:bg-gray-100"
-                              }`}
-                              title={
-                                tx?.payment_url
-                                  ? "Go to payment"
-                                  : tx?.payment_method === "bank"
-                                    ? "Copy RIB"
-                                    : "Payment details"
-                              }
-                            >
-                              {tx?.payment_url ? (
-                                <CreditCard className="w-6 h-6 text-primary" />
-                              ) : tx?.payment_method === "bank" ? (
-                                <Building2 className="w-6 h-6 text-primary" />
-                              ) : (
-                                <Wallet className="w-6 h-6 text-primary" />
-                              )}
-                            </div>
-                            <div className="flex flex-col gap-4">
-                              <p className="text-sm font-medium text-foreground">
-                                <Link
-                                  to={`/${role}/invoice/${tx?.invoice_id}`}
-                                  className="hover:underline"
-                                >
-                                  {formatId(tx?.invoice_id, "INVOICE")} -{" "}
-                                </Link>
-                                {tx?.percentage}% Payment
-                              </p>
-                              <p className="text-sm text-muted-foreground">
-                                {tx?.payment_method?.toUpperCase() || "OTHER"} •
-                                {tx?.payment_method === "bank" && (
-                                  <span
-                                    className="ml-2 text-blue-600 hover:text-blue-700 cursor-pointer items-center gap-1 inline-flex"
-                                    onClick={() => {
-                                      if (tx?.payment_url) {
-                                        handleStripePayment(tx.payment_url);
-                                      } else if (
-                                        tx?.payment_method === "bank"
-                                      ) {
-                                        copyRIB();
-                                      }
-                                    }}
-                                  >
-                                    <Copy className="w-3 h-3" />
-                                    Copy RIB
-                                  </span>
-                                )}
-                                {tx?.payment_url && (
-                                  <span
-                                    className="ml-2 text-blue-600 hover:text-blue-700 cursor-pointer inline-flex"
-                                    onClick={() =>
-                                      handleStripePayment(tx.payment_url)
-                                    }
-                                  >
-                                    Pay Now
-                                  </span>
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <span
-                              className={`text-sm font-semibold ${tx?.status === "paid" ? "text-green-600" : "text-red-600"}`}
-                            >
-                              {tx?.status === "paid" ? "Paid" : "Pending"}
-                            </span>
-                            <p className="text-sm font-medium text-foreground">
-                              {tx?.currency?.toUpperCase() || "MAD"}{" "}
-                              {tx?.amount || "0"}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              of {tx?.currency?.toUpperCase() || "MAD"}{" "}
-                              {tx?.total || "0"}
-                            </p>
-                          </div>
-                        </div>
-                      )) || (
-                        <p className="text-muted-foreground text-center py-4">
-                          No transactions found
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  <Transactions transactions={transactions} role={role} />
                 </TabsContent>
                 <TabsContent
                   value="attachments"
                   className="h-full overflow-auto"
                 >
-                  <div className="space-y-3">
-                    <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <Paperclip className="w-5 h-5" /> Files (
-                      {getAllFilesCount()})
-                    </h3>
-                    <div className="space-y-2">
-                      {console.log("getAllFiles() output:", getAllFiles())}
-                      {getAllFiles().length > 0 ? (
-                        getAllFiles().map((file, index) => (
-                          <div
-                            key={file?.id || index}
-                            className="flex items-center justify-between p-3 bg-secondary rounded-lg border  transition-colors cursor-pointer"
-                          >
-                            <div className="flex-1">
-                              <p className="text-sm font-medium text-foreground">
-                                {file?.name ||
-                                  file?.filename ||
-                                  `File ${index + 1}`}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {file?.size &&
-                                  `${(file.size / 1024 / 1024).toFixed(1)} MB`}{" "}
-                                •{" "}
-                                {file?.date || file?.created_at
-                                  ? formatDate(file.date || file.created_at)
-                                  : "N/A"}
-                              </p>
-                            </div>
-                            <span className="text-xs bg-secondary text-foreground px-2 py-1 rounded">
-                              Download
-                            </span>
-                          </div>
-                        ))
-                      ) : (
-                        <EmptyData5
-                          onUploadClick={() =>
-                            navigate(`/${role}/project/${id}/${destination}`)
-                          }
-                        />
-                      )}
-                    </div>
-                  </div>
+                  <Attachments
+                    logoFiles={logoFiles}
+                    mediaFiles={mediaFiles}
+                    otherFiles={otherFiles}
+                    specificFiles={specificFiles}
+                    backendOrigin={backendOrigin}
+                    downloadFile={downloadFile}
+                    normalizeExistingFiles={normalizeExistingFiles}
+                    filesLoading={filesLoading}
+                  />
                 </TabsContent>
                 <TabsContent value="history" className="h-full overflow-auto">
-                  <TimelineComponent data={history} />
+                  <History history={history} />
                 </TabsContent>
               </Tabs>
             </CardContent>

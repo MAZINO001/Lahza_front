@@ -13,6 +13,7 @@ export default function TransactionSection({
   data = [],
   isLoading,
   columns = [],
+  role,
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -44,6 +45,8 @@ export default function TransactionSection({
           columns={columns}
           isInvoiceTable={title === "Invoices"}
           isLoading={isLoading}
+          tableType={title?.toLowerCase()}
+          role={role}
         />
       )}
     </div>

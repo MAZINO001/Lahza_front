@@ -64,8 +64,11 @@ export function useProfile() {
     return useQuery({
         queryKey: ["profile"],
         queryFn: apiProfile.getProfile,
-        staleTime: 0,
-        refetchOnWindowFocus: true,
+        staleTime: Infinity,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        retry: 1,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch profile");
         },

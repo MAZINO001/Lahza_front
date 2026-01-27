@@ -1,17 +1,26 @@
+import { saveAs } from "file-saver";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Edit, Download, Copy, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Edit,
+  Download,
+  Copy,
+  Loader2,
+  DownloadIcon,
+} from "lucide-react";
 import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
-import { useDownloadFile } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { toast } from "sonner";
+import { useMultipleFileSearch } from "@/features/additional_data/hooks/multipeSearchHook";
+import api from "@/lib/utils/axios";
+import FilePreview from "@/components/common/filePreviewer";
 
 export default function AdditionalDataViewPage() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
-  const downloadFile = useDownloadFile();
 
   const currentPath = window.location.pathname;
   const pathMatch = currentPath.match(/\/project\/(\d+)/);
@@ -23,7 +32,16 @@ export default function AdditionalDataViewPage() {
     error,
   } = useAdditionalData(projectId);
 
-  console.log(additionalData);
+  const {
+    logoFiles,
+    mediaFiles,
+    otherFiles,
+    specificFiles,
+    isLoading: filesLoading,
+  } = useMultipleFileSearch(
+    "App\\Models\\ProjectAdditionalData",
+    additionalData?.id,
+  );
 
   if (isLoading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4">Error loading additional data</div>;
@@ -39,36 +57,159 @@ export default function AdditionalDataViewPage() {
     });
   };
 
-  const handleDownload = (type, fileable_type, fileable_id) => {
-    downloadFile.mutate({
-      type,
-      fileable_type,
-      fileable_id,
-    });
+  const backendOrigin = (() => {
+    const base = import.meta.env.VITE_BACKEND_URL;
+    const fallback = "http://localhost:8000";
+    if (!base) return fallback;
+    try {
+      const url = new URL(base);
+      const origin = `${url.protocol}//${url.host}`;
+      return origin || fallback;
+    } catch {
+      const cleaned = String(base)
+        .replace(/\/api\/?$/, "")
+        .replace(/\/$/, "");
+      if (/^https?:\/\//i.test(cleaned)) return cleaned;
+      return fallback;
+    }
+  })();
+
+  const normalizeExistingFiles = (result, folder) => {
+    if (!result) return [];
+
+    const list = Array.isArray(result)
+      ? result
+      : Array.isArray(result?.data)
+        ? result.data
+        : Array.isArray(result?.files)
+          ? result.files
+          : result
+            ? [result]
+            : [];
+
+    return list
+      .map((item, index) => {
+        const url =
+          (typeof item === "string" ? item : null) ??
+          item?.url ??
+          item?.path ??
+          item?.file_url ??
+          item?.full_url ??
+          item?.download_url ??
+          item?.link ??
+          "";
+
+        const name =
+          item?.name ??
+          item?.original_name ??
+          item?.filename ??
+          item?.file_name ??
+          (url ? String(url).split("/").pop() : "") ??
+          `file-${index}`;
+
+        let resolvedUrl = url;
+
+        if (backendOrigin && folder) {
+          resolvedUrl = `${backendOrigin}/storage/additionalData/${folder}/${name}`;
+        }
+
+        if (resolvedUrl && !/^https?:\/\//i.test(resolvedUrl)) {
+          if (resolvedUrl.startsWith("/")) {
+            resolvedUrl = `${backendOrigin}${resolvedUrl}`;
+          } else if (backendOrigin) {
+            resolvedUrl = `${backendOrigin}/${resolvedUrl}`;
+          }
+        }
+
+        if (resolvedUrl) {
+          resolvedUrl = String(resolvedUrl).replace(
+            /\/storage\/public\//,
+            "/storage/",
+          );
+        }
+
+        if (
+          resolvedUrl &&
+          backendOrigin &&
+          folder &&
+          !resolvedUrl.includes("/storage/")
+        ) {
+          resolvedUrl = `${backendOrigin}/storage/additionalData/${folder}/${name}`;
+        }
+
+        if (!resolvedUrl && backendOrigin && folder && name) {
+          resolvedUrl = `${backendOrigin}/storage/additionalData/${folder}/${name}`;
+        }
+
+        const id =
+          item?.id ??
+          item?.uuid ??
+          item?.file_id ??
+          `${name || "file"}-${index}`;
+
+        return {
+          id: String(id),
+          url: resolvedUrl,
+          name,
+        };
+      })
+      .filter((f) => f.url);
   };
 
-  const renderFileField = (label, value) => {
-    if (!value)
+  const downloadFile = async (fileUrl, filename) => {
+    if (!fileUrl) {
+      toast.error("No file URL provided");
+      return;
+    }
+
+    const safeFilename = filename || fileUrl.split("/").pop() || "download";
+
+    try {
+      const urlObj = new URL(fileUrl);
+      let path = urlObj.pathname.replace(/^\/storage/, "/storage");
+      const response = await api.get(path, {
+        responseType: "blob",
+      });
+
+      saveAs(response.data, safeFilename);
+      toast.success("file downloaded");
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error("Download failed");
+    }
+  };
+  const renderFileField = (label, value, folder) => {
+    if (filesLoading) {
+      return (
+        <div className="flex items-center justify-center py-4">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <span className="ml-2 text-sm text-muted-foreground">
+            Loading files...
+          </span>
+        </div>
+      );
+    }
+
+    const files = normalizeExistingFiles(value, folder);
+
+    if (files.length === 0) {
       return <span className="text-sm text-muted-foreground">None</span>;
+    }
 
     return (
-      <div className="flex items-center gap-2">
-        <Badge variant="secondary" className="text-xs">
-          Available
-        </Badge>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="h-8 w-8 p-0"
-          disabled={downloadFile.isPending}
-          onClick={() => handleDownload(value, label)}
-        >
-          {downloadFile.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Download className="h-4 w-4" />
-          )}
-        </Button>
+      <div className="space-y-2">
+        {files.map((file) => (
+          <FilePreview
+            file={{
+              id: `${file.id}`,
+              name: `${file.name}`,
+              url: `${file.url}`,
+              // add real size when oussama add it in BE 
+              size: "1000"
+            }}
+            onDownload={(url, name) => downloadFile(url, name)}
+          />
+        ))}
       </div>
     );
   };
@@ -111,8 +252,8 @@ export default function AdditionalDataViewPage() {
           Edit
         </Button>
       </div>
-      <div className="flex gap-4 w-full">
-        <div className="w-[70%]">
+      <div className="flex gap-4 w-full h-full">
+        <div className="w-[70%] h-full">
           {/* Account Information Card */}
           <Card className="border-border mb-4">
             <CardHeader className="border-b border-border">
@@ -263,39 +404,86 @@ export default function AdditionalDataViewPage() {
             </CardContent>
           </Card>
         </div>
-        <div className="w-[30%]">
+
+        <div className="w-[30%] h-full">
           <Card className="border-border">
             <CardHeader className="border-b border-border">
               <CardTitle className="text-lg">Files & Resources</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-2">
-                    Media Files
-                  </p>
-                  {renderFileField("Media Files", additionalData.media_files)}
+                  <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center justify-between">
+                    <span>Media Files</span>
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const files = normalizeExistingFiles(
+                          mediaFiles,
+                          "media_files",
+                        );
+                        files.forEach((f) => downloadFile(f.url, f.name));
+                      }}
+                    >
+                      <DownloadIcon />
+                    </Button>
+                  </div>
+                  {renderFileField("Media Files", mediaFiles, "media_files")}
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-2">
-                    Specification File
-                  </p>
+                  <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center justify-between">
+                    <span>Specification File</span>
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const files = normalizeExistingFiles(
+                          specificFiles,
+                          "specification_file",
+                        );
+                        files.forEach((f) => downloadFile(f.url, f.name));
+                      }}
+                    >
+                      <DownloadIcon />
+                    </Button>
+                  </div>
                   {renderFileField(
                     "Specification File",
-                    additionalData.specification_file,
+                    specificFiles,
+                    "specification_file",
                   )}
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-2">
-                    Logo
-                  </p>
-                  {renderFileField("Logo", additionalData.logo)}
+                  <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center justify-between">
+                    <span>Logo</span>
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const files = normalizeExistingFiles(logoFiles, "logo");
+                        files.forEach((f) => downloadFile(f.url, f.name));
+                      }}
+                    >
+                      <DownloadIcon />
+                    </Button>
+                  </div>
+                  {renderFileField("Logo", logoFiles, "logo")}
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-2">
-                    Other Files
-                  </p>
-                  {renderFileField("Other", additionalData.other)}
+                  <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center justify-between">
+                    <span>Other Files</span>
+                    <Button
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const files = normalizeExistingFiles(
+                          otherFiles,
+                          "other",
+                        );
+                        files.forEach((f) => downloadFile(f.url, f.name));
+                      }}
+                    >
+                      <DownloadIcon />
+                    </Button>
+                  </div>
+                  {renderFileField("Other", otherFiles, "other")}
                 </div>
               </div>
             </CardContent>

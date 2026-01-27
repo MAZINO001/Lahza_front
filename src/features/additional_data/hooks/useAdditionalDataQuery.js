@@ -12,30 +12,39 @@ const apiAdditionalData = {
         const formData = new FormData();
 
         Object.keys(data).forEach(key => {
-            if (data[key] !== null && data[key] !== undefined) {
-                // Handle array of files
-                if (Array.isArray(data[key]) && data[key].length > 0) {
-                    // Check if first element is a File
-                    if (data[key][0] instanceof File) {
-                        data[key].forEach((file, index) => {
-                            // Use index in key name for proper handling
-                            formData.append(`${key}[${index}]`, file);
-                        });
-                    } else {
-                        // Not files, just append as is
-                        formData.append(key, JSON.stringify(data[key]));
-                    }
-                }
-                // Handle single file
-                else if (data[key] instanceof File) {
-                    formData.append(key, data[key]);
-                }
-                // Handle regular data
-                else {
-                    formData.append(key, data[key]);
+            if (data[key] === null || data[key] === undefined) return;
+
+            if (Array.isArray(data[key])) {
+                if (data[key].length === 0) return;
+
+                if (data[key][0] instanceof File) {
+                    console.log(`Appending ${key}[] with ${data[key].length} files`);
+                    data[key].forEach((file) => {
+                        formData.append(`${key}[]`, file);
+                    });
+                } else {
+                    console.log(`Appending ${key} as JSON array`);
+                    formData.append(key, JSON.stringify(data[key]));
                 }
             }
+            else if (data[key] instanceof File) {
+                console.log(`Appending single file ${key}`);
+                formData.append(key, data[key]);
+            }
+            else {
+                console.log(`Appending text ${key}`);
+                formData.append(key, data[key]);
+            }
         });
+
+        console.log("FormData being sent:");
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                console.log(`  ${key}: File(${value.name})`);
+            } else {
+                console.log(`  ${key}:`, value);
+            }
+        }
 
         return api.post(`${API_URL}/additional-data`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
@@ -43,52 +52,73 @@ const apiAdditionalData = {
     },
 
     update: (id, data) => {
+        console.log("Update data received:", data);
         const formData = new FormData();
+
+        formData.append('_method', 'PUT');
+
+        // File-related fields that should only contain new File objects
+        const fileFields = ['logo', 'media_files', 'other', 'specification_file'];
+
         Object.keys(data).forEach(key => {
-            if (data[key] !== null && data[key] !== undefined) {
-                // Handle array of files
-                if (Array.isArray(data[key]) && data[key].length > 0) {
-                    // Check if first element is a File
-                    if (data[key][0] instanceof File) {
-                        // Special handling for logo field (single file)
-                        if (key === 'logo') {
-                            formData.append('logo', data[key][0]);
-                        } else {
-                            // For other file arrays, use indexed notation
-                            data[key].forEach((file, index) => {
-                                formData.append(`${key}[${index}]`, file);
-                            });
-                        }
-                    } else {
-                        // Not files, just append as is
-                        formData.append(key, JSON.stringify(data[key]));
+            if (data[key] === null || data[key] === undefined) {
+                console.log(`Skipping ${key}: null/undefined`);
+                return;
+            }
+
+            if (Array.isArray(data[key])) {
+                console.log(`${key} is array with ${data[key].length} items`);
+
+                // Handle file fields - only send new File objects, skip existing ones
+                if (fileFields.includes(key)) {
+                    const newFiles = data[key].filter((item) => item instanceof File);
+
+                    console.log(`Appending ${key}[] with ${newFiles.length} new files`);
+                    newFiles.forEach((file) => {
+                        formData.append(`${key}[]`, file);
+                    });
+                } else {
+                    // Other arrays (like social_media) - skip if empty
+                    if (data[key].length === 0) {
+                        console.log(`Skipping ${key}: empty array`);
+                        return;
                     }
+                    // Send as single JSON
+                    console.log(`Appending ${key} as JSON array`);
+                    formData.append(key, JSON.stringify(data[key]));
                 }
-                // Handle single file
-                else if (data[key] instanceof File) {
-                    formData.append(key, data[key]);
-                }
-                // Handle regular data
-                else {
-                    formData.append(key, data[key]);
-                }
+            }
+            else if (data[key] instanceof File) {
+                console.log(`Appending single file ${key}`);
+                formData.append(key, data[key]);
+            }
+            else {
+                console.log(`Appending ${key}: ${data[key]}`);
+                formData.append(key, data[key]);
             }
         });
 
-        return api.put(`${API_URL}/additional-data/${id}`, formData, {
+        console.log("FormData entries:");
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                console.log(`  ${key}: File(${value.name})`);
+            } else {
+                console.log(`  ${key}: ${value}`);
+            }
+        }
+
+        return api.post(`${API_URL}/additional-data/${id}`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' }
         }).then((res) => res.data);
     },
-
     delete: (id) =>
         api.delete(`${API_URL}/additional-data/${id}`).then((res) => res.data),
 
-    download: (filePath) =>
+    search: (type, fileable_type, fileable_id) =>
         api.post(`${API_URL}/file-search`, {
-            type: "download",
-            file_path: filePath,
-        }, {
-            responseType: 'blob'
+            type,
+            fileable_type,
+            fileable_id,
         }).then((res) => res.data),
 };
 
@@ -113,12 +143,11 @@ export function useCreateAdditionalData() {
         mutationFn: (data) => apiAdditionalData.create(data),
         onSuccess: (response, variables) => {
             toast.success("Additional data created!");
-            // Invalidate the project-specific additional data
             if (variables.project_id) {
                 queryClient.invalidateQueries({ queryKey: ["additional-data", variables.project_id] });
             }
-            // Also invalidate all additional data queries to be safe
             queryClient.invalidateQueries({ queryKey: ["additional-data"] });
+            queryClient.invalidateQueries({ queryKey: ["file-search"] });
         },
         refetchOnWindowFocus: true,
         onError: (error) => {
@@ -129,19 +158,17 @@ export function useCreateAdditionalData() {
     });
 }
 
-// Update existing additional data
 export function useUpdateAdditionalData() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ id, data }) => apiAdditionalData.update(id, data),
         onSuccess: (response, { data }) => {
             toast.success("Additional data updated!");
-            // Invalidate the project-specific additional data
             if (data.project_id) {
                 queryClient.invalidateQueries({ queryKey: ["additional-data", data.project_id] });
             }
-            // Also invalidate all additional data queries
             queryClient.invalidateQueries({ queryKey: ["additional-data"] });
+            queryClient.invalidateQueries({ queryKey: ["file-search"] });
         },
         refetchOnWindowFocus: true,
         onError: (error) => {
@@ -159,11 +186,9 @@ export function useDeleteAdditionalData() {
         mutationFn: ({ id, projectId }) => apiAdditionalData.delete(id),
         onSuccess: (response, { projectId }) => {
             toast.success("Additional data deleted");
-            // Invalidate the project-specific additional data
             if (projectId) {
                 queryClient.invalidateQueries({ queryKey: ["additional-data", projectId] });
             }
-            // Also invalidate all additional data queries
             queryClient.invalidateQueries({ queryKey: ["additional-data"] });
         },
         refetchOnWindowFocus: true,
@@ -175,35 +200,17 @@ export function useDeleteAdditionalData() {
     });
 }
 
-// Download file
-export function useDownloadFile() {
-    return useMutation({
-        mutationFn: ({ filePath, fileName }) => {
-            if (!filePath) {
-                throw new Error("No file path provided");
-            }
-            return apiAdditionalData.download(filePath).then((blob) => {
-                const url = window.URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.href = url;
-                link.setAttribute(
-                    "download",
-                    fileName || filePath.split("/").pop() || "download",
-                );
-                document.body.appendChild(link);
-                link.click();
-                link.parentNode.removeChild(link);
-                window.URL.revokeObjectURL(url);
-                return { fileName, filePath };
-            });
-        },
-        onSuccess: (response) => {
-            toast.success(`${response.fileName || "File"} downloaded successfully`);
-        },
+
+export function useSearchFile(type, fileable_type, fileable_id) {
+    return useQuery({
+        queryKey: ["file-search", type, fileable_type, fileable_id],
+        queryFn: () => apiAdditionalData.search(type, fileable_type, fileable_id),
+        enabled: !!(type && fileable_type && fileable_id),
+        staleTime: 5 * 60 * 1000, // 5 minutes
         onError: (error) => {
-            const errorMessage = error?.message || "Failed to download file";
+            const errorMessage = error?.response?.data?.message || error?.message || "Failed to search file";
             toast.error(errorMessage);
-            console.error("Download error:", error);
+            console.error("Search error:", error);
         },
     });
 }
