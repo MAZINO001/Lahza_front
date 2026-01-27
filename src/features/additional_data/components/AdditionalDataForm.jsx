@@ -15,11 +15,13 @@ import {
 } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 import { Minus, Plus } from "lucide-react";
 import { useMultipleFileSearch } from "../hooks/multipeSearchHook";
+import api from "@/lib/utils/axios";
 
 export function AdditionalDataForm({ onSuccess, projectId }) {
   const navigate = useNavigate();
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const { data: additionalData, isLoading } = useAdditionalData(projectId);
+  const [initialFilesLoading, setInitialFilesLoading] = useState(false);
 
   const {
     logoFiles,
@@ -37,7 +39,7 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
   const mutation = additionalData?.id ? updateMutation : createMutation;
   const isEditMode = !!additionalData?.id;
 
-  const normalizeExistingFiles = (result) => {
+  const normalizeExistingFiles = async (result) => {
     if (!result) return [];
 
     const list = Array.isArray(result)
@@ -48,52 +50,91 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
           ? result.files
           : [];
 
-    return list
-      .map((item, index) => {
-        const url =
-          item?.url ??
-          item?.path ??
-          item?.file_url ??
-          item?.full_url ??
-          item?.download_url ??
-          item?.link ??
-          "";
-        const name =
-          item?.name ??
-          item?.original_name ??
-          item?.filename ??
-          item?.file_name ??
-          (url ? String(url).split("/").pop() : "") ??
-          "";
-        const size = Number(item?.size ?? item?.file_size ?? item?.bytes ?? 0);
-        const type = item?.type ?? item?.mime_type ?? item?.mimetype ?? "";
-        const id =
-          item?.id ??
-          item?.uuid ??
-          item?.file_id ??
-          `${name || "file"}-${index}`;
+    const filePromises = list.map(async (item, index) => {
+      const path = item?.path ?? "";
+      const name =
+        item?.name ??
+        item?.original_name ??
+        item?.filename ??
+        item?.file_name ??
+        (path ? String(path).split("/").pop() : "") ??
+        "";
+      const size = Number(item?.size ?? item?.file_size ?? item?.bytes ?? 0);
+      const type = item?.type ?? item?.mime_type ?? item?.mimetype ?? "";
+      const id =
+        item?.id ?? item?.uuid ?? item?.file_id ?? `${name || "file"}-${index}`;
+
+      if (!path || !name) return null;
+
+      try {
+        const fileUrl = `${API_URL}/storage/${path}`;
+
+        const response = await api.get(fileUrl, {
+          responseType: "blob",
+        });
+
+        const file = new File([response.data], name, {
+          type: response.data.type || type,
+        });
 
         return {
           id: String(id),
-          url,
+          path,
           name,
-          size,
-          type,
+          size: size || response.data.size,
+          type: type || response.data.type,
+          file: file, // Store the actual File object
         };
-      })
-      .filter((f) => f.name || f.url);
+      } catch (error) {
+        console.error(`Failed to fetch file ${name}:`, error);
+        return null;
+      }
+    });
+
+    const files = await Promise.all(filePromises);
+    return files.filter((f) => f && f.name);
   };
 
-  const initialLogoFiles = isEditMode ? normalizeExistingFiles(logoFiles) : [];
-  const initialMediaFiles = isEditMode
-    ? normalizeExistingFiles(mediaFiles)
-    : [];
-  const initialOtherFiles = isEditMode
-    ? normalizeExistingFiles(otherFiles)
-    : [];
-  const initialSpecificFiles = isEditMode
-    ? normalizeExistingFiles(specificFiles)
-    : [];
+  // State to hold initial files
+  const [initialLogoFiles, setInitialLogoFiles] = useState([]);
+  const [initialMediaFiles, setInitialMediaFiles] = useState([]);
+  const [initialOtherFiles, setInitialOtherFiles] = useState([]);
+  const [initialSpecificFiles, setInitialSpecificFiles] = useState([]);
+
+  // Load initial files when data is available
+  useEffect(() => {
+    const loadInitialFiles = async () => {
+      if (isEditMode && !filesLoading) {
+        setInitialFilesLoading(true);
+        try {
+          const [logo, media, other, specific] = await Promise.all([
+            normalizeExistingFiles(logoFiles),
+            normalizeExistingFiles(mediaFiles),
+            normalizeExistingFiles(otherFiles),
+            normalizeExistingFiles(specificFiles),
+          ]);
+
+          setInitialLogoFiles(logo);
+          setInitialMediaFiles(media);
+          setInitialOtherFiles(other);
+          setInitialSpecificFiles(specific);
+        } catch (error) {
+          console.error("Error loading initial files:", error);
+        } finally {
+          setInitialFilesLoading(false);
+        }
+      }
+    };
+
+    loadInitialFiles();
+  }, [
+    isEditMode,
+    filesLoading,
+    logoFiles,
+    mediaFiles,
+    otherFiles,
+    specificFiles,
+  ]);
 
   const parseJSON = (str, fallback) => {
     try {
@@ -160,32 +201,11 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
       return Array.isArray(value) ? value : [value];
     };
 
-    const splitFiles = (value, cachedFiles) => {
-      const items = toArray(value);
-      const uploads = items.filter((f) => f instanceof File);
-
-      // Get existing files from cache and convert them back to File objects
-      const existingFileIds = items
-        .filter((f) => !(f instanceof File))
-        .map((f) => f.id ?? f.uuid ?? f.file_id)
-        .filter(Boolean);
-
-      const existingFiles =
-        cachedFiles?.filter((file) =>
-          existingFileIds.includes(
-            file.id?.toString() ||
-              file.uuid?.toString() ||
-              file.file_id?.toString(),
-          ),
-        ) || [];
-
-      return { uploads, existing: existingFiles };
-    };
-
-    const mediaSplit = splitFiles(data.media_files, mediaFiles);
-    const specSplit = splitFiles(data.specification_file, specificFiles);
-    const logoSplit = splitFiles(data.logo, logoFiles);
-    const otherSplit = splitFiles(data.other, otherFiles);
+    // Since we're now working with actual File objects, we can send them directly
+    const mediaFiles = toArray(data.media_files);
+    const specFiles = toArray(data.specification_file);
+    const logoFiles = toArray(data.logo);
+    const otherFiles = toArray(data.other);
 
     const payload = {
       project_id: Number(data.project_id),
@@ -204,20 +224,10 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
           password: sm.password,
         })),
       ),
-      // For create: send all files (new ones)
-      // For update: only send new File objects, backend handles deletion of unselected files
-      media_files: isEditMode
-        ? mediaSplit.uploads
-        : [...mediaSplit.uploads, ...mediaSplit.existing],
-      specification_file: isEditMode
-        ? specSplit.uploads
-        : [...specSplit.uploads, ...specSplit.existing],
-      logo: isEditMode
-        ? logoSplit.uploads
-        : [...logoSplit.uploads, ...logoSplit.existing],
-      other: isEditMode
-        ? otherSplit.uploads
-        : [...otherSplit.uploads, ...otherSplit.existing],
+      media_files: mediaFiles,
+      specification_file: specFiles,
+      logo: logoFiles,
+      other: otherFiles,
     };
 
     console.log("Submitting payload:", payload);
@@ -410,7 +420,7 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
                 label="Media Files"
                 name="Media Files"
                 error={errors.media_files?.message}
-                initialFiles={initialMediaFiles}
+                initialFiles={initialMediaFiles.map((f) => f.file)}
                 {...field}
               />
             )
@@ -434,7 +444,7 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
                 label="Specification File"
                 name="Specification File"
                 error={errors.specification_file?.message}
-                initialFiles={initialSpecificFiles}
+                initialFiles={initialSpecificFiles.map((f) => f.file)}
                 {...field}
               />
             )
@@ -460,7 +470,7 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
                 label="Logo"
                 name="Logo"
                 error={errors.logo?.message}
-                initialFiles={initialLogoFiles}
+                initialFiles={initialLogoFiles.map((f) => f.file)}
                 {...field}
               />
             )
@@ -484,7 +494,7 @@ export function AdditionalDataForm({ onSuccess, projectId }) {
                 label="Other Files"
                 name="Other Files"
                 error={errors.other?.message}
-                initialFiles={initialOtherFiles}
+                initialFiles={initialOtherFiles.map((f) => f.file)}
                 {...field}
               />
             )

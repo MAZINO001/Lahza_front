@@ -57,7 +57,7 @@ const apiAdditionalData = {
 
         formData.append('_method', 'PUT');
 
-        // File-related fields that should only contain new File objects
+
         const fileFields = ['logo', 'media_files', 'other', 'specification_file'];
 
         Object.keys(data).forEach(key => {
@@ -69,13 +69,13 @@ const apiAdditionalData = {
             if (Array.isArray(data[key])) {
                 console.log(`${key} is array with ${data[key].length} items`);
 
-                // Handle file fields - only send new File objects, skip existing ones
+                // Handle file fields - send all files (both new and existing)
                 if (fileFields.includes(key)) {
-                    const newFiles = data[key].filter((item) => item instanceof File);
-
-                    console.log(`Appending ${key}[] with ${newFiles.length} new files`);
-                    newFiles.forEach((file) => {
-                        formData.append(`${key}[]`, file);
+                    console.log(`Appending ${key}[] with ${data[key].length} files`);
+                    data[key].forEach((file) => {
+                        if (file instanceof File) {
+                            formData.append(`${key}[]`, file);
+                        }
                     });
                 } else {
                     // Other arrays (like social_media) - skip if empty
