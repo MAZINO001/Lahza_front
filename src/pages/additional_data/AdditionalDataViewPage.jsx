@@ -2,21 +2,14 @@ import { saveAs } from "file-saver";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  ArrowLeft,
-  Edit,
-  Download,
-  Copy,
-  Loader2,
-  DownloadIcon,
-} from "lucide-react";
+import { ArrowLeft, Edit, Copy, Loader2 } from "lucide-react";
 import { useAdditionalData } from "@/features/additional_data/hooks/useAdditionalDataQuery";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { toast } from "sonner";
 import { useMultipleFileSearch } from "@/features/additional_data/hooks/multipeSearchHook";
 import api from "@/lib/utils/axios";
 import FilePreview from "@/components/common/filePreviewer";
+import { normalizeExistingFilesSync } from "@/utils/normalizeFiles";
 
 export default function AdditionalDataViewPage() {
   const { role } = useAuthContext();
@@ -74,88 +67,6 @@ export default function AdditionalDataViewPage() {
     }
   })();
 
-  const normalizeExistingFiles = (result, folder) => {
-    if (!result) return [];
-
-    const list = Array.isArray(result)
-      ? result
-      : Array.isArray(result?.data)
-        ? result.data
-        : Array.isArray(result?.files)
-          ? result.files
-          : result
-            ? [result]
-            : [];
-
-    return list
-      .map((item, index) => {
-        const url =
-          (typeof item === "string" ? item : null) ??
-          item?.url ??
-          item?.path ??
-          item?.file_url ??
-          item?.full_url ??
-          item?.download_url ??
-          item?.link ??
-          "";
-
-        const name =
-          item?.name ??
-          item?.original_name ??
-          item?.filename ??
-          item?.file_name ??
-          (url ? String(url).split("/").pop() : "") ??
-          `file-${index}`;
-
-        let resolvedUrl = url;
-
-        if (backendOrigin && folder) {
-          resolvedUrl = `${backendOrigin}/storage/additionalData/${folder}/${name}`;
-        }
-
-        if (resolvedUrl && !/^https?:\/\//i.test(resolvedUrl)) {
-          if (resolvedUrl.startsWith("/")) {
-            resolvedUrl = `${backendOrigin}${resolvedUrl}`;
-          } else if (backendOrigin) {
-            resolvedUrl = `${backendOrigin}/${resolvedUrl}`;
-          }
-        }
-
-        if (resolvedUrl) {
-          resolvedUrl = String(resolvedUrl).replace(
-            /\/storage\/public\//,
-            "/storage/",
-          );
-        }
-
-        if (
-          resolvedUrl &&
-          backendOrigin &&
-          folder &&
-          !resolvedUrl.includes("/storage/")
-        ) {
-          resolvedUrl = `${backendOrigin}/storage/additionalData/${folder}/${name}`;
-        }
-
-        if (!resolvedUrl && backendOrigin && folder && name) {
-          resolvedUrl = `${backendOrigin}/storage/additionalData/${folder}/${name}`;
-        }
-
-        const id =
-          item?.id ??
-          item?.uuid ??
-          item?.file_id ??
-          `${name || "file"}-${index}`;
-
-        return {
-          id: String(id),
-          url: resolvedUrl,
-          name,
-        };
-      })
-      .filter((f) => f.url);
-  };
-
   const downloadFile = async (fileUrl, filename) => {
     if (!fileUrl) {
       toast.error("No file URL provided");
@@ -190,7 +101,7 @@ export default function AdditionalDataViewPage() {
       );
     }
 
-    const files = normalizeExistingFiles(value, folder);
+    const files = normalizeExistingFilesSync(value);
 
     if (files.length === 0) {
       return <span className="text-sm text-muted-foreground">None</span>;
@@ -203,11 +114,12 @@ export default function AdditionalDataViewPage() {
             file={{
               id: `${file.id}`,
               name: `${file.name}`,
-              url: `${file.url}`,
-              // add real size when oussama add it in BE 
-              size: "1000"
+              url: `${file.path}`,
+              // add real size when oussama add it in BE
+              size: "10080",
             }}
             onDownload={(url, name) => downloadFile(url, name)}
+            backendOrigin={backendOrigin}
           />
         ))}
       </div>
@@ -415,36 +327,12 @@ export default function AdditionalDataViewPage() {
                 <div>
                   <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center justify-between">
                     <span>Media Files</span>
-                    <Button
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const files = normalizeExistingFiles(
-                          mediaFiles,
-                          "media_files",
-                        );
-                        files.forEach((f) => downloadFile(f.url, f.name));
-                      }}
-                    >
-                      <DownloadIcon />
-                    </Button>
                   </div>
                   {renderFileField("Media Files", mediaFiles, "media_files")}
                 </div>
                 <div>
                   <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center justify-between">
                     <span>Specification File</span>
-                    <Button
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const files = normalizeExistingFiles(
-                          specificFiles,
-                          "specification_file",
-                        );
-                        files.forEach((f) => downloadFile(f.url, f.name));
-                      }}
-                    >
-                      <DownloadIcon />
-                    </Button>
                   </div>
                   {renderFileField(
                     "Specification File",
@@ -455,33 +343,12 @@ export default function AdditionalDataViewPage() {
                 <div>
                   <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center justify-between">
                     <span>Logo</span>
-                    <Button
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const files = normalizeExistingFiles(logoFiles, "logo");
-                        files.forEach((f) => downloadFile(f.url, f.name));
-                      }}
-                    >
-                      <DownloadIcon />
-                    </Button>
                   </div>
                   {renderFileField("Logo", logoFiles, "logo")}
                 </div>
                 <div>
                   <div className="text-sm font-medium text-muted-foreground mb-2 flex items-center justify-between">
                     <span>Other Files</span>
-                    <Button
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const files = normalizeExistingFiles(
-                          otherFiles,
-                          "other",
-                        );
-                        files.forEach((f) => downloadFile(f.url, f.name));
-                      }}
-                    >
-                      <DownloadIcon />
-                    </Button>
                   </div>
                   {renderFileField("Other", otherFiles, "other")}
                 </div>

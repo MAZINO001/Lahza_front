@@ -2,7 +2,6 @@ import FilePreview from "@/components/common/filePreviewer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { IconSquareChevronsDownFilled } from "@tabler/icons-react";
 import {
   DownloadIcon,
   FileText,
@@ -11,6 +10,7 @@ import {
   File,
   FileIcon,
 } from "lucide-react";
+import { normalizeExistingFilesSync } from "@/utils/normalizeFiles";
 
 export default function Attachments({
   logoFiles,
@@ -23,13 +23,16 @@ export default function Attachments({
   filesLoading,
 }) {
   const getAllFilesCount = () => {
-    const logoFilesCount = normalizeExistingFiles(logoFiles, "logo").length;
-    const mediaFilesCount = normalizeExistingFiles(
+    const logoFilesCount = normalizeExistingFilesSync(logoFiles, "logo").length;
+    const mediaFilesCount = normalizeExistingFilesSync(
       mediaFiles,
       "media_files",
     ).length;
-    const otherFilesCount = normalizeExistingFiles(otherFiles, "other").length;
-    const specificFilesCount = normalizeExistingFiles(
+    const otherFilesCount = normalizeExistingFilesSync(
+      otherFiles,
+      "other",
+    ).length;
+    const specificFilesCount = normalizeExistingFilesSync(
       specificFiles,
       "specification_file",
     ).length;
@@ -42,7 +45,6 @@ export default function Attachments({
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       await downloadFile(file.url, file.name);
-      // Add a small delay between downloads to avoid browser blocking
       if (i < files.length - 1) {
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
@@ -61,7 +63,7 @@ export default function Attachments({
       );
     }
 
-    const files = normalizeExistingFiles(value, folder);
+    const files = normalizeExistingFilesSync(value, folder);
 
     if (files.length === 0) {
       return (
@@ -78,11 +80,12 @@ export default function Attachments({
             file={{
               id: `${file.id}`,
               name: `${file.name}`,
-              url: `${file.url}`,
+              url: `${file.path}`,
               // add real size when oussama add it in BE
-              size: "1000",
+              size: "10080",
             }}
             onDownload={(url, name) => downloadFile(url, name)}
+            backendOrigin={backendOrigin}
           />
         ))}
       </div>
@@ -114,18 +117,22 @@ export default function Attachments({
                     Media Files
                   </CardTitle>
                   <p className="text-xs text-muted-foreground">
-                    {normalizeExistingFiles(mediaFiles, "media_files").length}{" "}
+                    {
+                      normalizeExistingFilesSync(mediaFiles, "media_files")
+                        .length
+                    }{" "}
                     files
                   </p>
                 </div>
               </div>
-              {normalizeExistingFiles(mediaFiles, "media_files").length > 0 && (
+              {normalizeExistingFilesSync(mediaFiles, "media_files").length >
+                0 && (
                 <Button
                   size="sm"
                   variant="outline"
                   className="h-8 px-3"
                   onClick={() => {
-                    const files = normalizeExistingFiles(
+                    const files = normalizeExistingFilesSync(
                       mediaFiles,
                       "media_files",
                     );
@@ -156,7 +163,7 @@ export default function Attachments({
                   </CardTitle>
                   <p className="text-xs text-muted-foreground">
                     {
-                      normalizeExistingFiles(
+                      normalizeExistingFilesSync(
                         specificFiles,
                         "specification_file",
                       ).length
@@ -165,14 +172,14 @@ export default function Attachments({
                   </p>
                 </div>
               </div>
-              {normalizeExistingFiles(specificFiles, "specification_file")
+              {normalizeExistingFilesSync(specificFiles, "specification_file")
                 .length > 0 && (
                 <Button
                   size="sm"
                   variant="outline"
                   className="h-8 px-3"
                   onClick={() => {
-                    const files = normalizeExistingFiles(
+                    const files = normalizeExistingFilesSync(
                       specificFiles,
                       "specification_file",
                     );
@@ -204,17 +211,17 @@ export default function Attachments({
                 <div>
                   <CardTitle className="text-sm font-medium">Logo</CardTitle>
                   <p className="text-xs text-muted-foreground">
-                    {normalizeExistingFiles(logoFiles, "logo").length} files
+                    {normalizeExistingFilesSync(logoFiles, "logo").length} files
                   </p>
                 </div>
               </div>
-              {normalizeExistingFiles(logoFiles, "logo").length > 0 && (
+              {normalizeExistingFilesSync(logoFiles, "logo").length > 0 && (
                 <Button
                   size="sm"
                   variant="outline"
                   className="h-8 px-3"
                   onClick={() => {
-                    const files = normalizeExistingFiles(logoFiles, "logo");
+                    const files = normalizeExistingFilesSync(logoFiles, "logo");
                     downloadAllFiles(files);
                   }}
                 >
@@ -241,17 +248,21 @@ export default function Attachments({
                     Other Files
                   </CardTitle>
                   <p className="text-xs text-muted-foreground">
-                    {normalizeExistingFiles(otherFiles, "other").length} files
+                    {normalizeExistingFilesSync(otherFiles, "other").length}{" "}
+                    files
                   </p>
                 </div>
               </div>
-              {normalizeExistingFiles(otherFiles, "other").length > 0 && (
+              {normalizeExistingFilesSync(otherFiles, "other").length > 0 && (
                 <Button
                   size="sm"
                   variant="outline"
                   className="h-8 px-3"
                   onClick={() => {
-                    const files = normalizeExistingFiles(otherFiles, "other");
+                    const files = normalizeExistingFilesSync(
+                      otherFiles,
+                      "other",
+                    );
                     downloadAllFiles(files);
                   }}
                 >

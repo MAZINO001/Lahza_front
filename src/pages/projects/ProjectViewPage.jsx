@@ -43,6 +43,7 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import api from "@/lib/utils/axios";
+import { normalizeExistingFiles } from "@/utils/normalizeFiles";
 
 export default function ProjectViewPage() {
   const { id } = useParams();
@@ -146,6 +147,7 @@ export default function ProjectViewPage() {
     try {
       const urlObj = new URL(fileUrl);
       let path = urlObj.pathname.replace(/^\/storage/, "/storage");
+
       const response = await api.get(path, {
         responseType: "blob",
       });
@@ -156,90 +158,6 @@ export default function ProjectViewPage() {
       console.error("Download error:", error);
       toast.error("Download failed");
     }
-  };
-
-  const normalizeExistingFiles = (result, folder) => {
-    if (!result) return [];
-
-    const list = Array.isArray(result)
-      ? result
-      : Array.isArray(result?.data)
-        ? result.data
-        : Array.isArray(result?.files)
-          ? result.files
-          : result
-            ? [result]
-            : [];
-
-    return list
-      .map((item, index) => {
-        // Priority: use the url from the hook response first (it's already complete)
-        const url =
-          item?.url ??
-          item?.full_url ??
-          item?.download_url ??
-          item?.link ??
-          item?.path ??
-          item?.file_url ??
-          (typeof item === "string" ? item : null) ??
-          "";
-
-        const name =
-          item?.name ??
-          item?.original_name ??
-          item?.filename ??
-          item?.file_name ??
-          (url ? String(url).split("/").pop() : "") ??
-          `file-${index}`;
-
-        let resolvedUrl = url;
-
-        // If URL is relative, prepend backend origin
-        if (resolvedUrl && !/^https?:\/\//i.test(resolvedUrl)) {
-          if (resolvedUrl.startsWith("/")) {
-            resolvedUrl = `${backendOrigin}${resolvedUrl}`;
-          } else if (backendOrigin) {
-            resolvedUrl = `${backendOrigin}/${resolvedUrl}`;
-          }
-        }
-
-        // Fix URLs that have localhost without port - add port from backendOrigin
-        if (resolvedUrl && resolvedUrl.includes("http://localhost/")) {
-          try {
-            const backendUrl = new URL(backendOrigin);
-            const backendPort = backendUrl.port;
-            if (backendPort) {
-              resolvedUrl = resolvedUrl.replace(
-                "http://localhost/",
-                `http://localhost:${backendPort}/`,
-              );
-            }
-          } catch (e) {
-            console.error("Error parsing backend origin:", e);
-          }
-        }
-
-        // Clean up storage paths
-        if (resolvedUrl) {
-          resolvedUrl = String(resolvedUrl).replace(
-            /\/storage\/public\//,
-            "/storage/",
-          );
-        }
-
-        const id =
-          item?.id ??
-          item?.uuid ??
-          item?.file_id ??
-          `${name || "file"}-${index}`;
-
-        return {
-          id: String(id),
-          url: resolvedUrl,
-          name,
-        };
-      })
-      .filter((f) => f.url);
   };
 
   const formatDate = (dateString) => {
@@ -257,6 +175,14 @@ export default function ProjectViewPage() {
   const TheProgress = theTasks?.length
     ? Math.round((doneTasks / tasks?.length) * 100)
     : 0;
+
+  console.log("logoFiles", logoFiles);
+  console.log("mediaFiles", mediaFiles);
+  console.log("otherFiles", otherFiles);
+  console.log("specificFiles", specificFiles);
+  console.log("backendOrigin", backendOrigin);
+  console.log("filesLoading", filesLoading);
+
   return (
     <div className="p-4">
       <div className="mb-4 rounded-xl text-foreground flex w-full items-center justify-between">

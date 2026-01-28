@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
 
-export default function FilePreview({ file, onDownload }) {
+export default function FilePreview({ file, onDownload, backendOrigin }) {
   const [previewData, setPreviewData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,7 +54,7 @@ export default function FilePreview({ file, onDownload }) {
       const fileType = getFileType(file.name);
 
       if (fileType === "image") {
-        const dimensions = await getImageDimensions(file.url);
+        const dimensions = await getImageDimensions(filePreviewUrl);
         setPreviewData({
           type: "image",
           dimensions,
@@ -73,6 +73,7 @@ export default function FilePreview({ file, onDownload }) {
   const extension = getFileExtension(file.name);
   const fileSize = file.size ? formatFileSize(file.size) : "Unknown";
 
+  const filePreviewUrl = `${backendOrigin}/storage/${file.url}`;
   return (
     <HoverCard onOpenChange={handleOpenChange}>
       <HoverCardTrigger asChild>
@@ -93,7 +94,7 @@ export default function FilePreview({ file, onDownload }) {
             className="h-8 w-8 p-0 cursor-pointer"
             onClick={(e) => {
               e.stopPropagation();
-              onDownload(file.url, file.name);
+              onDownload(filePreviewUrl, file.name);
             }}
           >
             <DownloadIcon className="h-4 w-4" />
@@ -113,7 +114,7 @@ export default function FilePreview({ file, onDownload }) {
               <img
                 alt={file.name}
                 className="h-full w-full object-cover"
-                src={file.url}
+                src={filePreviewUrl}
               />
             </div>
 
