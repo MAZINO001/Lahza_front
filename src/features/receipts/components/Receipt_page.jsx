@@ -4,7 +4,7 @@
 // import { Link } from "react-router-dom";
 // import api from "@/lib/utils/axios";
 // import { globalFnStore } from "@/hooks/GlobalFnStore";
-// import { usePayment } from "@/features/payments/hooks/usePaymentQuery";
+// import { usePayment } from "@/features/payments/hooks/usePayments/usePaymentsData";
 // import { formatId } from "@/lib/utils/formatId";
 // import PdfPreview from "@/features/documents/components/PdfPreview";
 
@@ -92,7 +92,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { Link } from "react-router-dom";
 import api from "@/lib/utils/axios";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
-import { usePayment } from "@/features/payments/hooks/usePaymentQuery";
+import { usePayment } from "@/features/payments/hooks/usePayments/usePaymentsData";
 import { formatId } from "@/lib/utils/formatId";
 import PdfPreview from "@/features/documents/components/PdfPreview";
 import { toast } from "sonner";

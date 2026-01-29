@@ -1,27 +1,56 @@
 import React from "react";
 import { Calendar, Users, AlertTriangle, ChevronDown } from "lucide-react";
+import { useEvents } from "../hooks/useCalendarQuery";
 
 export default function EventsSummary() {
+  const { data: events = [] } = useEvents();
+
+  // Get today's date for filtering
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Calculate upcoming events (next 7 days)
+  const nextWeek = new Date(today);
+  nextWeek.setDate(nextWeek.getDate() + 7);
+
+  const upcomingEvents = events.filter(event => {
+    const eventDate = new Date(event.start_date || event.start);
+    return eventDate >= today && eventDate <= nextWeek;
+  }).slice(0, 5); // Show max 5 events
+
+  // Calculate urgent events (today)
+  const urgentEvents = events.filter(event => {
+    const eventDate = new Date(event.start_date || event.start);
+    return eventDate.toDateString() === today.toDateString();
+  }).slice(0, 3); // Show max 3 urgent events
+
   const sections = [
     {
       label: "Upcoming Events",
-      value: 18,
+      value: upcomingEvents.length,
       icon: <Calendar className="h-5 w-5" />,
-      items: [
-        "Team meeting – Jan 2",
-        "Client presentation – Jan 4",
-        "Design review – Jan 6",
-      ],
+      items: upcomingEvents.map(event => {
+        const eventDate = new Date(event.start_date || event.start);
+        const dateStr = eventDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric"
+        });
+        return `${event.title} – ${dateStr}`;
+      }),
     },
     {
       label: "Urgent Today",
-      value: 3,
+      value: urgentEvents.length,
       icon: <AlertTriangle className="h-5 w-5 text-orange-500" />,
-      items: [
-        "Invoice deadline – 5 PM",
-        "Event setup – 3 PM",
-        "Send reminders",
-      ],
+      items: urgentEvents.map(event => {
+        const eventDate = new Date(event.start_date || event.start);
+        const timeStr = eventDate.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true
+        });
+        return `${event.title} – ${timeStr}`;
+      }),
     },
   ];
 

@@ -18,7 +18,7 @@ import FormField from "@/Components/Form/FormField";
 import CsvUploadModal from "@/components/common/CsvUploadModal";
 
 import { useAuthContext } from "@/hooks/AuthContext";
-import { useDocuments } from "../hooks/useDocumentsQuery";
+import { useDocuments } from "../hooks/useDocuments/useDocumentsQueryData";
 import { DocumentsColumns } from "../columns/documentColumns";
 import { DataTable } from "@/components/table/DataTable";
 

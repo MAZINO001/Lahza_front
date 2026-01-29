@@ -17,6 +17,7 @@ import TextareaField from "@/components/Form/TextareaField";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useCalendarQuery";
 import DateField from "@/components/Form/DateField";
 import { toast } from "sonner";
+import { useUsers } from "@/features/settings/hooks/useUsersQuery";
 
 function EventForm({
   open,
@@ -29,19 +30,23 @@ function EventForm({
   const createMutation = useCreateEvent();
   const updateMutation = useUpdateEvent();
   const [isLoading, setIsLoading] = useState(false);
+  const { data: usersResponse = [] } = useUsers();
 
-  const users = [
-    {
-      id: 1,
-      name: "Monir El Amrani",
-      email: "monir@demo.com",
-    },
-    {
-      id: 2,
-      name: "Yassine Benali",
-      email: "yassine@demo.com",
-    },
-  ];
+  // Debug: Log the structure of usersResponse
+  console.log('Users response structure:', usersResponse);
+
+  // Handle different possible response structures
+  let usersData = [];
+  if (Array.isArray(usersResponse)) {
+    usersData = usersResponse;
+  } else if (usersResponse && usersResponse.data && Array.isArray(usersResponse.data)) {
+    usersData = usersResponse.data;
+  } else if (usersResponse && usersResponse.users && Array.isArray(usersResponse.users)) {
+    usersData = usersResponse.users;
+  } else {
+    console.warn('Unexpected users data structure:', usersResponse);
+    usersData = [];
+  }
 
   const {
     handleSubmit,
@@ -171,7 +176,7 @@ function EventForm({
         other_notes: selectedEvent.other_notes || "",
         category: selectedEvent.category
           ? selectedEvent.category.charAt(0).toUpperCase() +
-            selectedEvent.category.slice(1)
+          selectedEvent.category.slice(1)
           : "Agency",
         status: selectedEvent.status || "pending",
         type: selectedEvent.type || "offline",
@@ -203,12 +208,12 @@ function EventForm({
         endTime:
           selectedDate.getHours() > 0
             ? new Date(
-                selectedDate.getTime() + 60 * 60 * 1000,
-              ).toLocaleTimeString("en-CA", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
+              selectedDate.getTime() + 60 * 60 * 1000,
+            ).toLocaleTimeString("en-CA", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })
             : "10:00",
         description: "",
         other_notes: "",
@@ -459,7 +464,6 @@ function EventForm({
               </div>
             )}
           />
-          {/* 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Event Color
@@ -477,19 +481,18 @@ function EventForm({
                           type="button"
                           onClick={() => {
                             field.onChange(colorOption.color);
+                            setSelectedColor(colorOption.color);
                           }}
-                          className={`flex items-center gap-2 border p-1 rounded-md transition-all ${
-                            selectedColor === colorOption.color
-                              ? "border-black bg-gray-100"
-                              : "border-border hover:border-gray-400"
-                          }`}
+                          className={`flex items-center gap-2 border p-1 rounded-md transition-all ${selectedColor === colorOption.color
+                            ? "border-black bg-gray-100"
+                            : "border-border hover:border-gray-400"
+                            }`}
                         >
                           <span
-                            className={`w-8 h-8 rounded border-2 transition-all ${
-                              selectedColor === colorOption.color
-                                ? "border-black"
-                                : "border-border"
-                            }`}
+                            className={`w-8 h-8 rounded border-2 transition-all ${selectedColor === colorOption.color
+                              ? "border-black"
+                              : "border-border"
+                              }`}
                             style={{ backgroundColor: colorOption.color }}
                           />
                           <span className="text-xs text-muted-foreground">
@@ -502,7 +505,7 @@ function EventForm({
                 />
               </div>
             </div>
-          </div> */}
+          </div>
 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
@@ -525,7 +528,7 @@ function EventForm({
                       className="flex-1 h-10 px-3 border border-border rounded-md bg-background text-foreground"
                     >
                       <option value="">Select a user to add...</option>
-                      {users.map((user) => (
+                      {usersData.map((user) => (
                         <option key={user.id} value={user.id}>
                           {user.name} ({user.email})
                         </option>
@@ -535,7 +538,7 @@ function EventForm({
                   {field.value.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-2">
                       {field.value.map((guestId, index) => {
-                        const user = users.find((u) => u.id === guestId);
+                        const user = usersData.find((u) => u.id === guestId);
                         return (
                           <div
                             key={index}

@@ -26,7 +26,10 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useCancelPayment, useConfirmPayment } from "../hooks/usePaymentQuery";
+import {
+  useCancelPayment,
+  useConfirmPayment,
+} from "../hooks/usePayments/usePaymentsData";
 import { Link } from "react-router-dom";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
 export function paymentColumns(role, { onEditPaidAt }) {

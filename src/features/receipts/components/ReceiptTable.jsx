@@ -12,7 +12,7 @@ import FormField from "@/Components/Form/FormField";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { getReceiptColumns } from "../columns/receiptColumns";
 import { DataTable } from "@/components/table/DataTable";
-import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsData";
 
 export function ReceiptTable() {
   const { data: payments = [], isLoading } = usePayments();

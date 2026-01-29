@@ -19,7 +19,7 @@ import FormField from "@/Components/Form/FormField";
 
 import { useAuthContext } from "@/hooks/AuthContext";
 import { paymentColumns } from "../columns/paymentColumns";
-import { usePayments } from "../hooks/usePaymentQuery";
+import { usePayments } from "../hooks/usePayments/usePaymentsData";
 import { DataTable } from "@/components/table/DataTable";
 import EditDatePayment from "../components/editDatePayment";
 const PaymentTable = React.memo(function PaymentTable() {

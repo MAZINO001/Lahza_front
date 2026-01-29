@@ -8,45 +8,26 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import "./calendar.css";
+import { useUsers } from "@/features/settings/hooks/useUsersQuery";
 
 function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete }) {
-  const users = [
-    {
-      id: 1,
-      name: "Monir El Amrani",
-      email: "monir@demo.com",
-    },
-    {
-      id: 2,
-      name: "Yassine Benali",
-      email: "yassine@demo.com",
-    },
-    {
-      id: 4,
-      name: "Omar Chraibi",
-      email: "omar@demo.com",
-    },
-    {
-      id: 5,
-      name: "Khadija El Idrissi",
-      email: "khadija@demo.com",
-    },
-    {
-      id: 6,
-      name: "Anas Bouzid",
-      email: "anas@demo.com",
-    },
-    {
-      id: 7,
-      name: "Imane Zohra",
-      email: "imane@demo.com",
-    },
-    {
-      id: 8,
-      name: "Hamza El Fassi",
-      email: "hamza@demo.com",
-    },
-  ];
+  const { data: usersResponse = [] } = useUsers();
+
+  // Debug: Log the structure of usersResponse
+  console.log('Users response structure in dialog:', usersResponse);
+
+  // Handle different possible response structures
+  let usersData = [];
+  if (Array.isArray(usersResponse)) {
+    usersData = usersResponse;
+  } else if (usersResponse && usersResponse.data && Array.isArray(usersResponse.data)) {
+    usersData = usersResponse.data;
+  } else if (usersResponse && usersResponse.users && Array.isArray(usersResponse.users)) {
+    usersData = usersResponse.users;
+  } else {
+    console.warn('Unexpected users data structure in dialog:', usersResponse);
+    usersData = [];
+  }
   if (!event) return null;
 
   console.log(event);
@@ -192,7 +173,7 @@ function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete }) {
               <span className="text-muted-foreground text-sm">Guests:</span>
               <div className="flex flex-wrap gap-1 mt-1">
                 {event.guests.map((guestId, index) => {
-                  const user = users.find((u) => u.id === guestId);
+                  const user = usersData.find((u) => u.id === guestId);
                   return (
                     <span
                       key={index}

@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsData";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { formatId } from "@/lib/utils/formatId";
 import { Link } from "react-router-dom";
@@ -20,7 +20,6 @@ export default function Overview_Payments({ formatCurrency, currentId }) {
           <h3 className="text-base font-semibold text-foreground mb-2">
             Receivables
           </h3>
-
           <div className="grid grid-cols-3 gap-4 py-2 border-b border-border">
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
               invoice id

@@ -19,7 +19,7 @@ import { processRepeatingEvents } from "../utils/repeatEventProcessor";
 import EventsSummary from "./EventsSummary";
 
 export default function CalendarPage() {
-  const { data: events } = useEvents();
+  const { data: events, isLoading, error } = useEvents();
   const createMutation = useCreateEvent();
   const updateMutation = useUpdateEvent();
   const deleteMutation = useDeleteEvent();
@@ -31,6 +31,32 @@ export default function CalendarPage() {
   const [editMode, setEditMode] = useState(false);
 
   const processedEvents = processRepeatingEvents(events);
+
+  // Debug: Log processed events to verify they're formatted correctly
+  console.log('Raw events:', events);
+  console.log('Processed events for calendar:', processedEvents);
+
+  if (isLoading) {
+    return (
+      <div className="calendar-container min-h-[800px] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading calendar...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="calendar-container min-h-[800px] flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-destructive mb-2">Failed to load calendar</p>
+          <p className="text-muted-foreground text-sm">Please try again later</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleDateClick = (arg) => {
     setSelectedDate(arg.date);
@@ -138,6 +164,7 @@ export default function CalendarPage() {
             slotMinTime="06:00:00"
             slotMaxTime="24:00:00"
             allDaySlot={true}
+            allDayText="All Day"
             scrollTime="08:00:00"
             eventTimeFormat={{
               hour: "2-digit",
@@ -145,6 +172,12 @@ export default function CalendarPage() {
               hour12: false,
             }}
             displayEventEnd={true}
+            slotEventOverlap={true}
+            eventMaxStack={4}
+            dayMaxEventRows={true}
+            dayMaxEvents={true}
+            weekNumbers={false}
+            nowIndicator={true}
           />
         </div>
         <div className="w-[30%] mt-2">

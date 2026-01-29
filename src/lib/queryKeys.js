@@ -18,6 +18,10 @@ export const QUERY_KEYS = {
     invoices: ['invoices'],
     invoice: (id) => ['invoice', id],
 
+    // Quotes
+    quotes: ['quotes'],
+    quote: (id) => ['quote', id],
+
     // Payments
     payments: ['payments'],
     payment: (id) => ['payment', id],

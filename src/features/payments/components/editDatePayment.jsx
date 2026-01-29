@@ -1,7 +1,6 @@
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import FormField from "@/Components/Form/FormField";
-import { useUpdatePaymentDate } from "../hooks/usePaymentQuery";
+import { useUpdatePaymentDate } from "../hooks/usePayments/usePaymentsData";
 import DateField from "@/components/Form/DateField";
 
 export default function EditPayment({ PaymentId, date, onClose }) {

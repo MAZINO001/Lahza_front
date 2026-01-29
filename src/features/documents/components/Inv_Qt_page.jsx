@@ -8,7 +8,7 @@
 // import {
 //   useDocument,
 //   useCreateDocument,
-// } from "@/features/documents/hooks/useDocumentsQuery";
+// } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 // import { MoreVertical } from "lucide-react";
 // import {
 //   DropdownMenu,
@@ -220,7 +220,7 @@ import { globalFnStore } from "@/hooks/GlobalFnStore";
 import {
   useDocument,
   useCreateDocument,
-} from "@/features/documents/hooks/useDocumentsQuery";
+} from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import { MoreVertical } from "lucide-react";
 import {
   DropdownMenu,
@@ -295,7 +295,6 @@ export default function Inv_Qt_page({ type, currentId }) {
     <div className="flex-1 flex flex-col h-screen">
       <div className="sticky top-0 z-10 border-b  border-t backdrop-blur-sm p-4 flex items-center justify-between gap-4">
         <div className="text-xl font-semibold tracking-tight text-foreground">
-          {isInvoice ? "Invoice" : "Quote"} —{" "}
           {formatId(currentId, isInvoice ? "INVOICE" : "QUOTE")}
         </div>
 

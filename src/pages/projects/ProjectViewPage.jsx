@@ -8,7 +8,7 @@ import {
   useProject,
   useProjectProgress,
   useProjectTeam,
-} from "@/features/projects/hooks/useProjects";
+} from "@/features/projects/hooks/useProjects/useProjectsData";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,7 +30,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import CountDownComponent from "@/features/projects/components/projectView/CountDownComponent";
-import { useTransActions } from "@/features/payments/hooks/usePaymentQuery";
+import { useTransActions } from "@/features/payments/hooks/usePayments/usePaymentsData";
 import { useMultipleFileSearch } from "@/features/additional_data/hooks/multipeSearchHook";
 import AlertDialogConfirmation from "@/components/alert-dialog-confirmation-6";
 import { StatusBadge } from "@/components/StatusBadge";

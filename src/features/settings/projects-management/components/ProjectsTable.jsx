@@ -25,7 +25,7 @@
 //   useAddProjectAssignment,
 //   useDeleteProjectAssignment,
 //   useUpdateProject,
-// } from "../../hooks/useProjectsQuery";
+// } from "../../hooks/useProjects/useProjectsDataQuery";
 // import { useTeams } from "../../hooks/useTeamsQuery";
 
 // export default function ProjectsTable() {
@@ -202,7 +202,7 @@ import {
   useAddProjectAssignment,
   useDeleteProjectAssignment,
   useUpdateProject,
-} from "../../hooks/useProjectsQuery";
+} from "../../hooks/useProjects/useProjectsDataQuery";
 import { useTeams } from "../../hooks/useTeamsQuery";
 
 export default function ProjectsTable() {
@@ -228,16 +228,16 @@ export default function ProjectsTable() {
     const teams = teamsResponse?.data || teamsResponse || [];
     return Array.isArray(teams)
       ? teams.map((team) => ({
-        id: team?.id,
-        name: team?.user?.name,
-        email: team?.user?.email,
-      }))
+          id: team?.id,
+          name: team?.user?.name,
+          email: team?.user?.email,
+        }))
       : [];
   }, [teamsResponse]);
 
   const availableStatuses = useMemo(
     () => ["pending", "in_progress", "completed", "cancelled"],
-    []
+    [],
   );
 
   const columns = useMemo(() => projectColumns(), []);
@@ -274,18 +274,18 @@ export default function ProjectsTable() {
       updateProjectMembers: (projectId, nextMembers) => {
         // Update the local state immediately for better UX
         const currentProjects = localProjects || projects;
-        const updatedProjects = currentProjects.map(project =>
+        const updatedProjects = currentProjects.map((project) =>
           project.id === projectId
             ? { ...project, members: nextMembers }
-            : project
+            : project,
         );
         setLocalProjects(updatedProjects);
 
         // Update the project data in the backend
-        if (typeof updateProject.mutate === 'function') {
+        if (typeof updateProject.mutate === "function") {
           updateProject.mutate({
             id: projectId,
-            data: { members: nextMembers.map(m => m.id) }
+            data: { members: nextMembers.map((m) => m.id) },
           });
         }
       },

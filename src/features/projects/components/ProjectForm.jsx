@@ -12,12 +12,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   useDocuments,
   useNoInvoiceProject,
-} from "@/features/documents/hooks/useDocumentsQuery";
+} from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import {
   useCreateProject,
   useProject,
   useUpdateProject,
-} from "../hooks/useProjects";
+} from "../hooks/useProjects/useProjectsData";
 import { formatId } from "@/lib/utils/formatId";
 import Checkbox from "@/components/Checkbox";
 import { useClients } from "@/features/clients/hooks/useClients/useClients";
@@ -57,14 +57,14 @@ export function ProjectForm({ onSuccess }) {
     defaultValues: isCloneModeActive
       ? {}
       : project || {
-        customerName: "",
-        name: "",
-        description: "",
-        invoice_id: "",
-        start_date: "",
-        estimated_end_date: "",
-        status: "pending",
-      },
+          customerName: "",
+          name: "",
+          description: "",
+          invoice_id: "",
+          start_date: "",
+          estimated_end_date: "",
+          status: "pending",
+        },
   });
 
   const { data: currentProject, isLoading: isCloneLoading } =
@@ -284,46 +284,46 @@ export function ProjectForm({ onSuccess }) {
           {(selectedClient?.client?.company ||
             selectedClient?.client?.ice ||
             selectedClient?.client?.siren) && (
-              <Card className="border-border bg-card text-card-foreground shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-lg font-semibold">
-                    Company Info
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2 text-sm">
-                  {selectedClient?.client?.company && (
-                    <div className="flex justify-between">
-                      <span className="font-medium text-muted-foreground">
-                        Company
-                      </span>
-                      <span className="text-foreground">
-                        {selectedClient.client.company}
-                      </span>
-                    </div>
-                  )}
-                  {selectedClient?.client?.ice && (
-                    <div className="flex justify-between">
-                      <span className="font-medium text-muted-foreground">
-                        ICE
-                      </span>
-                      <span className="text-foreground">
-                        {selectedClient.client.ice}
-                      </span>
-                    </div>
-                  )}
-                  {selectedClient?.client?.siren && (
-                    <div className="flex justify-between">
-                      <span className="font-medium text-muted-foreground">
-                        SIREN
-                      </span>
-                      <span className="text-foreground">
-                        {selectedClient.client.siren}
-                      </span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+            <Card className="border-border bg-card text-card-foreground shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold">
+                  Company Info
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 text-sm">
+                {selectedClient?.client?.company && (
+                  <div className="flex justify-between">
+                    <span className="font-medium text-muted-foreground">
+                      Company
+                    </span>
+                    <span className="text-foreground">
+                      {selectedClient.client.company}
+                    </span>
+                  </div>
+                )}
+                {selectedClient?.client?.ice && (
+                  <div className="flex justify-between">
+                    <span className="font-medium text-muted-foreground">
+                      ICE
+                    </span>
+                    <span className="text-foreground">
+                      {selectedClient.client.ice}
+                    </span>
+                  </div>
+                )}
+                {selectedClient?.client?.siren && (
+                  <div className="flex justify-between">
+                    <span className="font-medium text-muted-foreground">
+                      SIREN
+                    </span>
+                    <span className="text-foreground">
+                      {selectedClient.client.siren}
+                    </span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       )}
       {invoicesLoading && (

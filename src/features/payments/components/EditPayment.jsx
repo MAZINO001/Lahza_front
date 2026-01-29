@@ -8,9 +8,12 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
-import { usePayment, useUpdatePayment } from "../hooks/usePaymentQuery";
+import {
+  usePayment,
+  useUpdatePayment,
+} from "../hooks/usePayments/usePaymentsData";
 import SelectField from "@/components/Form/SelectField";
-import { useDocument } from "@/features/documents/hooks/useDocumentsQuery";
+import { useDocument } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 
 export default function EditPayment({ payment, onClose }) {
   const {
@@ -43,7 +46,7 @@ export default function EditPayment({ payment, onClose }) {
 
   const { data: invoice, isLoading } = useDocument(
     payment?.invoice_id,
-    "invoices"
+    "invoices",
   );
 
   const balanceDue = invoice?.balance_due;

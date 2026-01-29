@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import TransactionSection from "./transactionComp";
-import { useProjects } from "@/features/projects/hooks/useProjects";
-import { useDocuments } from "@/features/documents/hooks/useDocumentsQuery";
-import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+import { useProjects } from "@/features/projects/hooks/useProjects/useProjectsData";
+import { useDocuments } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
+import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsData";
 import { DocumentsColumns } from "@/features/documents/columns/documentColumns";
 import { paymentColumns } from "@/features/payments/columns/paymentColumns";
 import { ProjectColumns } from "@/features/projects/columns/projectColumns";

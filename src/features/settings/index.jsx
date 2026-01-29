@@ -81,7 +81,7 @@ export {
   useCreateProject,
   useUpdateProject,
   useDeleteProject,
-} from "./hooks/useProjectsQuery";
+} from "./hooks/useProjects/useProjectsDataQuery";
 
 // Agency Objectives
 export {

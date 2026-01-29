@@ -1,0 +1,16 @@
+------
+1/No cache invalidation strategy:
+With staleTime: Infinity, data never refreshes automatically.
+Consider adding selective invalidation or background refetching for critical data.
+2/Missing cache dependencies:
+No cross-entity cache updates
+(e.g., updating a client doesn't refresh related projects/services).
+------
+
+------
+
+------
+
+------
+
+------

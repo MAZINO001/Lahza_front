@@ -69,11 +69,30 @@ export function useDeleteOffer() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: apiOffer.delete,
+        onMutate: async (id) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: ["offers"] });
+
+            // Snapshot the previous value
+            const previousOffers = queryClient.getQueryData(["offers"]);
+
+            // Optimistically remove the offer from the cache
+            queryClient.setQueryData(["offers"], (old) =>
+                old?.filter(offer => offer.id !== id) || []
+            );
+
+            return { previousOffers };
+        },
+        onError: (error, id, context) => {
+            // If the mutation fails, roll back to the previous value
+            if (context?.previousOffers) {
+                queryClient.setQueryData(["offers"], context.previousOffers);
+            }
+            toast.error("Failed to delete offer");
+        },
         onSuccess: () => {
             toast.success("Offer deleted");
-            queryClient.invalidateQueries({ queryKey: ["offers"] });
+            // No need to invalidate since optimistic update already removed it
         },
-        refetchOnWindowFocus: true,
-        onError: () => toast.error("Failed to delete offer"),
     });
 }

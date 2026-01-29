@@ -9,7 +9,7 @@ import {
 import { useAuthContext } from "@/hooks/AuthContext";
 import { DataTable } from "../table/DataTable";
 import { dashBoardTableColumns } from "@/features/dashboard/dashboardTableColumn";
-import { useDocuments } from "@/features/documents/hooks/useDocumentsQuery";
+import { useDocuments } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import { useState } from "react"
 export default function Invoices() {
   const { role } = useAuthContext();

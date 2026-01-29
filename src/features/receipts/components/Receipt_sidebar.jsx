@@ -6,7 +6,7 @@
 // import { StatusBadge } from "@/components/StatusBadge";
 // import { useQueryClient } from "@tanstack/react-query";
 // import api from "@/lib/utils/axios";
-// import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+// import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsData";
 // import { formatId } from "@/lib/utils/formatId";
 // import FormField from "@/Components/Form/FormField";
 // import EmptySearch1 from "@/components/empty-search-1";
@@ -193,7 +193,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
-import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsData";
 import { formatId } from "@/lib/utils/formatId";
 import FormField from "@/Components/Form/FormField";
 import EmptySearch1 from "@/components/empty-search-1";

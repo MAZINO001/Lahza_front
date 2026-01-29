@@ -16,7 +16,7 @@
 //   CardHeader,
 //   CardTitle,
 // } from "@/components/ui/card";
-// import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+// import { usePayments } from "@/features/payments/@/features/payments/hooks/usePayments/usePaymentsData";
 // export default function Overview_chart({ formatCurrency }) {
 //   const [selectedPeriod, setSelectedPeriod] = useState("Last 6 Months");
 
@@ -202,7 +202,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { usePayments } from "@/features/payments/hooks/usePaymentQuery";
+import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsData";
 
 export default function Overview_chart({ formatCurrency, currentId }) {
   const [selectedPeriod, setSelectedPeriod] = useState("Last 6 Months");

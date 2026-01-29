@@ -22,7 +22,7 @@ import {
 import SignatureExamples from "@/features/documents/components/SignatureExamples";
 import SignUploader from "@/features/documents/components/SignUploader";
 import { toast } from "sonner";
-import { useCreateInvoiceFromQuote } from "@/features/documents/hooks/useDocumentsQuery";
+import { useCreateInvoiceFromQuote } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import api from "@/lib/utils/axios";
 export default function WhatsNextBanner({
   type,

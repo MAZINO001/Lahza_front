@@ -7,6 +7,11 @@ import { globalFnStore } from "@/hooks/GlobalFnStore";
 import { Badge } from "@/components/ui/badge";
 import AlertDialogDestructive from "@/components/alert-dialog-destructive-1";
 import { useDeleteService } from "@/features/services/hooks/useServicesData";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function getServiceColumns(role, navigate) {
   return [
@@ -59,7 +64,16 @@ export function getServiceColumns(role, navigate) {
       header: "Category",
       cell: ({ row }) => (
         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
-          <Badge>{row.getValue("category")}</Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge>{row.getValue("category")}</Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>{row.getValue("category")} Department</p>
+            </TooltipContent>
+          </Tooltip>
+
+          {/* <Badge>{row.getValue("category")}</Badge> */}
         </div>
       ),
     },

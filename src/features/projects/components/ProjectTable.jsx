@@ -13,7 +13,7 @@ import FormField from "@/Components/Form/FormField";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { DataTable } from "@/components/table/DataTable";
 import { ProjectColumns } from "../columns/projectColumns";
-import { useProjects } from "../hooks/useProjects";
+import { useProjects } from "../hooks/useProjects/useProjectsData";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -28,7 +28,7 @@ export function ProjectsTable() {
 
   const columns = React.useMemo(
     () => ProjectColumns(role, navigate),
-    [role, navigate]
+    [role, navigate],
   );
 
   const table = useReactTable({

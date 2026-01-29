@@ -33,11 +33,22 @@ function convertEventFormat(event) {
         let start, end;
 
         if (isAllDay) {
+            // For all-day events, use date-only format
             start = startDate;
             end = endDate || startDate;
         } else {
-            start = startTime ? `${startDate}T${startTime}` : `${startDate}T00:00:00`;
-            end = endTime ? `${endDate || startDate}T${endTime}` : `${endDate || startDate}T23:59:59`;
+            // For timed events, ensure proper ISO format with timezone
+            if (startTime && endTime) {
+                start = `${startDate}T${startTime}:00`;
+                end = `${endDate || startDate}T${endTime}:00`;
+            } else if (startTime) {
+                start = `${startDate}T${startTime}:00`;
+                end = `${endDate || startDate}T${startTime}:00`;
+            } else {
+                // Default to 9 AM if no time specified
+                start = `${startDate}T09:00:00`;
+                end = `${endDate || startDate}T10:00:00`;
+            }
         }
 
         const isMultiDay = !isAllDay && start && end &&
@@ -156,8 +167,18 @@ function createEventInstance(baseEvent, instanceDate, baseId, instanceIndex) {
             start = dateStr;
             end = dateStr;
         } else {
-            start = startTime ? `${dateStr}T${startTime}` : `${dateStr}T00:00:00`;
-            end = endTime ? `${dateStr}T${endTime}` : `${dateStr}T23:59:59`;
+            // Ensure proper ISO format with seconds
+            if (startTime && endTime) {
+                start = `${dateStr}T${startTime}:00`;
+                end = `${dateStr}T${endTime}:00`;
+            } else if (startTime) {
+                start = `${dateStr}T${startTime}:00`;
+                end = `${dateStr}T${startTime}:00`;
+            } else {
+                // Default to 9 AM if no time specified
+                start = `${dateStr}T09:00:00`;
+                end = `${dateStr}T10:00:00`;
+            }
         }
     } else {
         const originalStart = new Date(baseEvent.start);
