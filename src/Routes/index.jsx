@@ -13,7 +13,6 @@ const Register = lazy(() => import("../pages/Auth/Register"));
 const ResetPassword = lazy(() => import("../pages/Auth/ResetPassword"));
 const ForgotPassword = lazy(() => import("../pages/Auth/ForgotPassword"));
 const EmailVerification = lazy(() => import("../pages/Auth/EmailVerification"));
-const ConfirmOtp = lazy(() => import("../pages/Auth/ConfirmOtp"));
 
 // Lazy load dashboard
 const DashboardPage = lazy(() => import("../pages/dashboard/DashboardPage"));
@@ -224,16 +223,6 @@ export default function AppRoutes() {
                       fallback={<div>Loading email verification...</div>}
                     >
                       <EmailVerification />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="confirm-otp"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading OTP confirmation...</div>}>
-                      <ConfirmOtp />
                     </Suspense>
                   </ErrorBoundary>
                 }

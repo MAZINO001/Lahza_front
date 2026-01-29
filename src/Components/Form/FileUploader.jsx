@@ -49,9 +49,9 @@ export default function FileUploadField({
 
   useEffect(() => {
     const fileArray = files.map((f) => f.file);
-    registerStore.setField("cv", fileArray);
+    registerStore.setField(name, fileArray);
     onChange?.(fileArray);
-  }, [files]);
+  }, [files, name]);
 
   const getFileIcon = (fileName) => {
     const ext = fileName.split(".").pop()?.toLowerCase();

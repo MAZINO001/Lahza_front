@@ -29,6 +29,8 @@ export default function VerifyEmailPage() {
     renderContent,
     goToSignIn,
     goToResendVerification,
+    handleResendVerification,
+    sendVerificationMutation,
   } = useEmailVerification();
 
   const content = renderContent();
@@ -37,6 +39,7 @@ export default function VerifyEmailPage() {
   const isSuccess = content.icon === "success";
   const isError = content.icon === "error";
   const isWarning = content.icon === "warning";
+  const isResend = status === "resend";
 
   return (
     <div className="min-h-screen  flex items-center justify-center bg-background px-4 py-12 w-full">
@@ -61,6 +64,38 @@ export default function VerifyEmailPage() {
         </CardHeader>
 
         <CardContent className="space-y-6 pt-2">
+          {/* Resend State */}
+          {isResend && (
+            <div className="space-y-6">
+              <Alert>
+                <AlertTriangle className="h-5 w-5" />
+                <AlertTitle>{content.title}</AlertTitle>
+                <AlertDescription>{content.subtitle}</AlertDescription>
+              </Alert>
+
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={content.primaryAction}
+                  variant="default"
+                  size="lg"
+                  disabled={sendVerificationMutation.isPending}
+                >
+                  {sendVerificationMutation.isPending ? "Sending..." : content.primaryActionText}
+                </Button>
+
+                {content.secondaryAction && content.secondaryActionText && (
+                  <Button
+                    onClick={content.secondaryAction}
+                    variant="outline"
+                    size="lg"
+                  >
+                    {content.secondaryActionText}
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Loading State */}
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -133,17 +168,17 @@ export default function VerifyEmailPage() {
             </div>
           )}
         </CardContent>
-
-        {/* Optional Footer – e.g. resend link if needed */}
+        {/* Optional Footer – resend link if needed */}
         {isLoading && (
           <div className="px-6 pb-6 text-center text-sm text-muted-foreground">
             Didn't receive the email?{" "}
             <Button
               variant="link"
               className="p-0 h-auto font-medium"
-              onClick={goToResendVerification}
+              onClick={handleResendVerification}
+              disabled={sendVerificationMutation.isPending}
             >
-              Resend verification link
+              {sendVerificationMutation.isPending ? "Sending..." : "Resend verification link"}
             </Button>
           </div>
         )}

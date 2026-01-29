@@ -36,8 +36,7 @@ export default function Login({ status, canResetPassword }) {
     try {
       const result = await loginMutation.mutateAsync(data);
 
-      const token = result.token;
-      localStorage.setItem("token", token);
+      // Login successful - cookies are set by backend
       login(result.user);
       navigate(`/${role}/dashboard`, { replace: true });
     } catch (error) {

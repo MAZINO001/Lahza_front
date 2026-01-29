@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 const api = axios.create({
@@ -6,32 +5,20 @@ const api = axios.create({
   headers: {
     Accept: "application/json",
   },
+  withCredentials: true, // Enable HttpOnly cookies
 });
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
 
     if (status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      // ❌ REMOVED: window.location.href = "/login";
-      // Let the useAuth hook handle this, not the interceptor
       console.warn("Session expired. Please log in again.");
+      // Let the useAuth hook handle auth state, not localStorage
     }
 
     if (status === 403) {
       console.warn("Access denied. You don't have permission to access this resource.");
-      // ❌ REMOVED: window.location.href = "/unauthorized";
       // Let your app router handle redirects
     }
 

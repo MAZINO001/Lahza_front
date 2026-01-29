@@ -79,7 +79,6 @@
 //     return { user, role, isAuthenticated, loading, logout, verifyAuth };
 // }
 
-
 import { useState, useEffect } from "react";
 import api from "@/lib/utils/axios";
 import { toast } from "sonner";
@@ -88,8 +87,11 @@ export function useAuth() {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [initialized, setInitialized] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     useEffect(() => {
+        if (isLoggingOut) return; // Skip auth check during logout
+
         const controller = new AbortController();
 
         const checkAuth = async () => {
@@ -102,7 +104,7 @@ export function useAuth() {
         return () => {
             controller.abort();
         };
-    }, []);
+    }, [isLoggingOut]);
 
     const verifyAuth = async (controller) => {
         try {
@@ -127,7 +129,6 @@ export function useAuth() {
             // Not authenticated or token expired
             if (!controller.signal.aborted) {
                 setUser(null);
-                localStorage.removeItem('isAuthenticated');
             }
         } finally {
             if (!controller.signal.aborted) {
@@ -138,30 +139,23 @@ export function useAuth() {
 
     const login = async (userData) => {
         setUser(userData);
-        localStorage.setItem('isAuthenticated', 'true');
 
-        // Re-verify auth after login
+        // Re-verify auth after login to get fresh user data
         const controller = new AbortController();
         await verifyAuth(controller);
     };
 
     const logout = async () => {
+        setIsLoggingOut(true); // Prevent further auth checks
         try {
-            await api.post(
-                `${import.meta.env.VITE_BACKEND_URL}/logout`,
-                {
-                    headers: {
-                        Accept: "application/json",
-                    },
-                }
-            );
+            await api.post(`${import.meta.env.VITE_BACKEND_URL}/logout`);
         } catch (error) {
-            toast.error("Logout error:", error);
+            console.error("Logout error:", error);
         } finally {
-            localStorage.removeItem('isAuthenticated');
             setUser(null);
             setLoading(false);
-            window.location.href = '/auth/login';
+            // Force redirect to login page
+            window.location.replace('/auth/login');
         }
     };
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Lock, Eye, EyeOff, ArrowRight, CheckCircle2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,8 +30,26 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [token, setToken] = useState("");
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const resetPasswordMutation = useResetPassword();
+
+  useEffect(() => {
+    const urlToken = searchParams.get('token');
+    const urlEmail = searchParams.get('email');
+
+    if (!urlToken || !urlEmail) {
+      toast.error("Invalid or expired reset link. Please try again.");
+      navigate('/auth/forgot-password');
+      return;
+    }
+
+    setToken(urlToken);
+    setEmail(decodeURIComponent(urlEmail));
+  }, [searchParams, navigate]);
 
   const form = useForm({
     defaultValues: {
@@ -45,7 +63,12 @@ export default function ResetPassword() {
 
   const onSubmit = async (data) => {
     try {
-      await resetPasswordMutation.mutateAsync(data);
+      await resetPasswordMutation.mutateAsync({
+        email: email,
+        token: token,
+        password: data.password,
+        password_confirmation: data.confirmPassword
+      });
       setIsSuccess(true);
       toast.success("Password reset successfully!");
       form.reset();

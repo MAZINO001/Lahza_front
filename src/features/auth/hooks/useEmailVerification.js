@@ -2,13 +2,27 @@ import { useMutation } from '@tanstack/react-query';
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from '@/lib/utils/axios';
+import { toast } from "sonner";
+
+const sendVerificationEmail = async () => {
+    const response = await api.post(
+        `${import.meta.env.VITE_BACKEND_URL}/email/send-verification`,
+        {},
+        {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true, // Important for HTTP-only cookies
+        }
+    );
+    return response.data;
+};
 
 const verifyEmail = async ({ token }) => {
     const response = await api.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/email/verify`,
+        `${import.meta.env.VITE_BACKEND_URL}/email/verify`,
         { token },
         {
             headers: { "Content-Type": "application/json" },
+            withCredentials: true, // Important for HTTP-only cookies
         }
     );
     return response.data;
@@ -47,18 +61,34 @@ export function useEmailVerification() {
         },
     });
 
+    const sendVerificationMutation = useMutation({
+        mutationFn: sendVerificationEmail,
+        onSuccess: (data) => {
+            toast.success("Verification email sent successfully!");
+            setStatus("loading");
+            setMessage("Please check your email for the verification link.");
+        },
+        onError: (error) => {
+            toast.error(error.response?.data?.message || "Failed to send verification email");
+        },
+    });
+
     useEffect(() => {
         if (!token) {
-            setStatus("error");
-            setMessage("Invalid verification link. Please request a new one.");
+            // No token in URL, show resend verification option
+            setStatus("resend");
+            setMessage("Please request a verification email to continue.");
             return;
         }
 
         verifyEmailMutation.mutate({ token });
     }, [token]);
 
-    const goToSignIn = () => navigate("/signin");
-    const goToResendVerification = () => navigate("/resend-verification");
+    const goToSignIn = () => navigate("/auth/login");
+    const goToResendVerification = () => navigate("/auth/verify-email");
+    const handleResendVerification = () => {
+        sendVerificationMutation.mutate();
+    };
 
     const renderContent = () => {
         switch (status) {
@@ -80,13 +110,25 @@ export function useEmailVerification() {
                     primaryActionText: "Go to Sign In",
                 };
 
+            case "resend":
+                return {
+                    icon: "warning",
+                    title: "Email Verification Required",
+                    subtitle: message,
+                    showActions: true,
+                    primaryAction: handleResendVerification,
+                    primaryActionText: "Request Verification Link",
+                    secondaryAction: goToSignIn,
+                    secondaryActionText: "Back to Sign In",
+                };
+
             case "expired":
                 return {
                     icon: "warning",
                     title: "Verification Link Expired",
                     subtitle: message,
                     showActions: true,
-                    primaryAction: goToResendVerification,
+                    primaryAction: handleResendVerification,
                     primaryActionText: "Request New Verification Link",
                     secondaryAction: goToSignIn,
                     secondaryActionText: "Back to Sign In",
@@ -99,7 +141,7 @@ export function useEmailVerification() {
                     title: "Verification Failed",
                     subtitle: message,
                     showActions: true,
-                    primaryAction: goToResendVerification,
+                    primaryAction: handleResendVerification,
                     primaryActionText: "Request New Verification Link",
                     secondaryAction: goToSignIn,
                     secondaryActionText: "Back to Sign In",
@@ -115,5 +157,7 @@ export function useEmailVerification() {
         renderContent,
         goToSignIn,
         goToResendVerification,
+        handleResendVerification,
+        sendVerificationMutation,
     };
 }
