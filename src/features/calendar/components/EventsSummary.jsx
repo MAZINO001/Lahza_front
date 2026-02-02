@@ -13,27 +13,31 @@ export default function EventsSummary() {
   const nextWeek = new Date(today);
   nextWeek.setDate(nextWeek.getDate() + 7);
 
-  const upcomingEvents = events.filter(event => {
-    const eventDate = new Date(event.start_date || event.start);
-    return eventDate >= today && eventDate <= nextWeek;
-  }).slice(0, 5); // Show max 5 events
+  const upcomingEvents = events
+    .filter((event) => {
+      const eventDate = new Date(event.start_date || event.start);
+      return eventDate >= today && eventDate <= nextWeek;
+    })
+    .slice(0, 5); // Show max 5 events
 
   // Calculate urgent events (today)
-  const urgentEvents = events.filter(event => {
-    const eventDate = new Date(event.start_date || event.start);
-    return eventDate.toDateString() === today.toDateString();
-  }).slice(0, 3); // Show max 3 urgent events
+  const urgentEvents = events
+    .filter((event) => {
+      const eventDate = new Date(event.start_date || event.start);
+      return eventDate.toDateString() === today.toDateString();
+    })
+    .slice(0, 3); // Show max 3 urgent events
 
   const sections = [
     {
       label: "Upcoming Events",
       value: upcomingEvents.length,
       icon: <Calendar className="h-5 w-5" />,
-      items: upcomingEvents.map(event => {
+      items: upcomingEvents.map((event) => {
         const eventDate = new Date(event.start_date || event.start);
         const dateStr = eventDate.toLocaleDateString("en-US", {
           month: "short",
-          day: "numeric"
+          day: "numeric",
         });
         return `${event.title} – ${dateStr}`;
       }),
@@ -42,12 +46,12 @@ export default function EventsSummary() {
       label: "Urgent Today",
       value: urgentEvents.length,
       icon: <AlertTriangle className="h-5 w-5 text-orange-500" />,
-      items: urgentEvents.map(event => {
+      items: urgentEvents.map((event) => {
         const eventDate = new Date(event.start_date || event.start);
         const timeStr = eventDate.toLocaleTimeString("en-US", {
           hour: "numeric",
           minute: "2-digit",
-          hour12: true
+          hour12: true,
         });
         return `${event.title} – ${timeStr}`;
       }),

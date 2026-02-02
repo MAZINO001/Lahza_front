@@ -17,11 +17,14 @@ const apiProject = {
     postProjectDone: (id) => api.post(`${API_URL}/projects/${id}/complete`).then((res) => res.data),
 };
 
-export function useProjects() {
+export function useProjects(options) {
+    options = options || {};
+    var enabled = options.enabled !== undefined ? options.enabled : true;
     return useQuery({
         queryKey: ["projects"],
         queryFn: apiProject.getAll,
         staleTime: 0,
+        enabled,
         refetchOnWindowFocus: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch projects");

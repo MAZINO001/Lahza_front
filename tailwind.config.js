@@ -4,7 +4,7 @@ export default {
     content: [
         "./index.html",
         "./src/**/*.{js,ts,jsx,tsx}",
-        "./node_modules/@ilamy/calendar/**/*.{js,jsx}",
+        "./node_modules/@ilamy/calendar/**/*.{js,jsx,ts,tsx}",
     ],
     theme: {
         extend: {
@@ -34,7 +34,7 @@ export default {
                 lg: "var(--radius)",
                 xl: "calc(var(--radius) + 4px)",
             },
-            
+
         },
     },
     plugins: [require("tailwindcss-animate")],

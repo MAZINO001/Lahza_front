@@ -1,5 +1,4 @@
 import CalendarTable from "@/features/calendar/components/calendarTable.jsx";
-import NewCalendar from "@/features/calendar/components/calendarPage.jsx";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -10,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ChevronDown } from "lucide-react";
+import MyCalendar from "@/features/calendar/components/MyCalendar";
 export default function CalendarPage() {
   const [selectedView, setSelectedView] = useState("calendar");
   const AllViews = ["calendar", "table"];
@@ -38,7 +38,7 @@ export default function CalendarPage() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      {selectedView === "calendar" && <NewCalendar />}
+      {selectedView === "calendar" && <MyCalendar />}
       {selectedView === "table" && <CalendarTable />}
     </div>
   );

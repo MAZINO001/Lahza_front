@@ -360,7 +360,7 @@ export default function Inv_Qt_page({ type, currentId }) {
             </DropdownMenu>
           )}
 
-          <div className="h-5 w-px bg-border mx-2" />
+          {/* <div className="h-5 w-px bg-border mx-2" /> */}
 
           {/* Convert to Invoice - Admin + Quotes only */}
           {type === "quotes" &&

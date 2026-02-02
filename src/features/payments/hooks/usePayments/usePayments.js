@@ -3,12 +3,15 @@ import { toast } from "sonner";
 import { apiPayments } from '@/lib/api/payments';
 import { QUERY_KEYS } from '@/lib/queryKeys';
 
-export function usePayments() {
+export function usePayments(options) {
+    options = options || {};
+    var enabled = options.enabled !== undefined ? options.enabled : true;
     return useQuery({
         queryKey: QUERY_KEYS.payments,
         queryFn: apiPayments.getAll,
         staleTime: Infinity,
         refetchOnMount: false,
+        enabled,
         refetchOnWindowFocus: false,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch payments");

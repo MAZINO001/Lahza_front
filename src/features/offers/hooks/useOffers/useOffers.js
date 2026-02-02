@@ -3,11 +3,14 @@ import { toast } from "sonner";
 import { apiOffers } from '@/lib/api/offers';
 import { QUERY_KEYS } from '@/lib/queryKeys';
 
-export function useOffers() {
+export function useOffers(options) {
+    options = options || {};
+    var enabled = options.enabled !== undefined ? options.enabled : true;
     return useQuery({
         queryKey: QUERY_KEYS.offers,
         queryFn: apiOffers.getAll,
         staleTime: 0,
+        enabled,
         refetchOnMount: true,
         refetchOnWindowFocus: false,
         onError: (error) => {

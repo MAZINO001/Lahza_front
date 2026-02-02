@@ -1,16 +1,35 @@
 ------
-1/No cache invalidation strategy:
-With staleTime: Infinity, data never refreshes automatically.
-Consider adding selective invalidation or background refetching for critical data.
-2/Missing cache dependencies:
-No cross-entity cache updates
-(e.g., updating a client doesn't refresh related projects/services).
+daily :
+  rrule: {
+    freq: RRule.DAILY,
+    interval: 1,
+    dtstart: new Date('2025-08-04T09:00:00'),
+    count: 30 // 30 occurrences
+}
+------
+Weekly : 
+  rrule: {
+    freq: RRule.WEEKLY,
+    interval: 1,
+    byweekday: [RRule.MO], // Every Monday
+    dtstart: new Date('2025-08-04T09:00:00'),
+    until: new Date('2025-12-31T23:59:59')
+}
+------
+Monthly : 
+  rrule: {
+    freq: RRule.MONTHLY,
+    byweekday: [RRule.FR.nth(-1)], // Last Friday of each month
+    dtstart: new Date('2025-08-04T15:00:00'),
+    count: 12 // 12 months
+  }
+------
+Yearly : 
+  rrule: {
+    freq: RRule.YEARLY,
+    interval: 1,
+    dtstart: new Date('2025-08-04T10:00:00'),
+    count: 5 // 5 years
+  }
 ------
 
-------
-
-------
-
-------
-
-------

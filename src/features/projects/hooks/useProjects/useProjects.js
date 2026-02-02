@@ -3,10 +3,13 @@ import { toast } from "sonner";
 import { apiProjects } from '@/lib/api/projects';
 import { QUERY_KEYS } from '@/lib/queryKeys';
 
-export function useProjects() {
+export function useProjects(options) {
+    options = options || {};
+    var enabled = options.enabled !== undefined ? options.enabled : true;
     return useQuery({
         queryKey: QUERY_KEYS.projects,
         queryFn: apiProjects.getAll,
+        enabled,
         staleTime: Infinity,
         refetchOnMount: false,
         refetchOnWindowFocus: false,

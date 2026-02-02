@@ -10,41 +10,60 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import "./calendar.css";
 import FormField from "@/components/Form/FormField";
 import SelectField from "@/components/Form/SelectField";
 import TextareaField from "@/components/Form/TextareaField";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useCalendarQuery";
 import DateField from "@/components/Form/DateField";
+import TimeField from "@/components/Form/TimeField";
 import { toast } from "sonner";
 import { useUsers } from "@/features/settings/hooks/useUsersQuery";
+import Checkbox from "@/components/Checkbox";
+import RepeatSection from "./RepeatSection";
+import { RRule } from "rrule";
 
 function EventForm({
   open,
-  onOpenChange,
-  selectedDate,
-  editMode,
+  onClose,
   selectedEvent,
-  onEventEdit,
+  onAdd,
+  onUpdate,
+  onDelete,
+  selectedDate,
+  editMode = false,
 }) {
   const createMutation = useCreateEvent();
   const updateMutation = useUpdateEvent();
   const [isLoading, setIsLoading] = useState(false);
   const { data: usersResponse = [] } = useUsers();
 
+  // Repeat settings state
+  const [repeatEnabled, setRepeatEnabled] = useState(false);
+  const [everyN, setEveryN] = useState("1");
+  const [frequency, setFrequency] = useState("daily");
+  const [endType, setEndType] = useState("never");
+  const [afterOccurrences, setAfterOccurrences] = useState("10");
+  const [endsOnDate, setEndsOnDate] = useState("");
+
   // Debug: Log the structure of usersResponse
-  console.log('Users response structure:', usersResponse);
 
   // Handle different possible response structures
   let usersData = [];
   if (Array.isArray(usersResponse)) {
     usersData = usersResponse;
-  } else if (usersResponse && usersResponse.data && Array.isArray(usersResponse.data)) {
+  } else if (
+    usersResponse &&
+    usersResponse.data &&
+    Array.isArray(usersResponse.data)
+  ) {
     usersData = usersResponse.data;
-  } else if (usersResponse && usersResponse.users && Array.isArray(usersResponse.users)) {
+  } else if (
+    usersResponse &&
+    usersResponse.users &&
+    Array.isArray(usersResponse.users)
+  ) {
     usersData = usersResponse.users;
   } else {
-    console.warn('Unexpected users data structure:', usersResponse);
     usersData = [];
   }
 
@@ -228,6 +247,7 @@ function EventForm({
       });
 
       setSelectedColor("#6366f1");
+      setRepeatEnabled(false);
     } else if (open && !editMode && !selectedDate) {
       // New event without selected date
       reset({
@@ -249,6 +269,7 @@ function EventForm({
       });
 
       setSelectedColor("#6366f1");
+      setRepeatEnabled(false);
     }
   }, [open, selectedDate, editMode, selectedEvent, reset]);
 
@@ -279,7 +300,7 @@ function EventForm({
         endHour = formatTime(formData.endTime);
       }
 
-      return {
+      const eventPayload = {
         title: formData.title,
         start_date: date,
         end_date: formData.endDate || date,
@@ -289,33 +310,103 @@ function EventForm({
         category: formData.category.toLowerCase(),
         status: formData.status,
         type: formData.type,
-        repeatedly: formData.repeatedly,
+        repeatedly: repeatEnabled ? frequency : "none",
         color: formData.color,
         all_day: formData.allDay ? 1 : 0,
         guests: null,
         url: formData.type === "online" && formData.url ? formData.url : null,
         other_notes: formData.other_notes || null,
       };
+
+      // Add rrule configuration based on repetition type
+      if (repeatEnabled) {
+        const startDateTime = new Date(`${date}T${startHour}:00`);
+
+        switch (frequency) {
+          case "daily":
+            eventPayload.rrule = {
+              freq: RRule.DAILY,
+              interval: parseInt(everyN) || 1,
+              dtstart: startDateTime,
+              count:
+                endType === "after"
+                  ? parseInt(afterOccurrences) || 30
+                  : undefined,
+              until: endType === "on" ? new Date(endsOnDate) : undefined,
+            };
+            break;
+
+          case "weekly":
+            eventPayload.rrule = {
+              freq: RRule.WEEKLY,
+              interval: parseInt(everyN) || 1,
+              byweekday: [RRule.MO], // Default to Monday, can be customized
+              dtstart: startDateTime,
+              count:
+                endType === "after"
+                  ? parseInt(afterOccurrences) || 30
+                  : undefined,
+              until: endType === "on" ? new Date(endsOnDate) : undefined,
+            };
+            break;
+
+          case "monthly":
+            eventPayload.rrule = {
+              freq: RRule.MONTHLY,
+              interval: parseInt(everyN) || 1,
+              byweekday: [RRule.FR.nth(-1)], // Last Friday of each month
+              dtstart: startDateTime,
+              count:
+                endType === "after"
+                  ? parseInt(afterOccurrences) || 12
+                  : undefined,
+              until: endType === "on" ? new Date(endsOnDate) : undefined,
+            };
+            break;
+
+          case "yearly":
+            eventPayload.rrule = {
+              freq: RRule.YEARLY,
+              interval: parseInt(everyN) || 1,
+              dtstart: startDateTime,
+              count:
+                endType === "after"
+                  ? parseInt(afterOccurrences) || 5
+                  : undefined,
+              until: endType === "on" ? new Date(endsOnDate) : undefined,
+            };
+            break;
+        }
+      }
+
+      console.log("Event payload:", eventPayload);
+      return eventPayload;
     };
 
     if (editMode && selectedEvent) {
       // Edit existing event
       const eventPayload = createEvent(formData.startDate);
 
-      onEventEdit({
-        id: selectedEvent.id,
-        ...eventPayload,
-      });
-
-      setIsLoading(false);
-      onOpenChange(false);
+      updateMutation.mutate(
+        { id: selectedEvent.id, data: eventPayload },
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+            onClose();
+          },
+          onError: (error) => {
+            console.error("❌ Error updating event:", error);
+            setIsLoading(false);
+          },
+        },
+      );
     } else {
       const eventPayload = createEvent(formData.startDate);
 
       createMutation.mutate(eventPayload, {
         onSuccess: () => {
           setIsLoading(false);
-          onOpenChange(false);
+          onClose();
         },
         onError: (error) => {
           console.error("❌ Error creating event:", error);
@@ -327,15 +418,20 @@ function EventForm({
 
   const handleCancel = () => {
     reset();
-    onOpenChange(false);
+    setRepeatEnabled(false);
+    onClose();
   };
 
+  if (!open) return null;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-background text-foreground max-h-[90vh] flex flex-col ">
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      if (!isOpen) onClose();
+    }}>
+      <DialogContent className="bg-background text-foreground max-h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>
-            {editMode ? "Edit Event" : "New Event"}{" "}
+            {editMode ? "Edit Event" : "New Event"}
             {selectedDate?.toLocaleDateString()}
           </DialogTitle>
         </DialogHeader>
@@ -365,7 +461,6 @@ function EventForm({
                 name="startDate"
                 control={control}
                 render={({ field }) => (
-                  // <FormField
                   <DateField
                     id="startDate"
                     label="startDate"
@@ -385,7 +480,6 @@ function EventForm({
                 name="endDate"
                 control={control}
                 render={({ field }) => (
-                  // <FormField
                   <DateField
                     id="endDate"
                     label="endDate"
@@ -409,13 +503,12 @@ function EventForm({
                   name="startTime"
                   control={control}
                   render={({ field }) => (
-                    <FormField
+                    <TimeField
                       id="startTime"
                       label="startTime"
-                      type="time"
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
+                      value={field.value ?? ""}
+                      onChange={(newTimeString) => {
+                        field.onChange(newTimeString);
                       }}
                       error={errors.startTime?.message}
                     />
@@ -427,13 +520,12 @@ function EventForm({
                   name="endTime"
                   control={control}
                   render={({ field }) => (
-                    <FormField
+                    <TimeField
                       id="endTime"
                       label="endTime"
-                      type="time"
-                      value={field.value}
-                      onChange={(e) => {
-                        field.onChange(e.target.value);
+                      value={field.value ?? ""}
+                      onChange={(newTimeString) => {
+                        field.onChange(newTimeString);
                       }}
                       error={errors.endTime?.message}
                     />
@@ -448,8 +540,9 @@ function EventForm({
             control={control}
             render={({ field }) => (
               <div className="flex items-center space-x-2">
-                <input
+                <Checkbox
                   {...field}
+                  label="All Day Event"
                   id="allDay"
                   type="checkbox"
                   checked={field.value}
@@ -464,6 +557,7 @@ function EventForm({
               </div>
             )}
           />
+
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
               Event Color
@@ -600,7 +694,7 @@ function EventForm({
           </div>
 
           <div className="flex flex-col w-full gap-4">
-            <div className=" flex gap-4">
+            <div className="flex gap-4">
               <div className="space-y-2 w-full">
                 <Controller
                   name="category"
@@ -625,35 +719,14 @@ function EventForm({
                   )}
                 />
               </div>
-              <div className="space-y-2 w-full">
-                <Controller
-                  name="repeatedly"
-                  control={control}
-                  render={({ field }) => (
-                    <SelectField
-                      label="Repeat"
-                      value={field.value}
-                      onChange={(val) => {
-                        field.onChange(val);
-                      }}
-                      options={[
-                        { value: "none", label: "None" },
-                        { value: "daily", label: "Daily" },
-                        { value: "weekly", label: "Weekly" },
-                        { value: "monthly", label: "Monthly" },
-                        { value: "yearly", label: "Yearly" },
-                      ]}
-                      error={errors?.repeatedly?.message}
-                    />
-                  )}
-                />
-              </div>
+
               <div className="space-y-2 w-full">
                 <Controller
                   name="priority"
                   control={control}
                   render={({ field }) => (
                     <SelectField
+                      id="priority"
                       label="Priority"
                       value={field.value || "low"}
                       onChange={(val) => {
@@ -664,12 +737,28 @@ function EventForm({
                         { value: "medium", label: "Medium" },
                         { value: "high", label: "High" },
                       ]}
-                      error={errors?.repeatedly?.message}
+                      error={errors?.priority?.message}
                     />
                   )}
                 />
               </div>
             </div>
+
+            {/* New Repeat Section Component */}
+            <RepeatSection
+              repeatEnabled={repeatEnabled}
+              onRepeatChange={setRepeatEnabled}
+              frequency={frequency}
+              onFrequencyChange={setFrequency}
+              everyN={everyN}
+              onEveryNChange={setEveryN}
+              endType={endType}
+              onEndTypeChange={setEndType}
+              afterOccurrences={afterOccurrences}
+              onAfterOccurrencesChange={setAfterOccurrences}
+              endsOnDate={endsOnDate}
+              onEndsOnDateChange={setEndsOnDate}
+            />
 
             <div className="space-y-2 w-full">
               <Controller

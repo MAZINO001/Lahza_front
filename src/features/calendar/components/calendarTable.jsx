@@ -16,8 +16,6 @@ import {
   useDeleteEvent,
 } from "../hooks/useCalendarQuery";
 import { DataTable } from "@/components/table/DataTable";
-import EventDetailsDialog from "./EventDetailsDialog";
-import EventForm from "./EventForm";
 
 export default function CalendarTable() {
   const [sorting, setSorting] = useState([]);
@@ -93,25 +91,6 @@ export default function CalendarTable() {
         isLoading={isLoading}
         isInvoiceTable={false}
         onRowClick={handleEventClick}
-      />
-
-      {/* Event Details Dialog */}
-      <EventDetailsDialog
-        open={detailsOpen}
-        onOpenChange={setDetailsOpen}
-        event={selectedEvent}
-        onEdit={handleEditClick}
-        onDelete={handleEventDelete}
-      />
-
-      {/* Event Edit Form */}
-      <EventForm
-        open={editFormOpen}
-        onOpenChange={setEditFormOpen}
-        selectedDate={null}
-        editMode={editMode}
-        selectedEvent={editMode ? selectedEvent : null}
-        onEventEdit={handleEventEdit}
       />
     </div>
   );

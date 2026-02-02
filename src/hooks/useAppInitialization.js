@@ -7,22 +7,24 @@ import { usePayments } from '@/features/payments/hooks/usePayments/usePaymentsDa
 import { useOffers } from '@/features/offers/hooks/useOffers/useOffersData';
 import { useAuthContext } from '@/hooks/AuthContext';
 
+
 export function useAppInitialization() {
     const { user, loading: authLoading } = useAuthContext();
 
+    const isEnabled = !!user && !authLoading;
     // Call ALL hooks unconditionally - BEFORE any conditionals
-    const servicesQuery = useServices();
-    const clientsQuery = useClients();
-    const invoicesQuery = useDocumentsData('invoices');
-    const quotesQuery = useDocumentsData('quotes');
-    const projectsQuery = useProjects();
-    const paymentsQuery = usePayments();
-    const offersQuery = useOffers();
+    const servicesQuery = useServices({ enabled: isEnabled });
+    const clientsQuery = useClients({ enabled: isEnabled });
+    const invoicesQuery = useDocumentsData('invoices', { enabled: isEnabled });
+    const quotesQuery = useDocumentsData('quotes', { enabled: isEnabled });
+    const projectsQuery = useProjects({ enabled: isEnabled });
+    const paymentsQuery = usePayments({ enabled: isEnabled });
+    const offersQuery = useOffers({ enabled: isEnabled });
 
     // NOW you can use conditionals - AFTER all hooks are called
-    if (authLoading || !user) {
+    if (authLoading) {
         return {
-            isLoading: true, // or authLoading if you prefer
+            isLoading: true,
             servicesQuery: { isLoading: true },
             clientsQuery: { isLoading: true },
             invoicesQuery: { isLoading: true },
@@ -54,4 +56,4 @@ export function useAppInitialization() {
         paymentsQuery,
         offersQuery,
     };
-}
+} 

@@ -3,12 +3,15 @@ import { toast } from "sonner";
 import { apiClient } from '@/lib/api/clients';
 import { QUERY_KEYS } from '@/lib/queryKeys';
 
-export function useClients() {
+export function useClients(options) {
+    options = options || {};
+    var enabled = options.enabled !== undefined ? options.enabled : true;
     return useQuery({
         queryKey: QUERY_KEYS.clients,
         queryFn: () => apiClient.getAll(),
         staleTime: Infinity,
         refetchOnMount: false,
+        enabled,
         refetchOnWindowFocus: false,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch Clients");

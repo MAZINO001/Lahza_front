@@ -3,7 +3,9 @@ import { toast } from "sonner";
 import { apiDocuments } from '@/lib/api/documents';
 import { QUERY_KEYS } from '@/lib/queryKeys';
 
-export function useDocuments(type) {
+export function useDocuments(type, options) {
+    options = options || {};
+    var enabled = options.enabled !== undefined ? options.enabled : true;
     if (!type) throw new Error("useDocuments requires a type: 'invoices' or 'quotes'");
 
     // Use type-specific query key to prevent cache contamination
@@ -14,6 +16,7 @@ export function useDocuments(type) {
         queryFn: () => apiDocuments.getAll(type),
         staleTime: Infinity,
         refetchOnMount: false,
+        enabled,
         refetchOnWindowFocus: false,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch documents");

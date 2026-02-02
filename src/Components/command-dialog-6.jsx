@@ -22,11 +22,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ClientForm } from "@/components/auth/ClientForm";
 import { AddProjectModal } from "@/components/common/AddProjectModal";
 import { AddInvoiceModal } from "@/components/common/AddInvoiceModal";
 import { AddQuoteModal } from "@/components/common/AddQuoteModal";
-import { AddTaskModal } from "@/components/common/AddTaskModal";
 import { ClientFormModal } from "./client_components/addNewClient";
 
 export const title = "Command Dialog Actions Menu";
@@ -108,7 +106,6 @@ const Example = () => {
           </CommandGroup>
         </CommandList>
       </CommandDialog>
-
       {/* Add Client Dialog */}
       <Dialog open={clientDialogOpen} onOpenChange={setClientDialogOpen}>
         <DialogContent>
@@ -118,7 +115,6 @@ const Example = () => {
           <ClientFormModal onClose={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
-
       {/* Add Project Modal */}
       <AddProjectModal
         open={projectModalOpen}
@@ -127,7 +123,6 @@ const Example = () => {
           // Optional: Refresh data or show success message
         }}
       />
-
       {/* Add Invoice Modal */}
       <AddInvoiceModal
         open={invoiceModalOpen}
@@ -136,7 +131,6 @@ const Example = () => {
           // Optional: Refresh data or show success message
         }}
       />
-
       {/* Add Quote Modal */}
       <AddQuoteModal
         open={quoteModalOpen}
@@ -145,15 +139,7 @@ const Example = () => {
           // Optional: Refresh data or show success message
         }}
       />
-
       {/* Add Task Modal */}
-      <AddTaskModal
-        open={taskModalOpen}
-        onOpenChange={setTaskModalOpen}
-        onSuccess={() => {
-          // Optional: Refresh data or show success message
-        }}
-      />
     </>
   );
 };

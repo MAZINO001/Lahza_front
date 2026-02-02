@@ -3,13 +3,16 @@ import { toast } from "sonner";
 import { apiService } from '@/lib/api/services';
 import { QUERY_KEYS } from '@/lib/queryKeys';
 
-export function useServices() {
+export function useServices(options) {
+    options = options || {};
+    var enabled = options.enabled !== undefined ? options.enabled : true;
     return useQuery({
         queryKey: QUERY_KEYS.services,
         queryFn: () => apiService.getAll(),
         staleTime: Infinity,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
+        enabled,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch services");
             console.error(error);
