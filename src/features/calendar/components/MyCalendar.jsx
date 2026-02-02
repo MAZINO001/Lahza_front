@@ -3,7 +3,7 @@ import { IlamyCalendar } from "@ilamy/calendar";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
 import EventForm from "./EventForm";
-import EventDetailsDialog from "./EventDetailsDialog.jsx.jsx";
+import EventDetailsDialog from "./EventDetailsDialog.jsx";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -11,6 +11,11 @@ import {
   useEvents,
   useUpdateEvent,
 } from "../hooks/useCalendarQuery";
+import {
+  ramadanEvents,
+  eidAlFitrEvents,
+  eidAlAdhaEvents,
+} from "@/lib/CalendarData";
 
 export default function MyCalendar() {
   const { data: events } = useEvents();
@@ -228,12 +233,12 @@ export default function MyCalendar() {
       // Create Date objects (month is 0-indexed in JavaScript Date constructor)
       const startDateTime = event.start_date
         ? new Date(
-          startYear,
-          startMonth - 1,
-          startDay,
-          startHour || 9,
-          startMinute || 0,
-        )
+            startYear,
+            startMonth - 1,
+            startDay,
+            startHour || 9,
+            startMinute || 0,
+          )
         : new Date();
 
       const endDateTime = event.end_date
@@ -300,8 +305,143 @@ export default function MyCalendar() {
     };
   });
 
-  // Combine regular events with recurring events
-  const allEvents = [...transformedEvents, ...recurringEvents];
+  /************* START OF ISLAMIC HOLIDAYS *************/
+
+  const generateIslamicHolidays = () => {
+    const currentYear = new Date().getFullYear();
+    const islamicHolidays = [];
+
+    // Process Ramadan events - just the start date (single day)
+    const ramadanForYear = ramadanEvents.find((event) =>
+      event.start_date.startsWith(currentYear.toString()),
+    );
+
+    if (ramadanForYear) {
+      const startDate = new Date(ramadanForYear.start_date);
+
+      islamicHolidays.push({
+        title: "Ramadan Start",
+        start_date: startDate.toISOString().split("T")[0],
+        end_date: startDate.toISOString().split("T")[0],
+        start_hour: "00:00",
+        end_hour: "23:59",
+        all_day: 1,
+        category: "holiday",
+        status: "pending",
+        type: "offline",
+        color: "#10b981", // Green for Ramadan
+        description: "Start of the holy month of Ramadan",
+        guests: null,
+        url: null,
+        other_notes: null,
+        repeatedly: "yearly",
+        rrule: { freq: 0, interval: 1, dtstart: startDate },
+      });
+    }
+
+    // Process Eid al-Fitr events - single 3-day event
+    const eidAlFitrForYear = eidAlFitrEvents.find((event) =>
+      event.start_date.startsWith(currentYear.toString()),
+    );
+
+    if (eidAlFitrForYear) {
+      const startDate = new Date(eidAlFitrForYear.start_date);
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 2); // +2 to make it 3 days total (start, +1, +2)
+
+      islamicHolidays.push({
+        title: "Eid al-Fitr",
+        start_date: startDate.toISOString().split("T")[0],
+        end_date: endDate.toISOString().split("T")[0],
+        start_hour: "00:00",
+        end_hour: "23:59",
+        all_day: 1,
+        category: "holiday",
+        status: "pending",
+        type: "offline",
+        color: "#f59e0b", // Amber for Eid al-Fitr
+        description: "Celebration marking the end of Ramadan - 3 days",
+        guests: null,
+        url: null,
+        other_notes: null,
+        repeatedly: "yearly",
+        rrule: { freq: 0, interval: 1, dtstart: startDate },
+      });
+    }
+
+    // Process Eid al-Adha events - single 7-day event
+    const eidAlAdhaForYear = eidAlAdhaEvents.find((event) =>
+      event.start_date.startsWith(currentYear.toString()),
+    );
+
+    if (eidAlAdhaForYear) {
+      const startDate = new Date(eidAlAdhaForYear.start_date);
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 6); // +6 to make it 7 days total (start, +1, +2, +3, +4, +5, +6)
+
+      islamicHolidays.push({
+        title: "Eid al-Adha",
+        start_date: startDate.toISOString().split("T")[0],
+        end_date: endDate.toISOString().split("T")[0],
+        start_hour: "00:00",
+        end_hour: "23:59",
+        all_day: 1,
+        category: "holiday",
+        status: "pending",
+        type: "offline",
+        color: "#ef4444", // Red for Eid al-Adha
+        description:
+          "Festival of Sacrifice commemorating Prophet Ibrahim's devotion - 7 days",
+        guests: null,
+        url: null,
+        other_notes: null,
+        repeatedly: "yearly",
+        rrule: { freq: 0, interval: 1, dtstart: startDate },
+      });
+    }
+
+    return islamicHolidays;
+  };
+  /************* END OF ISLAMIC HOLIDAYS *************/
+
+  // Get Islamic holidays and transform them
+  const islamicEvents = generateIslamicHolidays().map((event) => {
+    const [startYear, startMonth, startDay] = event.start_date
+      .split("-")
+      .map(Number);
+    const [endYear, endMonth, endDay] = event.end_date.split("-").map(Number);
+    const [startHour, startMinute] = event.start_hour.split(":").map(Number);
+    const [endHour, endMinute] = event.end_hour.split(":").map(Number);
+
+    const startDateTime = new Date(
+      startYear,
+      startMonth - 1,
+      startDay,
+      startHour,
+      startMinute,
+    );
+    const endDateTime = new Date(
+      endYear,
+      endMonth - 1,
+      endDay,
+      endHour,
+      endMinute,
+    );
+
+    return {
+      ...event,
+      start: startDateTime,
+      end: endDateTime,
+      allDay: event.all_day === 1 || event.allDay === true,
+    };
+  });
+
+  // Combine regular events with recurring and Islamic events
+  const allEvents = [
+    ...transformedEvents,
+    ...recurringEvents,
+    ...islamicEvents,
+  ];
 
   // Filter out any null events from invalid dates
   const validEvents = allEvents.filter((event) => event !== null);
@@ -534,35 +674,14 @@ export default function MyCalendar() {
   //   },
   // ];
 
-  const translations = {
-    today: "Aujourd'hui",
-    month: "Mois",
-    week: "Semaine",
-    day: "Jour",
-    year: "Année",
-  };
-
-  console.log(validEvents);
-
   return (
     <div className="w-full h-screen flex flex-col">
-      <div className="flex-1 overflow-auto bg-background">
-        <div>
-          <Button
-            onClick={handleAddNew}
-            className="absolute top-4 right-4 z-50 "
-            size="sm"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add New
-          </Button>
-        </div>
-
+      <div className="flex-1 overflow-auto bg-background overflow-none">
         <IlamyCalendar
           stickyViewHeader={false}
           renderEventForm={(props) => <EventForm {...props} />}
           viewHeaderClassName="top-16 bg-background z-40 rounded-t-2xl"
-          headerClassName="bg-blue-50 bg-background text-blue-900 border-2 border-blue-200 p-4 "
+          headerClassName="bg-blue-50 bg-background text-blue-900 border-2 border-blue-200 p-4 rounded-t-md"
           events={validEvents}
           renderEvent={(event) => renderEvent(event, currentView)}
           locale="fr"
@@ -582,7 +701,7 @@ export default function MyCalendar() {
         />
       </div>
 
-      <div className="bg-background border-border border-t border-l border-r p-4">
+      <div className="bg-background border-border border-t border-l border-r p-4 rounded-b-md">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="flex items-center gap-2">

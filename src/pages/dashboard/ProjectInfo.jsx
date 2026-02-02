@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { mockProjectTasks, mockInvoices } from "@/lib/mockData";
+import { mockProjectTasks, mockInvoices } from "@/lib/CalendarData";
 import { StatusBadge } from "@/components/StatusBadge";
 
 const mockUser = {
