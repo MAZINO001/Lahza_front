@@ -11,10 +11,14 @@ import {
 } from "@/components/ui/empty";
 import { Building2, Copy, CreditCard, Wallet } from "lucide-react";
 import { formatId } from "@/lib/utils/formatId";
+import { useCompanyInfo } from "@/features/settings/hooks/useSettingsAgencyInfoQuery";
 
 export default function Transactions({ transactions, role }) {
+    const { data: companyInfo } = useCompanyInfo();
+    ;
     const copyRIB = () => {
-        const rib = "007640001433200000026029";
+        const rib = companyInfo?.rib || "007640001433200000026029";
+
         navigator.clipboard
             .writeText(rib)
             .then(() => {
@@ -35,9 +39,7 @@ export default function Transactions({ transactions, role }) {
 
     return (
         <div className="space-y-3">
-            <h3 className="font-semibold text-foreground mb-4">
-                Transactions
-            </h3>
+            <h3 className="font-semibold text-foreground mb-4">Transactions</h3>
             <div className="space-y-2">
                 {Array.isArray(transactions) && transactions.length > 0 ? (
                     transactions.map((tx) => (
@@ -80,7 +82,8 @@ export default function Transactions({ transactions, role }) {
                                         {tx?.percentage}% Payment
                                     </p>
                                     <p className="text-sm text-muted-foreground">
-                                        {tx?.payment_method?.toUpperCase() || "OTHER"} •
+                                        {tx?.payment_method?.toUpperCase() || "OTHER"} {" "}:{" "}
+                                        {companyInfo?.bank_name} •
                                         {tx?.payment_method === "bank" && (
                                             <span
                                                 className="ml-2 text-blue-600 hover:text-blue-700 cursor-pointer items-center gap-1 inline-flex"
@@ -99,9 +102,7 @@ export default function Transactions({ transactions, role }) {
                                         {tx?.payment_url && (
                                             <span
                                                 className="ml-2 text-blue-600 hover:text-blue-700 cursor-pointer inline-flex"
-                                                onClick={() =>
-                                                    handleStripePayment(tx.payment_url)
-                                                }
+                                                onClick={() => handleStripePayment(tx.payment_url)}
                                             >
                                                 Pay Now
                                             </span>

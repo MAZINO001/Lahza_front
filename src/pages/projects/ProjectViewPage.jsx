@@ -44,6 +44,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import api from "@/lib/utils/axios";
 import { normalizeExistingFiles } from "@/utils/normalizeFiles";
+import { CategoryBadge } from "@/components/CategoryBadge";
 
 export default function ProjectViewPage() {
   const { id } = useParams();
@@ -257,16 +258,7 @@ export default function ProjectViewPage() {
                       {client?.client?.company || client?.client?.name}
                     </span>
 
-                    <span>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Badge>Development</Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Development Department</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </span>
+                    <CategoryBadge category={"dev"} />
                   </div>
                   <span className="font-semibold text-sm text-muted-foreground">
                     {client?.client?.user?.name}

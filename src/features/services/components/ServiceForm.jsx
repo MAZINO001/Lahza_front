@@ -284,8 +284,8 @@ export function ServiceForm({ serviceId, onSuccess }) {
                     onChange={field.onChange}
                     {...field}
                     options={[
-                      { value: "development", label: "Development" },
-                      { value: "design", label: "Design" },
+                      { value: "dev", label: "Development" },
+                      { value: "Branding", label: "branding" },
                       { value: "marketing", label: "Marketing" },
                       { value: "management", label: "Management" },
                     ]}

@@ -6,7 +6,7 @@ import { useProjects } from '@/features/projects/hooks/useProjects/useProjectsDa
 import { usePayments } from '@/features/payments/hooks/usePayments/usePaymentsData';
 import { useOffers } from '@/features/offers/hooks/useOffers/useOffersData';
 import { useAuthContext } from '@/hooks/AuthContext';
-
+import { useCompanyInfo } from '@/features/settings/hooks/useSettingsAgencyInfoQuery';
 
 export function useAppInitialization() {
     const { user, loading: authLoading } = useAuthContext();
@@ -20,6 +20,7 @@ export function useAppInitialization() {
     const projectsQuery = useProjects({ enabled: isEnabled });
     const paymentsQuery = usePayments({ enabled: isEnabled });
     const offersQuery = useOffers({ enabled: isEnabled });
+    const companyInfoQuery = useCompanyInfo({ enabled: isEnabled });
 
     // NOW you can use conditionals - AFTER all hooks are called
     if (authLoading) {
@@ -32,6 +33,7 @@ export function useAppInitialization() {
             projectsQuery: { isLoading: true },
             paymentsQuery: { isLoading: true },
             offersQuery: { isLoading: true },
+            companyInfoQuery: { isLoading: true },
         };
     }
 
@@ -43,7 +45,8 @@ export function useAppInitialization() {
         quotesQuery.isLoading ||
         projectsQuery.isLoading ||
         paymentsQuery.isLoading ||
-        offersQuery.isLoading;
+        offersQuery.isLoading ||
+        companyInfoQuery.isLoading;
 
     // Return loading state and all query objects
     return {
@@ -55,5 +58,6 @@ export function useAppInitialization() {
         projectsQuery,
         paymentsQuery,
         offersQuery,
+        companyInfoQuery,
     };
-} 
+}

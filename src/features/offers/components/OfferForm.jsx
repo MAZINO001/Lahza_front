@@ -15,6 +15,8 @@ import {
 } from "@/features/offers/hooks/useOffersQuery";
 import { useServices } from "@/features/services/hooks/useServices";
 import DateField from "@/components/Form/DateField";
+import Checkbox from "@/components/Checkbox";
+import { Label } from "@/components/ui/label";
 
 export function OfferForm({ offerId, onSuccess }) {
   const { data: offer, isLoading } = useOffer(offerId);
@@ -38,21 +40,44 @@ export function OfferForm({ offerId, onSuccess }) {
   } = useForm({
     defaultValues: offer
       ? {
-        ...offer,
-        placement: offer.placement || [], // Handle existing placement data from backend
-      }
+          ...offer,
+          placement: offer.placement || [], // Handle existing placement data from backend
+        }
       : {
-        title: "",
-        description: "",
-        service_id: "",
-        discount_type: "percent",
-        discount_value: 0,
-        start_date: "",
-        end_date: "",
-        status: "active",
-        placement: [],
-      },
+          title: "",
+          description: "",
+          service_id: "",
+          discount_type: "percent",
+          discount_value: 0,
+          start_date: "",
+          end_date: "",
+          status: "active",
+          placement: [],
+        },
   });
+
+  const PLACEMENT_OPTIONS = [
+    { id: "header", label: "Header" },
+    { id: "calendar", label: "Calendar" },
+    { id: "projects", label: "Projects" },
+    { id: "invoices", label: "Invoices" },
+    { id: "quotes", label: "Quotes" },
+  ];
+
+  const PlacementCheckbox = ({ id, label, checked, onChange }) => (
+    <div className="flex items-center space-x-2 ">
+      <Checkbox
+        className="cursor-pointer"
+        type="checkbox"
+        id={id}
+        checked={checked}
+        onChange={onChange}
+      />
+      <Label htmlFor={id} className="text-sm cursor-pointer">
+        {label}
+      </Label>
+    </div>
+  );
 
   const onSubmit = (data) => {
     if (isSubmitting || !startSubmit()) return;
@@ -85,7 +110,7 @@ export function OfferForm({ offerId, onSuccess }) {
         <p className="text-sm text-muted-foreground">Loading services...</p>
       )}
 
-      <div className="flex gap-4">
+      <div className="flex items-end gap-4">
         <div className="w-full">
           <Controller
             name="title"
@@ -138,7 +163,7 @@ export function OfferForm({ offerId, onSuccess }) {
         />
       </div>
 
-      <div className="flex gap-4 w-full">
+      <div className="flex items-end gap-4 w-full">
         <div className="w-[50%]">
           <Controller
             name="discount_type"
@@ -157,7 +182,7 @@ export function OfferForm({ offerId, onSuccess }) {
           />
         </div>
 
-        <div className="w-[50%]">
+        <div className="w-[50%] ">
           <Controller
             name="discount_value"
             control={control}
@@ -237,49 +262,29 @@ export function OfferForm({ offerId, onSuccess }) {
             control={control}
             render={({ field }) => {
               const placementValues = field.value || [];
+
+              const handleCheckboxChange = (placementId) => (e) => {
+                if (e.target.checked) {
+                  field.onChange([...placementValues, placementId]);
+                } else {
+                  field.onChange(
+                    placementValues.filter((p) => p !== placementId),
+                  );
+                }
+              };
+
               return (
-                <>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="placement-header"
-                      checked={placementValues.includes("header")}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          field.onChange([...placementValues, "header"]);
-                        } else {
-                          field.onChange(
-                            placementValues.filter((p) => p !== "header"),
-                          );
-                        }
-                      }}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                <div className="flex gap-4 ">
+                  {PLACEMENT_OPTIONS.map((option) => (
+                    <PlacementCheckbox
+                      key={option.id}
+                      id={`placement-${option.id}`}
+                      label={option.label}
+                      checked={placementValues.includes(option.id)}
+                      onChange={handleCheckboxChange(option.id)}
                     />
-                    <label htmlFor="placement-header" className="text-sm">
-                      Header
-                    </label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="placement-calendar"
-                      checked={placementValues.includes("calendar")}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          field.onChange([...placementValues, "calendar"]);
-                        } else {
-                          field.onChange(
-                            placementValues.filter((p) => p !== "calendar"),
-                          );
-                        }
-                      }}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <label htmlFor="placement-calendar" className="text-sm">
-                      Calendar
-                    </label>
-                  </div>
-                </>
+                  ))}
+                </div>
               );
             }}
           />

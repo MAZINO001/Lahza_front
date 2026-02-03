@@ -30,15 +30,13 @@ export default function Transactions({ currentId }) {
   const { data: quotes, isLoading: loadingQuotes } = useDocuments("quotes");
   const { role } = useAuthContext();
   const navigate = useNavigate();
-  const columnsBySection = React.useMemo(
-    () => ({
-      invoices: DocumentsColumns(role, navigate, "invoice"),
-      quotes: DocumentsColumns(role, navigate, "quote"),
-      payments: paymentColumns(role, navigate),
-      projects: ProjectColumns(role, navigate),
-    }),
-    [role, navigate],
-  );
+
+  const columnsBySection = {
+    invoices: DocumentsColumns(role, navigate, "invoice"),
+    quotes: DocumentsColumns(role, navigate, "quote"),
+    payments: paymentColumns(role, navigate),
+    projects: ProjectColumns(role, navigate),
+  };
 
   const invoiceCount = invoices?.filter(
     (invoice) => invoice.client_id === Number(currentId),

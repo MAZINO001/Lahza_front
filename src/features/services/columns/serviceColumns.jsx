@@ -12,6 +12,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { CategoryBadge } from "@/components/CategoryBadge";
 
 export function getServiceColumns(role, navigate) {
   return [
@@ -64,16 +65,7 @@ export function getServiceColumns(role, navigate) {
       header: "Category",
       cell: ({ row }) => (
         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge>{row.getValue("category")}</Badge>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{row.getValue("category")} Department</p>
-            </TooltipContent>
-          </Tooltip>
-
-          {/* <Badge>{row.getValue("category")}</Badge> */}
+          <CategoryBadge category={row.getValue("category")} />
         </div>
       ),
     },

@@ -1,10 +1,11 @@
+import { StatusBadge } from "@/components/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatId } from "@/lib/utils/formatId";
 import { ArrowUpDown } from "lucide-react";
 import { Link } from "react-router-dom";
 
-export const getReceiptColumns = (role, navigate) => [
+export const getReceiptColumns = (role) => [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -19,7 +20,7 @@ export const getReceiptColumns = (role, navigate) => [
     // header: "Receipt ID",
     cell: ({ row }) => {
       const payment = row.original;
-      const id = payment.id;
+      const { id } = payment;
       return (
         <Link
           to={`/${role}/receipt/${id}`}
@@ -91,17 +92,7 @@ export const getReceiptColumns = (role, navigate) => [
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status");
-      const statusColors = {
-        paid: "bg-green-100 text-green-800",
-        pending: "bg-yellow-100 text-yellow-800",
-        failed: "bg-red-100 text-red-800",
-      };
-
-      return (
-        <Badge className={statusColors[status] || "bg-gray-100 text-gray-800"}>
-          {status}
-        </Badge>
-      );
+      return <StatusBadge status={status}>{status}</StatusBadge>;
     },
   },
   {
@@ -122,7 +113,7 @@ export const getReceiptColumns = (role, navigate) => [
         month: "short",
         day: "numeric",
       });
-      return <div className="ml-3">{!isNaN(date) ? formatted : "—"}</div>;
+      return <div className="ml-3"> {isNaN(date) ? "—" : formatted} </div>;
     },
   },
 ];

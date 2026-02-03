@@ -1,3 +1,5 @@
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+
 // const statusConfig = {
 //   draft: {
 //     label: "Draft",
@@ -152,29 +154,43 @@ const statusConfig = {
 
 
 
-export function StatusBadge({ status, type = "default", is_fully_signed }) {
+export function StatusBadge({ status, type = "default", is_fully_signed, showTooltip = true, tooltip }) {
   const effectiveStatus = is_fully_signed ? "signed" : status;
   const config = statusConfig[effectiveStatus] || {
     label: status,
     color: "bg-slate-100 text-muted-foreground border-border",
+    description: `Status: ${status}`,
   };
 
-  if (type === "dot") {
-    return (
-      <span className="flex items-center text-sm">
-        <span
-          className={`w-2 h-2 rounded-full mr-2 ${config.color.split(" ")[0]}`}
-        ></span>
-        {config.label}
-      </span>
-    );
-  }
+  const tooltipText = tooltip || config.description;
 
-  return (
+  const badgeContent = type === "dot" ? (
+    <span className="flex items-center text-sm">
+      <span
+        className={`w-2 h-2 rounded-full mr-2 ${config.color.split(" ")[0]}`}
+      ></span>
+      {config.label}
+    </span>
+  ) : (
     <span
       className={`inline-flex justify-center items-center px-2.5 py-0.5 w-22 rounded-full text-xs font-medium border ${config.color}`}
     >
       {config.label}
     </span>
   );
+
+  if (showTooltip && tooltipText) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {badgeContent}
+        </TooltipTrigger>
+        <TooltipContent sideOffset={5} className="bg-gray-900 text-white">
+          <p>{tooltipText}</p>
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return badgeContent;
 }

@@ -32,7 +32,10 @@ import {
 } from "../hooks/usePayments/usePaymentsData";
 import { Link } from "react-router-dom";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
+import { useCompanyInfo } from "@/features/settings/hooks/useSettingsAgencyInfoQuery";
 export function paymentColumns(role, { onEditPaidAt }) {
+  const { data: companyInfo } = useCompanyInfo();
+
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copied!`, {
@@ -79,15 +82,6 @@ export function paymentColumns(role, { onEditPaidAt }) {
         );
       },
     },
-    // {
-    //   accessorKey: "client_name",
-    //   header: "Client Name",
-    //   cell: ({ row }) => {
-    //     const user = "unknown";
-    //     console.log(user);
-    //     return <div> {user}</div>;
-    //   },
-    // },
     {
       accessorKey: "total",
       header: ({ column }) => (
@@ -263,8 +257,8 @@ export function paymentColumns(role, { onEditPaidAt }) {
 
                       if (payment.payment_method === "bank") {
                         copyToClipboard(
-                          "007 640 0014332000000260 29",
-                          "Payment Url",
+                          companyInfo?.rib || "007 640 0014332000000260 29",
+                          "RIB",
                         );
                       }
                     }}

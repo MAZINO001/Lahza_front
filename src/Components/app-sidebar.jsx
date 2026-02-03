@@ -71,11 +71,6 @@ export function AppSidebar(props) {
       ],
       navSecondary: [
         { title: "Tickets", url: `/${role}/tickets`, icon: IconInvoice },
-        // {
-        //   title: "Settings",
-        //   url: `/${role}/settings/company_basics`,
-        //   icon: IconSettings,
-        // },
       ],
     },
     admin: {
@@ -94,16 +89,16 @@ export function AppSidebar(props) {
               icon: Calendar1,
             },
             {
+              title: "Projects",
+              url: `/${role}/projects`,
+              icon: BriefcaseIcon,
+            },
+            {
               title: "Invoices",
               url: `/${role}/invoices`,
               icon: IconFileInvoice,
             },
             { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
-            {
-              title: "Projects",
-              url: `/${role}/projects`,
-              icon: BriefcaseIcon,
-            },
             {
               title: "Payments",
               url: `/${role}/payments`,
@@ -119,9 +114,7 @@ export function AppSidebar(props) {
         {
           title: "Management",
           items: [
-            { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
             { title: "Clients", url: `/${role}/clients`, icon: User },
-            { title: "Services", url: `/${role}/services`, icon: Package },
             {
               title: "Plans",
               url: `/${role}/plans`,
@@ -147,6 +140,8 @@ export function AppSidebar(props) {
                 },
               ],
             },
+            { title: "Services", url: `/${role}/services`, icon: Package },
+            { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },
             {
               title: "Tickets",
               url: `/${role}/tickets`,
@@ -175,11 +170,6 @@ export function AppSidebar(props) {
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },
-        // {
-        //   title: "Settings",
-        //   url: "/admin/settings/company_basics",
-        //   icon: IconSettings,
-        // },
       ],
     },
   };

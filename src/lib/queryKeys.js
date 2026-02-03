@@ -53,4 +53,13 @@ export const QUERY_KEYS = {
 
     // Activity Logs
     activityLogs: ['activityLogs'],
+
+    // Company Info
+    companyInfo: ['company-info'],
+    certifications: ['certifications'],
+    certification: (id) => ['certification', id],
+
+    // Agency
+    agency: ['agency'],
+    agencyById: (id) => ['agency', id],
 };

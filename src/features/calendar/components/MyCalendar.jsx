@@ -16,6 +16,7 @@ import {
   eidAlFitrEvents,
   eidAlAdhaEvents,
 } from "@/lib/CalendarData";
+import EventsSummary from "./EventsSummary";
 
 export default function MyCalendar() {
   const { data: events } = useEvents();
@@ -233,12 +234,12 @@ export default function MyCalendar() {
       // Create Date objects (month is 0-indexed in JavaScript Date constructor)
       const startDateTime = event.start_date
         ? new Date(
-          startYear,
-          startMonth - 1,
-          startDay,
-          startHour || 9,
-          startMinute || 0,
-        )
+            startYear,
+            startMonth - 1,
+            startDay,
+            startHour || 9,
+            startMinute || 0,
+          )
         : new Date();
 
       const endDateTime = event.end_date
@@ -674,62 +675,35 @@ export default function MyCalendar() {
   //   },
   // ];
 
-  const isCompletedFunctionality = () => {
-    console.log("tis is completed ");
-  };
-
   return (
     <div className="w-full h-screen flex flex-col">
-      <div className="flex-1 overflow-auto bg-background overflow-none">
-        <IlamyCalendar
-          stickyViewHeader={false}
-          renderEventForm={(props) => <EventForm {...props} />}
-          viewHeaderClassName="top-16 bg-background z-40 rounded-t-2xl"
-          headerClassName="bg-blue-50 bg-background text-blue-900 border-2 border-blue-200 p-4 rounded-t-md"
-          events={validEvents}
-          renderEvent={(event) => renderEvent(event, currentView)}
-          locale="fr"
-          timezone="Europe/Paris"
-          firstDayOfWeek="monday"
-          initialView="month"
-          translator={translator}
-          timeFormat="24-hour"
-          onEventClick={handleEventClick}
-          onCellClick={handleCellClick}
-          onViewChange={handleViewChange}
-          onEventUpdate={handleEventUpdate}
-          onEventDelete={handleEventDelete}
-          onDateChange={handleDateChange}
-          dayMaxEvents={8}
-          eventSpacing={2}
-        />
-      </div>
-
-      <div className="bg-background border-border border-t border-l border-r p-4 rounded-b-md">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-3 gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-red-500"></span>
-              <span>
-                Haute priorité:
-                {validEvents?.filter((e) => e.priority === "high").length}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-yellow-500"></span>
-              <span>
-                Priorité moyenne:
-                {validEvents?.filter((e) => e.priority === "medium").length}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-              <span>
-                Basse priorité:
-                {validEvents?.filter((e) => e.priority === "low").length}
-              </span>
-            </div>
-          </div>
+      <div className="flex-1 flex gap-4 w-full">
+        <div className="w-[70%] overflow-auto">
+          <IlamyCalendar
+            stickyViewHeader={false}
+            renderEventForm={(props) => <EventForm {...props} />}
+            viewHeaderClassName="top-16 bg-background z-40"
+            headerClassName="bg-blue-50 bg-background text-blue-900 border-2 border-border p-4 rounded-t-md"
+            events={validEvents}
+            renderEvent={(event) => renderEvent(event, currentView)}
+            locale="fr"
+            timezone="Europe/Paris"
+            firstDayOfWeek="monday"
+            initialView="month"
+            translator={translator}
+            timeFormat="24-hour"
+            onEventClick={handleEventClick}
+            onCellClick={handleCellClick}
+            onViewChange={handleViewChange}
+            onEventUpdate={handleEventUpdate}
+            onEventDelete={handleEventDelete}
+            onDateChange={handleDateChange}
+            dayMaxEvents={8}
+            eventSpacing={2}
+          />
+        </div>
+        <div className="w-[30%]">
+          <EventsSummary />
         </div>
       </div>
 
