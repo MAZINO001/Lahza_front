@@ -23,7 +23,7 @@ export const globalFnStore = create((set) => ({
     },
     handleDownloadInvoice_Quotes: async (id, type) => {
         try {
-            const response = await api.get(`http://127.0.0.1:8000/api/pdf/${type}/${id}`, { responseType: 'blob', withCredentials: true });
+            const response = await api.get(`/pdf/${type}/${id}`, { responseType: 'blob' });
 
             const blob = response.data;
 
@@ -118,14 +118,17 @@ export const globalFnStore = create((set) => ({
         }
     },
 
-    handleDeleteTask: async (projectId, id, reloadCallback) => {
-        try {
-            await api.delete(`${import.meta.env.VITE_BACKEND_URL}/projects/tasks/${projectId}/${id}`);
-            if (reloadCallback) reloadCallback();
-        } catch (error) {
-            console.log(error);
-            toast.error("Failed to delete task");
-        }
+    handleDeleteTask: (projectId, id, deleteMutation, reloadCallback) => {
+        deleteMutation.mutate({ projectId, taskId: id }, {
+            onSuccess: () => {
+                toast.success("Task deleted successfully");
+                if (reloadCallback) reloadCallback();
+            },
+            onError: (error) => {
+                console.log(error);
+                toast.error("Failed to delete task");
+            }
+        });
     },
 
 

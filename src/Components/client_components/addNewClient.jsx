@@ -40,7 +40,7 @@ export function ClientFormModal({ onClientCreated, onClose }) {
       registerStore.setField("ice", "");
       registerStore.setField("siren", "");
     } else {
-      registerStore.setField("currency", "");
+      registerStore.setField("currency", "EUR");
       registerStore.setField("vat", "");
       registerStore.setField("ice", "");
     }
@@ -409,7 +409,6 @@ export function ClientFormModal({ onClientCreated, onClose }) {
                     />
                   )}
                 />
-
                 <FormField
                   id="vat"
                   label="VAT"
@@ -417,7 +416,6 @@ export function ClientFormModal({ onClientCreated, onClose }) {
                   disabled
                   readOnly
                 />
-
                 <CurrencySelect value="MAD" disabled readOnly />
               </>
             ) : (
@@ -425,9 +423,6 @@ export function ClientFormModal({ onClientCreated, onClose }) {
                 <Controller
                   name="siren"
                   control={control}
-                  rules={{
-                    required: "SIREN is required",
-                  }}
                   render={({ field, fieldState: { error } }) => (
                     <FormField
                       id="siren"

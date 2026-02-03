@@ -5,10 +5,8 @@ import { toast } from "sonner";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const apiTask = {
-    // Get all tasks across all projects
     getAllTasks: () => api.get(`${API_URL}/tasks`).then((res) => res.data ?? []),
 
-    // Get tasks for a specific project (filter from all tasks)
     getByProject: async (projectId) => {
         const response = await api.get(`${API_URL}/tasks`);
         const allTasks = response.data ?? [];

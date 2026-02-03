@@ -233,12 +233,12 @@ export default function MyCalendar() {
       // Create Date objects (month is 0-indexed in JavaScript Date constructor)
       const startDateTime = event.start_date
         ? new Date(
-            startYear,
-            startMonth - 1,
-            startDay,
-            startHour || 9,
-            startMinute || 0,
-          )
+          startYear,
+          startMonth - 1,
+          startDay,
+          startHour || 9,
+          startMinute || 0,
+        )
         : new Date();
 
       const endDateTime = event.end_date
@@ -673,6 +673,10 @@ export default function MyCalendar() {
   //     end: "00:00",
   //   },
   // ];
+
+  const isCompletedFunctionality = () => {
+    console.log("tis is completed ");
+  };
 
   return (
     <div className="w-full h-screen flex flex-col">

@@ -87,41 +87,33 @@ export function TasksForm({ task, projectId, onCancel, onSuccess }) {
           />
         )}
       />
-      <div className="flex gap-4 w-full">
-        <div className="w-1/2">
-          <Controller
-            name="start_date"
-            control={control}
-            rules={{ required: "Start Date is required" }}
-            render={({ field }) => (
-              // <FormField
-              <DateField
-                label="Start Date"
-                type="date"
-                placeholder="e.g. Complete frontend development"
-                error={errors.start_date?.message}
-                {...field}
-              />
-            )}
-          />
-        </div>
-        <div className="w-1/2">
-          <Controller
-            name="end_date"
-            control={control}
-            rules={{ required: "End Date is required" }}
-            render={({ field }) => (
-              // <FormField
-              <DateField
-                label="End Date"
-                type="date"
-                placeholder="e.g. Complete frontend development"
-                error={errors.end_date?.message}
-                {...field}
-              />
-            )}
-          />
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+        <Controller
+          name="start_date"
+          control={control}
+          rules={{ required: "Start Date is required" }}
+          render={({ field }) => (
+            <DateField
+              label="Start Date"
+              type="date"
+              error={errors.start_date?.message}
+              {...field}
+            />
+          )}
+        />
+        <Controller
+          name="end_date"
+          control={control}
+          rules={{ required: "End Date is required" }}
+          render={({ field }) => (
+            <DateField
+              label="End Date"
+              type="date"
+              error={errors.end_date?.message}
+              {...field}
+            />
+          )}
+        />
       </div>
 
       <div className="flex justify-end gap-3 pt-6">

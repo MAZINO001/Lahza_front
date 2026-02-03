@@ -257,10 +257,9 @@ export default function Inv_Qt_page({ type, currentId }) {
   const handlePrintPdf = async () => {
     try {
       const response = await api.get(
-        `http://127.0.0.1:8000/api/pdf/${currentSection}/${currentId}`,
+        `/pdf/${currentSection}/${currentId}`,
         {
           responseType: "blob",
-          withCredentials: true,
         },
       );
       const blob = response.data;

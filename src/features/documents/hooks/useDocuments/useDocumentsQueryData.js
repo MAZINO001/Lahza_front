@@ -23,3 +23,7 @@ export {
 export {
     useNoInvoiceProject
 } from './useProjects';
+
+export {
+    useInvoicesWithoutProjects
+} from './useInvoicesWithoutProjects';

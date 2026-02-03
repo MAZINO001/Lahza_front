@@ -1,10 +1,9 @@
 // src/features/tasks/columns/taskColumns.jsx
-import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
-import { TooltipButton } from "@/components/common/TooltipButton";
-import { globalFnStore } from "@/hooks/GlobalFnStore";
-import AlertDialogDestructive from "@/components/alert-dialog-destructive-1.jsx";
+import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-export function getTaskColumns(navigate, role, projectId) {
+import { TaskActions } from "../components/TaskActions";
+
+export function getTaskColumns(navigate, role, projectId, deleteMutation) {
   return [
     {
       accessorKey: "title",
@@ -59,20 +58,14 @@ export function getTaskColumns(navigate, role, projectId) {
       header: "Actions",
       cell: ({ row }) => {
         const task = row.original;
-        const { HandleEditTask, handleDeleteTask } = globalFnStore();
-
         return (
-          <div className="flex gap-2">
-            <TooltipButton
-              tooltip="Edit Task"
-              onClick={() => HandleEditTask(task.id, navigate, role)}
-            >
-              <Pencil className="h-4 w-4" />
-            </TooltipButton>
-            <AlertDialogDestructive
-              onDelete={() => handleDeleteTask(projectId, task.id)}
-            />
-          </div>
+          <TaskActions
+            task={task}
+            projectId={projectId}
+            deleteMutation={deleteMutation}
+            navigate={navigate}
+            role={role}
+          />
         );
       },
     },

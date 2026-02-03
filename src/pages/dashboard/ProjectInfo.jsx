@@ -4,8 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { mockProjectTasks, mockInvoices } from "@/lib/CalendarData";
 import { StatusBadge } from "@/components/StatusBadge";
+import { useAllTasks } from "@/features/tasks/hooks/useTasksQuery";
+import { useDocuments } from "@/features/documents/hooks/useDocuments/useDocuments";
 
 const mockUser = {
   id: "client-001-uuid-here",
@@ -17,24 +18,17 @@ const services = ["Hosting", "Logo Design", "Web App Creation"];
 
 export default function ProjectInfo() {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [projects, setProjects] = useState([]);
-  const [quotes, setQuotes] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      if (!mockUser) return;
-      setTasks(mockProjectTasks);
-      setInvoices(mockInvoices);
-      setLoading(false);
-    };
-    loadDashboardData();
-  }, []);
+  // Use real hooks to fetch data
+  const { data: tasks = [], isLoading: tasksLoading, error: tasksError } = useAllTasks();
+  const { data: invoices = [], isLoading: invoicesLoading, error: invoicesError } = useDocuments("invoices");
+  const { data: quotes = [], isLoading: quotesLoading, error: quotesError } = useDocuments("quotes");
 
-  const activeProjects = projects.filter(
-    (p) => p.status === "in_progress" || p.status === "planning"
+  const loading = tasksLoading || invoicesLoading || quotesLoading;
+  const error = tasksError || invoicesError || quotesError;
+
+  const activeProjects = tasks.filter(
+    (task) => task.status === "in_progress" || task.status === "planning"
   );
   const pendingQuotes = quotes.filter((q) => q.status === "pending");
   const pendingInvoices = invoices.filter((i) => i.status === "pending");
@@ -43,6 +37,14 @@ export default function ProjectInfo() {
     return (
       <div className="flex items-center justify-center h-64">
         <Skeleton className="h-12 w-12 rounded-full" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-red-500">Error loading data: {error.message}</p>
       </div>
     );
   }
@@ -74,15 +76,25 @@ export default function ProjectInfo() {
                     >
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                         <div>
-                          <h4 className="text-sm font-medium">{task.title}</h4>
+                          <h4 className="text-sm font-medium">{task.title || task.name}</h4>
+                          {task.description && (
+                            <p className="text-xs text-muted-foreground mt-1">{task.description}</p>
+                          )}
                         </div>
 
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-xs text-muted-foreground">
                           <StatusBadge status={task.status} />
-                          <span>Assigned to: {task.assigned_to}</span>
-                          <span>
-                            Due: {new Date(task.due_date).toLocaleDateString()}
-                          </span>
+                          {task.assigned_to && (
+                            <span>Assigned to: {task.assigned_to}</span>
+                          )}
+                          {task.due_date && (
+                            <span>
+                              Due: {new Date(task.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                          {task.project_id && (
+                            <span>Project ID: {task.project_id}</span>
+                          )}
                         </div>
                       </div>
                     </Card>

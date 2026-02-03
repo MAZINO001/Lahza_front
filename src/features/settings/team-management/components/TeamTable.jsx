@@ -7,7 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import TeamColumns from "./TeamColumns";
+import TeamColumns from "../../columns/TeamColumns";
 import { useAuthContext } from "@/hooks/AuthContext";
 
 import FormField from "@/components/Form/FormField";

@@ -5,6 +5,5 @@ import { useAuthContext } from "@/hooks/AuthContext";
 
 export default function ServiceCreatePage() {
   const navigate = useNavigate();
-  const {role} = useAuthContext()
-  return <ServiceForm onSuccess={() => navigate(`/${role}/services`)} />;
+  return <ServiceForm onSuccess={() => navigate(-1)} />;
 }

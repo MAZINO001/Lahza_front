@@ -52,7 +52,7 @@ export default function ProjectViewPage() {
   const { data: project, isLoading } = useProject(id);
   const { data: projectTeam } = useProjectTeam(id);
   const { data: additionalData } = useAdditionalData(id);
-  // const { data: history } = useProjectHistory(id);
+  const { data: history = [] } = useProjectHistory(id);
   const { data: tasks } = useTasks(id);
   const { data: transactions } = useTransActions(id);
 

@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import FormField from "@/components/Form/FormField";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { getUserManagementColumns } from "./UserColumns";
+import { getUserManagementColumns } from "../../columns/UserColumns";
 import { DataTable } from "@/components/table/DataTable";
 import { Upload } from "lucide-react";
 import { useUsers } from "@/features/settings/hooks/useUsersQuery";

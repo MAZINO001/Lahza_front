@@ -10,6 +10,6 @@ export default function ServiceEditPage() {
 
 
   return (
-    <OfferForm offerId={id} onSuccess={() => navigate(`/${role}/offers`)} />
+    <OfferForm offerId={id} onSuccess={() => navigate(-1)} />
   );
 }

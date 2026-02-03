@@ -31,12 +31,18 @@ export function AddTaskModal({ open, onOpenChange, onSuccess }) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create New Task</DialogTitle>
         </DialogHeader>
         <div className="mt-4">
-          {!selectedProjectId ? (
+          {selectedProjectId ? (
+            <TasksForm
+              projectId={selectedProjectId}
+              onCancel={handleCancel}
+              onSuccess={handleSuccess}
+            />
+          ) : (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 Select a project to create a task for:
@@ -49,12 +55,6 @@ export function AddTaskModal({ open, onOpenChange, onSuccess }) {
                 placeholder="Select a project"
               />
             </div>
-          ) : (
-            <TasksForm
-              projectId={selectedProjectId}
-              onCancel={handleCancel}
-              onSuccess={handleSuccess}
-            />
           )}
         </div>
       </DialogContent>

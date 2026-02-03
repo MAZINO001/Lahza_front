@@ -152,12 +152,7 @@ const ProfilePage = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          {!isEditing ? (
-            <Button onClick={() => setIsEditing(true)} variant="outline">
-              <Edit2 className="w-4 h-4 mr-2" />
-              Edit Profile
-            </Button>
-          ) : (
+          {isEditing ? (
             <div className="flex gap-2">
               <Button onClick={onCancel} variant="outline">
                 Cancel
@@ -169,6 +164,11 @@ const ProfilePage = () => {
                 {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
+          ) : (
+            <Button onClick={() => setIsEditing(true)} variant="outline">
+              <Edit2 className="w-4 h-4 mr-2" />
+              Edit Profile
+            </Button>
           )}
         </div>
       </div>

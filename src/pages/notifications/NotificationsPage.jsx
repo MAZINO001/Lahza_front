@@ -280,7 +280,7 @@ export default function NotificationsPage() {
               <Card
                 key={notification.id}
                 className={`cursor-pointer transition-all hover:shadow-md ${
-                  !notification.read ? "border-l-4 border-l-blue-500" : ""
+                  notification.read ? "" : "border-l-4 border-l-blue-500"
                 }`}
                 onClick={() => handleNotificationClick(notification)}
               >
@@ -294,9 +294,7 @@ export default function NotificationsPage() {
                           <div className="flex items-center gap-2 mb-2">
                             <h3
                               className={`font-semibold text-lg ${
-                                !notification.read
-                                  ? "text-foreground"
-                                  : "text-muted-foreground"
+                                notification.read ? "text-muted-foreground" : "text-foreground"
                               }`}
                             >
                               {notification.title}

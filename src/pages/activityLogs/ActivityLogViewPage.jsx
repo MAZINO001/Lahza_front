@@ -33,7 +33,7 @@ export default function ActivityLogViewPage() {
   const { id } = useParams();
   const { role } = useAuthContext();
   const { data: log, isLoading } = useLog(id);
-  console.log(log);
+  
   if (isLoading) {
     return <div>Loading ...</div>;
   }

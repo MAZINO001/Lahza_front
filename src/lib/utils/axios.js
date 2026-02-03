@@ -5,7 +5,7 @@ const api = axios.create({
   headers: {
     Accept: "application/json",
   },
-  withCredentials: true, // Enable HttpOnly cookies
+  withCredentials: true,
 });
 api.interceptors.response.use(
   (response) => response,

@@ -10,10 +10,6 @@ import SelectField from "@/Components/Form/SelectField";
 import TextareaField from "@/Components/Form/TextareaField";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  useDocuments,
-  useNoInvoiceProject,
-} from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
-import {
   useCreateProject,
   useProject,
   useUpdateProject,
@@ -24,6 +20,7 @@ import { useClients } from "@/features/clients/hooks/useClients/useClients";
 import AddClientModel from "@/components/common/AddClientModel";
 import DateField from "@/components/Form/DateField";
 import { cn } from "@/lib/utils";
+import { useInvoicesWithoutProjects } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 
 export function ProjectForm({ onSuccess }) {
   const [directProject, setDirectProject] = useState(false);
@@ -38,7 +35,10 @@ export function ProjectForm({ onSuccess }) {
   const isCloneMode = !!cloneFromId;
 
   const { data: invoices = [], isLoading: invoicesLoading } =
-    useNoInvoiceProject();
+    useInvoicesWithoutProjects();
+
+  console.log(invoices);
+
   const { data: project = [], isLoading: projectLoading } = useProject(id);
   const createMutation = useCreateProject();
   const updateMutation = useUpdateProject();

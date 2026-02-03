@@ -758,7 +758,7 @@ export default function AppRoutes() {
                 }
               />
               <Route
-                path="project/:id/task/:id/edit"
+                path="project/:id/task/:taskId/edit"
                 element={
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading task editor...</div>}>

@@ -143,14 +143,14 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
     const step1Fields = handleClientCreatedByAdmin
       ? ["client_type", "name", "email", "phone", "company"]
       : [
-        "client_type",
-        "name",
-        "email",
-        "password",
-        "password_confirmation",
-        "phone",
-        "company",
-      ];
+          "client_type",
+          "name",
+          "email",
+          "password",
+          "password_confirmation",
+          "phone",
+          "company",
+        ];
 
     const fieldsToValidate =
       currentStep === 1 ? step1Fields : ["address", "zip", "city", "country"];
@@ -324,8 +324,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                   rules={{
                     required: "Password confirmation is required",
                     validate: (val) =>
-                      val === watch("password") ||
-                      "Passwords do not match",
+                      val === watch("password") || "Passwords do not match",
                   }}
                   render={({ field }) => (
                     <FormField
@@ -337,7 +336,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                         field.onChange(e.target.value);
                         registerStore.setField(
                           "password_confirmation",
-                          e.target.value
+                          e.target.value,
                         );
                       }}
                       error={errors.password_confirmation?.message}

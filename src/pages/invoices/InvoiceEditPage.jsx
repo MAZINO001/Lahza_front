@@ -8,7 +8,7 @@ export default function InvoiceEditPage() {
   return (
     <DocumentForm
       type={"invoices"}
-      onSuccess={() => navigate(`/${role}/invoices`)}
+      onSuccess={() => navigate(-1)}
     />
   );
 }

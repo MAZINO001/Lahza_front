@@ -62,7 +62,7 @@ export default function Component({ data }) {
 
   return (
     <Timeline>
-      {data.map((item) => (
+      {data?.map((item) => (
         <TimelineItem
           key={item.id}
           step={item.id}

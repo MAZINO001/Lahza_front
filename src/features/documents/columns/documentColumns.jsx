@@ -37,6 +37,7 @@ import {
   useCreateInvoiceFromQuote,
 } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
+import { TooltipStatus } from "@/components/common/TooltipStatus";
 export function DocumentsColumns(role, navigate, currentSection) {
   const isInvoice = currentSection === "invoice";
   return [
@@ -232,7 +233,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
           );
           return (
             <div className="flex items-center gap-2">
-              <StatusBadge status={status} />
+              <TooltipStatus status={status} />
               <span className="text-xs font-medium text-red-600">
                 {daysOverdue} {daysOverdue === 1 ? "day" : "days"} overdue
               </span>
@@ -240,7 +241,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
           );
         }
 
-        return <StatusBadge status={status} />;
+        return <TooltipStatus status={status} />;
       },
     },
 
@@ -281,7 +282,6 @@ export function DocumentsColumns(role, navigate, currentSection) {
             await api.post(url, formData, {
               headers: {
                 "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
             });
 
@@ -317,9 +317,6 @@ export function DocumentsColumns(role, navigate, currentSection) {
               `${import.meta.env.VITE_BACKEND_URL}/${endpoint}/${document.id}/signature`,
               {
                 params: { type },
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
               },
             );
 

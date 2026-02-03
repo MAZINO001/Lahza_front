@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/table";
 import FormField from "@/components/Form/FormField";
 import { getTaskColumns } from "../columns/taskColumns";
-import { useTasks } from "../hooks/useTasksQuery";
+import { useTasks, useDeleteTask } from "../hooks/useTasksQuery";
 import { DataTable } from "@/components/table/DataTable";
 import { ArrowLeft, Plus } from "lucide-react";
 import { useAuthContext } from "@/hooks/AuthContext";
@@ -33,10 +33,11 @@ export const TasksTable = React.memo(function TasksTable() {
   const { role } = useAuthContext();
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
+  const deleteMutation = useDeleteTask();
 
   const columns = React.useMemo(
-    () => getTaskColumns(navigate, role, projectId),
-    [navigate, role, projectId]
+    () => getTaskColumns(navigate, role, projectId, deleteMutation),
+    [navigate, role, projectId, deleteMutation]
   );
 
   const table = useReactTable({

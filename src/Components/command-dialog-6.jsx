@@ -119,25 +119,19 @@ const Example = () => {
       <AddProjectModal
         open={projectModalOpen}
         onOpenChange={setProjectModalOpen}
-        onSuccess={() => {
-          // Optional: Refresh data or show success message
-        }}
+
       />
       {/* Add Invoice Modal */}
       <AddInvoiceModal
         open={invoiceModalOpen}
         onOpenChange={setInvoiceModalOpen}
-        onSuccess={() => {
-          // Optional: Refresh data or show success message
-        }}
+
       />
       {/* Add Quote Modal */}
       <AddQuoteModal
         open={quoteModalOpen}
         onOpenChange={setQuoteModalOpen}
-        onSuccess={() => {
-          // Optional: Refresh data or show success message
-        }}
+
       />
       {/* Add Task Modal */}
     </>

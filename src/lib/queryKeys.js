@@ -17,6 +17,7 @@ export const QUERY_KEYS = {
     // Invoices
     invoices: ['invoices'],
     invoice: (id) => ['invoice', id],
+    invoicesWithoutProjects: ['invoices', 'withoutProjects'],
 
     // Quotes
     quotes: ['quotes'],

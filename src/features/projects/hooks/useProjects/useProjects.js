@@ -10,8 +10,8 @@ export function useProjects(options) {
         queryKey: QUERY_KEYS.projects,
         queryFn: apiProjects.getAll,
         enabled,
-        staleTime: Infinity,
-        refetchOnMount: false,
+        staleTime: 5 * 60 * 1000, // 5 minutes instead of Infinity
+        refetchOnMount: true, // Enable refetch on mount
         refetchOnWindowFocus: false,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch projects");

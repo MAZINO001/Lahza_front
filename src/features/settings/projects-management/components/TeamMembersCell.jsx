@@ -15,10 +15,11 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
-import { useProjectTeam } from "../../hooks/useProjects/useProjectsDataQuery";
+import { useProjectTeam } from "../../hooks/useProjectsQuery";
 
 function TeamMembersCell({ row, table }) {
   const projectId = row.original.id;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const selected = row.getValue("members") ?? [];
   const members = table?.options?.meta?.availableMembers ?? [];
   const [open, setOpen] = React.useState(false);

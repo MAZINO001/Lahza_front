@@ -10,6 +10,9 @@ export const apiDocuments = {
     getProjects: () =>
         api.get('/getproject/invoices').then((res) => res.data || []),
 
+    getInvoices: () =>
+        api.get('/invoice/projects').then((res) => res.data || []),
+
     create: (data, type) =>
         api.post(`/${type}`, data),
 

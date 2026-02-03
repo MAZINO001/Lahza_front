@@ -194,7 +194,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { projectColumns } from "./ProjectColumns";
+import { projectColumns } from "../../columns/ProjectColumns";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import {
@@ -202,7 +202,7 @@ import {
   useAddProjectAssignment,
   useDeleteProjectAssignment,
   useUpdateProject,
-} from "../../hooks/useProjects/useProjectsDataQuery";
+} from "../../hooks/useProjectsQuery";
 import { useTeams } from "../../hooks/useTeamsQuery";
 
 export default function ProjectsTable() {
@@ -228,10 +228,10 @@ export default function ProjectsTable() {
     const teams = teamsResponse?.data || teamsResponse || [];
     return Array.isArray(teams)
       ? teams.map((team) => ({
-          id: team?.id,
-          name: team?.user?.name,
-          email: team?.user?.email,
-        }))
+        id: team?.id,
+        name: team?.user?.name,
+        email: team?.user?.email,
+      }))
       : [];
   }, [teamsResponse]);
 

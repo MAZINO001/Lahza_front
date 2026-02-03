@@ -42,6 +42,7 @@ import {
   useDeleteTask,
   useUpdateTask,
   useMarkTaskComplete,
+  useUpdateTaskStatus,
   useTasks,
 } from "@/features/tasks/hooks/useTasksQuery";
 import { useProject } from "@/features/projects/hooks/useProjects/useProjectsData";
@@ -54,48 +55,50 @@ export default function GanttComponent({ tasks, projectId, role }) {
   const deleteTaskMutation = useDeleteTask();
   const updateTaskMutation = useUpdateTask();
   const markTaskCompleteMutation = useMarkTaskComplete();
+  const updateTaskStatusMutation = useUpdateTaskStatus();
   const { data: project } = useProject(projectId);
 
   const transformedTasks =
     tasks?.length > 0
       ? tasks.map((task) => {
-          const startDate = task.start_date
-            ? new Date(task.start_date)
-            : task.startAt || new Date();
-          const endDate = task.end_date
-            ? new Date(task.end_date)
-            : task.endAt ||
-              new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+        const startDate = task.start_date
+          ? new Date(task.start_date)
+          : task.startAt || new Date();
+        const endDate = task.end_date
+          ? new Date(task.end_date)
+          : task.endAt ||
+          new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
 
-          return {
-            id: task.id,
-            name: task.title || task.name || `Task ${task.id}`,
-            startAt: startDate,
-            endAt: endDate,
-            status: {
-              color:
-                task.status === "completed"
-                  ? "#10b981"
-                  : task.status === "in_progress"
-                    ? "#3b82f6"
-                    : task.status === "pending"
-                      ? "#f59e0b"
-                      : task.status?.color || "#6b7280",
-            },
-            lane: task.lane || task.id,
-            metadata: {
-              group: { name: task.group || "Tasks" },
-            },
-          };
-        })
+        return {
+          id: task.id,
+          name: task.title || task.name || `Task ${task.id}`,
+          startAt: startDate,
+          endAt: endDate,
+          status: {
+            color:
+              task.status === "done"
+                ? "#10b981"
+                : task.status === "in_progress"
+                  ? "#3b82f6"
+                  : task.status === "pending"
+                    ? "#f59e0b"
+                    : task.status?.color || "#6b7280",
+          },
+          lane: task.lane || task.id,
+          metadata: {
+            group: { name: task.group || "Tasks" },
+            isCompleted: task.status === "done",
+          },
+        };
+      })
       : [];
 
   // Calculate the first task start date
   const firstTaskStartDate =
     transformedTasks.length > 0
       ? transformedTasks.reduce((earliest, task) => {
-          return task.startAt < earliest ? task.startAt : earliest;
-        }, transformedTasks[0].startAt)
+        return task.startAt < earliest ? task.startAt : earliest;
+      }, transformedTasks[0].startAt)
       : null;
 
   const groupedTasks = groupBy(transformedTasks, "metadata.group.name");
@@ -166,6 +169,26 @@ export default function GanttComponent({ tasks, projectId, role }) {
     );
   };
 
+  const handleReinitializeTask = (taskId) => {
+    // Check if project is completed
+    if (project?.status === "completed") {
+      toast.info(
+        "You cannot change the status of tasks in a completed project",
+      );
+      return;
+    }
+
+    updateTaskStatusMutation.mutate(
+      { taskId, data: { status: 'pending' } },
+      {
+        onSuccess: () => {
+          console.log("Task reinitialized successfully");
+        },
+        onError: (err) => console.error("Reinitialize task failed:", err),
+      },
+    );
+  };
+
   const handleTaskEdit = (task) => {
     setEditingTask(task);
     setIsEditDialogOpen(true);
@@ -174,6 +197,28 @@ export default function GanttComponent({ tasks, projectId, role }) {
 
   const handleTaskAdd = () => {
     setIsAddDialogOpen(true);
+  };
+
+  // Helper function to get task completion status
+  const getTaskCompletionStatus = (task) => {
+    // Find the original task from the tasks array to get the actual status
+    const originalTask = tasks?.find(t => t.id === task.id);
+    console.log("originalTask", originalTask)
+    console.log("originalTaskStatus", originalTask?.status)
+
+    return originalTask?.status === 'done';
+  };
+
+
+  // Helper function to get the appropriate action label and handler
+  const getCompletionAction = (task) => {
+    const isCompleted = getTaskCompletionStatus(task);
+    console.log("isCompleted", isCompleted)
+
+    return {
+      label: isCompleted ? 'Re-initialize task' : 'Mark as complete',
+      handler: isCompleted ? () => handleReinitializeTask(task.id) : () => handleMarkComplete(task.id)
+    };
   };
 
   return (
@@ -185,13 +230,17 @@ export default function GanttComponent({ tasks, projectId, role }) {
             <DialogTrigger asChild>
               <Button onClick={handleTaskAdd}>+ Add Task</Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="w-full max-w-4xl">
               <DialogHeader>
                 <DialogTitle>Add New Task</DialogTitle>
                 <DialogDescription>
-                  <TaskCreatePage onCancel={() => setIsAddDialogOpen(false)} />
+                  Create a new task for this project
                 </DialogDescription>
               </DialogHeader>
+              <TaskCreatePage
+                onCancel={() => setIsAddDialogOpen(false)}
+                onSuccess={() => setIsAddDialogOpen(false)}
+              />
             </DialogContent>
           </Dialog>
         )}
@@ -244,7 +293,7 @@ export default function GanttComponent({ tasks, projectId, role }) {
                       {role !== "client" ? (
                         <ContextMenu>
                           <ContextMenuTrigger asChild>
-                            <div>
+                            <div className={representativeTask.metadata?.isCompleted ? "opacity-70" : ""}>
                               <GanttSidebarItem feature={representativeTask} />
                             </div>
                           </ContextMenuTrigger>
@@ -256,12 +305,12 @@ export default function GanttComponent({ tasks, projectId, role }) {
                               Edit
                             </ContextMenuItem>
                             <ContextMenuItem
-                              onClick={() => handleMarkComplete(laneId)}
+                              onClick={getCompletionAction(representativeTask).handler}
                             >
-                              Mark as Complete
+                              {getCompletionAction(representativeTask).label}
                             </ContextMenuItem>
                             <ContextMenuItem
-                              onClick={() => handleTaskDelete(laneId)}
+                              onClick={() => handleTaskDelete(representativeTask.id)}
                             >
                               Delete
                             </ContextMenuItem>
@@ -298,7 +347,7 @@ export default function GanttComponent({ tasks, projectId, role }) {
                               {role !== "client" ? (
                                 <ContextMenu>
                                   <ContextMenuTrigger asChild>
-                                    <div className="flex w-full items-center gap-2 cursor-pointer">
+                                    <div className={`flex w-full items-center gap-2 cursor-pointer ${task.metadata?.isCompleted ? "opacity-70" : ""}`}>
                                       <p className="flex-1 truncate text-xs">
                                         {task.name}
                                       </p>
@@ -311,11 +360,9 @@ export default function GanttComponent({ tasks, projectId, role }) {
                                       Edit
                                     </ContextMenuItem>
                                     <ContextMenuItem
-                                      onClick={() =>
-                                        handleMarkComplete(task.id)
-                                      }
+                                      onClick={getCompletionAction(task).handler}
                                     >
-                                      Mark as Complete
+                                      {getCompletionAction(task).label}
                                     </ContextMenuItem>
                                     <ContextMenuItem
                                       onClick={() => handleTaskDelete(task.id)}
@@ -356,9 +403,9 @@ export default function GanttComponent({ tasks, projectId, role }) {
               <DialogDescription>Edit task details below.</DialogDescription>
             </DialogHeader>
             <TaskEditPage
-              taskId={editingTask?.id}
-              projectId={projectId}
               onCancel={() => setIsEditDialogOpen(false)}
+              projectId={projectId}
+              taskId={editingTask?.id}
             />
           </DialogContent>
         </Dialog>

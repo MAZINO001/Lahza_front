@@ -6,10 +6,5 @@ export default function ServiceEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { role } = useAuthContext();
-  return (
-    <ServiceForm
-      serviceId={id}
-      onSuccess={() => navigate(`/${role}/services`)}
-    />
-  );
+  return <ServiceForm serviceId={id} onSuccess={() => navigate(-1)} />;
 }
