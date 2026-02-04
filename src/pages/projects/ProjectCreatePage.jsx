@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 export default function ProjectCreatePage() {
   const navigate = useNavigate();
+  const { role } = useAuthContext();
   return (
     <div className="p-4">
-      <ProjectForm onSuccess={() => navigate(-1)} />;
+      <ProjectForm onSuccess={() => navigate(`/${role}/projects`)} />;
     </div>
   );
 }

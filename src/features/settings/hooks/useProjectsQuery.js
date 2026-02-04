@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const handleApiError = (error, fallbackMsg) => {
     console.error(error);
-    toast.error(error?.response?.data?.message || fallbackMsg);
+    toast.info(error?.response?.data?.message || fallbackMsg);
 };
 
 const projectsApi = {
@@ -110,7 +110,7 @@ export function useAddProjectAssignment() {
         onSuccess: (_, { project_id }) => {
             toast.success("Project assigned successfully!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
-            queryClient.invalidateQueries({ queryKey: ["projectTeam", project_id] });
+            queryClient.invalidateQueries({ queryKey: ["projectTeamMembers", project_id] });
         },
         onError: (error) => handleApiError(error, "Failed to assign project"),
     });
@@ -124,7 +124,7 @@ export function useDeleteProjectAssignment() {
         onSuccess: (_, { project_id }) => {
             toast.success("Project assignment removed successfully!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
-            queryClient.invalidateQueries({ queryKey: ["projectTeam", project_id] });
+            queryClient.invalidateQueries({ queryKey: ["projectTeamMembers", project_id] });
         },
         onError: (error) => handleApiError(error, "Failed to remove project assignment"),
     });

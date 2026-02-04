@@ -257,7 +257,6 @@ export default function ProjectViewPage() {
                     <span className="text-lg font-bold text-foreground">
                       {client?.client?.company || client?.client?.name}
                     </span>
-
                     <CategoryBadge category={"dev"} />
                   </div>
                   <span className="font-semibold text-sm text-muted-foreground">
@@ -265,7 +264,6 @@ export default function ProjectViewPage() {
                   </span>
                 </div>
               </div>
-
               <div className="flex flex-col text-sm">
                 <span className="text-muted-foreground text-xs uppercase tracking-wide">
                   Started at
@@ -274,7 +272,6 @@ export default function ProjectViewPage() {
                   {formatDate(project?.start_date)}
                 </span>
               </div>
-
               <div className="flex flex-col text-sm">
                 <span className="text-muted-foreground text-xs uppercase tracking-wide">
                   Ends at

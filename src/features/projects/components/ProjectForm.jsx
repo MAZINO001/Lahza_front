@@ -29,15 +29,12 @@ export function ProjectForm({ onSuccess }) {
   const { role } = useAuthContext();
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
 
-  // Handle clone mode from navigation state
   const { state } = useLocation();
   const cloneFromId = state?.cloneFromId;
   const isCloneMode = !!cloneFromId;
 
   const { data: invoices = [], isLoading: invoicesLoading } =
     useInvoicesWithoutProjects();
-
-  console.log(invoices);
 
   const { data: project = [], isLoading: projectLoading } = useProject(id);
   const createMutation = useCreateProject();
@@ -69,7 +66,6 @@ export function ProjectForm({ onSuccess }) {
 
   const { data: currentProject, isLoading: isCloneLoading } =
     useProject(cloneFromId);
-  console.log(currentProject);
   useEffect(() => {
     if (isCloneModeActive && !isCloneLoading && currentProject) {
       const fetchProjectData = async () => {

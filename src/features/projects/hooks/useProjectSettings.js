@@ -19,6 +19,10 @@ const apiProjectSettings = {
         api.delete(`${API_URL}/project/team/${projectId}/${userId}`).then((res) => res.data),
     deleteInvoice: (projectId, invoiceId) =>
         api.delete(`${API_URL}/projects/${projectId}/invoices/${invoiceId}`).then((res) => res.data),
+    assignServiceToProject: (data) =>
+        api.post(`${API_URL}/project/service/assign`, data).then((res) => res.data),
+    assignProjectToInvoice: (data) =>
+        api.post(`${API_URL}/project/invoice/assign`, data).then((res) => res.data),
 };
 
 export function useProjectServices(projectId) {
@@ -112,11 +116,45 @@ export function useDeleteProjectInvoice() {
         onSuccess: (_, { projectId }) => {
             toast.success("Invoice removed from project!");
             queryClient.invalidateQueries({ queryKey: ["projectInvoices", projectId] });
+            queryClient.invalidateQueries({ queryKey: ["invoicesWithoutProjects"] });
         },
         onError: (error) => {
             const errorMessage = error?.response?.data?.message || "Failed to remove invoice from project.";
             toast.error(errorMessage);
             console.error("Invoice deletion error:", error);
+        },
+    });
+}
+
+export function useAssignServiceToProject() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: apiProjectSettings.assignServiceToProject,
+        onSuccess: (_, { projectId }) => {
+            toast.success("Service assigned to project successfully!");
+            queryClient.invalidateQueries({ queryKey: ["projectServices", projectId] });
+        },
+        onError: (error) => {
+            const errorMessage = error?.response?.data?.message || "Failed to assign service to project.";
+            toast.error(errorMessage);
+            console.error("Service assignment error:", error);
+        },
+    });
+}
+
+export function useAssignProjectToInvoice() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: apiProjectSettings.assignProjectToInvoice,
+        onSuccess: (_, { projectId }) => {
+            toast.success("Invoice assigned to project successfully!");
+            queryClient.invalidateQueries({ queryKey: ["projectInvoices", projectId] });
+            queryClient.invalidateQueries({ queryKey: ["invoicesWithoutProjects"] });
+        },
+        onError: (error) => {
+            const errorMessage = error?.response?.data?.message || "Failed to assign invoice to project.";
+            toast.error(errorMessage);
+            console.error("Invoice assignment error:", error);
         },
     });
 }

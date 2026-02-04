@@ -4,5 +4,6 @@ import { OfferForm } from "@/features/offers/components/OfferForm";
 
 export default function OfferCreatePage() {
   const navigate = useNavigate();
-  return <OfferForm onSuccess={() => navigate(-1)} />;
+  const { role } = useAuthContext();
+  return <OfferForm onSuccess={() => navigate(`/${role}/offers`)} />;
 }

@@ -22,10 +22,30 @@ import {
   useDeleteProjectService,
   useRemoveProjectTeamMember,
   useDeleteProjectInvoice,
+  useAssignServiceToProject,
+  useAssignProjectToInvoice,
 } from "@/features/projects/hooks/useProjectSettings";
+import { useAddProjectAssignment } from "@/features/settings/hooks/useProjectsQuery";
+import { useTeams } from "@/features/settings/hooks/useTeamsQuery";
+import { useInvoicesWithoutProjects } from "@/features/documents/hooks/useDocuments/useInvoicesWithoutProjects";
+import { useUpdateProject } from "@/features/settings/hooks/useProjectsQuery";
+import { useProject } from "@/features/settings/hooks/useProjectsQuery";
+import { useServices } from "@/features/services/hooks/useServicesData";
 import { Loader2 } from "lucide-react";
 import AlertDialogDestructive from "@/components/alert-dialog-destructive-1.jsx";
 import FormField from "@/components/Form/FormField";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import SelectField from "@/components/Form/SelectField";
+import { toast } from "sonner";
+import { formatId } from "@/lib/utils/formatId";
 
 export default function ProjectSettingsPage() {
   const { id } = useParams();
@@ -44,23 +64,44 @@ export default function ProjectSettingsPage() {
     isLoading: membersLoading,
     error: membersError,
   } = useProjectTeamMembers(id);
+
   const {
     data: invoices = [],
     isLoading: invoicesLoading,
     error: invoicesError,
   } = useProjectInvoices(id);
+
   const {
     data: services = [],
     isLoading: servicesLoading,
     error: servicesError,
   } = useProjectServices(id);
 
+  console.log("members", members);
+  console.log("invoices", invoices);
+  console.log("services", services);
+
   const deleteServiceMutation = useDeleteProjectService();
   const removeTeamMemberMutation = useRemoveProjectTeamMember();
   const deleteInvoiceMutation = useDeleteProjectInvoice();
+  const addAssignment = useAddProjectAssignment();
+  const { data: teamsResponse } = useTeams();
+  const { data: availableInvoices = [], isLoading: availableInvoicesLoading } =
+    useInvoicesWithoutProjects();
+  const updateProject = useUpdateProject();
+  const { data: project = [] } = useProject(id);
+  const { data: availableServices = [], isLoading: availableServicesLoading } = useServices();
+  const assignServiceToProject = useAssignServiceToProject();
+  const assignProjectToInvoice = useAssignProjectToInvoice();
 
   const [editingMember, setEditingMember] = useState(null);
   const [editingInvoice, setEditingInvoice] = useState(null);
+  const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
+  const [selectedTeamMember, setSelectedTeamMember] = useState("");
+  const [isAddInvoiceDialogOpen, setIsAddInvoiceDialogOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState("");
+  const [isAddServiceDialogOpen, setIsAddServiceDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState("");
 
   const removeMember = (memberId) => {
     const member = members.find((m) => m.id === memberId);
@@ -86,6 +127,55 @@ export default function ProjectSettingsPage() {
     console.log("Update invoice:", id, field, value);
   };
 
+  const handleAddMember = () => {
+    if (selectedTeamMember) {
+      addAssignment.mutate({
+        project_id: id,
+        team_id: selectedTeamMember,
+      });
+      setSelectedTeamMember("");
+      setIsAddMemberDialogOpen(false);
+    }
+  };
+
+  const teamMemberOptions =
+    teamsResponse?.data?.map((member) => ({
+      value: member.id,
+      label: `${member.user.name}`,
+    })) || [];
+
+  const handleAddInvoice = () => {
+    if (selectedInvoice && id) {
+      assignProjectToInvoice.mutate({
+        invoice_id: Number(selectedInvoice),
+        project_id: Number(id),
+      });
+      setSelectedInvoice("");
+      setIsAddInvoiceDialogOpen(false);
+    }
+  };
+
+  const invoiceOptions = availableInvoices.map((invoice) => ({
+    label: formatId(invoice.id, "INVOICE"),
+    value: String(invoice.id),
+  }));
+
+  const handleAddService = () => {
+    if (selectedService && id) {
+      assignServiceToProject.mutate({
+        project_id: Number(id),
+        service_id: Number(selectedService),
+      });
+      setSelectedService("");
+      setIsAddServiceDialogOpen(false);
+    }
+  };
+
+  const serviceOptions = availableServices.map((service) => ({
+    label: service.name,
+    value: String(service.id),
+  }));
+
   const getStatusColor = (status) => {
     switch (status) {
       case "Paid":
@@ -98,6 +188,8 @@ export default function ProjectSettingsPage() {
         return "bg-gray-100 text-gray-800";
     }
   };
+
+
   return (
     <div className="w-full p-4 min-h-screen">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full ">
@@ -123,11 +215,66 @@ export default function ProjectSettingsPage() {
 
         <TabsContent value="parameters" className="space-y-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Project Members</CardTitle>
-              <CardDescription>
-                Manage team members assigned to this project
-              </CardDescription>
+            <CardHeader className="flex gap-4 items-center justify-between">
+              <div>
+                <CardTitle>Project Members</CardTitle>
+                <CardDescription>
+                  Manage team members assigned to this project
+                </CardDescription>
+              </div>
+              <div>
+                <Dialog
+                  open={isAddMemberDialogOpen}
+                  onOpenChange={setIsAddMemberDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Add members
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Team Member</DialogTitle>
+                      <DialogDescription>
+                        Select a team member to assign to this project.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <SelectField
+                        id="team-member"
+                        label="Select Team Member"
+                        value={selectedTeamMember}
+                        onChange={setSelectedTeamMember}
+                        options={teamMemberOptions}
+                        placeholder="Choose a team member..."
+                      />
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsAddMemberDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleAddMember}
+                        disabled={
+                          !selectedTeamMember || addAssignment.isPending
+                        }
+                      >
+                        {addAssignment.isPending ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Adding...
+                          </>
+                        ) : (
+                          "Add Member"
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
               {membersLoading ? (
@@ -155,58 +302,17 @@ export default function ProjectSettingsPage() {
                       className="flex items-center justify-between p-3 border rounded-lg bg-card"
                     >
                       <div className="flex-1">
-                        {editingMember === member.id ? (
-                          <div className="space-y-2">
-                            <Input
-                              value={teamUser?.name || ""}
-                              onChange={(e) =>
-                                updateMember(member.id, "name", e.target.value)
-                              }
-                              placeholder="Name"
-                              className="h-8 text-sm"
-                            />
-                            <Input
-                              value={teamInfo?.poste || ""}
-                              onChange={(e) =>
-                                updateMember(member.id, "role", e.target.value)
-                              }
-                              placeholder="Role"
-                              className="h-8 text-sm"
-                            />
-                            <Input
-                              value={teamUser?.email || ""}
-                              onChange={(e) =>
-                                updateMember(member.id, "email", e.target.value)
-                              }
-                              placeholder="Email"
-                              className="h-8 text-sm"
-                            />
-                          </div>
-                        ) : (
-                          <>
-                            <p className="font-medium text-sm">
-                              {teamUser?.name || "Unknown"}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {teamInfo?.poste || "No role specified"}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {teamUser?.email || "No email"}
-                            </p>
-                          </>
-                        )}
+                        <p className="font-medium text-sm">
+                          {teamUser?.name || "Unknown"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {teamInfo?.poste || "No role specified"}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {teamUser?.email || "No email"}
+                        </p>
                       </div>
                       <div className="flex gap-2 ml-4">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            setEditingMember(
-                              editingMember === member.id ? null : member.id,
-                            )
-                          }
-                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                        ></Button>
                         <AlertDialogDestructive
                           onDelete={() => removeMember(member.id)}
                         />
@@ -220,11 +326,69 @@ export default function ProjectSettingsPage() {
 
           {/* INVOICES CARD */}
           <Card>
-            <CardHeader>
-              <CardTitle>Project Invoices</CardTitle>
-              <CardDescription>
-                Manage invoices associated with this project
-              </CardDescription>
+            <CardHeader className="flex gap-4 items-center justify-between">
+              <div>
+                <CardTitle>Project Invoices</CardTitle>
+                <CardDescription>
+                  Manage invoices associated with this project
+                </CardDescription>
+              </div>
+              <div>
+                <Dialog
+                  open={isAddInvoiceDialogOpen}
+                  onOpenChange={setIsAddInvoiceDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Add invoices
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Invoice to Project</DialogTitle>
+                      <DialogDescription>
+                        Select an invoice to associate with this project.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <SelectField
+                        id="invoice"
+                        label="Select Invoice"
+                        value={selectedInvoice}
+                        onChange={setSelectedInvoice}
+                        options={invoiceOptions}
+                        placeholder={
+                          availableInvoicesLoading
+                            ? "Loading invoices..."
+                            : "Choose an invoice..."
+                        }
+                        disabled={availableInvoicesLoading}
+                      />
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsAddInvoiceDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleAddInvoice}
+                        disabled={!selectedInvoice || assignProjectToInvoice.isPending}
+                      >
+                        {assignProjectToInvoice.isPending ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Adding...
+                          </>
+                        ) : (
+                          "Add Invoice"
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
               {invoicesLoading ? (
@@ -249,121 +413,22 @@ export default function ProjectSettingsPage() {
                     className="flex items-center justify-between p-3 border rounded-lg bg-card"
                   >
                     <div className="flex-1">
-                      {editingInvoice === invoice.id ? (
-                        <div className="space-y-2">
-                          <Controller
-                            name={`invoice_${invoice.id}_number`}
-                            control={invoiceControl}
-                            render={({ field }) => (
-                              <FormField
-                                value={`INV-${invoice.id}`}
-                                onChange={(e) => {
-                                  field.onChange(e.target.value);
-                                  updateInvoice(
-                                    invoice.id,
-                                    "number",
-                                    e.target.value,
-                                  );
-                                }}
-                                placeholder="Invoice Number"
-                                className="h-8 text-sm"
-                              />
-                            )}
-                          />
-                          <div className="grid grid-cols-3 gap-2">
-                            <Controller
-                              name={`invoice_${invoice.id}_amount`}
-                              control={invoiceControl}
-                              render={({ field }) => (
-                                <FormField
-                                  value={invoice.total_amount || ""}
-                                  onChange={(e) => {
-                                    field.onChange(e.target.value);
-                                    updateInvoice(
-                                      invoice.id,
-                                      "amount",
-                                      e.target.value,
-                                    );
-                                  }}
-                                  placeholder="Amount"
-                                  type="number"
-                                  className="h-8 text-sm"
-                                />
-                              )}
-                            />
-                            <Controller
-                              name={`invoice_${invoice.id}_date`}
-                              control={invoiceControl}
-                              render={({ field }) => (
-                                <FormField
-                                  value={invoice.invoice_date || ""}
-                                  onChange={(e) => {
-                                    field.onChange(e.target.value);
-                                    updateInvoice(
-                                      invoice.id,
-                                      "date",
-                                      e.target.value,
-                                    );
-                                  }}
-                                  placeholder="Date"
-                                  type="date"
-                                  className="h-8 text-sm"
-                                />
-                              )}
-                            />
-                            <Controller
-                              name={`invoice_${invoice.id}_status`}
-                              control={invoiceControl}
-                              render={({ field }) => (
-                                <FormField
-                                  value={invoice.status || ""}
-                                  onChange={(e) => {
-                                    field.onChange(e.target.value);
-                                    updateInvoice(
-                                      invoice.id,
-                                      "status",
-                                      e.target.value,
-                                    );
-                                  }}
-                                  placeholder="Status"
-                                  className="h-8 text-sm"
-                                />
-                              )}
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <p className="font-medium text-sm">
-                            INV-{invoice.id}
-                          </p>
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className="text-xs text-muted-foreground">
-                              ${invoice.total_amount || "0.00"}
-                            </span>
-                            <span
-                              className={`text-xs px-2 py-1 rounded-full ${getStatusColor(invoice.status)}`}
-                            >
-                              {invoice.status || "Unknown"}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {invoice.invoice_date || "No date"}
-                            </span>
-                          </div>
-                        </>
-                      )}
+                      <p className="font-medium text-sm">INV-{invoice.id}</p>
+                      <div className="flex items-center gap-3 mt-1">
+                        <span className="text-xs text-muted-foreground">
+                          ${invoice.total_amount || "0.00"}
+                        </span>
+                        <span
+                          className={`text-xs px-2 py-1 rounded-full ${getStatusColor(invoice.status)}`}
+                        >
+                          {invoice.status || "Unknown"}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {invoice.invoice_date || "No date"}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex gap-2 ml-4">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          setEditingInvoice(
-                            editingInvoice === invoice.id ? null : invoice.id,
-                          )
-                        }
-                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
-                      ></Button>
                       <AlertDialogDestructive
                         onDelete={() => removeInvoice(invoice.id)}
                       />
@@ -375,11 +440,69 @@ export default function ProjectSettingsPage() {
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Related Services</CardTitle>
-              <CardDescription>
-                Add or remove services associated with this project
-              </CardDescription>
+            <CardHeader className="flex gap-4 items-center justify-between">
+              <div>
+                <CardTitle>Related Services</CardTitle>
+                <CardDescription>
+                  Add or remove services associated with this project
+                </CardDescription>
+              </div>
+              <div>
+                <Dialog
+                  open={isAddServiceDialogOpen}
+                  onOpenChange={setIsAddServiceDialogOpen}
+                >
+                  <DialogTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Add services
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Service to Project</DialogTitle>
+                      <DialogDescription>
+                        Select a service to associate with this project.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                      <SelectField
+                        id="service"
+                        label="Select Service"
+                        value={selectedService}
+                        onChange={setSelectedService}
+                        options={serviceOptions}
+                        placeholder={
+                          availableServicesLoading
+                            ? "Loading services..."
+                            : "Choose a service..."
+                        }
+                        disabled={availableServicesLoading}
+                      />
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsAddServiceDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleAddService}
+                        disabled={!selectedService || assignServiceToProject.isPending}
+                      >
+                        {assignServiceToProject.isPending ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Adding...
+                          </>
+                        ) : (
+                          "Add Service"
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </CardHeader>
             <CardContent className="space-y-3">
               {servicesLoading ? (
