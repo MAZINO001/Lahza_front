@@ -8,8 +8,7 @@ export default function ServiceEditPage() {
   const navigate = useNavigate();
   const { role } = useAuthContext();
 
-
   return (
-    <OfferForm offerId={id} onSuccess={() => navigate(-1)} />
+    <OfferForm offerId={id} onSuccess={() => navigate(`/${role}/offers`)} />
   );
 }

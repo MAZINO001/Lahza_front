@@ -5,5 +5,10 @@ import { DocumentForm } from "@/features/documents/components/DocumentForm";
 export default function InvoiceCreatePage() {
   const navigate = useNavigate();
   const { role } = useAuthContext();
-  return <DocumentForm type={"invoices"} onSuccess={() => navigate(-1)} />;
+  return (
+    <DocumentForm
+      type={"invoices"}
+      onSuccess={() => navigate(`/${role}/invoices`)}
+    />
+  );
 }

@@ -92,50 +92,50 @@ export function ExpenseForm({
 
       // Handle file attachment
       if (data.attachment instanceof File) {
-        const formData = new FormData();
-        Object.entries(submitData).forEach(([key, value]) => {
-          if (value !== null && value !== undefined) {
-            formData.append(key, value);
-          }
-        });
-        formData.append("attachment", data.attachment);
-
-        if (isEditMode && expenseId) {
-          updateMutation.mutate(
-            { id: expenseId, data: formData },
-            {
-              onSuccess: () => {
-                navigate(`/${role}/expenses`);
-              },
-            },
-          );
-        } else {
-          createMutation.mutate(formData, {
-            onSuccess: () => {
-              onExpenseCreated?.();
-              reset();
-            },
-          });
-        }
-      } else {
-        if (isEditMode && expenseId) {
-          updateMutation.mutate(
-            { id: expenseId, data: submitData },
-            {
-              onSuccess: () => {
-                navigate(`/${role}/expenses`);
-              },
-            },
-          );
-        } else {
-          createMutation.mutate(submitData, {
-            onSuccess: () => {
-              onExpenseCreated?.();
-              reset();
-            },
-          });
-        }
-      }
+              const formData = new FormData();
+              Object.entries(submitData).forEach(([key, value]) => {
+                if (value !== null && value !== undefined) {
+                  formData.append(key, value);
+                }
+              });
+              formData.append("attachment", data.attachment);
+      
+              if (isEditMode && expenseId) {
+                updateMutation.mutate(
+                  { id: expenseId, data: formData },
+                  {
+                    onSuccess: () => {
+                      navigate(`/${role}/expenses`);
+                    },
+                  },
+                );
+              } else {
+                createMutation.mutate(formData, {
+                  onSuccess: () => {
+                    onExpenseCreated?.();
+                    reset();
+                  },
+                });
+              }
+            }
+      else if (isEditMode && expenseId) {
+                updateMutation.mutate(
+                  { id: expenseId, data: submitData },
+                  {
+                    onSuccess: () => {
+                      navigate(`/${role}/expenses`);
+                    },
+                  },
+                );
+              }
+      else {
+                createMutation.mutate(submitData, {
+                  onSuccess: () => {
+                    onExpenseCreated?.();
+                    reset();
+                  },
+                });
+              }
     } catch (error) {
       console.error("Form submission error:", error);
     }
