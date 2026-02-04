@@ -77,25 +77,22 @@ export default function ProjectSettingsPage() {
     error: servicesError,
   } = useProjectServices(id);
 
-  console.log("members", members);
-  console.log("invoices", invoices);
-  console.log("services", services);
-
-  const deleteServiceMutation = useDeleteProjectService();
-  const removeTeamMemberMutation = useRemoveProjectTeamMember();
-  const deleteInvoiceMutation = useDeleteProjectInvoice();
-  const addAssignment = useAddProjectAssignment();
   const { data: teamsResponse } = useTeams();
   const { data: availableInvoices = [], isLoading: availableInvoicesLoading } =
-    useInvoicesWithoutProjects();
-  const updateProject = useUpdateProject();
-  const { data: project = [] } = useProject(id);
-  const { data: availableServices = [], isLoading: availableServicesLoading } = useServices();
+  useInvoicesWithoutProjects();
+  const { data: availableServices = [], isLoading: availableServicesLoading } =
+  useServices();
+
+
+  const removeTeamMemberMutation = useRemoveProjectTeamMember();
+  const deleteServiceMutation = useDeleteProjectService();
+  const deleteInvoiceMutation = useDeleteProjectInvoice();
+  
+
+  const addAssignment = useAddProjectAssignment();
   const assignServiceToProject = useAssignServiceToProject();
   const assignProjectToInvoice = useAssignProjectToInvoice();
 
-  const [editingMember, setEditingMember] = useState(null);
-  const [editingInvoice, setEditingInvoice] = useState(null);
   const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState(false);
   const [selectedTeamMember, setSelectedTeamMember] = useState("");
   const [isAddInvoiceDialogOpen, setIsAddInvoiceDialogOpen] = useState(false);
@@ -117,14 +114,6 @@ export default function ProjectSettingsPage() {
 
   const removeService = (serviceId) => {
     deleteServiceMutation.mutate({ projectId: id, serviceId });
-  };
-
-  const updateMember = (id, field, value) => {
-    console.log("Update member:", id, field, value);
-  };
-
-  const updateInvoice = (id, field, value) => {
-    console.log("Update invoice:", id, field, value);
   };
 
   const handleAddMember = () => {
@@ -188,7 +177,6 @@ export default function ProjectSettingsPage() {
         return "bg-gray-100 text-gray-800";
     }
   };
-
 
   return (
     <div className="w-full p-4 min-h-screen">
@@ -299,7 +287,7 @@ export default function ProjectSettingsPage() {
                   return (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between p-3 border rounded-lg bg-card"
+                      className="flex items-center justify-between p-4 border rounded-lg bg-card"
                     >
                       <div className="flex-1">
                         <p className="font-medium text-sm">
@@ -374,7 +362,9 @@ export default function ProjectSettingsPage() {
                       </Button>
                       <Button
                         onClick={handleAddInvoice}
-                        disabled={!selectedInvoice || assignProjectToInvoice.isPending}
+                        disabled={
+                          !selectedInvoice || assignProjectToInvoice.isPending
+                        }
                       >
                         {assignProjectToInvoice.isPending ? (
                           <>
@@ -410,7 +400,7 @@ export default function ProjectSettingsPage() {
                 invoices.map((invoice) => (
                   <div
                     key={invoice.id}
-                    className="flex items-center justify-between p-3 border rounded-lg bg-card"
+                    className="flex items-center justify-between p-4 border rounded-lg bg-card"
                   >
                     <div className="flex-1">
                       <p className="font-medium text-sm">INV-{invoice.id}</p>
@@ -488,7 +478,9 @@ export default function ProjectSettingsPage() {
                       </Button>
                       <Button
                         onClick={handleAddService}
-                        disabled={!selectedService || assignServiceToProject.isPending}
+                        disabled={
+                          !selectedService || assignServiceToProject.isPending
+                        }
                       >
                         {assignServiceToProject.isPending ? (
                           <>
@@ -524,7 +516,7 @@ export default function ProjectSettingsPage() {
                 services.map((service) => (
                   <div
                     key={service.id}
-                    className="flex items-center justify-between p-3 border rounded-lg bg-card"
+                    className="flex items-center justify-between p-4 border rounded-lg bg-card"
                   >
                     <div className="flex-1">
                       <p className="font-medium text-sm">{service.name}</p>
@@ -533,10 +525,7 @@ export default function ProjectSettingsPage() {
                       </p>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-xs text-muted-foreground">
-                          $
-                          {service.pivot?.individual_total ||
-                            service.base_price ||
-                            "0.00"}
+                          {Number(service.base_price) || "0.00"} MAD
                         </span>
                         <span className="text-xs text-muted-foreground">
                           Qty: {service.pivot?.quantity || 1}

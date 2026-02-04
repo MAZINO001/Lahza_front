@@ -32,6 +32,9 @@ export function useTeams(page = 1) {
         queryKey: ["teams", page],
         queryFn: () => teamsApi.getAll(page),
         staleTime: 0,
+        refetchOnWindowFocus: true,
+        refetchOnMount: true,
+        gcTime: 0,
         onError: (error) => handleApiError(error, "Failed to fetch teams"),
     });
 }

@@ -330,7 +330,7 @@ export default function MyCalendar() {
         category: "holiday",
         status: "pending",
         type: "offline",
-        color: "#10b981", // Green for Ramadan
+        color: "#10b981", // Green for Islamic events
         description: "Start of the holy month of Ramadan",
         guests: null,
         url: null,
@@ -360,7 +360,7 @@ export default function MyCalendar() {
         category: "holiday",
         status: "pending",
         type: "offline",
-        color: "#f59e0b", // Amber for Eid al-Fitr
+        color: "#10b981", // Green for Islamic events
         description: "Celebration marking the end of Ramadan - 3 days",
         guests: null,
         url: null,
@@ -390,7 +390,7 @@ export default function MyCalendar() {
         category: "holiday",
         status: "pending",
         type: "offline",
-        color: "#ef4444", // Red for Eid al-Adha
+        color: "#10b981", // Green for Islamic events
         description:
           "Festival of Sacrifice commemorating Prophet Ibrahim's devotion - 7 days",
         guests: null,
@@ -546,7 +546,7 @@ export default function MyCalendar() {
   };
 
   const handleEventUpdate = (updatedEvent) => {
-    updateMutation.mutate(updatedEvent);
+    updateMutation.mutate({ id: updatedEvent.id, data: updatedEvent });
   };
 
   const handleEventDelete = (deletedEvent) => {
@@ -555,7 +555,8 @@ export default function MyCalendar() {
   };
 
   const handleEventComplete = (updatedEvent) => {
-    updateMutation.mutate(updatedEvent);
+    console.log(updatedEvent);
+    updateMutation.mutate({ id: updatedEvent.id, data: updatedEvent });
   };
 
   const handleDateChange = (date) => {
@@ -677,8 +678,8 @@ export default function MyCalendar() {
 
   return (
     <div className="w-full h-screen flex flex-col">
-      <div className="flex-1 flex gap-4 w-full">
-        <div className="w-[70%] overflow-auto">
+      <div className="flex-1 flex gap-4 w-full overflow-auto">
+        <div className="w-[70%]">
           <IlamyCalendar
             stickyViewHeader={false}
             renderEventForm={(props) => <EventForm {...props} />}

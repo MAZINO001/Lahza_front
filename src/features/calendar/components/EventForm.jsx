@@ -195,7 +195,7 @@ function EventForm({
         other_notes: selectedEvent.other_notes || "",
         category: selectedEvent.category
           ? selectedEvent.category.charAt(0).toUpperCase() +
-            selectedEvent.category.slice(1)
+          selectedEvent.category.slice(1)
           : "Agency",
         status: selectedEvent.status || "pending",
         type: selectedEvent.type || "offline",
@@ -227,12 +227,12 @@ function EventForm({
         endTime:
           selectedDate.getHours() > 0
             ? new Date(
-                selectedDate.getTime() + 60 * 60 * 1000,
-              ).toLocaleTimeString("en-CA", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
+              selectedDate.getTime() + 60 * 60 * 1000,
+            ).toLocaleTimeString("en-CA", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })
             : "10:00",
         description: "",
         other_notes: "",
@@ -585,18 +585,16 @@ function EventForm({
                             field.onChange(colorOption.color);
                             setSelectedColor(colorOption.color);
                           }}
-                          className={`flex items-center gap-2 border p-1 rounded-md transition-all ${
-                            selectedColor === colorOption.color
+                          className={`flex items-center gap-2 border p-1 rounded-md transition-all ${selectedColor === colorOption.color
                               ? "border-black bg-gray-100"
                               : "border-border hover:border-gray-400"
-                          }`}
+                            }`}
                         >
                           <span
-                            className={`w-8 h-8 rounded border-2 transition-all ${
-                              selectedColor === colorOption.color
+                            className={`w-8 h-8 rounded border-2 transition-all ${selectedColor === colorOption.color
                                 ? "border-black"
                                 : "border-border"
-                            }`}
+                              }`}
                             style={{ backgroundColor: colorOption.color }}
                           />
                           <span className="text-xs text-muted-foreground">

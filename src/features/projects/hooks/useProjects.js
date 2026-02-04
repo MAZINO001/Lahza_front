@@ -18,6 +18,7 @@ const apiProject = {
 };
 
 export function useProjects(options) {
+    options = options || {};
     let enabled = options.enabled !== undefined ? options.enabled : true;
     return useQuery({
         queryKey: ["projects"],

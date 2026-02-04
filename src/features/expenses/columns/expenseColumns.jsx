@@ -5,6 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function getExpenseColumns(role, navigate) {
   const copyToClipboard = (text, label) => {
@@ -130,13 +135,36 @@ export function getExpenseColumns(role, navigate) {
       header: "Repeats",
       cell: ({ row }) => {
         const repeats = row.getValue("repeatedly");
+        const billingConfig = {
+          monthly: {
+            label: "Monthly",
+            description:
+              "Billed every month for flexible, short-term commitment",
+          },
+          none: {
+            label: "None",
+            description: "No automatic billing or recurring charges",
+          },
+          yearly: {
+            label: "Yearly",
+            description: "Billed annually for the best value and savings",
+          },
+          weekly: {
+            label: "Weekly",
+            description: "Billed every week for frequent or temporary use",
+          },
+        };
+        const config = billingConfig[repeats];
+
         return (
-          <Badge
-            variant={repeats === "none" ? "outline" : "default"}
-            className="capitalize"
-          >
-            {repeats}
-          </Badge>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge className="cursor-pointer capitalize">
+                {config?.label}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="top">{config?.description}</TooltipContent>
+          </Tooltip>
         );
       },
     },

@@ -1,4 +1,8 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // const statusConfig = {
 //   draft: {
@@ -68,17 +72,18 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 //   },
 // };
 
-
 const statusConfig = {
   draft: {
     label: "Draft",
     color: "bg-background text-gray-800 border-border",
-    description: "The item is still being prepared and hasn’t been sent or finalized yet.",
+    description:
+      "The item is still being prepared and hasn’t been sent or finalized yet.",
   },
   sent: {
     label: "Sent",
     color: "bg-yellow-100 text-yellow-800 border-border",
-    description: "The item has been sent to the recipient but no response has been received yet.",
+    description:
+      "The item has been sent to the recipient but no response has been received yet.",
   },
   confirmed: {
     label: "Confirmed",
@@ -93,7 +98,8 @@ const statusConfig = {
   rejected: {
     label: "Rejected",
     color: "bg-red-100 text-red-800 border-border",
-    description: "The item was reviewed but explicitly declined by the recipient.",
+    description:
+      "The item was reviewed but explicitly declined by the recipient.",
   },
   unpaid: {
     label: "Unpaid",
@@ -113,7 +119,8 @@ const statusConfig = {
   overdue: {
     label: "Overdue",
     color: "bg-red-100 text-red-800 border-border",
-    description: "The payment or action is past its due date and still unresolved.",
+    description:
+      "The payment or action is past its due date and still unresolved.",
   },
   active: {
     label: "Active",
@@ -128,7 +135,8 @@ const statusConfig = {
   pending: {
     label: "Pending",
     color: "bg-purple-100 text-purple-800 border-border",
-    description: "The item is waiting for an action or decision to move forward.",
+    description:
+      "The item is waiting for an action or decision to move forward.",
   },
   in_progress: {
     label: "In Progress",
@@ -152,9 +160,13 @@ const statusConfig = {
   },
 };
 
-
-
-export function StatusBadge({ status, type = "default", is_fully_signed, showTooltip = true, tooltip }) {
+export function StatusBadge({
+  status,
+  type = "default",
+  is_fully_signed,
+  showTooltip = true,
+  tooltip,
+}) {
   const effectiveStatus = is_fully_signed ? "signed" : status;
   const config = statusConfig[effectiveStatus] || {
     label: status,
@@ -164,28 +176,30 @@ export function StatusBadge({ status, type = "default", is_fully_signed, showToo
 
   const tooltipText = tooltip || config.description;
 
-  const badgeContent = type === "dot" ? (
-    <span className="flex items-center text-sm">
+  const badgeContent =
+    type === "dot" ? (
+      <span className="flex items-center text-sm">
+        <span
+          className={`w-2 h-2 rounded-full mr-2 ${config.color.split(" ")[0]}`}
+        ></span>
+        {config.label}
+      </span>
+    ) : (
       <span
-        className={`w-2 h-2 rounded-full mr-2 ${config.color.split(" ")[0]}`}
-      ></span>
-      {config.label}
-    </span>
-  ) : (
-    <span
-      className={`inline-flex justify-center items-center px-2.5 py-0.5 w-22 rounded-full text-xs font-medium border ${config.color}`}
-    >
-      {config.label}
-    </span>
-  );
+        className={`inline-flex justify-center items-center px-2.5 py-0.5 w-22 rounded-full text-xs font-medium border ${config.color}`}
+      >
+        {config.label}
+      </span>
+    );
 
   if (showTooltip && tooltipText) {
     return (
       <Tooltip>
-        <TooltipTrigger asChild>
-          {badgeContent}
-        </TooltipTrigger>
-        <TooltipContent sideOffset={5} className="bg-gray-900 text-white">
+        <TooltipTrigger asChild>{badgeContent}</TooltipTrigger>
+        <TooltipContent
+          sideOffset={5}
+          className="bg-foreground text-background"
+        >
           <p>{tooltipText}</p>
         </TooltipContent>
       </Tooltip>

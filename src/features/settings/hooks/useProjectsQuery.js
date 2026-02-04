@@ -111,6 +111,7 @@ export function useAddProjectAssignment() {
             toast.success("Project assigned successfully!");
             queryClient.invalidateQueries({ queryKey: ["projects"] });
             queryClient.invalidateQueries({ queryKey: ["projectTeamMembers", project_id] });
+            queryClient.refetchQueries({ queryKey: ["projectTeamMembers", project_id] });
         },
         onError: (error) => handleApiError(error, "Failed to assign project"),
     });

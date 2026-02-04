@@ -19,9 +19,16 @@ import {
 import { useUsers } from "@/features/settings/hooks/useUsersQuery";
 import { cn } from "@/lib/utils";
 
-function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete, onUpdate }) {
+function EventDetailsDialog({
+  open,
+  onOpenChange,
+  event,
+  onEdit,
+  onDelete,
+  onUpdate,
+}) {
   const { data: usersResponse } = useUsers();
-
+  console.log(event);
   // Normalize users data
   const users = Array.isArray(usersResponse)
     ? usersResponse
@@ -29,9 +36,6 @@ function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete, onUpd
 
   if (!event) return null;
 
-  // ────────────────────────────────────────────────
-  //               Date & Time Formatting
-  // ────────────────────────────────────────────────
   const formatDate = (dateStr) => {
     if (!dateStr) return "—";
     const date = new Date(dateStr);
@@ -212,14 +216,7 @@ function EventDetailsDialog({ open, onOpenChange, event, onEdit, onDelete, onUpd
         </div>
 
         <DialogFooter className="gap-2 sm:gap-3 pt-4 border-t">
-          <Button
-            variant="outline"
-            onClick={() => {
-              const updatedEvent = { ...event, status: 'completed' };
-              onUpdate(updatedEvent);
-              onOpenChange(false);
-            }}
-          >
+          <Button variant="outline" onClick={() => onUpdate(event)}>
             Done
           </Button>
           <Button variant="outline" onClick={() => onEdit(event)}>

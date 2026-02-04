@@ -1,20 +1,24 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useExpense } from "@/features/expenses/hooks/useExpenses/useExpensesData";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
+
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
 import {
   ArrowLeft,
   Edit,
-  FileText,
   Calendar,
   DollarSign,
   CreditCard,
   User,
   Building,
-  FileText as FileIcon,
+  FileText,
+  Receipt,
+  Clock,
 } from "lucide-react";
 
 export default function ExpenseViewPage() {
@@ -25,57 +29,53 @@ export default function ExpenseViewPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Loading expense...</div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg text-muted-foreground">
+          Loading expense details...
+        </div>
       </div>
     );
   }
 
   if (!expense) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Expense not found</div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-lg text-muted-foreground">Expense not found</div>
       </div>
     );
   }
 
-  const getStatusColor = (status) => {
-    switch (status) {
+  const getStatusVariant = (status) => {
+    switch (status?.toLowerCase()) {
       case "paid":
-        return "bg-green-100 text-green-800";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800";
-      case "approved":
-        return "bg-blue-100 text-blue-800";
       case "reimbursed":
-        return "bg-purple-100 text-purple-800";
+        return "success";
+      case "approved":
+        return "default";
+      case "pending":
+        return "secondary";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "outline";
     }
+  };
+
+  const formatCurrency = (amount, currency = "MAD") => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount);
   };
 
   return (
     <div className="p-4 min-h-screen">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(`/${role}/expenses`)}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Expenses
-          </Button>
-        </div>
-
+      {/* Header Bar */}
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3"></div>
         {role === "admin" && (
           <Button
-            onClick={() =>
-              navigate(`/${role}/expense/${id}/edit`, {
-                state: { expenseId: id },
-              })
-            }
-            className="flex items-center gap-2"
+            onClick={() => navigate(`/${role}/expense/${id}/edit`)}
+            className="gap-2"
           >
             <Edit className="h-4 w-4" />
             Edit Expense
@@ -83,177 +83,207 @@ export default function ExpenseViewPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 ">
-        <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white p-4 rounded-lg border">
-            <div className="flex items-start justify-between mb-4">
-              <h2 className="text-xl font-semibold">{expense.title}</h2>
-              <Badge className={getStatusColor(expense.status)}>
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="md:col-span-2 space-y-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-xl font-semibold">
+                {expense.title}
+              </CardTitle>
+              <Badge
+                variant={getStatusVariant(expense.status)}
+                className="capitalize px-4 py-1 text-sm"
+              >
                 {expense.status}
               </Badge>
-            </div>
+            </CardHeader>
 
-            {expense.description && (
-              <p className="text-gray-400 mb-4">{expense.description}</p>
-            )}
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-500">Date:</span>
-                <span className="font-medium">
-                  {new Date(expense.date).toLocaleDateString()}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-500">Amount:</span>
-                <span className="font-medium">
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: expense.currency || "USD",
-                  }).format(expense.amount)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-4">
-              Additional Information
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <span className="text-sm text-gray-500">Category</span>
-                <p className="font-medium capitalize">
-                  {expense.category || "—"}
+            <CardContent className="space-y-6 pt-4">
+              {expense.description && (
+                <p className="text-muted-foreground leading-relaxed">
+                  {expense.description}
                 </p>
-              </div>
+              )}
 
-              <div>
-                <span className="text-sm text-gray-500">Payment Method</span>
-                <p className="font-medium capitalize">
-                  {expense.payment_method
-                    ? expense.payment_method.replace(/_/g, " ")
-                    : "—"}
-                </p>
-              </div>
-
-              <div>
-                <span className="text-sm text-gray-500 mr-2">Repeats</span>
-                <Badge
-                  variant={
-                    expense.repeatedly === "none" ? "outline" : "default"
-                  }
-                  className="capitalize"
-                >
-                  {expense.repeatedly}
-                </Badge>
-              </div>
-
-              <div>
-                <span className="text-sm text-gray-500">Currency</span>
-                <p className="font-medium">{expense.currency || "USD"}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white p-4 rounded-lg border">
-            <h3 className="text-lg font-semibold mb-4">Related Items</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {expense.project_id && (
-                <div className="flex items-center gap-2">
-                  <Building className="h-4 w-4 text-gray-500" />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full bg-muted p-2">
+                    <Calendar className="h-5 w-5 text-muted-foreground" />
+                  </div>
                   <div>
-                    <span className="text-sm text-gray-500 mr-2">Project</span>
-                    <Button
-                      variant="link"
-                      onClick={() =>
-                        navigate(`/${role}/project/${expense.project_id}`)
-                      }
-                      className="p-0 h-auto font-medium"
-                    >
-                      View Project
-                    </Button>
+                    <p className="text-xs text-muted-foreground">Date</p>
+                    <p className="font-medium">
+                      {new Date(expense.date).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </p>
                   </div>
                 </div>
-              )}
 
-              {expense.client_id && (
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4 text-gray-500" />
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full bg-muted p-2">
+                    <DollarSign className="h-5 w-5 text-muted-foreground" />
+                  </div>
                   <div>
-                    <span className="text-sm text-gray-500 mr-2">Client</span>
-                    <Button
-                      variant="link"
-                      onClick={() =>
-                        navigate(`/${role}/client/${expense.client_id}`)
-                      }
-                      className="p-0 h-auto font-medium"
-                    >
-                      View Client
-                    </Button>
+                    <p className="text-xs text-muted-foreground">Amount</p>
+                    <p className="text-lg font-semibold">
+                      {formatCurrency(expense.amount, expense.currency)}
+                    </p>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {expense.invoice_id && (
-                <div className="flex items-center gap-2">
-                  <FileIcon className="h-4 w-4 text-gray-500" />
-                  <div>
-                    <span className="text-sm text-gray-500 mr-2">Invoice</span>
-                    <Button
-                      variant="link"
-                      onClick={() =>
-                        navigate(`/${role}/invoice/${expense.invoice_id}`)
-                      }
-                      className="p-0 h-auto font-medium"
-                    >
-                      View Invoice
-                    </Button>
-                  </div>
+              <Separator />
+
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Category</p>
+                  <p className="font-medium capitalize">
+                    {expense.category || "—"}
+                  </p>
                 </div>
-              )}
-            </div>
 
-            {!expense.project_id &&
-              !expense.client_id &&
-              !expense.invoice_id && (
-                <p className="text-gray-500">No related items</p>
-              )}
-          </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">
+                    Payment Method
+                  </p>
+                  <p className="font-medium capitalize">
+                    {expense.payment_method?.replace(/_/g, " ") || "—"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs text-muted-foreground">Repeats</p>
+                  <Badge
+                    variant={
+                      expense.repeatedly === "none" ? "outline" : "secondary"
+                    }
+                    className="capitalize"
+                  >
+                    {expense.repeatedly}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {(expense.project || expense.client || expense.invoice) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Related To</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {expense.project && (
+                  <div className="flex items-start gap-3">
+                    <Building className="mt-0.5 h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Project</p>
+                      <Button
+                        variant="link"
+                        className="h-auto p-0 font-medium"
+                        onClick={() =>
+                          navigate(`/${role}/project/${expense.project_id}`)
+                        }
+                      >
+                        {expense.project.name}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {expense.client && (
+                  <div className="flex items-start gap-3">
+                    <User className="mt-0.5 h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Client</p>
+                      <Button
+                        variant="link"
+                        className="h-auto p-0 font-medium"
+                        onClick={() =>
+                          navigate(`/${role}/client/${expense.client_id}`)
+                        }
+                      >
+                        {expense.client.company ||
+                          expense.client.name ||
+                          "Client"}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {expense.invoice && (
+                  <div className="flex items-start gap-3">
+                    <Receipt className="mt-0.5 h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Invoice</p>
+                      <Button
+                        variant="link"
+                        className="h-auto p-0 font-medium"
+                        onClick={() =>
+                          navigate(`/${role}/invoice/${expense.invoice_id}`)
+                        }
+                      >
+                        Invoice #{expense.invoice.id} •{" "}
+                        {formatCurrency(expense.invoice.total_amount)}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
+        {/* Sidebar */}
         <div className="space-y-4">
-          {expense.paid_by && (
-            <div className="bg-white p-4 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Paid By
-              </h3>
-              <p className="font-medium">User ID: {expense.paid_by}</p>
-            </div>
-          )}
+          {/* Metadata Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                Metadata
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <div>
+                <p className="text-muted-foreground">Created</p>
+                <p>{new Date(expense.created_at).toLocaleString()}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Last Updated</p>
+                <p>{new Date(expense.updated_at).toLocaleString()}</p>
+              </div>
+              {expense.paid_by && (
+                <div>
+                  <p className="text-muted-foreground">Paid By (User ID)</p>
+                  <p className="font-medium">{expense.paid_by}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
+          {/* Attachment */}
           {expense.attachment && (
-            <div className="bg-white p-4 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <FileText className="h-4 w-4" />
-                Attachment
-              </h3>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (typeof expense.attachment === "string") {
-                    window.open(expense.attachment, "_blank");
-                  }
-                }}
-                className="w-full"
-              >
-                View Attachment
-              </Button>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Attachment
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => window.open(expense.attachment, "_blank")}
+                >
+                  <FileText className="h-4 w-4" />
+                  Open Receipt / File
+                </Button>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

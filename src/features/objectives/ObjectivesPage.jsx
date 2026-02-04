@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { Plus, Trash2, Edit2 } from "lucide-react";
+import { Plus, Trash2, Edit2, Calendar, User, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import ObjectivesForm from "./components/ObjectivesForm";
 import {
   useCreateObjective,
@@ -16,24 +17,18 @@ import {
   useObjectives,
   useUpdateObjective,
 } from "./hooks/useObjectivesQuery";
-import { StatusBadge } from "@/components/StatusBadge";
 
 export default function ObjectivesPage() {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
 
-  // React Query hooks
   const { data: objectives = [], isLoading, error } = useObjectives();
   const createObjective = useCreateObjective();
   const updateObjective = useUpdateObjective();
   const deleteObjective = useDeleteObjective();
 
   const handleOpenDialog = (objective = null) => {
-    if (objective) {
-      setEditingId(objective.id);
-    } else {
-      setEditingId(null);
-    }
+    setEditingId(objective ? objective.id : null);
     setOpen(true);
   };
 
@@ -52,93 +47,199 @@ export default function ObjectivesPage() {
   };
 
   const handleDelete = (id) => {
-    deleteObjective.mutate(id);
+    if (window.confirm("Delete this objective?")) {
+      deleteObjective.mutate(id);
+    }
   };
 
   if (isLoading) {
-    return <div className="p-4">Loading objectives...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-muted-foreground animate-pulse">
+          Loading objectives...
+        </div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="p-4 text-red-600">Error loading objectives</div>;
+    return (
+      <div className="p-6 text-center text-destructive">
+        Failed to load objectives. Please try again later.
+      </div>
+    );
   }
 
   return (
     <div className="p-4 min-h-screen">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-semibold">Objectives</h1>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+        <div></div>
 
-        <Button onClick={() => handleOpenDialog()} size="sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Objective
+        <Button onClick={() => handleOpenDialog()} className="gap-2">
+          <Plus className="h-4 w-4" />
+          New Objective
         </Button>
       </div>
 
-      <div className="space-y-3">
-        {objectives.map((obj) => (
-          <Card key={obj.id}>
-            <CardContent className="pt-4">
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{obj.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {obj.description}
-                  </p>
+      {/* Objectives List */}
+      {objectives.length === 0 ? (
+        <div className="text-center py-4 border border-dashed rounded-lg">
+          <p className="text-muted-foreground mb-4">No objectives yet</p>
+          <Button variant="outline" onClick={() => handleOpenDialog()}>
+            Create your first objective
+          </Button>
+        </div>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-1 lg:grid-cols-2">
+          {objectives.map((obj) => (
+            <Card
+              key={obj.id}
+              className="overflow-hidden border shadow-sm hover:shadow-md transition-shadow"
+            >
+              <CardHeader className="pb-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-1 flex-1">
+                    <CardTitle className="text-lg leading-tight line-clamp-2">
+                      {obj.title}
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {obj.description || "No description provided"}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => handleOpenDialog(obj)}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
+                      onClick={() => handleDelete(obj.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleOpenDialog(obj)}
+              </CardHeader>
+
+              <CardContent className="pt-4 space-y-4">
+                {/* Status & Progress */}
+                <div className="flex flex-wrap items-center gap-3">
+                  <Badge
+                    variant={
+                      obj.status === "completed"
+                        ? "success"
+                        : obj.status === "in_progress"
+                          ? "default"
+                          : obj.status === "pending"
+                            ? "secondary"
+                            : "destructive"
+                    }
+                    className="capitalize px-3 py-1 text-xs font-medium"
                   >
-                    <Edit2 className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(obj.id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
+                    {obj.status}
+                  </Badge>
 
-              <div className="flex flex-wrap gap-2 mb-3">
-                <StatusBadge status={obj.status}>{obj.status}</StatusBadge>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div>
-                  <span className="text-muted-foreground">Start:</span>{" "}
-                  {obj.start_date || "-"}
+                  {obj.progress !== undefined && (
+                    <div className="flex items-center gap-2 text-sm flex-1 min-w-[140px]">
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                      <Progress value={obj.progress} className="h-2 flex-1" />
+                      <span className="tabular-nums w-10 text-right">
+                        {obj.progress}%
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <span className="text-muted-foreground">End:</span>{" "}
-                  {obj.end_date || "-"}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
 
+                {/* Dates & Owner */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>Start</span>
+                    </div>
+                    <div>{formatDate(obj.start_date) || "—"}</div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>End</span>
+                    </div>
+                    <div>{formatDate(obj.end_date) || "—"}</div>
+                  </div>
+                </div>
+
+                {obj.owner && (
+                  <div className="flex items-center gap-2 text-sm pt-2 border-t">
+                    <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-medium">
+                      {getInitials(obj.owner.name)}
+                    </div>
+                    <div>
+                      <span className="text-muted-foreground">Owner: </span>
+                      {obj.owner.name}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Form Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingId ? "Edit Objective" : "Add Objective"}
+        <DialogContent className="sm:max-w-2xl max-h-[92vh] overflow-y-auto p-0">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b">
+            <DialogTitle className="text-xl">
+              {editingId ? "Edit Objective" : "Create New Objective"}
             </DialogTitle>
           </DialogHeader>
-          <ObjectivesForm
-            open={open}
-            onOpenChange={setOpen}
-            objective={
-              editingId ? objectives.find((obj) => obj.id === editingId) : null
-            }
-            onSave={handleSave}
-          />
+
+          <div className="px-6 py-5">
+            <ObjectivesForm
+              objective={
+                editingId ? objectives.find((o) => o.id === editingId) : null
+              }
+              onSave={handleSave}
+              onCancel={handleCloseDialog}
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
   );
+}
+
+// Simple date formatter (you can replace with date-fns or luxon later)
+function formatDate(dateStr) {
+  if (!dateStr) return null;
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+function getInitials(name) {
+  if (!name) return "??";
+  return name
+    .trim()
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 }

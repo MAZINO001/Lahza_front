@@ -999,7 +999,7 @@ export function DocumentForm({ type, onSuccess }) {
         <div className="flex gap-4 w-full items-start space-between">
           {(type === "invoices" || (type === "quotes" && !isEditMode)) && (
             <div
-              className={`flex gap-4 items-end justify-between ${!isInvoice ? "w-full" : "w-[50%]"
+              className={`flex gap-4 items-end justify-between ${isInvoice ? "w-[50%]" : "w-full"
                 }`}
             >
               <div className="w-full">
