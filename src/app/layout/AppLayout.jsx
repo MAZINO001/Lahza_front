@@ -6,6 +6,7 @@ import { SidebarInset, SidebarProvider } from "../../Components/ui/sidebar";
 import { LoadingProvider } from "@/hooks/LoadingContext";
 import ContactWidget from "../ContactWidget";
 import BreadcrumbsWrapper from "@/components/common/Breadcrumbs";
+import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot ";
 
 export default function AppLayout() {
   return (
@@ -18,6 +19,7 @@ export default function AppLayout() {
       <AppSidebar variant="inset" />
       <SidebarInset>
         <div className="flex flex-col min-h-screen">
+          <OfferPlacementSlot placement="header" />
           <header className="w-full border-b">
             <Header />
           </header>

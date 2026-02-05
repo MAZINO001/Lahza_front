@@ -17,6 +17,7 @@ import {
   eidAlAdhaEvents,
 } from "@/lib/CalendarData";
 import EventsSummary from "./EventsSummary";
+import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot ";
 
 export default function MyCalendar() {
   const { data: events } = useEvents();
@@ -703,8 +704,11 @@ export default function MyCalendar() {
             eventSpacing={2}
           />
         </div>
-        <div className="w-[30%]">
-          <EventsSummary />
+        <div className="flex flex-col w-[30%]">
+          <div>
+            <EventsSummary />
+          </div>
+          <OfferPlacementSlot placement="calendar" />
         </div>
       </div>
 

@@ -16,6 +16,7 @@ import { ProjectColumns } from "../columns/projectColumns";
 import { useProjects } from "../hooks/useProjects/useProjectsData";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot ";
 
 export function ProjectsTable() {
   const [sorting, setSorting] = useState([]);
@@ -30,6 +31,8 @@ export function ProjectsTable() {
     () => ProjectColumns(role, navigate),
     [role, navigate],
   );
+
+  const hasEmptySpace = projects?.length < 6;
 
   const table = useReactTable({
     data: projects,
@@ -74,6 +77,15 @@ export function ProjectsTable() {
         tableType="projects"
         role={role}
       />
+
+      {/* {hasEmptySpace && <OfferPlacementSlot placement="projects" />} */}
+      {hasEmptySpace && (
+        <OfferPlacementSlot
+          placement="projects"
+          maxOffers={2}
+          showAnimated={true}
+        />
+      )}
     </div>
   );
 }

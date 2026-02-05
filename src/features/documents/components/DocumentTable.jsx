@@ -21,6 +21,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { useDocuments } from "../hooks/useDocuments/useDocumentsQueryData";
 import { DocumentsColumns } from "../columns/documentColumns";
 import { DataTable } from "@/components/table/DataTable";
+import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot ";
 
 export function DocumentTable({ type }) {
   const [sorting, setSorting] = useState([]);
@@ -73,7 +74,7 @@ export function DocumentTable({ type }) {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
+  const hasEmptySpace = documents?.length < 6;
   return (
     <div className="w-full p-4 h-screen">
       <div className="flex items-center justify-between mb-4">
@@ -110,6 +111,7 @@ export function DocumentTable({ type }) {
         uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
         onSuccess={() => window.location.reload()}
       />
+      {hasEmptySpace && <OfferPlacementSlot placement={type} />}
     </div>
   );
 }

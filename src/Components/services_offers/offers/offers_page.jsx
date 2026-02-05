@@ -15,6 +15,8 @@ export default function OfferPage({ currentId }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  console.log(data);
+
   const deleteMutation = useMutation({
     mutationFn: () =>
       api.delete(`${import.meta.env.VITE_BACKEND_URL}/offers/${currentId}`),

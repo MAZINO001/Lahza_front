@@ -32,10 +32,7 @@ import {
 } from "../hooks/usePayments/usePaymentsData";
 import { Link } from "react-router-dom";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
-import { useCompanyInfo } from "@/features/settings/hooks/useSettingsAgencyInfoQuery";
-export function paymentColumns(role, { onEditPaidAt }) {
-  const { data: companyInfo } = useCompanyInfo();
-
+export function paymentColumns(role, companyInfo, { onEditPaidAt }) {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copied!`, {

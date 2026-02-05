@@ -22,26 +22,28 @@ import { paymentColumns } from "../columns/paymentColumns";
 import { usePayments } from "../hooks/usePayments/usePaymentsData";
 import { DataTable } from "@/components/table/DataTable";
 import EditDatePayment from "../components/editDatePayment";
+import { useCompanyInfo } from "@/features/settings/hooks/useSettingsAgencyInfoQuery";
 const PaymentTable = React.memo(function PaymentTable() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const { role } = useAuthContext();
   const { data: payments = [], isLoading } = usePayments();
+  const { data: companyInfo } = useCompanyInfo();
 
   const [paidAtOpen, setPaidAtOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
 
-  const handleEditPaidAt = (payment) => {
+  const handleEditPaidAt = React.useCallback((payment) => {
     setSelectedPayment(payment);
     setPaidAtOpen(true);
-  };
+  }, []);
 
   const columns = React.useMemo(
     () =>
-      paymentColumns(role, {
+      paymentColumns(role, companyInfo, {
         onEditPaidAt: handleEditPaidAt,
       }),
-    [role],
+    [role, handleEditPaidAt, companyInfo],
   );
 
   const table = useReactTable({

@@ -18,12 +18,14 @@ export class CacheInvalidationManager {
                 QUERY_KEYS.quotes,
                 QUERY_KEYS.invoices,
                 QUERY_KEYS.projects,
+                QUERY_KEYS.invoicesProjects,
                 QUERY_KEYS.payments,
             ],
-            // WheN an invoice changes, affects payments and dashboard
+            // When an invoice changes, affects payments and dashboard
             invoices: [
                 QUERY_KEYS.invoices,
                 QUERY_KEYS.projects,
+                QUERY_KEYS.invoicesProjects,
                 QUERY_KEYS.payments,
                 QUERY_KEYS.dashboardStats
             ],

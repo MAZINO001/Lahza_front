@@ -5,7 +5,7 @@ import { QUERY_KEYS } from '@/lib/queryKeys';
 
 export function usePayments(options) {
     options = options || {};
-    var enabled = options.enabled !== undefined ? options.enabled : true;
+    let enabled = options.enabled !== undefined ? options.enabled : true;
     return useQuery({
         queryKey: QUERY_KEYS.payments,
         queryFn: apiPayments.getAll,

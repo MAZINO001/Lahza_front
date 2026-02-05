@@ -5,10 +5,10 @@ import { QUERY_KEYS } from '@/lib/queryKeys';
 
 export function useNoInvoiceProject() {
     return useQuery({
-        queryKey: QUERY_KEYS.projects,
+        queryKey: QUERY_KEYS.invoicesProjects,
         queryFn: () => apiDocuments.getProjects(),
-        staleTime: Infinity,
-        refetchOnMount: false,
+        staleTime: 5 * 60 * 1000, // 5 minutes instead of Infinity
+        refetchOnMount: true, // Enable refetch on mount
         refetchOnWindowFocus: false,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch projects");
