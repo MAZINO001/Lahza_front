@@ -78,7 +78,6 @@ export function ProjectsTable() {
         role={role}
       />
 
-      {/* {hasEmptySpace && <OfferPlacementSlot placement="projects" />} */}
       {hasEmptySpace && (
         <OfferPlacementSlot
           placement="projects"

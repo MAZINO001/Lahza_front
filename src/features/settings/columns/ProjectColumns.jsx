@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { StatusBadge } from "@/components/StatusBadge";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
+import { Link } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Command,
@@ -24,6 +25,7 @@ import * as React from "react";
 import { format, isValid } from "date-fns";
 import { formatId } from "@/lib/utils/formatId";
 import TeamMembersCell from "../projects-management/components/TeamMembersCell";
+import { useAuthContext } from "@/hooks/AuthContext";
 
 function copyToClipboard(text, label = "Copied") {
   navigator.clipboard.writeText(text);
@@ -426,7 +428,7 @@ function MembersCell({ row, table }) {
   );
 }
 
-export function projectColumns() {
+export function projectColumns(role) {
   return [
     {
       accessorKey: "status",
@@ -461,16 +463,36 @@ export function projectColumns() {
     },
     {
       accessorKey: "invoices",
-      header: "Invoices",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Invoice Id <ArrowUpDown className="ml-1 h-4 w-4" />
+        </Button>
+      ),
       cell: ({ row }) => {
-        const invoicesId = row.getValue("invoices.id") || [];
+        const invoices = row.getValue("invoices") || [];
         return (
-          <div className="flex items-center gap-2">
-            {formatId(invoicesId, "INVOICE")}
+          <div className="flex flex-col gap-2">
+            {invoices.length > 0 ? (
+              invoices.map((invoice) => (
+                <Link
+                  key={invoice.id}
+                  to={`/${role}/invoice/${invoice.id}`}
+                  className="font-medium text-foreground hover:underline ml-3"
+                >
+                  {formatId(invoice.id, "INVOICE")}
+                </Link>
+              ))
+            ) : (
+              <span>-</span>
+            )}
           </div>
         );
       },
     },
+
     {
       accessorKey: "access",
       header: "Access",

@@ -5,22 +5,29 @@ import { create } from "zustand";
 
 
 export const globalFnStore = create((set) => ({
-    handleSendInvoice_Quote: (id, email, type) => {
+
+    handleSendInvoice_Quote: (id, email, type, status, onOpenSendDialog) => {
         const payload = {
             email: `${email}`,
-            message: `Thanks for your business! Please find the invoice attached.`,
+            message: `Thanks for your business! Please find the ${type} attached.`,
             type: type,
             id: id,
-            subject: "Your Invoice from LAHZA HM",
-        }
-        try {
-            const req = api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, payload)
-            toast.success(type + " is sent to " + email)
-        } catch (error) {
-            console.log(error)
-            toast.error("Failed to send " + type)
+            subject: `Your ${type} from LAHZA HM`,
+        };
+
+        if (status === "draft") {
+            onOpenSendDialog(id, email, type);
+        } else {
+            try {
+                api.post(`${import.meta.env.VITE_BACKEND_URL}/email/send`, payload);
+                toast.success(type + " is sent to " + email);
+            } catch (error) {
+                console.log(error);
+                toast.error("Failed to send " + type);
+            }
         }
     },
+
     handleDownloadInvoice_Quotes: async (id, type) => {
         try {
             const response = await api.get(`/pdf/${type}/${id}`, { responseType: 'blob' });

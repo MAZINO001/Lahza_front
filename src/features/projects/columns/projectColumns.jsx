@@ -43,12 +43,15 @@ export function ProjectColumns(role, navigate) {
       ? [
           {
             accessorKey: "client_id",
-            header: "Client",
+            header: "Client ID",
             cell: ({ row }) => {
               const id = row.getValue("client_id");
 
               return (
-                <Link to={`/${role}/client/${id}`}>
+                <Link
+                  to={`/${role}/client/${id}`}
+                  className="font-medium text-foreground hover:underline"
+                >
                   {formatId(id, "CLIENT")}
                 </Link>
               );
@@ -56,7 +59,37 @@ export function ProjectColumns(role, navigate) {
           },
         ]
       : []),
-
+    {
+      accessorKey: "invoices",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Invoice Id <ArrowUpDown className="ml-1 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const invoices = row.getValue("invoices") || [];
+        return (
+          <div className="flex flex-col gap-2">
+            {invoices.length > 0 ? (
+              invoices.map((invoice) => (
+                <Link
+                  key={invoice.id}
+                  to={`/${role}/invoice/${invoice.id}`}
+                  className="font-medium text-foreground hover:underline ml-3"
+                >
+                  {formatId(invoice.id, "INVOICE")}
+                </Link>
+              ))
+            ) : (
+              <span>-</span>
+            )}
+          </div>
+        );
+      },
+    },
     {
       accessorKey: "status",
       header: "Status",

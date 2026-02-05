@@ -7,21 +7,46 @@ export function TablePagination({
   paginationData,
   onPageChange,
 }) {
-  const currentPage = paginationData?.current_page || 1;
-  const lastPage = paginationData?.last_page || 1;
-  const from = paginationData?.from || 0;
-  const to = paginationData?.to || 0;
-  const total = paginationData?.total || 0;
+  // If external pagination data is provided, use it; otherwise use table's internal pagination
+  const useExternalPagination = !!paginationData && !!onPageChange;
+
+  const currentPage = useExternalPagination
+    ? (paginationData?.current_page || 1)
+    : table.getState().pagination.pageIndex + 1;
+
+  const lastPage = useExternalPagination
+    ? (paginationData?.last_page || 1)
+    : table.getPageCount();
+
+  const from = useExternalPagination
+    ? (paginationData?.from || 0)
+    : table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1;
+
+  const to = useExternalPagination
+    ? (paginationData?.to || 0)
+    : Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length);
+
+  const total = useExternalPagination
+    ? (paginationData?.total || 0)
+    : table.getFilteredRowModel().rows.length;
 
   const handlePrevious = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
+    if (useExternalPagination) {
+      if (currentPage > 1) {
+        onPageChange(currentPage - 1);
+      }
+    } else {
+      table.previousPage();
     }
   };
 
   const handleNext = () => {
-    if (currentPage < lastPage) {
-      onPageChange(currentPage + 1);
+    if (useExternalPagination) {
+      if (currentPage < lastPage) {
+        onPageChange(currentPage + 1);
+      }
+    } else {
+      table.nextPage();
     }
   };
 
@@ -41,7 +66,7 @@ export function TablePagination({
           variant="outline"
           size="sm"
           onClick={handlePrevious}
-          disabled={currentPage <= 1}
+          disabled={useExternalPagination ? currentPage <= 1 : !table.getCanPreviousPage()}
         >
           Previous
         </Button>
@@ -52,7 +77,7 @@ export function TablePagination({
           variant="outline"
           size="sm"
           onClick={handleNext}
-          disabled={currentPage >= lastPage}
+          disabled={useExternalPagination ? currentPage >= lastPage : !table.getCanNextPage()}
         >
           Next
         </Button>

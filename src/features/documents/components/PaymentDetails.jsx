@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Copy } from "lucide-react";
 import { StatusBadge } from "@/components/StatusBadge";
-
+import { useCompanyInfo } from "@/features/settings";
 export default function PaymentDetails({ invoiceId }) {
+  const { data: companyInfo } = useCompanyInfo();
+
   const [error, setError] = useState(null);
   const { data: payments = [], isLoading } = useDocumentPayments(invoiceId);
   const copyToClipboard = (text, label) => {
@@ -28,7 +30,10 @@ export default function PaymentDetails({ invoiceId }) {
       if (isStripe) {
         copyToClipboard(payment.payment_url, "Payment URL");
       } else if (isBank) {
-        copyToClipboard("007 640 0014332000000260 29", "RIB");
+        copyToClipboard(
+          companyInfo?.rib || "007 640 0014332000000260 29",
+          "RIB",
+        );
       }
     };
 

@@ -38,19 +38,25 @@ export function DataTable({
 }) {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10, // Default page size
+  });
 
   const table =
     externalTable ??
     useReactTable({
       data: data,
       columns: columns,
-      state: { sorting, columnFilters },
+      state: { sorting, columnFilters, pagination },
       onSortingChange: setSorting,
       onColumnFiltersChange: setColumnFilters,
+      onPaginationChange: setPagination,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: filterColumn ? getFilteredRowModel() : undefined,
       getPaginationRowModel: getPaginationRowModel(),
+      manualPagination: false, // Let the table handle pagination automatically
     });
 
   if (isLoading) {

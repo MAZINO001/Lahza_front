@@ -90,6 +90,7 @@ function EventForm({
       color: "#6366f1",
       allDay: false,
       guests: [],
+      rrule: null,
       url: "",
       priority: "low",
     },
@@ -273,10 +274,30 @@ function EventForm({
     }
   }, [open, selectedDate, editMode, selectedEvent, reset]);
 
-  // Helper function to format time as H:i (without seconds)
+  // Helper function to format time as H:i (24-hour format without seconds)
   const formatTime = (time) => {
     if (!time) return "00:00";
-    return time.length === 5 ? time : time.slice(0, 5);
+
+    // If already in correct format (HH:MM), return as is
+    if (/^\d{2}:\d{2}$/.test(time)) {
+      return time;
+    }
+
+    // Handle time with seconds (HH:MM:SS)
+    if (time.includes(':') && time.split(':').length >= 2) {
+      const parts = time.split(':');
+      return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+    }
+
+    // Handle other formats, try to extract hours and minutes
+    const timeMatch = time.match(/(\d{1,2}):?(\d{2})?/);
+    if (timeMatch) {
+      const hours = timeMatch[1].padStart(2, '0');
+      const minutes = timeMatch[2] ? timeMatch[2].padStart(2, '0') : '00';
+      return `${hours}:${minutes}`;
+    }
+
+    return "00:00";
   };
 
   const onSubmit = (formData) => {
@@ -299,6 +320,14 @@ function EventForm({
         startHour = formatTime(formData.startTime);
         endHour = formatTime(formData.endTime);
       }
+
+      // Debug: Log the time values being sent
+      console.log("Time values:", {
+        startTime: formData.startTime,
+        endTime: formData.endTime,
+        formattedStartHour: startHour,
+        formattedEndHour: endHour
+      });
 
       const eventPayload = {
         title: formData.title,
@@ -324,7 +353,7 @@ function EventForm({
 
         switch (frequency) {
           case "daily":
-            eventPayload.rrule = {
+            eventPayload.rrule = JSON.stringify({
               freq: RRule.DAILY,
               interval: parseInt(everyN) || 1,
               dtstart: startDateTime,
@@ -333,11 +362,11 @@ function EventForm({
                   ? parseInt(afterOccurrences) || 30
                   : undefined,
               until: endType === "on" ? new Date(endsOnDate) : undefined,
-            };
+            });
             break;
 
           case "weekly":
-            eventPayload.rrule = {
+            eventPayload.rrule = JSON.stringify({
               freq: RRule.WEEKLY,
               interval: parseInt(everyN) || 1,
               byweekday: [RRule.MO], // Default to Monday, can be customized
@@ -347,11 +376,11 @@ function EventForm({
                   ? parseInt(afterOccurrences) || 30
                   : undefined,
               until: endType === "on" ? new Date(endsOnDate) : undefined,
-            };
+            });
             break;
 
           case "monthly":
-            eventPayload.rrule = {
+            eventPayload.rrule = JSON.stringify({
               freq: RRule.MONTHLY,
               interval: parseInt(everyN) || 1,
               byweekday: [RRule.FR.nth(-1)], // Last Friday of each month
@@ -361,11 +390,11 @@ function EventForm({
                   ? parseInt(afterOccurrences) || 12
                   : undefined,
               until: endType === "on" ? new Date(endsOnDate) : undefined,
-            };
+            });
             break;
 
           case "yearly":
-            eventPayload.rrule = {
+            eventPayload.rrule = JSON.stringify({
               freq: RRule.YEARLY,
               interval: parseInt(everyN) || 1,
               dtstart: startDateTime,
@@ -374,7 +403,7 @@ function EventForm({
                   ? parseInt(afterOccurrences) || 5
                   : undefined,
               until: endType === "on" ? new Date(endsOnDate) : undefined,
-            };
+            });
             break;
         }
       }
@@ -586,14 +615,14 @@ function EventForm({
                             setSelectedColor(colorOption.color);
                           }}
                           className={`flex items-center gap-2 border p-1 rounded-md transition-all ${selectedColor === colorOption.color
-                              ? "border-black bg-gray-100"
-                              : "border-border hover:border-gray-400"
+                            ? "border-black bg-gray-100"
+                            : "border-border hover:border-gray-400"
                             }`}
                         >
                           <span
                             className={`w-8 h-8 rounded border-2 transition-all ${selectedColor === colorOption.color
-                                ? "border-black"
-                                : "border-border"
+                              ? "border-black"
+                              : "border-border"
                               }`}
                             style={{ backgroundColor: colorOption.color }}
                           />

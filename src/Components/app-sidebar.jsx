@@ -23,6 +23,7 @@ import {
   MessageSquareWarning,
   Server,
 } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
@@ -71,6 +72,11 @@ export function AppSidebar(props) {
       ],
       navSecondary: [
         { title: "Tickets", url: `/${role}/tickets`, icon: IconInvoice },
+        {
+          title: "Contact Us",
+          component: "contactWidget",
+          icon: MessageCircle,
+        },
       ],
     },
     admin: {
@@ -170,6 +176,11 @@ export function AppSidebar(props) {
       ],
       navSecondary: [
         { title: "System Logs", url: "/admin/logs", icon: IconInvoice },
+        {
+          title: "Contact Us",
+          component: "contactWidget",
+          icon: MessageCircle,
+        },
       ],
     },
   };

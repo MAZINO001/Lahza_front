@@ -1,77 +1,11 @@
-// import { useState } from "react";
-// import isBetween from "dayjs/plugin/isBetween";
-// import dayjs from "dayjs";
-// import { X } from "lucide-react";
-// import { useOffers } from "../hooks/useOffers/useOffers";
-
-// const OfferPlacementSlot = ({ placement }) => {
-//   const { data: offers } = useOffers();
-//   dayjs.extend(isBetween);
-
-//   const [dismissedOffers, setDismissedOffers] = useState([]);
-
-//   const handleDismiss = (id) => {
-//     setDismissedOffers((prev) => [...prev, id]);
-//   };
-
-//   const visibleOffers = offers
-//     ?.filter((offer) => {
-//       return (
-//         offer?.status === "active" &&
-//         offer?.placement?.includes(placement) &&
-//         dayjs().isBetween(offer?.start_date, offer?.end_date) &&
-//         !dismissedOffers.includes(offer.id)
-//       );
-//     })
-//     .slice();
-
-//   if (!visibleOffers?.length) return null;
-
-//   return (
-//     <div className="mt-4 space-y-3">
-//       {visibleOffers?.map((offer) => (
-//         <div
-//           key={offer.id}
-//           className="relative rounded-xl border p-4 bg-background"
-//         >
-//           <button
-//             onClick={() => handleDismiss(offer.id)}
-//             className="absolute top-2 right-2 text-sm px-2 py-1 rounded-md"
-//           >
-//             <X />
-//           </button>
-
-//           <h3 className="font-semibold">{offer.title}</h3>
-//           <p className="text-sm text-muted-foreground">{offer.description}</p>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// export default OfferPlacementSlot;
-
 import { useState, useMemo } from "react";
 import isBetween from "dayjs/plugin/isBetween";
 import dayjs from "dayjs";
-import { X } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useOffers } from "../hooks/useOffers/useOffers";
+import OfferCard from "./OfferCard";
 
 dayjs.extend(isBetween);
-
-/**
- * OfferPlacementSlot - Displays promotional offers in specific UI placements
- *
- * Features:
- * - Filters offers by placement, status, and date range
- * - Allows users to dismiss individual offers
- * - Dismissal state is per-component instance
- * - Supports rendering multiple offers with animation
- *
- * @param {string} placement - The placement identifier (e.g., "projects", "calendar")
- * @param {number} [maxOffers=3] - Maximum number of offers to display
- * @param {boolean} [showAnimated=true] - Enable entrance animations
- */
 const OfferPlacementSlot = ({
   placement,
   maxOffers = 3,
@@ -79,38 +13,82 @@ const OfferPlacementSlot = ({
 }) => {
   const { data: offers, isLoading, error } = useOffers();
   const [dismissedOffers, setDismissedOffers] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const handleDismiss = (id) => {
-    setDismissedOffers((prev) => [...prev, id]);
-  };
-
-  // Memoize filtering logic to avoid unnecessary recalculations
   const visibleOffers = useMemo(() => {
-    if (!offers?.length) return [];
+    if (!offers?.length) {
+      console.log("No offers available");
+      return [];
+    }
 
     const now = dayjs();
 
     return offers
-      .filter((offer) => {
-        // Validate offer structure
-        if (!offer.id || !offer.placement || !Array.isArray(offer.placement)) {
-          console.warn("Invalid offer structure:", offer);
+      ?.filter((offer) => {
+        if (!offer?.id) {
+          console.warn("Invalid offer structure - missing id:", offer);
           return false;
         }
+        let hasPlacement = false;
+        if (Array.isArray(offer?.placement)) {
+          hasPlacement = offer?.placement.includes(placement);
+        } else if (offer?.service_id && offer?.placement !== null) {
+          // Only show in projects/header if placement is explicitly set (not null)
+          hasPlacement = placement === "projects" || placement === "header";
+        }
 
-        return (
-          offer.status === "active" &&
-          offer.placement.includes(placement) &&
-          now.isBetween(offer.start_date, offer.end_date, null, "[]") &&
-          !dismissedOffers.includes(offer.id)
-        );
+        const isActive =
+          offer?.status === "active" || offer?.status === undefined;
+        let isInRange = true;
+        if (offer?.start_date && offer?.end_date) {
+          isInRange = now.isBetween(
+            offer?.start_date,
+            offer?.end_date,
+            null,
+            "[]",
+          );
+        }
+
+        const notDismissed = !dismissedOffers.includes(offer?.id);
+
+        return isActive && hasPlacement && isInRange && notDismissed;
       })
       .slice(0, maxOffers);
   }, [offers, placement, dismissedOffers, maxOffers]);
 
-  // Handle loading and error states
+  const handleDismiss = (id) => {
+    setDismissedOffers((prev) => [...prev, id]);
+    // Reset to first slide if current offer is dismissed
+    if (visibleOffers[currentSlide]?.id === id) {
+      setCurrentSlide(0);
+    }
+  };
+
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) =>
+      prev === 0 ? visibleOffers.length - 1 : prev - 1,
+    );
+  };
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) =>
+      prev === visibleOffers.length - 1 ? 0 : prev + 1,
+    );
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+
+  // Reset current slide when visible offers change
+  useMemo(() => {
+    if (currentSlide >= visibleOffers.length) {
+      setCurrentSlide(0);
+    }
+  }, [visibleOffers.length, currentSlide]);
+
   if (isLoading) {
-    return null; // Or render a skeleton if needed
+    return null;
   }
 
   if (error) {
@@ -122,71 +100,91 @@ const OfferPlacementSlot = ({
     return null;
   }
 
+  // If only one offer, show it normally without slider
+  if (visibleOffers.length === 1) {
+    return (
+      <div
+        className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        role="region"
+        aria-label={`Promotional offers for ${placement}`}
+      >
+        <OfferCard
+          key={visibleOffers[0]?.id}
+          offer={visibleOffers[0]}
+          onDismiss={handleDismiss}
+          animationDelay={0}
+          showAnimated={showAnimated}
+          placement={placement}
+        />
+      </div>
+    );
+  }
+
+  // Multiple offers - show slider
   return (
     <div
-      className="mt-4 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300"
+      className="relative animate-in fade-in slide-in-from-bottom-2 duration-300"
       role="region"
       aria-label={`Promotional offers for ${placement}`}
     >
-      {visibleOffers.map((offer, index) => (
-        <OfferCard
-          key={offer.id}
-          offer={offer}
-          onDismiss={handleDismiss}
-          animationDelay={index}
-          showAnimated={showAnimated}
-        />
-      ))}
-    </div>
-  );
-};
+      {/* Slider Container */}
+      <div className="overflow-hidden rounded-xl">
+        <div
+          className="flex transition-transform duration-300 ease-in-out"
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+        >
+          {visibleOffers.map((offer, index) => (
+            <div key={offer?.id} className="w-full shrink-0">
+              <OfferCard
+                offer={offer}
+                onDismiss={handleDismiss}
+                animationDelay={0}
+                showAnimated={false}
+                placement={placement}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
 
-/**
- * OfferCard - Individual offer display component
- * Separated for better component composition and reusability
- */
-const OfferCard = ({
-  offer,
-  onDismiss,
-  animationDelay = 0,
-  showAnimated = true,
-}) => {
-  return (
-    <div
-      className={`relative rounded-xl border border-gray-200 p-4 shadow-sm bg-white hover:shadow-md transition-shadow duration-200 ${
-        showAnimated
-          ? "animate-in fade-in slide-in-from-bottom-1 duration-300"
-          : ""
-      }`}
-      style={
-        showAnimated ? { animationDelay: `${animationDelay * 100}ms` } : {}
-      }
-    >
-      <button
-        onClick={() => onDismiss(offer.id)}
-        className="absolute top-3 right-3 p-1 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-500 hover:text-gray-700 shrink-0"
-        aria-label={`Dismiss offer: ${offer.title}`}
-        title="Dismiss this offer"
-      >
-        <X size={18} />
-      </button>
+      {/* Navigation Controls */}
+      <div className="flex items-center justify-between mt-4 px-2">
+        {/* Previous Button */}
+        <button
+          onClick={handlePrevSlide}
+          className="p-2 rounded-full bg-background border border-border hover:bg-muted transition-colors"
+          aria-label="Previous offer"
+          title="Previous offer"
+        >
+          <ChevronLeft size={16} />
+        </button>
 
-      <div className="pr-8">
-        <h3 className="font-semibold text-gray-900">{offer.title}</h3>
-        {offer.description && (
-          <p className="text-sm text-gray-600 mt-1">{offer.description}</p>
-        )}
+        {/* Slide Indicators */}
+        <div className="flex gap-2">
+          {visibleOffers.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                index === currentSlide
+                  ? "bg-primary"
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+              }`}
+              aria-label={`Go to offer ${index + 1}`}
+              title={`Offer ${index + 1}`}
+            />
+          ))}
+        </div>
 
-        {offer.cta_url && offer.cta_text && (
-          <a
-            href={offer.cta_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block mt-3 text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline transition-colors"
-          >
-            {offer.cta_text} →
-          </a>
-        )}
+        {/* Next Button */}
+        <button
+          onClick={handleNextSlide}
+          className="p-2 rounded-full bg-background border border-border hover:bg-muted transition-colors"
+          aria-label="Next offer"
+          title="Next offer"
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
     </div>
   );

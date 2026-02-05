@@ -111,7 +111,6 @@ export function DocumentTable({ type }) {
         uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
         onSuccess={() => window.location.reload()}
       />
-      {/* {hasEmptySpace && <OfferPlacementSlot placement={type} />} */}
       {hasEmptySpace && (
         <OfferPlacementSlot
           placement={type}

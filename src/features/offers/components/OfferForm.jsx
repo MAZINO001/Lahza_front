@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -38,23 +38,28 @@ export function OfferForm({ offerId, onSuccess }) {
     watch,
     setValue,
   } = useForm({
-    defaultValues: offer
-      ? {
-          ...offer,
-          placement: offer.placement || [], // Handle existing placement data from backend
-        }
-      : {
-          title: "",
-          description: "",
-          service_id: "",
-          discount_type: "percent",
-          discount_value: 0,
-          start_date: "",
-          end_date: "",
-          status: "active",
-          placement: [],
-        },
+    defaultValues: {
+      title: "",
+      description: "",
+      service_id: "",
+      discount_type: "percent",
+      discount_value: 0,
+      start_date: "",
+      end_date: "",
+      status: "active",
+      placement: [],
+    },
   });
+
+  // Reset form when offer data loads
+  useEffect(() => {
+    if (offer && !isLoading) {
+      reset({
+        ...offer,
+        placement: offer.placement || [], // Handle existing placement data from backend
+      });
+    }
+  }, [offer, isLoading, reset]);
 
   const PLACEMENT_OPTIONS = [
     { id: "header", label: "Header" },
@@ -106,207 +111,215 @@ export function OfferForm({ offerId, onSuccess }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 h-screen">
-      {servicesLoading && (
-        <p className="text-sm text-muted-foreground">Loading services...</p>
-      )}
+      {isLoading && offerId ? (
+        <div className="flex items-center justify-center h-64">
+          <p className="text-sm text-muted-foreground">Loading offer data...</p>
+        </div>
+      ) : (
+        <>
+          {servicesLoading && (
+            <p className="text-sm text-muted-foreground">Loading services...</p>
+          )}
 
-      <div className="flex items-end gap-4">
-        <div className="w-full">
-          <Controller
-            name="title"
-            control={control}
-            rules={{ required: "Title is required" }}
-            render={({ field }) => (
-              <FormField
-                label="Offer Title"
-                placeholder="e.g. Summer Sale 30%"
-                error={errors.title?.message}
-                {...field}
+          <div className="flex items-end gap-4">
+            <div className="w-full">
+              <Controller
+                name="title"
+                control={control}
+                rules={{ required: "Title is required" }}
+                render={({ field }) => (
+                  <FormField
+                    label="Offer Title"
+                    placeholder="e.g. Summer Sale 30%"
+                    error={errors.title?.message}
+                    {...field}
+                  />
+                )}
               />
-            )}
-          />
-        </div>
-        <div className="w-full">
-          <Controller
-            name="service_id"
-            control={control}
-            rules={{ required: "Please select a service" }}
-            render={({ field }) => (
-              <SelectField
-                label="Service"
-                options={serviceOptions}
-                placeholder={
-                  servicesLoading ? "Loading services..." : "Select a service"
-                }
-                value={String(field.value || "")}
-                onChange={(v) => field.onChange(Number(v))}
-                disabled={servicesLoading}
-                error={errors.service_id?.message}
+            </div>
+            <div className="w-full">
+              <Controller
+                name="service_id"
+                control={control}
+                rules={{ required: "Please select a service" }}
+                render={({ field }) => (
+                  <SelectField
+                    label="Service"
+                    options={serviceOptions}
+                    placeholder={
+                      servicesLoading ? "Loading services..." : "Select a service"
+                    }
+                    value={String(field.value || "")}
+                    onChange={(v) => field.onChange(Number(v))}
+                    disabled={servicesLoading}
+                    error={errors.service_id?.message}
+                  />
+                )}
               />
-            )}
-          />
-        </div>
-      </div>
-      <div className="w-full">
-        <Controller
-          name="description"
-          control={control}
-          rules={{ required: "Description is required" }}
-          render={({ field }) => (
-            <RichTextEditor
-              label="Description"
-              placeholder="Describe this offer..."
-              error={errors.description?.message}
-              {...field}
+            </div>
+          </div>
+          <div className="w-full">
+            <Controller
+              name="description"
+              control={control}
+              rules={{ required: "Description is required" }}
+              render={({ field }) => (
+                <RichTextEditor
+                  label="Description"
+                  placeholder="Describe this offer..."
+                  error={errors.description?.message}
+                  {...field}
+                />
+              )}
+            />
+          </div>
+
+          <div className="flex items-end gap-4 w-full">
+            <div className="w-[50%]">
+              <Controller
+                name="discount_type"
+                control={control}
+                rules={{ required: "Discount type is required" }}
+                render={({ field }) => (
+                  <SelectField
+                    label="Discount Type"
+                    options={[
+                      { value: "percent", label: "Percentage (%)" },
+                      { value: "fixed", label: "Fixed Amount (MAD)" },
+                    ]}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+
+            <div className="w-[50%] ">
+              <Controller
+                name="discount_value"
+                control={control}
+                rules={{
+                  required: "Value is required",
+                  min: { value: 0, message: "Cannot be negative" },
+                }}
+                render={({ field }) => (
+                  <FormField
+                    label="Discount Value"
+                    type="number"
+                    step="0.01"
+                    placeholder="0"
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+          </div>
+          <div className="flex gap-4 w-full">
+            <div className="w-[50%]">
+              <Controller
+                name="start_date"
+                control={control}
+                rules={{ required: "Start date is required" }}
+                render={({ field }) => (
+                  // <FormField
+                  <DateField
+                    type="date"
+                    label="Start Date"
+                    error={errors.start_date?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+            <div className="w-[50%]">
+              <Controller
+                name="end_date"
+                control={control}
+                rules={{ required: "End date is required" }}
+                render={({ field }) => (
+                  // <FormField
+                  <DateField
+                    type="date"
+                    label="End Date"
+                    error={errors.end_date?.message}
+                    {...field}
+                  />
+                )}
+              />
+            </div>
+          </div>
+
+          {isEditMode && (
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <SelectField
+                  label="Status"
+                  options={[
+                    { value: "active", label: "Active" },
+                    { value: "inactive", label: "Inactive" },
+                  ]}
+                  {...field}
+                />
+              )}
             />
           )}
-        />
-      </div>
 
-      <div className="flex items-end gap-4 w-full">
-        <div className="w-[50%]">
-          <Controller
-            name="discount_type"
-            control={control}
-            rules={{ required: "Discount type is required" }}
-            render={({ field }) => (
-              <SelectField
-                label="Discount Type"
-                options={[
-                  { value: "percent", label: "Percentage (%)" },
-                  { value: "fixed", label: "Fixed Amount (MAD)" },
-                ]}
-                {...field}
-              />
-            )}
-          />
-        </div>
+          <div className="space-y-3">
+            <label className="text-sm font-medium">Placement</label>
+            <div className="space-y-2">
+              <Controller
+                name="placement"
+                control={control}
+                render={({ field }) => {
+                  const placementValues = field.value || [];
 
-        <div className="w-[50%] ">
-          <Controller
-            name="discount_value"
-            control={control}
-            rules={{
-              required: "Value is required",
-              min: { value: 0, message: "Cannot be negative" },
-            }}
-            render={({ field }) => (
-              <FormField
-                label="Discount Value"
-                type="number"
-                step="0.01"
-                placeholder="0"
-                {...field}
-              />
-            )}
-          />
-        </div>
-      </div>
-      <div className="flex gap-4 w-full">
-        <div className="w-[50%]">
-          <Controller
-            name="start_date"
-            control={control}
-            rules={{ required: "Start date is required" }}
-            render={({ field }) => (
-              // <FormField
-              <DateField
-                type="date"
-                label="Start Date"
-                error={errors.start_date?.message}
-                {...field}
-              />
-            )}
-          />
-        </div>
-        <div className="w-[50%]">
-          <Controller
-            name="end_date"
-            control={control}
-            rules={{ required: "End date is required" }}
-            render={({ field }) => (
-              // <FormField
-              <DateField
-                type="date"
-                label="End Date"
-                error={errors.end_date?.message}
-                {...field}
-              />
-            )}
-          />
-        </div>
-      </div>
+                  const handleCheckboxChange = (placementId) => (e) => {
+                    if (e.target.checked) {
+                      field.onChange([...placementValues, placementId]);
+                    } else {
+                      field.onChange(
+                        placementValues.filter((p) => p !== placementId),
+                      );
+                    }
+                  };
 
-      {isEditMode && (
-        <Controller
-          name="status"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label="Status"
-              options={[
-                { value: "active", label: "Active" },
-                { value: "inactive", label: "Inactive" },
-              ]}
-              {...field}
-            />
-          )}
-        />
-      )}
-
-      <div className="space-y-3">
-        <label className="text-sm font-medium">Placement</label>
-        <div className="space-y-2">
-          <Controller
-            name="placement"
-            control={control}
-            render={({ field }) => {
-              const placementValues = field.value || [];
-
-              const handleCheckboxChange = (placementId) => (e) => {
-                if (e.target.checked) {
-                  field.onChange([...placementValues, placementId]);
-                } else {
-                  field.onChange(
-                    placementValues.filter((p) => p !== placementId),
+                  return (
+                    <div className="flex gap-4 ">
+                      {PLACEMENT_OPTIONS.map((option) => (
+                        <PlacementCheckbox
+                          key={option.id}
+                          id={`placement-${option.id}`}
+                          label={option.label}
+                          checked={placementValues.includes(option.id)}
+                          onChange={handleCheckboxChange(option.id)}
+                        />
+                      ))}
+                    </div>
                   );
-                }
-              };
+                }}
+              />
+            </div>
+          </div>
 
-              return (
-                <div className="flex gap-4 ">
-                  {PLACEMENT_OPTIONS.map((option) => (
-                    <PlacementCheckbox
-                      key={option.id}
-                      id={`placement-${option.id}`}
-                      label={option.label}
-                      checked={placementValues.includes(option.id)}
-                      onChange={handleCheckboxChange(option.id)}
-                    />
-                  ))}
-                </div>
-              );
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="flex justify-end gap-3 pt-6">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => navigate(`/${role}/offers`)}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={isSubmitting || mutation.isPending}>
-          {mutation.isPending
-            ? "Saving..."
-            : isEditMode
-              ? "Update Offer"
-              : "Create Offer"}
-        </Button>
-      </div>
+          <div className="flex justify-end gap-3 pt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate(`/${role}/offers`)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting || mutation.isPending}>
+              {mutation.isPending
+                ? "Saving..."
+                : isEditMode
+                  ? "Update Offer"
+                  : "Create Offer"}
+            </Button>
+          </div>
+        </>
+      )}
     </form>
   );
 }

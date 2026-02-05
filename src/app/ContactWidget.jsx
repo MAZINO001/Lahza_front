@@ -20,22 +20,29 @@ import {
 } from "@/components/ui/select";
 import { MessageCircle } from "lucide-react";
 
-export default function ContactWidget() {
+export default function ContactWidget({ variant = "floating" }) {
   const [open, setOpen] = useState(false);
+
+  const buttonContent = (
+    <Button
+      size={variant === "sidebar" ? "default" : "lg"}
+      className={
+        variant === "sidebar"
+          ? "w-full justify-start gap-2 cursor-pointer"
+          : "fixed bottom-6 right-6 rounded-full cursor-pointer shadow-2xl h-14 w-14 p-0 z-50 bg-primary hover:bg-primary/90 transition-all duration-300 hover:scale-110"
+      }
+    >
+      <MessageCircle
+        className={variant === "sidebar" ? "h-4 w-4" : "h-7 w-7"}
+      />
+      {variant === "sidebar" && <span>Contact Us</span>}
+      {variant === "floating" && <span className="sr-only">Contact Us</span>}
+    </Button>
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="lg"
-          className="fixed bottom-6 right-6 rounded-full shadow-2xl h-14 w-14 p-0 z-50
-                     bg-primary hover:bg-primary/90 transition-all duration-300
-                     hover:scale-110"
-        >
-          <MessageCircle className="h-7 w-7" />
-          <span className="sr-only">Contact Us</span>
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{buttonContent}</DialogTrigger>
 
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

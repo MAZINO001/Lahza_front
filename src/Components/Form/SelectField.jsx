@@ -75,7 +75,7 @@ export default function SelectField({
   value = "",
   onChange,
   options = [],
-  placeholder = "Sélectionnez une option",
+  placeholder = "",
   error,
   disabled = false,
   className,

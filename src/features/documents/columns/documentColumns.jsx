@@ -37,6 +37,7 @@ import {
   useCreateInvoiceFromQuote,
 } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
+import SendPopUp from "../components/sendPopUp";
 export function DocumentsColumns(role, navigate, currentSection) {
   const isInvoice = currentSection === "invoice";
   return [
@@ -364,8 +365,27 @@ export function DocumentsColumns(role, navigate, currentSection) {
         const { handleSendInvoice_Quote, handleDownloadInvoice_Quotes } =
           globalFnStore();
 
+        const [openSendDialog, setOpenSendDialog] = useState(false);
+        const [sendDialogData, setSendDialogData] = useState({
+          id: null,
+          email: null,
+          type: null,
+        });
+
+        const handleOpenSendDialog = (id, email, type) => {
+          setSendDialogData({ id, email, type });
+          setOpenSendDialog(true);
+        };
+
+        const status = row.getValue("status");
         const handleSend = () => {
-          handleSendInvoice_Quote(document.id, user.email, currentSection);
+          handleSendInvoice_Quote(
+            document.id,
+            user.email,
+            currentSection,
+            status,
+            handleOpenSendDialog,
+          );
         };
 
         const handleDownload = () => {
@@ -381,6 +401,8 @@ export function DocumentsColumns(role, navigate, currentSection) {
             toast.info(`Opening payment for ${document.id}`);
           }
         };
+
+
         return (
           <div className="flex items-center gap-2">
             {isInvoice &&
@@ -410,6 +432,15 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 <Send className="h-4 w-4" />
               </TooltipButton>
             )}
+
+            <SendPopUp
+              id={sendDialogData.id}
+              invoiceId={row.original?.id}
+              email={sendDialogData.email}
+              type={sendDialogData.type}
+              open={openSendDialog}
+              onOpenChange={setOpenSendDialog}
+            />
 
             <Dialog open={isSignDialogOpen} onOpenChange={setIsSignDialogOpen}>
               <DialogTrigger asChild>

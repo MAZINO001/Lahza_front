@@ -708,7 +708,11 @@ export default function MyCalendar() {
           <div>
             <EventsSummary />
           </div>
-          <OfferPlacementSlot placement="calendar" />
+          <OfferPlacementSlot
+            placement="calendar"
+            maxOffers={1}
+            showAnimated={true}
+          />
         </div>
       </div>
 

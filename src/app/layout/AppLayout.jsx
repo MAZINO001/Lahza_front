@@ -17,9 +17,14 @@ export default function AppLayout() {
       }}
     >
       <AppSidebar variant="inset" />
+
       <SidebarInset>
+        <OfferPlacementSlot
+          placement="header"
+          maxOffers={1}
+          showAnimated={true}
+        />
         <div className="flex flex-col min-h-screen">
-          <OfferPlacementSlot placement="header" />
           <header className="w-full border-b">
             <Header />
           </header>
@@ -32,7 +37,6 @@ export default function AppLayout() {
             </LoadingProvider>
           </main>
           <Footer />
-          <ContactWidget />
         </div>
       </SidebarInset>
     </SidebarProvider>

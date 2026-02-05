@@ -65,7 +65,7 @@ export default function AgencyInfo({ section }) {
   }, [companyInfo, isLoading, reset]);
 
   const onSubmit = (values) => {
-    console.log(values);
+    console.log("values", values);
     updateCompanyInfo.mutate({
       id: companyInfo?.id || 1,
       data: values,
@@ -73,7 +73,7 @@ export default function AgencyInfo({ section }) {
   };
 
   // Show client read-only view for non-admin users
-  if (!authLoading && role !== 'admin') {
+  if (!authLoading && role !== "admin") {
     return <AgencyInfoView section={section} />;
   }
 
@@ -154,15 +154,7 @@ export default function AgencyInfo({ section }) {
           </form>
         );
       case "certifications":
-        return (
-          <form
-            key="certifications"
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-8"
-          >
-            <CertificationsSection />
-          </form>
-        );
+        return <CertificationsSection />;
 
       default:
         return null;
