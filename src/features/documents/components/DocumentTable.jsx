@@ -21,7 +21,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { useDocuments } from "../hooks/useDocuments/useDocumentsQueryData";
 import { DocumentsColumns } from "../columns/documentColumns";
 import { DataTable } from "@/components/table/DataTable";
-import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot ";
+import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot";
 
 export function DocumentTable({ type }) {
   const [sorting, setSorting] = useState([]);
@@ -111,7 +111,14 @@ export function DocumentTable({ type }) {
         uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadInvoices`}
         onSuccess={() => window.location.reload()}
       />
-      {hasEmptySpace && <OfferPlacementSlot placement={type} />}
+      {/* {hasEmptySpace && <OfferPlacementSlot placement={type} />} */}
+      {hasEmptySpace && (
+        <OfferPlacementSlot
+          placement={type}
+          maxOffers={1}
+          showAnimated={true}
+        />
+      )}
     </div>
   );
 }

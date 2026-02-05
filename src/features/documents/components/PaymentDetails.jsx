@@ -8,16 +8,44 @@ import { StatusBadge } from "@/components/StatusBadge";
 
 export default function PaymentDetails({ invoiceId }) {
   const [error, setError] = useState(null);
-
+  const { data: payments = [], isLoading } = useDocumentPayments(invoiceId);
   const copyToClipboard = (text, label) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`${label} copied!`, {
-      duration: 3000,
-    });
+    navigator.clipboard
+      .writeText(text)
+      .then(() => toast.success(`${label} copied!`))
+      .catch(() => toast.error(`Failed to copy ${label}`));
+  };
+  const CopyPaymentButton = ({ payment, copyToClipboard }) => {
+    const isStripe =
+      payment?.payment_method === "stripe" && payment?.payment_url;
+
+    const isBank = payment?.payment_method === "bank";
+
+    const showCopyButton =
+      payment?.status === "pending" && (isStripe || isBank);
+
+    const handleCopy = () => {
+      if (isStripe) {
+        copyToClipboard(payment.payment_url, "Payment URL");
+      } else if (isBank) {
+        copyToClipboard("007 640 0014332000000260 29", "RIB");
+      }
+    };
+
+    const buttonLabel = isStripe ? "Copy URL" : isBank ? "Copy RIB" : "";
+
+    if (!showCopyButton) return null;
+
+    return (
+      <div className="mt-1 text-sm">
+        <Button variant="outline" size="sm" onClick={handleCopy}>
+          <Copy className="mr-1 h-4 w-4" />
+          {buttonLabel}
+        </Button>
+      </div>
+    );
   };
 
-  const { data: payments = [], isLoading } = useDocumentPayments(invoiceId);
-  console.log(payments);
   if (isLoading) {
     return (
       <div className="p-4 text-center text-muted-foreground">
@@ -66,31 +94,10 @@ export default function PaymentDetails({ invoiceId }) {
                 <span>
                   <StatusBadge status={payment.status} />
                 </span>
-                {payment.status === "pending" &&
-                  (payment.payment_method === "stripe" ||
-                    payment.payment_method === "bank") && (
-                    <div className="mt-1 text-sm">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          if (payment.payment_method === "stripe") {
-                            copyToClipboard(payment.payment_url, "Payment Url");
-                          }
-
-                          if (payment.payment_method === "bank") {
-                            copyToClipboard(
-                              "007 640 0014332000000260 29",
-                              "Payment Url"
-                            );
-                          }
-                        }}
-                      >
-                        <Copy className="mr-1 h-4 w-4" />
-                        Copy Rib
-                      </Button>
-                    </div>
-                  )}
+                <CopyPaymentButton
+                  payment={payment}
+                  copyToClipboard={copyToClipboard}
+                />
               </div>
             </div>
             {payment.payment_method && (

@@ -4,7 +4,6 @@ import {
   ArrowUpDown,
   Download,
   Pencil,
-  Eye,
   Copy,
   Check,
   Ban,
@@ -228,17 +227,6 @@ export function paymentColumns(role, companyInfo, { onEditPaidAt }) {
 
         return (
           <div className="flex">
-            {payment.stripe_session_id && row.getValue("status") === "paid" && (
-              <TooltipButton
-                tooltip="View Stripe Session"
-                variant="ghost"
-                size="sm"
-                onClick={handleViewSession}
-                className="cursor-pointer"
-              >
-                <Eye />
-              </TooltipButton>
-            )}
             {row.getValue("status") === "pending" &&
               (row.getValue("payment_method") === "stripe" ||
                 row.getValue("payment_method") === "bank") && (
@@ -265,57 +253,53 @@ export function paymentColumns(role, companyInfo, { onEditPaidAt }) {
                   </TooltipButton>
                 </div>
               )}
-            {row.getValue("payment_method") === "bank" &&
-              row.getValue("status") === "pending" &&
-              role === "admin" && (
-                <>
-                  <TooltipButton
-                    tooltip="Confirm Payment"
-                    variant="ghost"
-                    onClick={() => setOpen(true)}
-                    className="cursor-pointer"
-                  >
-                    <CircleCheck className="h-4 w-4" />
-                  </TooltipButton>
-                  <ConfirmDialog
-                    open={open}
-                    onClose={() => setOpen(false)}
-                    onConfirm={() => {
-                      confirmPayment.mutate(row.getValue("id"));
-                      setOpen(false);
-                    }}
-                    title="Confirm Payment"
-                    description="Are you sure you want to confirm this payment? This action cannot be undone."
-                    action="confirm"
-                  />
-                </>
-              )}
-            {row.getValue("payment_method") === "bank" &&
-              row.getValue("status") === "paid" &&
-              role === "admin" && (
-                <>
-                  <TooltipButton
-                    tooltip="Cancel Payment"
-                    variant="ghost"
-                    onClick={() => setOpen(true)}
-                    className="cursor-pointer"
-                  >
-                    <CircleX className="h-4 w-4" />
-                  </TooltipButton>
+            {row.getValue("status") === "pending" && role === "admin" && (
+              <>
+                <TooltipButton
+                  tooltip="Confirm Payment"
+                  variant="ghost"
+                  onClick={() => setOpen(true)}
+                  className="cursor-pointer"
+                >
+                  <CircleCheck className="h-4 w-4" />
+                </TooltipButton>
+                <ConfirmDialog
+                  open={open}
+                  onClose={() => setOpen(false)}
+                  onConfirm={() => {
+                    confirmPayment.mutate(row.getValue("id"));
+                    setOpen(false);
+                  }}
+                  title="Confirm Payment"
+                  description="Are you sure you want to confirm this payment? This action cannot be undone."
+                  action="confirm"
+                />
+              </>
+            )}
+            {row.getValue("status") === "paid" && role === "admin" && (
+              <>
+                <TooltipButton
+                  tooltip="Cancel Payment"
+                  variant="ghost"
+                  onClick={() => setOpen(true)}
+                  className="cursor-pointer"
+                >
+                  <CircleX className="h-4 w-4" />
+                </TooltipButton>
 
-                  <ConfirmDialog
-                    open={open}
-                    onClose={() => setOpen(false)}
-                    onConfirm={() => {
-                      cancelPayment.mutate(row.getValue("id"));
-                      setOpen(false);
-                    }}
-                    title="Cancel Payment"
-                    description="Are you sure you want to cancel this payment? This action cannot be undone."
-                    action="cancel"
-                  />
-                </>
-              )}
+                <ConfirmDialog
+                  open={open}
+                  onClose={() => setOpen(false)}
+                  onConfirm={() => {
+                    cancelPayment.mutate(row.getValue("id"));
+                    setOpen(false);
+                  }}
+                  title="Cancel Payment"
+                  description="Are you sure you want to cancel this payment? This action cannot be undone."
+                  action="cancel"
+                />
+              </>
+            )}
             {role === "admin" && row.getValue("status") === "pending" && (
               <Dialog
                 open={isSignDialogOpen}

@@ -16,7 +16,7 @@ import { ProjectColumns } from "../columns/projectColumns";
 import { useProjects } from "../hooks/useProjects/useProjectsData";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot ";
+import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot";
 
 export function ProjectsTable() {
   const [sorting, setSorting] = useState([]);
@@ -82,7 +82,7 @@ export function ProjectsTable() {
       {hasEmptySpace && (
         <OfferPlacementSlot
           placement="projects"
-          maxOffers={2}
+          maxOffers={1}
           showAnimated={true}
         />
       )}

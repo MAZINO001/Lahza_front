@@ -164,7 +164,7 @@ const OfferCard = ({
     >
       <button
         onClick={() => onDismiss(offer.id)}
-        className="absolute top-3 right-3 p-1 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-500 hover:text-gray-700 flex-shrink-0"
+        className="absolute top-3 right-3 p-1 rounded-lg hover:bg-gray-100 transition-colors duration-200 text-gray-500 hover:text-gray-700 shrink-0"
         aria-label={`Dismiss offer: ${offer.title}`}
         title="Dismiss this offer"
       >

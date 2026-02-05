@@ -17,7 +17,7 @@ import {
   eidAlAdhaEvents,
 } from "@/lib/CalendarData";
 import EventsSummary from "./EventsSummary";
-import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot ";
+import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot";
 
 export default function MyCalendar() {
   const { data: events } = useEvents();

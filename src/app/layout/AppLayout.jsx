@@ -6,7 +6,7 @@ import { SidebarInset, SidebarProvider } from "../../Components/ui/sidebar";
 import { LoadingProvider } from "@/hooks/LoadingContext";
 import ContactWidget from "../ContactWidget";
 import BreadcrumbsWrapper from "@/components/common/Breadcrumbs";
-import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot ";
+import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot";
 
 export default function AppLayout() {
   return (
