@@ -34,7 +34,7 @@ export default function Transactions({ currentId }) {
   const columnsBySection = {
     invoices: DocumentsColumns(role, navigate, "invoice"),
     quotes: DocumentsColumns(role, navigate, "quote"),
-    payments: paymentColumns(role, navigate),
+    payments: paymentColumns(role, null, { onEditPaidAt: () => { } }),
     projects: ProjectColumns(role, navigate),
   };
 
