@@ -36,10 +36,10 @@ export default function Login({ status, canResetPassword }) {
     try {
       const result = await loginMutation.mutateAsync(data);
 
-      // Login successful - cookies are set by backend
       login(result.user);
       navigate(`/${role}/dashboard`, { replace: true });
     } catch (error) {
+      console.log(error);
       toast.error(error.response?.data?.message || "Login failed");
     }
   };
