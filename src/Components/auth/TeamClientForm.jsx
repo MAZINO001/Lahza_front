@@ -51,6 +51,7 @@ export function TeamClientForm() {
 
       await registerMutation.mutateAsync(formData);
 
+      toast.info("Check your email for verification link");
       navigate("/auth/login");
     } catch (error) {
       console.error("Registration failed:", error.response?.data);
@@ -139,8 +140,7 @@ export function TeamClientForm() {
               rules={{
                 required: "Password confirmation is required",
                 validate: (val) =>
-                  val === watch("password") ||
-                  "Passwords do not match",
+                  val === watch("password") || "Passwords do not match",
               }}
               render={({ field }) => (
                 <FormField

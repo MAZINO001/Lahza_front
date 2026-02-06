@@ -128,6 +128,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
         handleClientCreatedByAdmin?.(response?.client_id);
         registerStore.reset();
       } else {
+        toast.info("Check your email for verification link");
         navigate("/auth/login");
       }
     } catch (error) {

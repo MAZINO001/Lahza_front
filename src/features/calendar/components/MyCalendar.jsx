@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IlamyCalendar } from "@ilamy/calendar";
 import dayjs from "dayjs";
 import "dayjs/locale/fr";
@@ -21,15 +21,19 @@ import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot"
 
 export default function MyCalendar() {
   const { data: events } = useEvents();
+  const [holidays, setHolidays] = useState([]);
 
-  const generateRecurringEvents = () => {
+  const generateRecurringEvents = async () => {
     const year = new Date().getFullYear();
 
-    return [
-      {
-        title: "New Year's Day",
-        start_date: `${year}-01-01`,
-        end_date: `${year}-01-01`,
+    try {
+      const response = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/MA`);
+      const holidaysData = await response.json();
+
+      const formattedHolidays = holidaysData.map((holiday) => ({
+        title: holiday.localName || holiday.name,
+        start_date: holiday.date,
+        end_date: holiday.date,
         start_hour: "00:00",
         end_hour: "23:59",
         all_day: 1,
@@ -37,177 +41,48 @@ export default function MyCalendar() {
         status: "pending",
         type: "offline",
         color: "#ec4899",
-        description: "New Year's Day",
+        description: holiday.name,
         guests: null,
         url: null,
-        other_notes: null,
+        other_notes: `Country: ${holiday.countryCode}`,
         repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-01-01`) },
-      },
-      {
-        title: "Proclamation of Independence",
-        start_date: `${year}-01-11`,
-        end_date: `${year}-01-11`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Proclamation of Independence Day",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-01-11`) },
-      },
-      {
-        title: "Amazigh New Year (Yennayer)",
-        start_date: `${year}-01-14`,
-        end_date: `${year}-01-14`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Amazigh New Year",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-01-14`) },
-      },
-      {
-        title: "Labour Day",
-        start_date: `${year}-05-01`,
-        end_date: `${year}-05-01`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Labour Day",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-05-01`) },
-      },
-      {
-        title: "Throne Day",
-        start_date: `${year}-07-30`,
-        end_date: `${year}-07-30`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Throne Day",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-07-30`) },
-      },
-      {
-        title: "Oued Ed-Dahab Day",
-        start_date: `${year}-08-14`,
-        end_date: `${year}-08-14`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Oued Ed-Dahab Day",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-08-14`) },
-      },
-      {
-        title: "Revolution of the King and the People",
-        start_date: `${year}-08-20`,
-        end_date: `${year}-08-20`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Revolution of the King and the People",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-08-20`) },
-      },
-      {
-        title: "Youth Day",
-        start_date: `${year}-08-21`,
-        end_date: `${year}-08-21`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Youth Day",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-08-21`) },
-      },
-      {
-        title: "Green March Day",
-        start_date: `${year}-11-06`,
-        end_date: `${year}-11-06`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Green March Day",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-11-06`) },
-      },
-      {
-        title: "Independence Day",
-        start_date: `${year}-11-18`,
-        end_date: `${year}-11-18`,
-        start_hour: "00:00",
-        end_hour: "23:59",
-        all_day: 1,
-        category: "holiday",
-        status: "pending",
-        type: "offline",
-        color: "#ec4899",
-        description: "Independence Day",
-        guests: null,
-        url: null,
-        other_notes: null,
-        repeatedly: "yearly",
-        rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-11-18`) },
-      },
-    ];
+        rrule: {
+          freq: 0,
+          interval: 1,
+          dtstart: new Date(holiday.date),
+        },
+      }));
+
+      setHolidays(formattedHolidays);
+      return formattedHolidays;
+    } catch (error) {
+      console.error("Error fetching holidays:", error);
+      return [
+        {
+          title: "New Year's Day",
+          start_date: `${year}-01-01`,
+          end_date: `${year}-01-01`,
+          start_hour: "00:00",
+          end_hour: "23:59",
+          all_day: 1,
+          category: "holiday",
+          status: "pending",
+          type: "offline",
+          color: "#ec4899",
+          description: "New Year's Day",
+          guests: null,
+          url: null,
+          other_notes: null,
+          repeatedly: "yearly",
+          rrule: { freq: 0, interval: 1, dtstart: new Date(`${year}-01-01`) },
+        },
+      ];
+    }
   };
+
+  useEffect(() => {
+    generateRecurringEvents();
+  }, []);
 
   // Transform events to IlamyCalendar format
   const transformedEvents =
@@ -235,12 +110,12 @@ export default function MyCalendar() {
       // Create Date objects (month is 0-indexed in JavaScript Date constructor)
       const startDateTime = event.start_date
         ? new Date(
-            startYear,
-            startMonth - 1,
-            startDay,
-            startHour || 9,
-            startMinute || 0,
-          )
+          startYear,
+          startMonth - 1,
+          startDay,
+          startHour || 9,
+          startMinute || 0,
+        )
         : new Date();
 
       const endDateTime = event.end_date
@@ -276,7 +151,7 @@ export default function MyCalendar() {
     }) || [];
 
   // Get recurring events and transform them
-  const recurringEvents = generateRecurringEvents().map((event) => {
+  const recurringEvents = holidays.map((event) => {
     const [startYear, startMonth, startDay] = event.start_date
       .split("-")
       .map(Number);

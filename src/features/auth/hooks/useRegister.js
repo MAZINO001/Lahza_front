@@ -6,7 +6,7 @@ const register = async (registerData) => {
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         registerData,
         {
-            headers: { 
+            headers: {
                 Accept: 'application/json',
                 ...(registerData instanceof FormData && {
                     'Content-Type': 'multipart/form-data'

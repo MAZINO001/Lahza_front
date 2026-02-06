@@ -6,7 +6,7 @@ import Overview_ClientInfo from "./overview_ClientInfo";
 import Overview_Payments from "./overview_Payments";
 import { useClientHistory } from "@/features/clients/hooks/useClientsHistory";
 import { useState } from "react";
-import VerifiedCard from "@/components/hover-card-info-3";
+import VerifiedCard from "@/components/VerifiedCard";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 export default function Overview({ data, currentId }) {
   const [copiedEmail, setCopiedEmail] = useState(false);

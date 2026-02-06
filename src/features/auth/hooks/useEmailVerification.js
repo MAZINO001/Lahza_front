@@ -82,7 +82,7 @@ export function useEmailVerification() {
         }
 
         verifyEmailMutation.mutate({ token });
-    }, [token]);
+    }, [token, verifyEmailMutation]);
 
     const goToSignIn = () => navigate("/auth/login");
     const goToResendVerification = () => navigate("/auth/verify-email");
