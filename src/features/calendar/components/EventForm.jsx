@@ -212,29 +212,18 @@ function EventForm({
 
       setSelectedColor(selectedEvent.color || "#6366f1");
     } else if (open && selectedDate && !editMode) {
-      // New event mode
-      const dateStr = selectedDate.toLocaleDateString("en-CA");
-      const timeStr = selectedDate.toLocaleTimeString("en-CA", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      });
-
+      console.log("selectedDate", selectedDate);
+      console.log("startDate", selectedDate?.startDate);
+      console.log("endDate", selectedDate?.endDate);
+      console.log("endTime", selectedDate?.endTime);
+      console.log("startTime", selectedDate?.startTime);
+      console.log("allDay", selectedDate?.allDay);
       reset({
         title: "",
-        startDate: dateStr,
-        endDate: dateStr,
-        startTime: selectedDate.getHours() > 0 ? timeStr : "09:00",
-        endTime:
-          selectedDate.getHours() > 0
-            ? new Date(
-                selectedDate.getTime() + 60 * 60 * 1000,
-              ).toLocaleTimeString("en-CA", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })
-            : "10:00",
+        startDate: selectedDate?.startDate,
+        endDate: selectedDate?.endDate,
+        startTime: selectedDate?.endTime,
+        endTime: selectedDate?.startTime,
         description: "",
         other_notes: "",
         category: "Agency",
@@ -242,7 +231,7 @@ function EventForm({
         type: "offline",
         repeatedly: "none",
         color: "#6366f1",
-        allDay: false,
+        allDay: selectedDate?.allDay,
         guests: [],
         url: "",
       });
@@ -342,10 +331,15 @@ function EventForm({
         repeatedly: repeatEnabled ? frequency : "none",
         color: formData.color,
         all_day: formData.allDay ? 1 : 0,
-        guests: null,
+        guests:
+          formData.guests && formData.guests.length > 0
+            ? formData.guests.map((guest) => guest.id || guest)
+            : null,
         url: formData.type === "online" && formData.url ? formData.url : null,
         other_notes: formData.other_notes || null,
       };
+
+      console.log("Event payload:", eventPayload);
 
       // Add rrule configuration based on repetition type
       if (repeatEnabled) {
@@ -408,13 +402,14 @@ function EventForm({
         }
       }
 
-      console.log("Event payload:", eventPayload);
       return eventPayload;
     };
 
     if (editMode && selectedEvent) {
       // Edit existing event
       const eventPayload = createEvent(formData.startDate);
+
+      console.log("eventPayload", eventPayload);
 
       updateMutation.mutate(
         { id: selectedEvent.id, data: eventPayload },
@@ -469,7 +464,7 @@ function EventForm({
         <DialogHeader>
           <DialogTitle>
             {editMode ? "Edit Event" : "New Event"}
-            {selectedDate?.toLocaleDateString()}
+            {selectedDate?.startDate}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4 bg-background text-foreground overflow-y-auto flex-1 p-4">

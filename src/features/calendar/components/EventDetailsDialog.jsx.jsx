@@ -28,7 +28,6 @@ function EventDetailsDialog({
   onUpdate,
 }) {
   const { data: usersResponse } = useUsers();
-  console.log(event);
   // Normalize users data
   const users = Array.isArray(usersResponse)
     ? usersResponse
@@ -74,6 +73,8 @@ function EventDetailsDialog({
     }
     return event.end_date || event.start_date || null;
   };
+
+  console.log(event);
 
   const isAllDayEvent = event.allDay ?? event.all_day ?? false;
 
@@ -167,8 +168,6 @@ function EventDetailsDialog({
               </p>
             </div>
           )}
-
-          {/* Guests */}
           {event.guests?.length > 0 && (
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -176,12 +175,12 @@ function EventDetailsDialog({
                 <span>Guests ({event.guests.length})</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
-                {event.guests.map((guestId) => {
-                  const user = users.find((u) => u.id === guestId);
-                  const name = user?.name || user?.email || `User ${guestId}`;
+                {event.guests.map((guest) => {
+                  const name =
+                    guest?.name || guest?.email || `User ${guest?.id}`;
                   return (
                     <div
-                      key={guestId}
+                      key={guest?.id}
                       className={cn(
                         "text-xs font-medium px-2.5 py-1 rounded-full",
                         "bg-secondary text-secondary-foreground",
@@ -217,7 +216,7 @@ function EventDetailsDialog({
 
         <DialogFooter className="gap-2 sm:gap-3 pt-4 border-t">
           <Button variant="outline" onClick={() => onUpdate(event)}>
-            Done
+            {event.status === "completed" ? "Un-Done" : "Done"}
           </Button>
           <Button variant="outline" onClick={() => onEdit(event)}>
             Edit Event

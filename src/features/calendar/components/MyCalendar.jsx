@@ -4,8 +4,6 @@ import dayjs from "dayjs";
 import "dayjs/locale/fr";
 import EventForm from "./EventForm";
 import EventDetailsDialog from "./EventDetailsDialog.jsx";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import {
   useDeleteEvent,
   useEvents,
@@ -21,13 +19,40 @@ import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot"
 
 export default function MyCalendar() {
   const { data: events } = useEvents();
+
+  const parseRrule = (rrule) => {
+    if (!rrule) return null;
+
+    if (typeof rrule === "object") {
+      return rrule;
+    }
+
+    if (typeof rrule === "string") {
+      try {
+        const parsed = JSON.parse(rrule);
+
+        if (parsed.dtstart && typeof parsed.dtstart === "string") {
+          parsed.dtstart = new Date(parsed.dtstart);
+        }
+        return parsed;
+      } catch (error) {
+        console.error("Error parsing rrule:", error);
+        return null;
+      }
+    }
+
+    return null;
+  };
+
   const [holidays, setHolidays] = useState([]);
 
   const generateRecurringEvents = async () => {
     const year = new Date().getFullYear();
 
     try {
-      const response = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/MA`);
+      const response = await fetch(
+        `https://date.nager.at/api/v3/PublicHolidays/${year}/MA`,
+      );
       const holidaysData = await response.json();
 
       const formattedHolidays = holidaysData.map((holiday) => ({
@@ -84,15 +109,12 @@ export default function MyCalendar() {
     generateRecurringEvents();
   }, []);
 
-  // Transform events to IlamyCalendar format
   const transformedEvents =
     events?.map((event) => {
-      // If event already has start/end properties, use as-is
       if (event.start && event.end) {
         return event;
       }
 
-      // Parse date components more robustly
       const [startYear, startMonth, startDay] = event.start_date
         ? event.start_date.split("-").map(Number)
         : [null, null, null];
@@ -107,22 +129,20 @@ export default function MyCalendar() {
         ? event.end_hour.split(":").map(Number)
         : [0, 0];
 
-      // Create Date objects (month is 0-indexed in JavaScript Date constructor)
       const startDateTime = event.start_date
         ? new Date(
-          startYear,
-          startMonth - 1,
-          startDay,
-          startHour || 9,
-          startMinute || 0,
-        )
+            startYear,
+            startMonth - 1,
+            startDay,
+            startHour || 9,
+            startMinute || 0,
+          )
         : new Date();
 
       const endDateTime = event.end_date
         ? new Date(endYear, endMonth - 1, endDay, endHour || 10, endMinute || 0)
-        : new Date(startDateTime.getTime() + 60 * 60 * 1000); // Default to 1 hour after start
+        : new Date(startDateTime.getTime() + 60 * 60 * 1000);
 
-      // Validate the dates are valid
       if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
         console.warn("Invalid date for event:", event.title, {
           startDateTime,
@@ -131,26 +151,17 @@ export default function MyCalendar() {
         return null;
       }
 
-      console.log(
-        "Event:",
-        event.title,
-        "Start:",
-        startDateTime.toISOString(),
-        "End:",
-        endDateTime.toISOString(),
-      );
-
       return {
         ...event,
         start: startDateTime,
         end: endDateTime,
-        allDay: event.all_day === 1 || event.allDay === true, // FIX: Map all_day property to allDay
+        allDay: event.all_day === 1 || event.allDay === true,
         title: event.title || "Untitled Event",
         description: event.description || "",
+        rrule: parseRrule(event.rrule),
       };
     }) || [];
 
-  // Get recurring events and transform them
   const recurringEvents = holidays.map((event) => {
     const [startYear, startMonth, startDay] = event.start_date
       .split("-")
@@ -188,7 +199,6 @@ export default function MyCalendar() {
     const currentYear = new Date().getFullYear();
     const islamicHolidays = [];
 
-    // Process Ramadan events - just the start date (single day)
     const ramadanForYear = ramadanEvents.find((event) =>
       event.start_date.startsWith(currentYear.toString()),
     );
@@ -216,7 +226,6 @@ export default function MyCalendar() {
       });
     }
 
-    // Process Eid al-Fitr events - single 3-day event
     const eidAlFitrForYear = eidAlFitrEvents.find((event) =>
       event.start_date.startsWith(currentYear.toString()),
     );
@@ -246,7 +255,6 @@ export default function MyCalendar() {
       });
     }
 
-    // Process Eid al-Adha events - single 7-day event
     const eidAlAdhaForYear = eidAlAdhaEvents.find((event) =>
       event.start_date.startsWith(currentYear.toString()),
     );
@@ -323,8 +331,6 @@ export default function MyCalendar() {
   // Filter out any null events from invalid dates
   const validEvents = allEvents.filter((event) => event !== null);
 
-  console.log("Transformed events:", validEvents);
-
   const DeleteMutation = useDeleteEvent();
   const updateMutation = useUpdateEvent();
 
@@ -341,7 +347,6 @@ export default function MyCalendar() {
     const storedLocale = localStorage.getItem("i18nextLng");
     if (!storedLocale) return "fr"; // default fallback
 
-    // Map only French and English locale codes
     const localeMap = {
       "en-US": "en",
       en: "en",
@@ -384,20 +389,11 @@ export default function MyCalendar() {
   };
 
   const handleEventClick = (event) => {
-    console.log("✅ Event clicked:", event);
     setSelectedEvent(event);
     setShowEventDetails(true);
   };
 
-  const handleAddNew = () => {
-    setSelectedDate(new Date());
-    setSelectedEvent(null);
-    setEditMode(false);
-    setShowEventForm(true);
-  };
-
   const handleEventEdit = (event) => {
-    console.log("✏️ Editing event:", event);
     setSelectedEvent(event);
     setEditMode(true);
     setShowEventDetails(false);
@@ -405,13 +401,38 @@ export default function MyCalendar() {
   };
 
   const handleCellClick = (info) => {
-    console.log("📅 Cell clicked:", {
-      start: info.start?.format("YYYY-MM-DD HH:mm"),
-      end: info.end?.format("YYYY-MM-DD HH:mm"),
-      resourceId: info.resourceId,
+    console.log("info", info);
+    const startDate = info.start ? info.start.toDate() : new Date();
+    const endDate = info.end
+      ? info.end.toDate()
+      : new Date(startDate.getTime() + 60 * 60 * 1000);
+    const startDateFormatted = startDate.toLocaleDateString("en-CA");
+    const endDateFormatted = endDate.toLocaleDateString("en-CA");
+    const startTimeFormatted = startDate.toLocaleTimeString("en-CA", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
     });
-    // Open event form for new event
-    setSelectedDate(info.start ? info.start.toDate() : new Date());
+
+    const endTimeFormatted = endDate.toLocaleTimeString("en-CA", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+
+    const isAllDay = info.allDay === true;
+
+    const eventData = {
+      startDate: startDateFormatted,
+      endDate: endDateFormatted,
+      startTime: startTimeFormatted,
+      endTime: endTimeFormatted,
+      allDay: isAllDay,
+    };
+
+    console.log("Extracted event data:", eventData);
+
+    setSelectedDate(eventData);
     setSelectedEvent(null);
     setEditMode(false);
     setShowEventForm(true);
@@ -430,9 +451,30 @@ export default function MyCalendar() {
     setShowEventDetails(false);
   };
 
+  // const handleEventComplete = (updatedEvent) => {
+  //   const data = {
+  //     title: updatedEvent.title,
+  //     start_date: updatedEvent.start_date,
+  //     end_date: updatedEvent.end_date,
+  //     status: "completed",
+  //   };
+
+  //   updateMutation.mutate({ id: updatedEvent.id, data });
+  //   setShowEventDetails(false); // Close the dialog after updating
+  // };
+
   const handleEventComplete = (updatedEvent) => {
-    console.log(updatedEvent);
-    updateMutation.mutate({ id: updatedEvent.id, data: updatedEvent });
+    const newStatus =
+      updatedEvent.status === "pending" ? "completed" : "pending";
+    const data = {
+      title: updatedEvent.title,
+      start_date: updatedEvent.start_date,
+      end_date: updatedEvent.end_date,
+      status: newStatus,
+    };
+
+    updateMutation.mutate({ id: updatedEvent.id, data });
+    setShowEventDetails(false);
   };
 
   const handleDateChange = (date) => {
@@ -442,20 +484,22 @@ export default function MyCalendar() {
   const renderEvent = (event, view) => {
     const eventColor = event.color || "#3b82f6";
 
-    // const bgColor = `${eventColor}1a`; //10%
-    // const bgColor = `${eventColor}33`; //20%
-    const bgColor = `${eventColor}4d`; //30%
+    const now = new Date();
+    const eventEnd =
+      event.end instanceof Date ? event.end : new Date(event.end);
+    const isPast = eventEnd < now;
+    const isCompleted = event.status === "completed";
+    const isFinished = isPast || isCompleted;
 
-    // Format time for display
+    const bgColor = isFinished ? `rgba(128, 128, 128, 0.3)` : `${eventColor}4d`;
+
+    const borderColor = isFinished ? "#808080" : eventColor;
+    const opacity = isFinished ? "opacity-50" : "";
+
     const formatTime = (date) => {
       if (!date) return "";
-
-      // Convert to Date object if it's not already
       const dateObj = date instanceof Date ? date : new Date(date);
-
-      // Check if it's a valid date
       if (isNaN(dateObj.getTime())) return "";
-
       return dateObj.toLocaleTimeString("en-US", {
         hour: "numeric",
         minute: "2-digit",
@@ -467,15 +511,15 @@ export default function MyCalendar() {
     const endTime = formatTime(event.end);
     const timeDisplay = startTime && endTime ? `${startTime} → ${endTime}` : "";
 
-    // In month view, show simpler layout
-    if (view === "month") {
+    if (view === "month" || view === "week" || view === "day") {
       return (
         <div
-          className="p-1 text-xs font-medium truncate"
+          className={`p-1 text-xs font-medium truncate ${opacity} ${isFinished ? "line-through" : ""}`}
           style={{
             backgroundColor: bgColor,
-            borderLeft: `2px solid ${eventColor}`,
-            color: `text-foreground`,
+            borderLeft: `2px solid ${borderColor}`,
+            color: isFinished ? "#666666" : "text-foreground",
+            height: "100%",
           }}
         >
           <span className="truncate">{event.title}</span>
@@ -483,74 +527,32 @@ export default function MyCalendar() {
       );
     }
 
-    // In week/day view, show full details
     return (
       <div
-        className=" p-2 text-sm font-medium"
+        className={`p-2 text-sm font-medium ${opacity}`}
         style={{
           backgroundColor: bgColor,
-          // borderLeft: `4px solid ${eventColor}`,
-          color: `dark:text-white text-black`,
-          // color: eventColor,
-          height: `100%`,
+          color: isFinished ? "#666666" : "dark:text-white text-black",
+          height: "100%",
         }}
       >
         <div className="flex items-center gap-2">
-          {event.urgency === "high" && <span>🔥</span>}
-          <span className="truncate">{event.title}</span>
+          {event.urgency === "high" && !isFinished && <span>🔥</span>}
+          <span className={`truncate ${isFinished ? "line-through" : ""}`}>
+            {event.title}
+          </span>
         </div>
 
         {timeDisplay && (
-          <p className="text-xs mt-1 opacity-80">{timeDisplay}</p>
-        )}
-
-        {/* {event.description && (
-          <p className="text-xs mt-1 truncate opacity-80">
-            {event.description}
+          <p
+            className={`text-xs mt-1 opacity-80 ${isFinished ? "opacity-50" : ""}`}
+          >
+            {timeDisplay}
           </p>
-        )} */}
+        )}
       </div>
     );
   };
-
-  // const renderCurrentTimeIndicator = (context) => {
-  //   const { time, isVisible } = context;
-
-  //   if (!isVisible) return null;
-
-  //   return (
-  //     <div
-  //       className="absolute w-full border-t-2 border-red-500 z-10 pointer-events-none"
-  //       style={{
-  //         top: context.top || "0px",
-  //         left: "0px",
-  //       }}
-  //     >
-  //       <div className="flex items-center gap-2 text-red-500 text-xs font-semibold">
-  //         <div className="w-3 h-3 rounded-full bg-red-500"></div>
-  //         <span>{time?.format("HH:mm") || "Now"}</span>
-  //       </div>
-  //     </div>
-  //   );
-  // };
-
-  // const businessHours = [
-  //   {
-  //     daysOfWeek: [0], // Sunday - off
-  //     start: "00:00",
-  //     end: "00:00",
-  //   },
-  //   {
-  //     daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
-  //     start: "09:00",
-  //     end: "18:00",
-  //   },
-  //   {
-  //     daysOfWeek: [6], // Saturday - off
-  //     start: "00:00",
-  //     end: "00:00",
-  //   },
-  // ];
 
   return (
     <div className="w-full h-screen flex flex-col">
@@ -559,7 +561,7 @@ export default function MyCalendar() {
           <IlamyCalendar
             stickyViewHeader={false}
             renderEventForm={(props) => <EventForm {...props} />}
-            viewHeaderClassName="top-16 bg-background z-40"
+            viewHeaderClassName="bg-background"
             headerClassName="bg-blue-50 bg-background text-blue-900 border-2 border-border p-4 rounded-t-md"
             events={validEvents}
             renderEvent={(event) => renderEvent(event, currentView)}

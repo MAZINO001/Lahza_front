@@ -321,3 +321,16 @@
         rotate: 1080deg;
     }
 }
+
+/* Make native select dropdowns work */
+select {
+    position: relative !important;
+    z-index: 9999 !important;
+    appearance: auto !important;
+}
+
+/* Allow select options to overflow */
+select option {
+    overflow: visible !important;
+    pointer-events: auto !important;
+}

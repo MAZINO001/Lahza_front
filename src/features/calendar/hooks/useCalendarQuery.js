@@ -73,7 +73,6 @@ export function useUpdateEvent() {
             queryClient.invalidateQueries({ queryKey: ["events", variables.id] });
         },
         onError: (error) => {
-            console.log(error)
             toast.error(error?.response?.data?.message || "Failed to update event");
         },
     });
