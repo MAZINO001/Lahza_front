@@ -63,7 +63,7 @@ export function getPlansColumns(role, navigate, onDelete) {
             {prices.slice(0, 2).map((price, index) => (
               <div key={index} className="text-sm">
                 <span className="font-medium">
-                  {price.price.toFixed(2)} {price.currency}
+                  {Number(price.price)?.toFixed(2)} {price.currency}
                 </span>
                 <span className="text-muted-foreground ml-1">
                   /{price.interval}

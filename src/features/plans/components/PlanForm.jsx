@@ -209,6 +209,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
               onClick={() =>
                 appendPrice({ interval: "monthly", price: "", currency: "USD" })
               }
+              disabled={priceFields.length >= 3}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Pricing
@@ -304,7 +305,6 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         </CardContent>
       </Card>
 
-      {/* Custom Fields / Features */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -334,29 +334,30 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         <CardContent>
           {customFields.length === 0 ? (
             <div className="py-10 text-center text-muted-foreground italic">
-              Add things like max_storage, team_members, has_api_access...
+              Add your custom inputs
             </div>
           ) : (
-            <div className="space-y-5">
+            <div className="space-y-4">
               {customFields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="rounded-lg border bg-card p-5 shadow-sm"
+                  className="rounded-lg border bg-background p-4"
                 >
-                  <div className="mb-4 flex items-center justify-between">
-                    <h4 className="font-medium">Feature N {index + 1}</h4>
+                  <div className="flex items-center justify-between ">
+                    <h4 className="font-bold">Feature Number {index + 1}</h4>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       className="text-destructive hover:bg-destructive/10"
+                      disabled={customFields.length <= 1}
                       onClick={() => removeCustom(index)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
 
-                  <div className="grid gap-5 md:grid-cols-2">
+                  <div className="grid gap-4 mb-4 md:grid-cols-2">
                     <Controller
                       name={`custom_fields.${index}.key`}
                       control={control}
@@ -382,8 +383,8 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                     />
                   </div>
 
-                  <div className="flex gap-4 w-full space-y-4">
-                    <div className="w-[40%]">
+                  <div className="flex items-center justify-between gap-4 w-full space-y-4">
+                    <div className="w-[43%] m-0">
                       <Controller
                         name={`custom_fields.${index}.type`}
                         control={control}
@@ -405,7 +406,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                         )}
                       />
                     </div>
-                    <div className="w-[40%]">
+                    <div className="w-[43%]">
                       <Controller
                         name={`custom_fields.${index}.default_value`}
                         control={control}
@@ -423,7 +424,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                         )}
                       />
                     </div>
-                    <div className="flex items-end md:items-center pt-2 md:pt-0 w-[20%]">
+                    <div className="flex items-end md:items-center pt-2 md:pt-0 w-[14%] ">
                       <Controller
                         name={`custom_fields.${index}.required`}
                         control={control}

@@ -37,10 +37,6 @@ export function PlanesTable({ packId }) {
   const navigate = useNavigate();
   const deletePlan = useDeletePlan();
 
-  // Debug: Log the data structure
-  console.log('Plans data:', plans);
-  console.log('Plans data type:', typeof plans);
-  console.log('Is array?', Array.isArray(plans));
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
