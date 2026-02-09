@@ -29,8 +29,13 @@ import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 import { Sidebar, SidebarContent, SidebarRail, useSidebar } from "./ui/sidebar";
 import { useAuthContext } from "@/hooks/AuthContext";
+import { usePacks } from "@/features/plans/hooks/usePacks";
 export function AppSidebar(props) {
   const { role, logout } = useAuthContext();
+  const { data: packsData, isLoading: packsLoading } = usePacks({ activeOnly: true });
+  const packs = packsData?.packs ?? [];
+
+
   const sidebarData = {
     client: {
       navMain: [
@@ -56,6 +61,18 @@ export function AppSidebar(props) {
               title: "Projects",
               url: `/${role}/projects`,
               icon: BriefcaseIcon,
+            },
+            {
+              title: "Plans",
+              url: `/${role}/plans`,
+              icon: Layers,
+              children: packsLoading
+                ? [{ title: "Loading...", url: `/${role}/plans`, icon: Server }]
+                : packs.map((pack) => ({
+                  title: pack.name,
+                  url: `/${role}/plans/${pack.id}`,
+                  icon: Server,
+                })),
             },
             {
               title: "Payments",
@@ -125,26 +142,13 @@ export function AppSidebar(props) {
               title: "Plans",
               url: `/${role}/plans`,
               icon: Layers,
-              children: [
-                {
-                  title: "Web Hosting",
-                  url: `/${role}/plans/web-hosting`,
+              children: packsLoading
+                ? [{ title: "Loading...", url: `/${role}/plans`, icon: Server }]
+                : packs.map((pack) => ({
+                  title: pack.name,
+                  url: `/${role}/plans/${pack.id}`,
                   icon: Server,
-                },
-                { title: "SEO", url: `/${role}/plans/seo`, icon: Server },
-                {
-                  title: "Maintenance & Security",
-                  url: `/${role}/plans/maintenance-security`,
-                  icon: Server,
-                },
-                { title: "SAV", url: `/${role}/plans/sav`, icon: Server },
-                { title: "SM", url: `/${role}/plans/sm`, icon: Server },
-                {
-                  title: "Automation",
-                  url: `/${role}/plans/automation`,
-                  icon: Server,
-                },
-              ],
+                })),
             },
             { title: "Services", url: `/${role}/services`, icon: Package },
             { title: "Offers", url: `/${role}/offers`, icon: PercentSquare },

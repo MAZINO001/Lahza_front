@@ -140,16 +140,14 @@ const NotificationsPage = lazy(
   () => import("@/pages/notifications/NotificationsPage"),
 );
 
-// Lazy load plan pages
-const PlansPage = lazy(() => import("../pages/plans"));
-const WebHostingPage = lazy(() => import("../pages/plans/web-hosting"));
-const SEOPage = lazy(() => import("../pages/plans/seo"));
-const MaintenanceSecurityPage = lazy(
-  () => import("../pages/plans/maintenance-security"),
-);
-const SAVPage = lazy(() => import("../pages/plans/sav"));
-const SMPage = lazy(() => import("../pages/plans/sm"));
-const AutomationPage = lazy(() => import("../pages/plans/automation"));
+// Lazy load pack management pages
+const PacksList = lazy(() => import("../pages/plans/PacksList"));
+const PackCreate = lazy(() => import("../pages/plans/PackCreate"));
+const PackDetail = lazy(() => import("../pages/plans/PackDetail"));
+const PackEdit = lazy(() => import("../pages/plans/PackEdit"));
+const PlanCreate = lazy(() => import("../pages/plans/PlanCreate"));
+const PlanEdit = lazy(() => import("../pages/plans/PlanEdit"));
+const PlanesPage = lazy(() => import("../pages/plans/planesPage"));
 
 import AuthLayout from "@/app/layout/AuthLayout";
 import AppLayout from "@/app/layout/AppLayout";
@@ -557,75 +555,17 @@ export default function AppRoutes() {
                 element={
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading plans...</div>}>
-                      <PlansPage />
+                      <PlanesPage />
                     </Suspense>
                   </ErrorBoundary>
                 }
               />
               <Route
-                path="plans/web-hosting"
+                path="plans/:packId"
                 element={
                   <ErrorBoundary>
-                    <Suspense
-                      fallback={<div>Loading web hosting plans...</div>}
-                    >
-                      <WebHostingPage />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="plans/seo"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading SEO plans...</div>}>
-                      <SEOPage />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="plans/maintenance-security"
-                element={
-                  <ErrorBoundary>
-                    <Suspense
-                      fallback={
-                        <div>Loading maintenance & security plans...</div>
-                      }
-                    >
-                      <MaintenanceSecurityPage />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="plans/sav"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading SAV plans...</div>}>
-                      <SAVPage />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="plans/sm"
-                element={
-                  <ErrorBoundary>
-                    <Suspense
-                      fallback={<div>Loading social media plans...</div>}
-                    >
-                      <SMPage />
-                    </Suspense>
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path="plans/automation"
-                element={
-                  <ErrorBoundary>
-                    <Suspense fallback={<div>Loading automation plans...</div>}>
-                      <AutomationPage />
+                    <Suspense fallback={<div>Loading plans...</div>}>
+                      <PlanesPage />
                     </Suspense>
                   </ErrorBoundary>
                 }
@@ -657,7 +597,7 @@ export default function AppRoutes() {
 
               {/* settings */}
               <Route
-                path="settings/:id"
+                path="settings/*"
                 element={
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading settings...</div>}>

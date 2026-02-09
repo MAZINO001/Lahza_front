@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
 
 const AgencyInfo = lazy(() => import("../agency-info/AgencyInfo"));
 const PreferencesSection = lazy(
@@ -9,8 +9,21 @@ const ManagementSection = lazy(() => import("../management/ManagementSection"));
 
 export default function SettingsMainContent() {
   const { id } = useParams();
+  const location = useLocation();
+
+  // Extract the section name from the full path
+  const pathSegments = location.pathname.split("/");
+  const settingsIndex = pathSegments.indexOf("settings");
+  const section = settingsIndex !== -1 && settingsIndex + 1 < pathSegments.length
+    ? pathSegments[settingsIndex + 1]
+    : "company_basics";
 
   const renderContent = () => {
+    // Handle plans_management with potential pack ID
+    if (section === "plans_management" || section?.startsWith("plans_management/")) {
+      return <ManagementSection section="plans_management" />;
+    }
+
     if (
       [
         "company_basics",
@@ -18,13 +31,13 @@ export default function SettingsMainContent() {
         "contact_address",
         "legal_tax_banking",
         "certifications",
-      ].includes(id)
+      ].includes(section)
     ) {
-      return <AgencyInfo section={id} />;
+      return <AgencyInfo section={section} />;
     }
 
-    if (["notifications", "preferences", "security"].includes(id)) {
-      return <PreferencesSection section={id} />;
+    if (["notifications", "preferences", "security"].includes(section)) {
+      return <PreferencesSection section={section} />;
     }
 
     if (
@@ -32,10 +45,9 @@ export default function SettingsMainContent() {
         "team_management",
         "projects_management",
         "users_management",
-        "plans_management",
-      ].includes(id)
+      ].includes(section)
     ) {
-      return <ManagementSection section={id} />;
+      return <ManagementSection section={section} />;
     }
 
     return <Navigate to="/admin/settings/company_basics" replace />;

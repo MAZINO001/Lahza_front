@@ -17,8 +17,7 @@ import { useTeams } from "../../hooks/useTeamsQuery";
 import DateField from "@/components/Form/DateField";
 
 export default function AdditionalTeamDetails() {
-  const { user } = useAuthContext();
-  const { role } = useAuthContext();
+  const {user, role} = useAuthContext();
   const { data: teamsMembers } = useTeams();
 
   const currentUserTeamId = teamsMembers?.data?.find(

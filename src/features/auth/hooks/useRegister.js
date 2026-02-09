@@ -2,6 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import api from '@/lib/utils/axios';
 
 const register = async (registerData) => {
+    console.log("registerData", registerData)
     const response = await api.post(
         `${import.meta.env.VITE_BACKEND_URL}/register`,
         registerData,

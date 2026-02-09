@@ -102,7 +102,11 @@ export default function SettingsSideBar() {
   const location = useLocation();
 
   // Get the current settings section from the URL
-  const currentSection = location.pathname.split("/").pop() || "company_basics";
+  const pathSegments = location.pathname.split("/");
+  const settingsIndex = pathSegments.indexOf("settings");
+  const currentSection = settingsIndex !== -1 && settingsIndex + 1 < pathSegments.length
+    ? pathSegments[settingsIndex + 1]
+    : "company_basics";
   return (
     <aside className="w-60 shrink-0 border border-border rounded-lg h-screen overflow-auto bg-background ">
       <div className="bg-background backdrop-blur-sm ">
@@ -139,11 +143,10 @@ export default function SettingsSideBar() {
                           key={item.value}
                         >
                           <div
-                            className={`w-full text-left px-2 py-2 rounded-lg text-sm transition-colors mb-1 ${
-                              isActive
+                            className={`w-full text-left px-2 py-2 rounded-lg text-sm transition-colors mb-1 ${isActive
                                 ? "bg-primary/20 text-primary/80"
                                 : "text-foreground hover:bg-gray-100 dark:hover:bg-primary/20"
-                            }`}
+                              }`}
                           >
                             <span className="flex gap-2">
                               {item.icon}

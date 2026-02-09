@@ -202,12 +202,29 @@ function BreadcrumbsWrapper() {
       name = "Profile";
     } else if (segment === "notifications") {
       name = "Notifications";
+    } else if (segment === "plans_management") {
+      name = "Plans Management";
+    } else if (segment === "plans") {
+      name = "Plans";
+      // For plans under plans_management, don't create a link - it's not a valid route
+      const prevPrevSegment = pathSegments[index - 2];
+      if (prevPrevSegment === "plans_management") {
+        breadcrumbPath = currentPath;
+      }
     } else if (/^\d+$/.test(segment)) {
       const prevSegment = pathSegments[index - 1];
+      const nextSegment = pathSegments[index + 1];
+
       if (prevSegment === "project") {
         name = `Project ${segment}`;
       } else if (prevSegment === "ticket") {
         name = `TKT ${segment}`;
+      } else if (prevSegment === "plans_management") {
+        name = `Pack ${segment}`;
+        // If there's a "plans" segment after this ID, don't create a link for the ID
+        if (nextSegment === "plans") {
+          breadcrumbPath = currentPath;
+        }
       } else {
         name = `ID: ${segment}`;
       }
