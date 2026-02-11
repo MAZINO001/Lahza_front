@@ -91,7 +91,7 @@ export default function ObjectivesPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-1 lg:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-1 lg:grid-cols-2">
           {objectives.map((obj) => (
             <Card
               key={obj.id}

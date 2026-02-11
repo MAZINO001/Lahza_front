@@ -9,7 +9,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import FormField from "@/Components/Form/FormField";
 import { useCreatePack, useUpdatePack } from "../hooks/usePacks";
 import { useAuthContext } from "@/hooks/AuthContext";
@@ -50,25 +49,21 @@ export function PackForm({ pack, onSuccess, onCancel }) {
         { id: pack.id, ...data },
         {
           onSuccess: () => {
-            toast.success("Pack updated successfully");
             onSuccess?.();
           },
           onError: (err) => {
-            toast.error(
-              err?.response?.data?.message || "Failed to update pack",
-            );
+            // errors are handled by the mutation hook
           },
         },
       );
     } else {
       mutation.mutate(data, {
         onSuccess: () => {
-          toast.success("Pack created successfully");
           onSuccess?.();
           reset();
         },
         onError: (err) => {
-          toast.error(err?.response?.data?.message || "Failed to create pack");
+          // errors are handled by the mutation hook
         },
       });
     }
@@ -76,38 +71,47 @@ export function PackForm({ pack, onSuccess, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
-        <div className="space-y-4">
-          <Controller
-            name="name"
-            control={control}
-            rules={{ required: "Pack name is required" }}
-            render={({ field }) => (
-              <FormField
-                label="Pack Name"
-                placeholder="e.g. Business Solutions, Enterprise, Starter"
-                error={errors.name?.message}
-                {...field}
-              />
-            )}
-          />
+      <div className="space-y-4">
+        <Controller
+          name="name"
+          control={control}
+          rules={{ required: "Pack name is required" }}
+          render={({ field }) => (
+            <FormField
+              label="Pack Name"
+              placeholder="e.g. Business Solutions, Enterprise, Starter"
+              error={errors.name?.message}
+              {...field}
+            />
+          )}
+        />
 
-          <Controller
-            name="description"
-            control={control}
-            render={({ field }) => (
-              <div className="space-y-2">
-                <Label>Description (optional)</Label>
-                <Textarea
-                  placeholder="Describe this pack..."
-                  className="min-h-[100px]"
-                  {...field}
-                  value={field.value || ""}
-                />
-              </div>
-            )}
-          />
-        </div>
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <div className="space-y-2">
+              <Label>Description (optional)</Label>
+              <Textarea
+                placeholder="Describe this pack..."
+                className="min-h-[100px]"
+                {...field}
+                value={field.value || ""}
+              />
+            </div>
+          )}
+        />
+
+        <Controller
+          name="is_active"
+          control={control}
+          render={({ field }) => (
+            <div className="flex items-center gap-2">
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
+              <Label>Active</Label>
+            </div>
+          )}
+        />
       </div>
 
       <div className="flex justify-end gap-4 pt-4">

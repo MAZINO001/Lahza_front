@@ -6,7 +6,14 @@ import TextareaField from "@/components/Form/TextareaField";
 export function CompanyBasicsSection({ control, errors }) {
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="font-semibold text-lg mb-6">Company Basics</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Company Basics
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your basic company information and details
+        </p>
+      </div>
 
       <div className=" flex gap-4">
         <div className="space-y-2 w-[50%]">

@@ -11,6 +11,7 @@ import SelectField from "@/Components/Form/SelectField";
 import SelectField_Search from "@/Components/Form/SelectField_Search";
 import { Label } from "@/components/ui/label";
 import FileUploader from "@/components/Form/FileUploader";
+import { useDocumentFileAttachments } from "../hooks/useattachFiles";
 import ServiceSelect from "@/features/documents/components/ServiceSelector";
 
 import { terms } from "@/lib/Terms_Conditions.json";
@@ -46,6 +47,12 @@ export function DocumentForm({ type, onSuccess }) {
   const documentId = quoteId ?? id ?? cloneFromId;
   const documentType = quoteId ? "quotes" : type;
 
+  const { originalFiles, handleAttachmentChange } = useDocumentFileAttachments(
+    documentId,
+    documentType,
+  );
+  console.log(originalFiles);
+
   const { data: document } = useDocument(documentId, documentType);
   const isInvoice = type === "invoices";
   const { data: clients, isLoading: clientsLoading } = useClients();
@@ -74,14 +81,14 @@ export function DocumentForm({ type, onSuccess }) {
       customerName: clientId || "",
       ...(isInvoice
         ? {
-          // invoice_date: "",
-          // due_date: "",
-          invoice_date: new Date().toISOString().split("T")[0],
-          due_date: new Date().toISOString().split("T")[0],
-        }
+            // invoice_date: "",
+            // due_date: "",
+            invoice_date: new Date().toISOString().split("T")[0],
+            due_date: new Date().toISOString().split("T")[0],
+          }
         : {
-          quoteDate: new Date().toISOString().split("T")[0],
-        }),
+            quoteDate: new Date().toISOString().split("T")[0],
+          }),
       attach_file: [],
       notes: "",
       payment_percentage: "50",
@@ -234,12 +241,12 @@ export function DocumentForm({ type, onSuccess }) {
           customerName: doc.client?.id || doc.client_id || clientId,
           ...(isInvoice
             ? {
-              invoice_date: doc.invoice_date,
-              due_date: doc.due_date,
-            }
+                invoice_date: doc.invoice_date,
+                due_date: doc.due_date,
+              }
             : {
-              quoteDate: doc.quotation_date,
-            }),
+                quoteDate: doc.quotation_date,
+              }),
           notes: doc.notes || "",
           terms: doc.terms || terms,
           payment_percentage: "50",
@@ -364,23 +371,31 @@ export function DocumentForm({ type, onSuccess }) {
     if (isSubmitting || !startSubmit()) return;
 
     console.log(data);
+
+    // Collect IDs of existing reusable/agency attachments selected in the uploader
+    const attachmentFileIds = Array.isArray(data.attach_file)
+      ? data.attach_file
+          .filter((f) => f && typeof f === "object" && f.id)
+          .map((f) => f.id)
+      : [];
+
     const payload = {
       client_id: Number(data.customerName),
 
       ...(isInvoice
         ? {
-          invoice_date: data.invoice_date,
-          due_date: data.due_date,
-          status: status || "unpaid",
-          description: data.description,
-          balance_due: Number(calculateTotal().toFixed(2)),
-          ...(isConvertMode && { quote_id: quoteId }),
-        }
+            invoice_date: data.invoice_date,
+            due_date: data.due_date,
+            status: status || "unpaid",
+            description: data.description,
+            balance_due: Number(calculateTotal().toFixed(2)),
+            ...(isConvertMode && { quote_id: quoteId }),
+          }
         : {
-          quotation_date: data.quoteDate,
-          status: status || "draft",
-          description: data.description,
-        }),
+            quotation_date: data.quoteDate,
+            status: status || "draft",
+            description: data.description,
+          }),
 
       total_amount: Number(calculateTotal().toFixed(2)),
       notes: data.notes || "",
@@ -393,6 +408,7 @@ export function DocumentForm({ type, onSuccess }) {
       payment_percentage: Number(data.payment_percentage),
       payment_status: data.payment_status,
       payment_type: data.payment_type,
+      attachment_file_ids: attachmentFileIds,
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
@@ -545,46 +561,46 @@ export function DocumentForm({ type, onSuccess }) {
             {(selectedClient?.client?.company ||
               selectedClient?.client?.ice ||
               selectedClient?.client?.siren) && (
-                <Card className="border-border bg-card text-card-foreground shadow-sm">
-                  <CardHeader>
-                    <CardTitle className="text-lg font-semibold">
-                      Company Info
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-2 text-sm">
-                    {selectedClient?.client?.company && (
-                      <div className="flex justify-between">
-                        <span className="font-medium text-muted-foreground">
-                          Company
-                        </span>
-                        <span className="text-foreground">
-                          {selectedClient.client.company}
-                        </span>
-                      </div>
-                    )}
-                    {selectedClient?.client?.ice && (
-                      <div className="flex justify-between">
-                        <span className="font-medium text-muted-foreground">
-                          ICE
-                        </span>
-                        <span className="text-foreground">
-                          {selectedClient.client.ice}
-                        </span>
-                      </div>
-                    )}
-                    {selectedClient?.client?.siren && (
-                      <div className="flex justify-between">
-                        <span className="font-medium text-muted-foreground">
-                          SIREN
-                        </span>
-                        <span className="text-foreground">
-                          {selectedClient.client.siren}
-                        </span>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
+              <Card className="border-border bg-card text-card-foreground shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-lg font-semibold">
+                    Company Info
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-sm">
+                  {selectedClient?.client?.company && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        Company
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.company}
+                      </span>
+                    </div>
+                  )}
+                  {selectedClient?.client?.ice && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        ICE
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.ice}
+                      </span>
+                    </div>
+                  )}
+                  {selectedClient?.client?.siren && (
+                    <div className="flex justify-between">
+                      <span className="font-medium text-muted-foreground">
+                        SIREN
+                      </span>
+                      <span className="text-foreground">
+                        {selectedClient.client.siren}
+                      </span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
 
@@ -751,7 +767,7 @@ export function DocumentForm({ type, onSuccess }) {
                           "border-b last:border-b-0 hover:bg-muted/50 transition-colors ",
                           isDragging && "opacity-60 bg-muted/70",
                           isDragOver &&
-                          "border-t-2 border-t-primary bg-primary/5",
+                            "border-t-2 border-t-primary bg-primary/5",
                         )}
                         draggable
                         onDragStart={() => handleDragStart(index)}
@@ -999,8 +1015,9 @@ export function DocumentForm({ type, onSuccess }) {
         <div className="flex gap-4 w-full items-start space-between">
           {(type === "invoices" || (type === "quotes" && !isEditMode)) && (
             <div
-              className={`flex gap-4 items-end justify-between ${isInvoice ? "w-[50%]" : "w-full"
-                }`}
+              className={`flex gap-4 items-end justify-between ${
+                isInvoice ? "w-[50%]" : "w-full"
+              }`}
             >
               <div className="w-full">
                 <Controller
@@ -1146,11 +1163,20 @@ export function DocumentForm({ type, onSuccess }) {
               control={control}
               render={({ field }) => (
                 <FileUploader
-                  name="Attach File"
+                  key={
+                    originalFiles?.map((f) => f.id).join("_") ||
+                    "no-attachments"
+                  }
+                  {...field}
+                  name="attach_file"
                   label="Attach File(s) to Quote"
                   placeholder="Add Your Attach File"
                   error={errors.attach_file?.message}
-                  {...field}
+                  initialFiles={originalFiles}
+                  onChange={(files) => {
+                    field.onChange(files);
+                    handleAttachmentChange(files);
+                  }}
                 />
               )}
             />

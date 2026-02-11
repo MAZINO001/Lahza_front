@@ -32,7 +32,6 @@ export default function SendPopUp({
     },
   });
 
-
   const onSubmit = async (data) => {
     try {
       const payload = {

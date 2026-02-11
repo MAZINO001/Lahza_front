@@ -56,7 +56,7 @@ export default function PaymentPercentage({
         onSuccess: () => {
           onOpenChange?.(false);
         },
-      }
+      },
     );
   };
 

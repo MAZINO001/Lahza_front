@@ -1,11 +1,24 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import FileUploader from "@/components/Form/FileUploader";
+import { useDocumentFileAttachments } from "@/features/documents/hooks/useattachFiles";
 
 export function BrandingAssetsSection({ control }) {
+  // Use attachments API to manage agency-related files via /attachments & /attachments/manage
+  const { originalFiles, handleAttachmentChange } = useDocumentFileAttachments(
+    null,
+    "agency_related",
+  );
   return (
     <div className="flex flex-col">
-      <h1 className="font-semibold text-lg mb-6">Branding & Assets</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Branding & Assets
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your company logos, signatures and branding assets
+        </p>
+      </div>
 
       <div className="w-full flex gap-4 mb-4">
         <div className="space-y-2 w-[50%]">
@@ -72,6 +85,30 @@ export function BrandingAssetsSection({ control }) {
             )}
           />
         </div>
+      </div>
+      <div className="space-y-2 mt-4">
+        <Controller
+          name="new_files"
+          control={control}
+          render={({ field }) => (
+            <FileUploader
+              key={
+                originalFiles?.map((f) => f.id).join("_") ||
+                "no-agency-attachments"
+              }
+              {...field}
+              name="new_files"
+              label="Company Related Files"
+              id="new_files"
+              description="Your company related files that will be sent with quotes and invoices"
+              initialFiles={originalFiles}
+              onChange={(files) => {
+                field.onChange(files);
+                handleAttachmentChange(files);
+              }}
+            />
+          )}
+        />
       </div>
     </div>
   );

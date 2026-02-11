@@ -1,260 +1,3 @@
-// import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// import api from "@/lib/utils/axios";
-// import { toast } from "sonner";
-// import { agencyApi } from "@/lib/api/agency";
-// import { QUERY_KEYS } from "@/lib/queryKeys";
-
-// const API_URL = import.meta.env.VITE_BACKEND_URL;
-
-
-
-// const buildFormData = (data, fileKeys = [], isUpdate = false) => {
-//     const formData = new FormData();
-
-//     Object.entries(data).forEach(([key, value]) => {
-//         if (fileKeys.includes(key)) {
-//             if (Array.isArray(value) && value[0]) {
-//                 formData.append(key, value[0]);
-//             } else if (value instanceof File) {
-//                 formData.append(key, value);
-//             }
-//         }
-//         // Handle regular fields
-//         else if (value !== null && value !== undefined) {
-//             formData.append(key, value);
-//         }
-//     });
-
-//     return formData;
-// };
-
-
-
-
-
-// const getMultipartHeaders = () => ({});
-
-// const handleApiError = (error, fallbackMsg) => {
-//     console.error(error);
-//     toast.error(error?.response?.data?.message || fallbackMsg);
-// };
-
-// const companyInfoApi = {
-//     getAll: () =>
-//         api.get(`${API_URL}/company-info`).then((res) => {
-//             const { data } = res;
-//             return Array.isArray(data) && data.length > 0 ? data[0] : data ?? {};
-//         }),
-
-//     update: (id, data) => {
-//         const fileKeys = ['logo_path', 'logo_dark_path', 'signature_path', 'stamp_path'];
-//         const formData = buildFormData(data, fileKeys, true);
-//         return api.put(`${API_URL}/company-info/${id}`, formData, {
-//             headers: getMultipartHeaders(),
-//         });
-//     },
-// };
-
-// const certificationsApi = {
-//     getAll: () =>
-//         api.get(`${API_URL}/certifications`).then((res) => res.data ?? []),
-
-//     getById: (id) =>
-//         api.get(`${API_URL}/certifications/${id}`).then((res) => res.data ?? null),
-
-//     create: (data) => {
-//         const formData = buildFormData(data, ['certificate_image']);
-//         return api.post(`${API_URL}/certifications`, formData, {
-//             headers: getMultipartHeaders(),
-//         });
-//     },
-
-//     update: (id, data) => {
-//         const formData = buildFormData(data, ['certificate_image'], true);
-//         return api.post(`${API_URL}/certifications/${id}`, formData, {
-//             headers: getMultipartHeaders(),
-//         });
-//     },
-
-//     delete: (id) => api.delete(`${API_URL}/certifications/${id}`),
-// };
-
-// export function useCompanyInfo(options = {}) {
-//     const enabled = options.enabled !== undefined ? options.enabled : true;
-//     return useQuery({
-//         queryKey: QUERY_KEYS.companyInfo,
-//         queryFn: companyInfoApi.getAll,
-//         staleTime: Infinity,
-//         refetchOnMount: false,
-//         refetchOnWindowFocus: false,
-//         enabled,
-//         onError: (error) => handleApiError(error, "Failed to fetch company info"),
-//     });
-// }
-
-// export function useCreateCompanyInfo() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: companyInfoApi.create,
-//         onSuccess: () => {
-//             toast.success("Company info created successfully!");
-//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.companyInfo });
-//         },
-//         onError: (error) => handleApiError(error, "Failed to create company info"),
-//     });
-// }
-
-// export function useUpdateCompanyInfo() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: ({ id, data }) => companyInfoApi.update(id, data),
-//         onSuccess: () => {
-//             toast.success("Company info updated successfully!");
-//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.companyInfo });
-//         },
-//         onError: (error) => handleApiError(error, "Failed to update company info"),
-//     });
-// }
-
-// export function useCertifications() {
-//     return useQuery({
-//         queryKey: QUERY_KEYS.certifications,
-//         queryFn: certificationsApi.getAll,
-//         staleTime: Infinity,
-//         refetchOnMount: false,
-//         refetchOnWindowFocus: false,
-//         onError: (error) => handleApiError(error, "Failed to fetch certifications"),
-//     });
-// }
-
-// export function useCertification(id) {
-//     return useQuery({
-//         queryKey: QUERY_KEYS.certification(id),
-//         queryFn: () => certificationsApi.getById(id),
-//         enabled: !!id,
-//         staleTime: Infinity,
-//         refetchOnMount: false,
-//         refetchOnWindowFocus: false,
-//         onError: (error) => handleApiError(error, "Failed to fetch certification"),
-//     });
-// }
-
-// export function useCreateCertification() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: certificationsApi.create,
-//         onSuccess: () => {
-//             toast.success("Certification created successfully!");
-//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.certifications });
-//         },
-//         onError: (error) => handleApiError(error, "Failed to create certification"),
-//     });
-// }
-
-// export function useUpdateCertification() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: ({ id, data }) => certificationsApi.update(id, data),
-//         onSuccess: () => {
-//             toast.success("Certification updated successfully!");
-//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.certifications });
-//         },
-//         onError: (error) => handleApiError(error, "Failed to update certification"),
-//     });
-// }
-
-// export function useDeleteCertification() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: (id) => certificationsApi.delete(id),
-//         onSuccess: () => {
-//             toast.success("Certification deleted successfully!");
-//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.certifications });
-//         },
-//         onError: (error) => handleApiError(error, "Failed to delete certification"),
-//     });
-// }
-
-// // Agency hooks
-// export function useAgency(options = {}) {
-//     const enabled = options.enabled !== undefined ? options.enabled : true;
-//     return useQuery({
-//         queryKey: QUERY_KEYS.agency,
-//         queryFn: agencyApi.getAll,
-//         staleTime: Infinity,
-//         refetchOnMount: false,
-//         refetchOnWindowFocus: false,
-//         enabled,
-//         onError: (error) => handleApiError(error, "Failed to fetch agency data"),
-//     });
-// }
-
-// export function useAgencyById(id) {
-//     return useQuery({
-//         queryKey: QUERY_KEYS.agencyById(id),
-//         queryFn: () => agencyApi.getById(id),
-//         enabled: !!id,
-//         staleTime: Infinity,
-//         refetchOnMount: false,
-//         refetchOnWindowFocus: false,
-//         onError: (error) => handleApiError(error, "Failed to fetch agency data"),
-//     });
-// }
-
-// export function useCreateAgency() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: agencyApi.create,
-//         onSuccess: () => {
-//             toast.success("Agency created successfully!");
-//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.agency });
-//         },
-//         onError: (error) => handleApiError(error, "Failed to create agency"),
-//     });
-// }
-
-// export function useUpdateAgency() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: ({ id, data }) => agencyApi.update(id, data),
-//         onSuccess: () => {
-//             toast.success("Agency updated successfully!");
-//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.agency });
-//         },
-//         onError: (error) => handleApiError(error, "Failed to update agency"),
-//     });
-// }
-
-// export function useDeleteAgency() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: (id) => agencyApi.delete(id),
-//         onSuccess: () => {
-//             toast.success("Agency deleted successfully!");
-//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.agency });
-//         },
-//         onError: (error) => handleApiError(error, "Failed to delete agency"),
-//     });
-// }
-
-// // Cache helper functions
-// export function useCompanyInfoFromCache() {
-//     const queryClient = useQueryClient();
-//     return queryClient.getQueryData(QUERY_KEYS.companyInfo);
-// }
-
-// export function useAgencyFromCache() {
-//     const queryClient = useQueryClient();
-//     return queryClient.getQueryData(QUERY_KEYS.agency);
-// }
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
 import { toast } from "sonner";
@@ -332,11 +75,50 @@ const companyInfoApi = {
         }),
 
     update: (id, data) => {
-        const fileKeys = ['logo_path', 'logo_dark_path', 'signature_path', 'stamp_path'];
+        // Branding-related image/file fields that belong to company-info
+        const fileKeys = [
+            'logo_path',
+            'logo_dark_path',
+            'signature_path',
+            'stamp_path',
+            // Note: new_files are managed via /attachments/manage,
+            // not directly on the company-info endpoint.
+        ];
         const formData = buildFormData(data, fileKeys, true);
         return api.post(`${API_URL}/company-info/${id}`, formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
         });
+    },
+};
+
+// Agency-related attachments (uses /attachments/manage and accepts any file type)
+const agencyAttachmentsApi = {
+    manage: ({ newFiles, deleteFileIds, type = "agency_related_attachment" }) => {
+        const formData = new FormData();
+
+        if (type) {
+            formData.append("type", type);
+        }
+
+        if (newFiles?.length > 0) {
+            newFiles.forEach((file) => {
+                if (file instanceof File) {
+                    formData.append("new_files[]", file);
+                }
+            });
+        }
+
+        if (deleteFileIds?.length > 0) {
+            formData.append("delete_file_ids", JSON.stringify(deleteFileIds));
+        }
+
+        return api
+            .post(`${API_URL}/attachments/manage`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+            .then((res) => res.data?.data ?? []);
     },
 };
 
@@ -514,6 +296,22 @@ export function useUpdateAgency() {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.agency });
         },
         onError: (error) => handleApiError(error, "Failed to update agency"),
+    });
+}
+
+// Manage agency-related attachments (branding / company-related files)
+export function useManageAgencyAttachments() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ newFiles, deleteFileIds, type = "agency_related_attachment" }) =>
+            agencyAttachmentsApi.manage({ newFiles, deleteFileIds, type }),
+        onSuccess: () => {
+            toast.success("Agency attachments updated successfully!");
+            // Refresh agency/settings data if needed
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.agency });
+        },
+        onError: (error) => handleApiError(error, "Failed to manage agency attachments"),
     });
 }
 

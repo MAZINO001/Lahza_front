@@ -192,7 +192,14 @@ export default function NotificationPreferences() {
 
   return (
     <div className="w-full">
-      <h1 className="font-semibold text-lg mb-6">Notifications</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Notifications
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your email and in-app notification preferences
+        </p>
+      </div>
       <div className="flex w-full gap-4">
         {/* Email Notifications */}
         <div className="w-[50%]">

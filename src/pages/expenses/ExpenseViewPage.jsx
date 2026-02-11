@@ -174,7 +174,7 @@ export default function ExpenseViewPage() {
               <CardHeader>
                 <CardTitle className="text-lg">Related To</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {expense.project && (
                   <div className="flex items-start gap-3">
                     <Building className="mt-0.5 h-5 w-5 text-muted-foreground" />

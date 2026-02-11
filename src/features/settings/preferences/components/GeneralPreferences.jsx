@@ -65,7 +65,14 @@ export default function GeneralPreferences() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-      <h1 className="font-semibold text-lg mb-6">General</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          General
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your general application preferences
+        </p>
+      </div>
       <div className="space-y-4">
         <div className="flex items-center justify-between rounded-lg border p-4">
           <div className="space-y-1">

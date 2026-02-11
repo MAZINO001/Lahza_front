@@ -81,7 +81,8 @@ export default function SelectField({
   className,
 }) {
   return (
-    <div className={cn(className)}>
+    // <div className={cn(className)}>
+    <div className={cn("flex items-start justify-between flex-col", className)}>
       <Label htmlFor={id} className="text-sm font-medium text-foreground ">
         {label}
       </Label>
@@ -91,7 +92,7 @@ export default function SelectField({
           id={id}
           aria-invalid={!!error}
           className={cn(
-            "h-10 w-full bg-background",
+            "h-10 w-full bg-background ",
             error && "border-destructive  focus-visible:ring-destructive",
             "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
             disabled && "opacity-50 cursor-not-allowed",

@@ -147,7 +147,9 @@ export function OfferForm({ offerId, onSuccess }) {
                     label="Service"
                     options={serviceOptions}
                     placeholder={
-                      servicesLoading ? "Loading services..." : "Select a service"
+                      servicesLoading
+                        ? "Loading services..."
+                        : "Select a service"
                     }
                     value={String(field.value || "")}
                     onChange={(v) => field.onChange(Number(v))}

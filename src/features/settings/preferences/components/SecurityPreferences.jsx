@@ -68,7 +68,14 @@ export default function SecurityPreferences() {
 
   return (
     <div className="w-full">
-      <h1 className="font-semibold text-lg mb-6">Security</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Security
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your password and email security settings
+        </p>
+      </div>
       <form
         onSubmit={handlePasswordSubmit(onPasswordSubmit)}
         className="space-y-4"

@@ -6,7 +6,14 @@ import FormSection from "@/components/Form/FormSection";
 export function LegalTaxBankingSection({ control, errors }) {
   return (
     <form className="flex flex-col gap-4">
-      <h1 className="font-semibold text-lg mb-6">Legal, Tax & Banking</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Legal, Tax & Banking
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your legal, tax identification and banking information
+        </p>
+      </div>
 
       <div className="space-y-4">
         {/* Morocco IDs */}

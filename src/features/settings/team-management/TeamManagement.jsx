@@ -6,7 +6,14 @@ import TeamTable from "./components/TeamTable";
 export default function TeamManagement() {
   return (
     <div>
-      <h1 className="font-semibold text-lg mb-6">Team Management</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Team Management
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your teams and team members
+        </p>
+      </div>
 
       <Tabs defaultValue="additional" className="w-ful">
         <TabsList className="grid w-[25%] md:w-[40%] grid-cols-2">

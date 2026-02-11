@@ -149,7 +149,7 @@ export function ActivityLogsColumns(role) {
             )}
 
             {!["Mobile", "Desktop", "Tablet", "Server"].includes(
-              deviceType || ""
+              deviceType || "",
             ) && (
               <>
                 <Monitor className="h-3.5 w-3.5" />
@@ -164,7 +164,7 @@ export function ActivityLogsColumns(role) {
       id: "location",
       header: "Location",
       cell: ({ row }) => (
-        <div className="flex items-center justify-between gap-5 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-1">
             <Globe className="h-3.5 w-3.5" />
             {row.original.ip_country}

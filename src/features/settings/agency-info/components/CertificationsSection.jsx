@@ -53,7 +53,14 @@ export default function CertificationsSection() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div className="w-full">
-          <h1 className="font-semibold text-lg mb-6">Certifications</h1>
+          <div className="space-y-0.5 mb-4">
+            <h1 className="text-2xl font-bold tracking-tight">
+              Certifications
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              Manage your professional certifications and credentials
+            </p>
+          </div>
 
           <AddCertificationComp />
         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useMemo, useState } from "react";
 import {
   getCoreRowModel,
@@ -10,80 +11,92 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
 import { useAuthContext } from "@/hooks/AuthContext";
-import { usePlans } from "../hooks/usePlans";
-import { getPlansColumns } from "../columns/plansColumns";
-import { ChevronDown, Plus } from "lucide-react";
+import { getSubscriptionColumns } from "../columns/subscribersColumns";
+import { ChevronDown, CreditCard } from "lucide-react";
 import { DataTable } from "@/components/table/DataTable";
-import { PlanForm } from "./PlanForm";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { useDeletePlan } from "../hooks/usePlans";
+  useSubscriptions,
+  useDeleteSubscription,
+} from "../hooks/useSubscriptions";
+import { usePlans } from "../hooks/usePlans";
+import { toast } from "sonner";
 
-export function PlanesTable({ packId }) {
-  const { data: plans, isLoading } = usePlans(packId);
+export function SubscribersTable({ packId, onViewChange }) {
+  const { data: subscriptions, isLoading } = useSubscriptions();
+  const { data: plansData } = usePlans(packId);
+
+  const deleteSubscription = useDeleteSubscription();
   const { role } = useAuthContext();
   const navigate = useNavigate();
-  const deletePlan = useDeletePlan();
-
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("A-Z");
-  const [selectedPack, setSelectedPack] = useState("all");
+  const [selectedSort, setSelectedSort] = useState("newest");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const handleDeleteSubscription = (subscriptionId) => {
+    deleteSubscription.mutateAsync(subscriptionId);
+    toast.success("Subscription cancelled successfully");
+  };
 
   const columns = React.useMemo(
-    () => getPlansColumns(role, navigate, (planId) => {
-      if (window.confirm("Are you sure you want to delete this plan?")) {
-        deletePlan.mutate(planId);
-      }
-    }),
-    [role, navigate, deletePlan],
+    () =>
+      getSubscriptionColumns(role, packId, navigate, handleDeleteSubscription),
+    [role, packId, navigate],
   );
 
-  const planOrder = ["A-Z", "Z-A"];
-  const statusOptions = ["all", "active", "inactive"];
+  const sortOptions = ["newest", "oldest"];
+  const statusOptions = ["all", "active", "cancelled"];
 
   const filteredData = useMemo(() => {
-    if (!plans || !Array.isArray(plans)) return [];
+    if (!subscriptions || !Array.isArray(subscriptions)) return [];
 
-    let filtered = [...plans];
+    let filtered = [...subscriptions];
 
-    if (activeFilter !== "all") {
-      filtered = filtered.filter(
-        (plan) => plan.is_active === (activeFilter === "active")
-      );
+    // Filter by packId - get plans that belong to this pack, then filter subscriptions by those plans
+    if (packId && plansData?.data) {
+      const planIdsForPack = plansData.data.map(plan => plan.id);
+      filtered = filtered.filter(sub => planIdsForPack.includes(sub.plan_id));
     }
 
-    if (selectedStatus === "A-Z") {
-      filtered.sort((a, b) =>
-        (a.name || "").localeCompare(b.name || "")
+    // Filter by status
+    if (activeFilter !== "all") {
+      filtered = filtered.filter((sub) => sub.status === activeFilter);
+    }
+
+    // Filter by global search (company name or client id)
+    if (globalFilter.trim()) {
+      filtered = filtered.filter((sub) => {
+        const clientId = String(sub.client_id || "").toLowerCase();
+        const company = (sub.client?.company || "").toLowerCase();
+        const searchTerm = globalFilter.toLowerCase();
+        return clientId.includes(searchTerm) || company.includes(searchTerm);
+      });
+    }
+
+    // Sort
+    if (selectedSort === "newest") {
+      filtered.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
-    } else if (selectedStatus === "Z-A") {
-      filtered.sort((a, b) =>
-        (b.name || "").localeCompare(a.name || "")
+    } else if (selectedSort === "oldest") {
+      filtered.sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
       );
     }
 
     return filtered;
-  }, [plans, selectedStatus, activeFilter]);
-
-  const selectStatus = (status) => {
-    setSelectedStatus(status);
-  };
+  }, [subscriptions, selectedSort, activeFilter, globalFilter, packId, plansData]);
 
   const table = useReactTable({
     data: filteredData || [],
@@ -98,35 +111,31 @@ export function PlanesTable({ packId }) {
   });
 
   return (
-    <div className="w-full p-4 min-h-screen">
+    <div className="w-full pb-4 px-4 min-h-screen">
       <div className="flex justify-between mb-4">
         <div className="flex items-end justify-between gap-4">
           <FormField
-            placeholder="Filter plans by name..."
-            value={table.getColumn("name")?.getFilterValue() ?? ""}
-            onChange={(e) =>
-              table.getColumn("name")?.setFilterValue(e.target.value)
-            }
+            placeholder="Search by company or client ID..."
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
           />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex-1 rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px] bg-background">
-                Order {selectedStatus}
+                Sort: {selectedSort}
                 <ChevronDown className="w-4 h-4" />
               </button>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="start" className="w-56">
               <DropdownMenuRadioGroup
-                value={selectedStatus}
-                onValueChange={selectStatus}
+                value={selectedSort}
+                onValueChange={setSelectedSort}
               >
-                {planOrder.map((status) => (
-                  <DropdownMenuRadioItem key={status} value={status}>
-                    <span className="capitalize">
-                      {status.replace("_", " ")}
-                    </span>
+                {sortOptions.map((option) => (
+                  <DropdownMenuRadioItem key={option} value={option}>
+                    <span className="capitalize">{option}</span>
                   </DropdownMenuRadioItem>
                 ))}
               </DropdownMenuRadioGroup>
@@ -158,33 +167,25 @@ export function PlanesTable({ packId }) {
           </DropdownMenu>
         </div>
 
-        <div className="flex gap-2">
-          <Button onClick={() => setShowCreateModal(true)}>
-            <Plus className="mr-2 h-4 w-4" /> Add New Plan
+        {role === "client" && onViewChange && (
+          <Button
+            variant="outline"
+            onClick={() => onViewChange("cards")}
+            className="flex items-center gap-2"
+          >
+            <CreditCard className="h-4 w-4" />
+            View All Plans
           </Button>
-        </div>
+        )}
       </div>
 
       <DataTable
         table={table}
         columns={columns}
         isLoading={isLoading}
-        tableType="plans"
+        tableType="subscribers"
         role={role}
       />
-
-      <Dialog open={showCreateModal} onOpenChange={setShowCreateModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Create New Plan</DialogTitle>
-          </DialogHeader>
-          <PlanForm
-            packId={packId}
-            onSuccess={() => setShowCreateModal(false)}
-            onCancel={() => setShowCreateModal(false)}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

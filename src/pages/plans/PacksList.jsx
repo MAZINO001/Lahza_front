@@ -1,3 +1,289 @@
+// // PacksList.tsx
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { Plus, Edit, Trash2 } from "lucide-react";
+
+// import { Button } from "@/components/ui/button";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import { Badge } from "@/components/ui/badge";
+// import { Switch } from "@/components/ui/switch";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogHeader,
+//   DialogTitle,
+// } from "@/components/ui/dialog";
+// import {
+//   AlertDialog,
+//   AlertDialogAction,
+//   AlertDialogCancel,
+//   AlertDialogContent,
+//   AlertDialogDescription,
+//   AlertDialogFooter,
+//   AlertDialogHeader,
+//   AlertDialogTitle,
+//   AlertDialogTrigger,
+// } from "@/components/ui/alert-dialog";
+
+// import { toast } from "sonner";
+// import { cn } from "@/lib/utils";
+
+// import {
+//   usePacks,
+//   useDeletePack,
+//   useUpdatePack,
+// } from "@/features/plans/hooks/usePacks";
+// import { useAuthContext } from "@/hooks/AuthContext";
+// import { PackForm } from "@/features/plans/components/PackForm";
+
+// export default function PacksList() {
+//   const navigate = useNavigate();
+//   const { role } = useAuthContext();
+
+//   const { data: packsData, isLoading } = usePacks();
+//   const packs = packsData?.data ?? [];
+
+//   const deletePack = useDeletePack();
+//   const updatePack = useUpdatePack();
+
+//   const [createModalOpen, setCreateModalOpen] = useState(false);
+//   const [editModalOpen, setEditModalOpen] = useState(false);
+//   const [editingPack, setEditingPack] = useState(null);
+
+//   const handleDelete = (id, name) => {
+//     deletePack.mutate(id, {
+//       onSuccess: () => toast.success("Pack deleted"),
+//       onError: () => toast.error("Could not delete pack"),
+//     });
+//   };
+
+//   const handleEdit = (pack) => {
+//     setEditingPack(pack);
+//     setEditModalOpen(true);
+//   };
+
+//   const toggleActive = (id, current) => {
+//     updatePack.mutate(
+//       { id, is_active: !current },
+//       {
+//         onSuccess: () => {
+//           toast.success(`Pack ${current ? "deactivated" : "activated"}`);
+//         },
+//         onError: () => toast.error("Failed to update status"),
+//       },
+//     );
+//   };
+
+//   // Always render modals (controlled) so buttons open them even on empty state
+//   const createModal = (
+//     <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+//       <DialogContent className="max-w-2xl">
+//         <DialogHeader>
+//           <DialogTitle>Create Subscription Pack</DialogTitle>
+//         </DialogHeader>
+//         <PackForm
+//           onSuccess={() => {
+//             setCreateModalOpen(false);
+//           }}
+//           onCancel={() => setCreateModalOpen(false)}
+//         />
+//       </DialogContent>
+//     </Dialog>
+//   );
+
+//   const editModal = (
+//     <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+//       <DialogContent>
+//         <DialogHeader>
+//           <DialogTitle>Edit Subscription Pack</DialogTitle>
+//         </DialogHeader>
+//         <PackForm
+//           pack={editingPack}
+//           onSuccess={() => {
+//             setEditModalOpen(false);
+//             setEditingPack(null);
+//           }}
+//           onCancel={() => {
+//             setEditModalOpen(false);
+//             setEditingPack(null);
+//           }}
+//         />
+//       </DialogContent>
+//     </Dialog>
+//   );
+
+//   if (isLoading) {
+//     return (
+//       <div className="grid min-h-[50vh] place-items-center">
+//         <div className="text-muted-foreground animate-pulse">
+//           Loading packs...
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (packs.length === 0) {
+//     return (
+//       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
+//         <div className="space-y-3">
+//           <h2 className="text-xl font-semibold tracking-tight sm:text-3xl">
+//             No subscription packs yet
+//           </h2>
+//           <p className="text-muted-foreground text-sm">
+//             Create your first pack to start offering subscription plans to your
+//             users.
+//           </p>
+//         </div>
+
+//         <Button onClick={() => setCreateModalOpen(true)}>
+//           <Plus className="mr-2 h-5 w-5" />
+//           Create First Pack
+//         </Button>
+//         {createModal}
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="space-y-4 min-h-screen">
+//       {/* Header */}
+//       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+//         <div>
+//           <h1 className="font-semibold text-lg">Packs & Plans</h1>
+//         </div>
+
+//         <Button onClick={() => setCreateModalOpen(true)}>
+//           <Plus className="mr-2 h-4 w-4" />
+//           New Pack
+//         </Button>
+//       </div>
+
+//       {/* Cards Grid */}
+//       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+//         {packs.map((pack) => (
+//           <Card
+//             key={pack.id}
+//             className={cn(
+//               "group relative overflow-hidden cursor-pointer w-full",
+//               !pack.is_active && "opacity-65",
+//             )}
+//             onClick={() =>
+//               navigate(`/${role}/settings/plans_management/${pack.id}`)
+//             }
+//           >
+//             <CardHeader className="pb-3">
+//               <div className="flex items-start justify-between gap-4">
+//                 <div className="min-w-0 flex-1">
+//                   <CardTitle className="truncate text-lg font-semibold leading-tight">
+//                     {pack.name}
+//                   </CardTitle>
+//                   <CardDescription className="mt-1 text-xs">
+//                     {pack.plans.length || 0} plan
+//                     {pack.plans.length !== 1 ? "s" : ""}
+//                   </CardDescription>
+//                 </div>
+
+//                 <Badge
+//                   variant={pack.is_active ? "default" : "secondary"}
+//                   className="mt-0.5 shrink-0 absolute right-4"
+//                 >
+//                   {pack.is_active ? "Active" : "Inactive"}
+//                 </Badge>
+//               </div>
+//             </CardHeader>
+
+//             <CardContent className="space-y-4 pb-4">
+//               <p className="text-sm text-muted-foreground line-clamp-3 min-h-15">
+//                 {pack.description || "No description provided."}
+//               </p>
+
+//               {/* Floating bottom bar */}
+//               <div
+//                 className={cn(
+//                   "absolute bottom-0 left-0 right-0 h-14",
+//                   "border-t bg-linear-to-t from-background/95 via-background/85 to-transparent",
+//                   "px-5 flex items-center justify-between",
+//                 )}
+//               >
+//                 {/* Left – toggle */}
+//                 <div
+//                   className="flex items-center gap-2 "
+//                   onClick={(e) => e.stopPropagation()}
+//                 >
+//                   <Switch
+//                     checked={pack.is_active}
+//                     onCheckedChange={() =>
+//                       toggleActive(pack.id, pack.is_active)
+//                     }
+//                     className="data-[state=checked]:bg-primary cursor-pointer"
+//                   />
+//                   <span className="text-xs text-muted-foreground font-medium hidden sm:inline">
+//                     {pack.is_active ? "Active" : "Disabled"}
+//                   </span>
+//                 </div>
+
+//                 {/* Right – actions */}
+//                 <div
+//                   className="flex items-center gap-1"
+//                   onClick={(e) => e.stopPropagation()}
+//                 >
+//                   <Button
+//                     variant="ghost"
+//                     size="icon"
+//                     className="h-8 w-8 cursor-pointer"
+//                     onClick={() => handleEdit(pack)}
+//                   >
+//                     <Edit className="h-4 w-4" />
+//                   </Button>
+
+//                   <AlertDialog>
+//                     <AlertDialogTrigger asChild>
+//                       <Button
+//                         variant="ghost"
+//                         size="icon"
+//                         className="h-8 w-8 text-destructive cursor-pointer"
+//                       >
+//                         <Trash2 className="h-4 w-4" />
+//                       </Button>
+//                     </AlertDialogTrigger>
+//                     <AlertDialogContent>
+//                       <AlertDialogHeader>
+//                         <AlertDialogTitle>Delete Pack?</AlertDialogTitle>
+//                         <AlertDialogDescription>
+//                           Are you sure you want to delete "{pack.name}" pack and
+//                           all its plans? This action cannot be undone.
+//                         </AlertDialogDescription>
+//                       </AlertDialogHeader>
+//                       <AlertDialogFooter>
+//                         <AlertDialogCancel>Cancel</AlertDialogCancel>
+//                         <AlertDialogAction
+//                           className="bg-destructive text-white hover:bg-destructive/90"
+//                           onClick={() => handleDelete(pack.id, pack.name)}
+//                         >
+//                           Delete
+//                         </AlertDialogAction>
+//                       </AlertDialogFooter>
+//                     </AlertDialogContent>
+//                   </AlertDialog>
+//                 </div>
+//               </div>
+//             </CardContent>
+//           </Card>
+//         ))}
+//       </div>
+
+//       {createModal}
+//       {editModal}
+//     </div>
+//   );
+// }
+
 // PacksList.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -80,11 +366,46 @@ export default function PacksList() {
     );
   };
 
+  const createModal = (
+    <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+      <DialogContent className="sm:max-w-[640px]">
+        <DialogHeader>
+          <DialogTitle>Create Subscription Pack</DialogTitle>
+        </DialogHeader>
+        <PackForm
+          onSuccess={() => setCreateModalOpen(false)}
+          onCancel={() => setCreateModalOpen(false)}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+
+  const editModal = (
+    <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+      <DialogContent className="sm:max-w-[640px]">
+        <DialogHeader>
+          <DialogTitle>Edit Subscription Pack</DialogTitle>
+        </DialogHeader>
+        <PackForm
+          pack={editingPack}
+          onSuccess={() => {
+            setEditModalOpen(false);
+            setEditingPack(null);
+          }}
+          onCancel={() => {
+            setEditModalOpen(false);
+            setEditingPack(null);
+          }}
+        />
+      </DialogContent>
+    </Dialog>
+  );
+
   if (isLoading) {
     return (
-      <div className="grid min-h-[50vh] place-items-center">
-        <div className="text-muted-foreground animate-pulse">
-          Loading packs...
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <div className="text-muted-foreground animate-pulse text-sm">
+          Loading subscription packs...
         </div>
       </div>
     );
@@ -92,14 +413,13 @@ export default function PacksList() {
 
   if (packs.length === 0) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-4 text-center">
-        <div className="space-y-3">
-          <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-4 px-4 text-center">
+        <div className="space-y-3 max-w-md">
+          <h2 className="text-2xl font-semibold tracking-tight">
             No subscription packs yet
           </h2>
-          <p className="text-muted-foreground max-w-md">
-            Create your first pack to start offering subscription plans to your
-            users.
+          <p className="text-muted-foreground">
+            Create your first pack to start offering subscription plans.
           </p>
         </div>
 
@@ -107,16 +427,23 @@ export default function PacksList() {
           <Plus className="mr-2 h-5 w-5" />
           Create First Pack
         </Button>
+
+        {createModal}
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 min-h-screen">
+    <div className="space-y-4 pb-10">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-semibold text-lg">Packs & Plans</h1>
+        <div className="space-y-0.5">
+          <h1 className="text-2xl font-bold tracking-tight">
+            Subscription Packs
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Manage your available subscription offerings
+          </p>
         </div>
 
         <Button onClick={() => setCreateModalOpen(true)}>
@@ -125,56 +452,59 @@ export default function PacksList() {
         </Button>
       </div>
 
-      {/* Cards Grid */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ">
         {packs.map((pack) => (
           <Card
             key={pack.id}
             className={cn(
-              "group relative overflow-hidden cursor-pointer",
-              !pack.is_active && "opacity-65",
+              "group relative overflow-hidden transition-all",
+              !pack.is_active && "opacity-70",
+              "cursor-pointer",
             )}
             onClick={() =>
               navigate(`/${role}/settings/plans_management/${pack.id}`)
             }
           >
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 flex-1">
-                  <CardTitle className="truncate text-lg font-semibold leading-tight">
+            <CardHeader className="pb-4">
+              <div className="flex items-start justify-between gap-4 ">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <CardTitle className="truncate text-base font-semibold max-w-[calc(100%-60px)]">
                     {pack.name}
                   </CardTitle>
-                  <CardDescription className="mt-1 text-xs">
+                  <CardDescription className="text-xs">
                     {pack.plans.length || 0} plan
                     {pack.plans.length !== 1 ? "s" : ""}
                   </CardDescription>
                 </div>
 
                 <Badge
-                  variant={pack.is_active ? "default" : "secondary"}
-                  className="mt-0.5 shrink-0"
+                  variant={pack.is_active ? "default" : "outline"}
+                  className={cn(
+                    "mt-0.5 shrink-0 absolute right-4",
+                    !pack.is_active && "text-muted-foreground",
+                  )}
                 >
                   {pack.is_active ? "Active" : "Inactive"}
                 </Badge>
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-4 pb-4">
-              <p className="text-sm text-muted-foreground line-clamp-3 min-h-15">
+            <CardContent className="pb-16 relative ">
+              <p className="text-sm text-muted-foreground line-clamp-3 min-h-18">
                 {pack.description || "No description provided."}
               </p>
 
-              {/* Floating bottom bar */}
+              {/* Bottom actions bar */}
               <div
                 className={cn(
-                  "absolute bottom-0 left-0 right-0 h-14",
-                  "border-t bg-linear-to-t from-background/95 via-background/85 to-transparent",
-                  "px-5 flex items-center justify-between",
+                  "absolute bottom-0 inset-x-0 h-14 ",
+                  "border-t bg-linear-to-t from-background via-background/95 to-transparent ",
+                  "px-4 flex items-center justify-between",
                 )}
               >
-                {/* Left – toggle */}
+                {/* Toggle */}
                 <div
-                  className="flex items-center gap-2 "
+                  className="flex items-center gap-2.5"
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Switch
@@ -182,22 +512,21 @@ export default function PacksList() {
                     onCheckedChange={() =>
                       toggleActive(pack.id, pack.is_active)
                     }
-                    className="data-[state=checked]:bg-primary cursor-pointer"
                   />
-                  <span className="text-xs text-muted-foreground font-medium hidden sm:inline">
+                  <span className="text-xs font-medium text-muted-foreground hidden sm:block">
                     {pack.is_active ? "Active" : "Disabled"}
                   </span>
                 </div>
 
-                {/* Right – actions */}
+                {/* Actions */}
                 <div
-                  className="flex items-center gap-1"
+                  className="flex items-center gap-1 "
                   onClick={(e) => e.stopPropagation()}
                 >
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 cursor-pointer"
+                    className="h-8 w-8 hover:bg-accent/60"
                     onClick={() => handleEdit(pack)}
                   >
                     <Edit className="h-4 w-4" />
@@ -208,7 +537,7 @@ export default function PacksList() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-destructive cursor-pointer"
+                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -217,14 +546,14 @@ export default function PacksList() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete Pack?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete "{pack.name}" pack and
-                          all its plans? This action cannot be undone.
+                          This will permanently delete "{pack.name}" and all
+                          associated plans. This action cannot be undone.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-destructive text-white hover:bg-destructive/90"
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           onClick={() => handleDelete(pack.id, pack.name)}
                         >
                           Delete
@@ -239,42 +568,8 @@ export default function PacksList() {
         ))}
       </div>
 
-      {/* Create Modal */}
-      <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Create Subscription Pack</DialogTitle>
-          </DialogHeader>
-          <PackForm
-            onSuccess={() => {
-              setCreateModalOpen(false);
-              toast.success("Pack created successfully");
-            }}
-            onCancel={() => setCreateModalOpen(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Modal */}
-      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Subscription Pack</DialogTitle>
-          </DialogHeader>
-          <PackForm
-            pack={editingPack}
-            onSuccess={() => {
-              setEditModalOpen(false);
-              setEditingPack(null);
-              toast.success("Pack updated successfully");
-            }}
-            onCancel={() => {
-              setEditModalOpen(false);
-              setEditingPack(null);
-            }}
-          />
-        </DialogContent>
-      </Dialog>
+      {createModal}
+      {editModal}
     </div>
   );
 }

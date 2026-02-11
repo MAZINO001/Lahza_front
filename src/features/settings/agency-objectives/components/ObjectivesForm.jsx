@@ -92,6 +92,7 @@ export default function ObjectivesForm({
               options={[
                 { value: "pending", label: "Pending" },
                 { value: "completed", label: "Completed" },
+
                 { value: "cancelled", label: "Cancelled" },
                 { value: "in_progress", label: "In Progress" },
               ]}

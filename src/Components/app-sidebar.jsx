@@ -32,9 +32,10 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { usePacks } from "@/features/plans/hooks/usePacks";
 export function AppSidebar(props) {
   const { role, logout } = useAuthContext();
-  const { data: packsData, isLoading: packsLoading } = usePacks({ activeOnly: true });
-  const packs = packsData?.packs ?? [];
-
+  const { data: packsData, isLoading: packsLoading } = usePacks({
+    activeOnly: true,
+  });
+  const packs = packsData?.packs?.filter(pack => pack.active_plans && pack.active_plans.length > 0) ?? [];
 
   const sidebarData = {
     client: {

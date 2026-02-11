@@ -24,7 +24,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { usePacks } from "../hooks/usePacks";
-import { useCreatePlan } from "../hooks/usePlans";
+import { useCreatePlan, useUpdatePlan } from "../hooks/usePlans";
 import SelectField from "@/components/Form/SelectField";
 import FormField from "@/components/Form/FormField";
 import TextareaField from "@/components/Form/TextareaField";
@@ -44,6 +44,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
   const packs = packsData?.data || [];
 
   const createPlan = useCreatePlan();
+  const updatePlan = useUpdatePlan();
 
   const {
     control,
@@ -116,15 +117,32 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
 
     console.log(payload);
 
-    createPlan.mutate(payload, {
-      onSuccess: () => {
-        toast.success(plan ? "Plan updated" : "Plan created");
-        onSuccess?.();
-      },
-      onError: (err) => {
-        toast.error(err?.response?.data?.message || "Something went wrong");
-      },
-    });
+    if (plan) {
+      // Update existing plan
+      updatePlan.mutate(
+        { id: plan.id, ...payload },
+        {
+          onSuccess: () => {
+            toast.success("Plan updated");
+            onSuccess?.();
+          },
+          onError: (err) => {
+            toast.error(err?.response?.data?.message || "Something went wrong");
+          },
+        },
+      );
+    } else {
+      // Create new plan
+      createPlan.mutate(payload, {
+        onSuccess: () => {
+          toast.success("Plan created");
+          onSuccess?.();
+        },
+        onError: (err) => {
+          toast.error(err?.response?.data?.message || "Something went wrong");
+        },
+      });
+    }
   };
 
   return (
@@ -222,7 +240,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
             <div
               key={field.id}
               className="
-                flex items-start justify-between gap-4 rounded-lg border w-full p-4"
+                flex items-start justify-between gap-4 rounded-lg border w-full p-4 "
             >
               <div className="w-[30%]">
                 <Controller
@@ -287,7 +305,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                   type="button"
                   variant="ghost"
                   size="icon"
-                  className="text-destructive hover:bg-destructive/10"
+                  className="text-destructive"
                   onClick={() => removePrice(index)}
                   disabled={priceFields.length <= 1}
                 >
@@ -384,7 +402,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                   </div>
 
                   <div className="flex items-center justify-between gap-4 w-full space-y-4">
-                    <div className="w-[43%] m-0">
+                    <div className="w-[43%]">
                       <Controller
                         name={`custom_fields.${index}.type`}
                         control={control}
@@ -424,7 +442,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                         )}
                       />
                     </div>
-                    <div className="flex items-end md:items-center pt-2 md:pt-0 w-[14%] ">
+                    <div className="flex  md:items-center pt-2 md:pt-0 w-[14%] ">
                       <Controller
                         name={`custom_fields.${index}.required`}
                         control={control}
@@ -461,9 +479,11 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || createPlan.isPending}
+              disabled={
+                isSubmitting || createPlan.isPending || updatePlan.isPending
+              }
             >
-              {createPlan.isPending
+              {createPlan.isPending || updatePlan.isPending
                 ? "Saving..."
                 : plan
                   ? "Update Plan"

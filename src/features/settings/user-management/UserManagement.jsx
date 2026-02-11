@@ -2,7 +2,14 @@ import UserTable from "./components/UserTable";
 export default function UserManagement() {
   return (
     <div>
-      <h1 className="font-semibold text-lg mb-6">User Management</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          User Management
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your system users and permissions
+        </p>
+      </div>
 
       <UserTable />
     </div>

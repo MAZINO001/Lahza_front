@@ -7,7 +7,14 @@ import FormSection from "@/components/Form/FormSection";
 export function ContactAddressSection({ control, errors }) {
   return (
     <form className="flex flex-col gap-4">
-      <h1 className="font-semibold text-lg mb-6">Contact & Address</h1>
+      <div className="space-y-0.5 mb-4">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Contact & Address
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Manage your contact information and office address
+        </p>
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
         {/* Contact */}

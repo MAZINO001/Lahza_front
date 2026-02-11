@@ -148,6 +148,9 @@ const PackEdit = lazy(() => import("../pages/plans/PackEdit"));
 const PlanCreate = lazy(() => import("../pages/plans/PlanCreate"));
 const PlanEdit = lazy(() => import("../pages/plans/PlanEdit"));
 const PlanesPage = lazy(() => import("../pages/plans/planesPage"));
+const SubscriptionViewPage = lazy(
+  () => import("../pages/plans/subscriptions/subscriptionViewPage"),
+);
 
 import AuthLayout from "@/app/layout/AuthLayout";
 import AppLayout from "@/app/layout/AppLayout";
@@ -566,6 +569,19 @@ export default function AppRoutes() {
                   <ErrorBoundary>
                     <Suspense fallback={<div>Loading plans...</div>}>
                       <PlanesPage />
+                    </Suspense>
+                  </ErrorBoundary>
+                }
+              />
+
+              <Route
+                path="plans/:packId/subscription/:id"
+                element={
+                  <ErrorBoundary>
+                    <Suspense
+                      fallback={<div>Loading subscription details...</div>}
+                    >
+                      <SubscriptionViewPage />
                     </Suspense>
                   </ErrorBoundary>
                 }

@@ -60,8 +60,8 @@ export default function Login({ status, canResetPassword }) {
         </div>
 
         {/* Login Form Container */}
-        <div className="flex-1 flex items-center justify-center px-8">
-          <Card className="w-full max-w-md border-0 shadow-none">
+        <div className="flex-1 flex items-center justify-center px-8 ">
+          <Card className="w-full max-w-md border-0 shadow-none bg-background">
             <CardContent className="p-0">
               <div className="text-center mb-8">
                 <h1 className="text-2xl font-bold mb-2">Welcome back</h1>

@@ -1,25 +1,38 @@
 import React from "react";
+
 import { useNavigate, useLocation } from "react-router-dom";
+
 import { useAuthContext } from "@/hooks/AuthContext";
+
 import { PlanForm } from "@/features/plans/components/PlanForm";
+
 import { usePlan } from "@/features/plans/hooks/usePlans";
 
 export default function PlanEdit() {
   const location = useLocation();
+
   const navigate = useNavigate();
+
   const { role } = useAuthContext();
 
   // Extract the pack ID and plan ID from the URL path
+
   const pathSegments = location.pathname.split("/");
+
   const plansManagementIndex = pathSegments.indexOf("plans_management");
-  const packId = plansManagementIndex !== -1 && plansManagementIndex + 1 < pathSegments.length
-    ? pathSegments[plansManagementIndex + 1]
-    : null;
+
+  const packId =
+    plansManagementIndex !== -1 &&
+    plansManagementIndex + 1 < pathSegments.length
+      ? pathSegments[plansManagementIndex + 1]
+      : null;
 
   const plansIndex = pathSegments.indexOf("plans");
-  const planId = plansIndex !== -1 && plansIndex + 1 < pathSegments.length
-    ? pathSegments[plansIndex + 1]
-    : null;
+
+  const planId =
+    plansIndex !== -1 && plansIndex + 1 < pathSegments.length
+      ? pathSegments[plansIndex + 1]
+      : null;
 
   const { data: plan, isLoading, error } = usePlan(planId);
 
