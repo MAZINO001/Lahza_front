@@ -56,7 +56,7 @@ export function ProjectsTable() {
           onChange={(e) =>
             table.getColumn("name")?.setFilterValue(e.target.value)
           }
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
         <div className="flex gap-2">
           {role !== "client" && (

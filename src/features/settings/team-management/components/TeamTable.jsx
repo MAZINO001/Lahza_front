@@ -56,7 +56,7 @@ export default function TeamTable() {
           placeholder="Filter team members..."
           value={table.getColumn("name")?.getFilterValue() ?? ""}
           onChange={handleFilterChange}
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
         {/* <div className="flex gap-2">
           <Button onClick={() => setShowUploadModal(true)} variant="outline">

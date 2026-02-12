@@ -10,7 +10,6 @@ export default function UserManagement() {
           Manage your system users and permissions
         </p>
       </div>
-
       <UserTable />
     </div>
   );

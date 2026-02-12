@@ -2,12 +2,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios"; // your axios instance
 import { toast } from "sonner";
+import { QUERY_KEYS } from "@/lib/queryKeys";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000/api";
 
 export function usePacks({ activeOnly = false } = {}) {
     return useQuery({
-        queryKey: ["packs", { activeOnly }],
+        queryKey: [QUERY_KEYS.packs, { activeOnly }],
         queryFn: async () => {
             const endpoint = activeOnly ? "/packs/active" : "/packs";
             const res = await api.get(`${API_URL}${endpoint}`);
@@ -19,7 +20,7 @@ export function usePacks({ activeOnly = false } = {}) {
 
 export function usePack(packId) {
     return useQuery({
-        queryKey: ["pack", packId],
+        queryKey: QUERY_KEYS.pack(packId),
         queryFn: async () => {
             if (!packId) return null;
             const res = await api.get(`${API_URL}/packs/${packId}`);
@@ -38,9 +39,16 @@ export function useCreatePack() {
             const res = await api.post(`${API_URL}/packs`, data);
             return res.data;
         },
+        onMutate: async () => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+        },
         onSuccess: () => {
             toast.success("Pack created successfully");
-            queryClient.invalidateQueries({ queryKey: ["packs"] });
+            // Invalidate to get fresh data from server
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not create pack";
@@ -58,10 +66,16 @@ export function useUpdatePack() {
             const res = await api.put(`${API_URL}/packs/${id}`, data);
             return res.data;
         },
-        onSuccess: (_, variables) => {
+        onMutate: async () => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+        },
+        onSuccess: () => {
             toast.success("Pack updated");
-            queryClient.invalidateQueries({ queryKey: ["packs"] });
-            queryClient.invalidateQueries({ queryKey: ["pack", variables.id] });
+            // Invalidate to get fresh data from server
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not update pack";
@@ -77,10 +91,16 @@ export function useDeletePack() {
         mutationFn: async (id) => {
             await api.delete(`${API_URL}/packs/${id}`);
         },
-        onSuccess: (_, id) => {
+        onMutate: async () => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+        },
+        onSuccess: () => {
             toast.success("Pack deleted");
-            queryClient.invalidateQueries({ queryKey: ["packs"] });
-            queryClient.removeQueries({ queryKey: ["pack", id] });
+            // Ensure data is fresh from server
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not delete pack";

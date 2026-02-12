@@ -2,12 +2,19 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
 import { toast } from "sonner";
+import { QUERY_KEYS } from "@/lib/queryKeys";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000/api";
 
 export function useSubscriptions(clientId, packId) {
+    const queryKey = clientId
+        ? QUERY_KEYS.subscriptionsByClient(clientId)
+        : packId
+            ? QUERY_KEYS.subscriptionsByPack(packId)
+            : QUERY_KEYS.subscriptions;
+
     return useQuery({
-        queryKey: ["subscriptions", clientId, packId],
+        queryKey,
         queryFn: async () => {
             const params = {};
             if (clientId) params.client_id = clientId;
@@ -26,7 +33,7 @@ export function useSubscriptions(clientId, packId) {
 
 export function useSubscription(subscriptionId) {
     return useQuery({
-        queryKey: ["subscription", subscriptionId],
+        queryKey: QUERY_KEYS.subscription(subscriptionId),
         queryFn: async () => {
             if (!subscriptionId) return null;
             const res = await api.get(`${API_URL}/subscriptions/${subscriptionId}`);
@@ -45,23 +52,43 @@ export function useCreateSubscription() {
             const res = await api.post(`${API_URL}/subscriptions`, data);
             return res.data;
         },
+        onMutate: async (newSubscription) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscriptions });
+
+            // Snapshot the previous value
+            const previousSubscriptions = queryClient.getQueryData(QUERY_KEYS.subscriptions);
+
+            // Optimistically update to the new value
+            queryClient.setQueryData(QUERY_KEYS.subscriptions, (old) => {
+                const subscriptionData = newSubscription.subscription || newSubscription;
+                return old ? [...old, subscriptionData] : [subscriptionData];
+            });
+
+            return { previousSubscriptions };
+        },
         onSuccess: (responseData) => {
             toast.success("Subscription created successfully");
-            queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+
+            // Invalidate to get fresh data from server
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscriptions });
 
             // Optional: invalidate subscriptions for this specific client
             const clientId = responseData?.subscription?.client_id;
             if (clientId) {
-                queryClient.invalidateQueries({ queryKey: ["subscriptions", clientId] });
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscriptionsByClient(clientId) });
             }
 
             // Optional: invalidate subscriptions for this specific pack
             const packId = responseData?.subscription?.plan?.pack_id;
             if (packId) {
-                queryClient.invalidateQueries({ queryKey: ["subscriptions", undefined, packId] });
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscriptionsByPack(packId) });
             }
         },
-        onError: (error) => {
+        onError: (error, newSubscription, context) => {
+            if (context?.previousSubscriptions) {
+                queryClient.setQueryData(QUERY_KEYS.subscriptions, context.previousSubscriptions);
+            }
             const msg = error?.response?.data?.message || "Could not create subscription";
             toast.error(msg);
             console.error("Create subscription failed:", error);
@@ -77,12 +104,43 @@ export function useUpdateSubscription() {
             const res = await api.put(`${API_URL}/subscriptions/${subscriptionId}`, updateData);
             return res.data;
         },
+        onMutate: async ({ subscriptionId, ...updateData }) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscriptions });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
+
+            // Snapshot the previous values
+            const previousSubscriptions = queryClient.getQueryData(QUERY_KEYS.subscriptions);
+            const previousSubscription = queryClient.getQueryData(QUERY_KEYS.subscription(subscriptionId));
+
+            // Optimistically update subscriptions list
+            queryClient.setQueryData(QUERY_KEYS.subscriptions, (old) =>
+                old?.map(subscription =>
+                    subscription.id === subscriptionId ? { ...subscription, ...updateData } : subscription
+                ) || []
+            );
+
+            // Optimistically update individual subscription
+            queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), (old) =>
+                old ? { ...old, ...updateData } : old
+            );
+
+            return { previousSubscriptions, previousSubscription };
+        },
         onSuccess: (_, { subscriptionId }) => {
             toast.success("Subscription updated successfully");
-            queryClient.invalidateQueries({ queryKey: ["subscription", subscriptionId] });
-            queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+            // Invalidate to get fresh data from server
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscriptions });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
         },
-        onError: (error) => {
+        onError: (error, { subscriptionId }, context) => {
+            // Rollback on error
+            if (context?.previousSubscriptions) {
+                queryClient.setQueryData(QUERY_KEYS.subscriptions, context.previousSubscriptions);
+            }
+            if (context?.previousSubscription) {
+                queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), context.previousSubscription);
+            }
             const msg = error?.response?.data?.message || "Could not update subscription";
             toast.error(msg);
         },
@@ -97,12 +155,45 @@ export function useCancelSubscription() {
             const res = await api.post(`${API_URL}/subscriptions/${subscriptionId}/cancel`, { immediate });
             return res.data;
         },
+        onMutate: async ({ subscriptionId, immediate }) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscriptions });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
+
+            // Snapshot the previous values
+            const previousSubscriptions = queryClient.getQueryData(QUERY_KEYS.subscriptions);
+            const previousSubscription = queryClient.getQueryData(QUERY_KEYS.subscription(subscriptionId));
+
+            // Optimistically update subscriptions list
+            queryClient.setQueryData(QUERY_KEYS.subscriptions, (old) =>
+                old?.map(subscription =>
+                    subscription.id === subscriptionId
+                        ? { ...subscription, status: immediate ? 'cancelled' : 'cancelled', cancelled_at: immediate ? new Date().toISOString() : subscription.cancelled_at }
+                        : subscription
+                ) || []
+            );
+
+            // Optimistically update individual subscription
+            queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), (old) =>
+                old ? { ...old, status: immediate ? 'cancelled' : 'cancelled', cancelled_at: immediate ? new Date().toISOString() : old.cancelled_at } : old
+            );
+
+            return { previousSubscriptions, previousSubscription };
+        },
         onSuccess: (_, { subscriptionId }) => {
             toast.success("Subscription cancelled successfully");
-            queryClient.invalidateQueries({ queryKey: ["subscription", subscriptionId] });
-            queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+            // Invalidate to get fresh data from server
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscriptions });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
         },
-        onError: (error) => {
+        onError: (error, { subscriptionId }, context) => {
+            // Rollback on error
+            if (context?.previousSubscriptions) {
+                queryClient.setQueryData(QUERY_KEYS.subscriptions, context.previousSubscriptions);
+            }
+            if (context?.previousSubscription) {
+                queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), context.previousSubscription);
+            }
             const msg = error?.response?.data?.message || "Could not cancel subscription";
             toast.error(msg);
         },
@@ -117,12 +208,45 @@ export function useRenewSubscription() {
             const res = await api.post(`${API_URL}/subscriptions/${subscriptionId}/renew`);
             return res.data;
         },
-        onSuccess: (_, subscriptionId) => {
-            toast.success("Subscription renewed successfully");
-            queryClient.invalidateQueries({ queryKey: ["subscription", subscriptionId] });
-            queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+        onMutate: async (subscriptionId) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscriptions });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
+
+            // Snapshot the previous values
+            const previousSubscriptions = queryClient.getQueryData(QUERY_KEYS.subscriptions);
+            const previousSubscription = queryClient.getQueryData(QUERY_KEYS.subscription(subscriptionId));
+
+            return { previousSubscriptions, previousSubscription };
         },
-        onError: (error) => {
+        onSuccess: (responseData, subscriptionId) => {
+            // Use the actual renewed subscription data from backend response
+            const renewedSubscription = responseData.subscription || responseData;
+
+            // Update subscriptions list with the renewed data
+            queryClient.setQueryData(QUERY_KEYS.subscriptions, (old) =>
+                old?.map(subscription =>
+                    subscription.id === subscriptionId ? renewedSubscription : subscription
+                ) || []
+            );
+
+            // Update individual subscription with the renewed data
+            queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), renewedSubscription);
+
+            toast.success("Subscription renewed successfully");
+
+            // Force refetch to ensure UI updates with latest data
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.subscriptions });
+        },
+        onError: (error, subscriptionId, context) => {
+            // Rollback on error
+            if (context?.previousSubscriptions) {
+                queryClient.setQueryData(QUERY_KEYS.subscriptions, context.previousSubscriptions);
+            }
+            if (context?.previousSubscription) {
+                queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), context.previousSubscription);
+            }
             const msg = error?.response?.data?.message || "Could not renew subscription";
             toast.error(msg);
         },
@@ -141,12 +265,45 @@ export function useChangePlan() {
             });
             return res.data;
         },
+        onMutate: async ({ subscriptionId, planId, planPriceId }) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscriptions });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
+
+            // Snapshot the previous values
+            const previousSubscriptions = queryClient.getQueryData(QUERY_KEYS.subscriptions);
+            const previousSubscription = queryClient.getQueryData(QUERY_KEYS.subscription(subscriptionId));
+
+            // Optimistically update subscriptions list
+            queryClient.setQueryData(QUERY_KEYS.subscriptions, (old) =>
+                old?.map(subscription =>
+                    subscription.id === subscriptionId
+                        ? { ...subscription, plan_id: planId, plan_price_id: planPriceId }
+                        : subscription
+                ) || []
+            );
+
+            // Optimistically update individual subscription
+            queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), (old) =>
+                old ? { ...old, plan_id: planId, plan_price_id: planPriceId } : old
+            );
+
+            return { previousSubscriptions, previousSubscription };
+        },
         onSuccess: (_, { subscriptionId }) => {
             toast.success("Plan changed successfully");
-            queryClient.invalidateQueries({ queryKey: ["subscription", subscriptionId] });
-            queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+            // Invalidate to get fresh data from server
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscriptions });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
         },
-        onError: (error) => {
+        onError: (error, { subscriptionId }, context) => {
+            // Rollback on error
+            if (context?.previousSubscriptions) {
+                queryClient.setQueryData(QUERY_KEYS.subscriptions, context.previousSubscriptions);
+            }
+            if (context?.previousSubscription) {
+                queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), context.previousSubscription);
+            }
             const msg = error?.response?.data?.message || "Could not change plan";
             toast.error(msg);
         },
@@ -200,12 +357,39 @@ export function useDeleteSubscription() {
         mutationFn: async (subscriptionId) => {
             await api.delete(`${API_URL}/subscriptions/${subscriptionId}`);
         },
+        onMutate: async (subscriptionId) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscriptions });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
+
+            // Snapshot the previous values
+            const previousSubscriptions = queryClient.getQueryData(QUERY_KEYS.subscriptions);
+            const previousSubscription = queryClient.getQueryData(QUERY_KEYS.subscription(subscriptionId));
+
+            // Optimistically remove from subscriptions list
+            queryClient.setQueryData(QUERY_KEYS.subscriptions, (old) =>
+                old?.filter(subscription => subscription.id !== subscriptionId) || []
+            );
+
+            // Optimistically remove individual subscription
+            queryClient.removeQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
+
+            return { previousSubscriptions, previousSubscription };
+        },
         onSuccess: (_, subscriptionId) => {
             toast.success("Subscription deleted successfully");
-            queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
-            queryClient.removeQueries({ queryKey: ["subscription", subscriptionId] });
+            // Ensure data is fresh from server
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.subscriptions });
+            queryClient.removeQueries({ queryKey: QUERY_KEYS.subscription(subscriptionId) });
         },
-        onError: (error) => {
+        onError: (error, subscriptionId, context) => {
+            // Rollback on error
+            if (context?.previousSubscriptions) {
+                queryClient.setQueryData(QUERY_KEYS.subscriptions, context.previousSubscriptions);
+            }
+            if (context?.previousSubscription) {
+                queryClient.setQueryData(QUERY_KEYS.subscription(subscriptionId), context.previousSubscription);
+            }
             const msg = error?.response?.data?.message || "Could not delete subscription";
             toast.error(msg);
         },

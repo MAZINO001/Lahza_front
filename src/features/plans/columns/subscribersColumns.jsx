@@ -55,7 +55,7 @@ export function getSubscriptionColumns(role, packId, navigate, onDelete) {
             to={`/${role}/plans/${packId}/subscription/${id}`}
             className="font-medium text-foreground hover:underline ml-3"
           >
-            {formatId(id, "SUBSCRIPTION")}
+            {formatId(id, "SUBS")}
           </Link>
         );
       },
@@ -132,6 +132,16 @@ export function getSubscriptionColumns(role, packId, navigate, onDelete) {
       cell: ({ getValue }) => (
         <span className="ml-3 font-medium text-sm">{getValue()}</span>
       ),
+    },
+
+    {
+      id: "status",
+      header: "Status",
+      accessorFn: (row) => row.status ?? "-",
+      cell: ({ row }) => {
+        const { status } = row.original;
+        return <StatusBadge status={status} />;
+      },
     },
 
     {

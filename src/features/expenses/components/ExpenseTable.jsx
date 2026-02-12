@@ -52,7 +52,7 @@ export default function ExpenseTable() {
           onChange={(e) =>
             table.getColumn("title")?.setFilterValue(e.target.value)
           }
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
         <div className="flex gap-2">
           <Button onClick={() => setShowUploadModal(true)} variant="outline">

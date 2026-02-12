@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowUpDown,
   Download,
@@ -38,6 +38,7 @@ import {
 } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
 import SendPopUp from "../components/sendPopUp";
+import { QUERY_KEYS } from "@/lib/queryKeys";
 export function DocumentsColumns(role, navigate, currentSection) {
   const isInvoice = currentSection === "invoice";
   return [
@@ -127,74 +128,8 @@ export function DocumentsColumns(role, navigate, currentSection) {
 
     ...(isInvoice
       ? [
-          {
-            accessorKey: "balance_due",
-            header: ({ column }) => (
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  column.toggleSorting(column.getIsSorted() === "asc")
-                }
-              >
-                Balance Due <ArrowUpDown className="ml-1 h-4 w-4" />
-              </Button>
-            ),
-            cell: ({ row }) => {
-              const invoice = row.original;
-              const balanceDue = parseFloat(invoice.balance_due) || 0;
-              const totalAmount = parseFloat(invoice.total_amount) || 0;
-
-              const percentage =
-                totalAmount > 0
-                  ? ((balanceDue / totalAmount) * 100).toFixed(1)
-                  : 0;
-
-              const formatted = new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: "MAD",
-              }).format(balanceDue);
-
-              return (
-                <div className="ml-3">
-                  <div className="font-medium">{formatted}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {percentage}% remaining
-                  </div>
-                </div>
-              );
-            },
-          },
-        ]
-      : []),
-
-    isInvoice
-      ? {
-          accessorKey: "due_date",
-          header: ({ column }) => {
-            return (
-              <Button
-                variant="ghost"
-                onClick={() =>
-                  column.toggleSorting(column.getIsSorted() === "asc")
-                }
-              >
-                Due Date
-                <ArrowUpDown />
-              </Button>
-            );
-          },
-          cell: ({ row }) => {
-            const date = new Date(row.getValue("due_date"));
-            const formatted = date.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            });
-            return <div className="ml-3">{formatted}</div>;
-          },
-        }
-      : {
-          accessorKey: "quotation_date",
+        {
+          accessorKey: "balance_due",
           header: ({ column }) => (
             <Button
               variant="ghost"
@@ -202,22 +137,88 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
             >
-              Quotation Date <ArrowUpDown className="ml-2 h-4 w-4" />
+              Balance Due <ArrowUpDown className="ml-1 h-4 w-4" />
             </Button>
           ),
           cell: ({ row }) => {
-            const value = row.getValue("quotation_date");
-            if (!value)
-              return <div className="ml-3 text-muted-foreground">N/A</div>;
+            const invoice = row.original;
+            const balanceDue = parseFloat(invoice.balance_due) || 0;
+            const totalAmount = parseFloat(invoice.total_amount) || 0;
 
-            const formatted = new Date(value).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            });
-            return <div className="ml-3">{formatted}</div>;
+            const percentage =
+              totalAmount > 0
+                ? ((balanceDue / totalAmount) * 100).toFixed(1)
+                : 0;
+
+            const formatted = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "MAD",
+            }).format(balanceDue);
+
+            return (
+              <div className="ml-3">
+                <div className="font-medium">{formatted}</div>
+                <div className="text-xs text-muted-foreground">
+                  {percentage}% remaining
+                </div>
+              </div>
+            );
           },
         },
+      ]
+      : []),
+
+    isInvoice
+      ? {
+        accessorKey: "due_date",
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Due Date
+              <ArrowUpDown />
+            </Button>
+          );
+        },
+        cell: ({ row }) => {
+          const date = new Date(row.getValue("due_date"));
+          const formatted = date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+          return <div className="ml-3">{formatted}</div>;
+        },
+      }
+      : {
+        accessorKey: "quotation_date",
+        header: ({ column }) => (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              column.toggleSorting(column.getIsSorted() === "asc")
+            }
+          >
+            Quotation Date <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        ),
+        cell: ({ row }) => {
+          const value = row.getValue("quotation_date");
+          if (!value)
+            return <div className="ml-3 text-muted-foreground">N/A</div>;
+
+          const formatted = new Date(value).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+          return <div className="ml-3">{formatted}</div>;
+        },
+      },
 
     {
       accessorKey: "status",
@@ -252,6 +253,7 @@ export function DocumentsColumns(role, navigate, currentSection) {
       cell: ({ row }) => {
         const document = row.original;
         const { user } = useAuthContext();
+        const queryClient = useQueryClient();
         const [isSignDialogOpen, setIsSignDialogOpen] = useState(false);
         const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
         const [signatureFile, setSignatureFile] = useState(null);
@@ -271,9 +273,14 @@ export function DocumentsColumns(role, navigate, currentSection) {
             return;
           }
 
+          // Close dialog immediately and clear the file
+          setIsSignDialogOpen(false);
+          const fileToUpload = signatureFile;
+          setSignatureFile(null);
+
           try {
             const formData = new FormData();
-            formData.append("signature", signatureFile.file);
+            formData.append("signature", fileToUpload.file);
             formData.append("type", "client_signature");
 
             const endpoint = isInvoice ? "invoices" : "quotes";
@@ -301,12 +308,12 @@ export function DocumentsColumns(role, navigate, currentSection) {
             } else {
               toast.success("Quote signature uploaded successfully!");
             }
-
-            setIsSignDialogOpen(false);
-            setSignatureFile(null);
           } catch (error) {
             console.error("Error uploading signature:", error);
             toast.error("Failed to upload signature");
+            // Reopen dialog on error so user can try again
+            setIsSignDialogOpen(true);
+            setSignatureFile(fileToUpload);
           }
         };
 
@@ -354,6 +361,11 @@ export function DocumentsColumns(role, navigate, currentSection) {
                 );
               }
             }
+
+            // Invalidate cache to refresh UI
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.quotes });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.invoices });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.document(document.id) });
 
             toast.success("Signature removed successfully");
           } catch (error) {

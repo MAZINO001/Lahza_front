@@ -16,25 +16,35 @@ export default function PlanEdit() {
   const { role } = useAuthContext();
 
   // Extract the pack ID and plan ID from the URL path
-
-  const pathSegments = location.pathname.split("/");
+  // Expected URL pattern: /{role}/settings/plans_management/{packId}/plans/{planId}/edit
+  const pathSegments = location.pathname.split("/").filter(Boolean);
 
   const plansManagementIndex = pathSegments.indexOf("plans_management");
-
-  const packId =
-    plansManagementIndex !== -1 &&
-    plansManagementIndex + 1 < pathSegments.length
-      ? pathSegments[plansManagementIndex + 1]
-      : null;
-
   const plansIndex = pathSegments.indexOf("plans");
+  const editIndex = pathSegments.indexOf("edit");
 
-  const planId =
-    plansIndex !== -1 && plansIndex + 1 < pathSegments.length
-      ? pathSegments[plansIndex + 1]
+  const packId = plansManagementIndex !== -1 && plansManagementIndex + 1 < pathSegments.length
+    ? pathSegments[plansManagementIndex + 1]
+    : null;
+
+  const planId = plansIndex !== -1 && plansIndex + 1 < pathSegments.length &&
+    pathSegments[plansIndex + 1] !== "edit"
+    ? pathSegments[plansIndex + 1]
+    : editIndex !== -1 && editIndex - 1 >= 0
+      ? pathSegments[editIndex - 1]
       : null;
+
+  // Debug logging
+  console.log("PlanEdit - Current path:", location.pathname);
+  console.log("PlanEdit - Path segments:", pathSegments);
+  console.log("PlanEdit - Pack ID:", packId);
+  console.log("PlanEdit - Plan ID:", planId);
 
   const { data: plan, isLoading, error } = usePlan(planId);
+
+  // Debug logging
+  console.log("PlanEdit - Raw plan data:", plan);
+  console.log("PlanEdit - Plan data structure:", JSON.stringify(plan, null, 2));
 
   const handleSuccess = () => {
     navigate(`/${role}/settings/plans_management/${packId}`);
@@ -65,7 +75,7 @@ export default function PlanEdit() {
   return (
     <div>
       <PlanForm
-        plan={plan?.data}
+        plan={plan}
         onSuccess={handleSuccess}
         onCancel={handleCancel}
         packId={packId}

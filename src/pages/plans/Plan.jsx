@@ -299,82 +299,13 @@ export default function Plan({ plan, interval = "monthly" }) {
   const currentPrice = getPriceForInterval();
   const isYearly = interval === "yearly";
 
-  const renderFeature = (field) => {
-    const value = field.default_value;
-
-    if (field.type === "boolean") {
-      const isEnabled = value === "true" || value === true;
-      return (
-        <div className="flex items-center gap-3 py-1.5">
-          {isEnabled ? (
-            <Check className="h-5 w-5 text-primary shrink-0" />
-          ) : (
-            <X className="h-5 w-5 text-muted-foreground shrink-0" />
-          )}
-          <span
-            className={cn(
-              "text-sm",
-              !isEnabled && "text-muted-foreground line-through",
-            )}
-          >
-            {field.label}
-          </span>
-        </div>
-      );
-    }
-
-    if (field.type === "number") {
-      return (
-        <div className="flex items-center gap-3 py-1.5">
-          <Check className="h-5 w-5 text-primary shrink-0" />
-          <span className="text-sm">
-            {field.label}: <strong>{value}</strong>
-          </span>
-        </div>
-      );
-    }
-
-    if (field.type === "text") {
-      return (
-        <div className="flex items-start gap-3 py-1.5">
-          <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-          <span className="text-sm">{value}</span>
-        </div>
-      );
-    }
-
-    if (field.type === "json") {
-      try {
-        const parsed = JSON.parse(value);
-        return Object.entries(parsed).map(([key, val]) => {
-          const label = key
-            .replace(/_/g, " ")
-            .split(" ")
-            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-            .join(" ");
-
-          const displayValue =
-            typeof val === "boolean" ? (val ? "Enabled" : "Disabled") : val;
-
-          return (
-            <div key={key} className="flex items-center gap-3 py-1.5">
-              <Check className="h-5 w-5 text-primary shrink-0" />
-              <span className="text-sm">
-                {label}: <strong>{displayValue}</strong>
-              </span>
-            </div>
-          );
-        });
-      } catch (e) {
-        return (
-          <div className="text-sm text-muted-foreground italic py-1.5">
-            Advanced configuration
-          </div>
-        );
-      }
-    }
-
-    return null;
+  const renderFeature = (feature) => {
+    return (
+      <div className="flex items-center gap-3 py-1.5">
+        <Check className="h-5 w-5 text-primary shrink-0" />
+        <span className="text-sm">{feature.name}</span>
+      </div>
+    );
   };
 
   return (
@@ -430,20 +361,18 @@ export default function Plan({ plan, interval = "monthly" }) {
         <Separator />
 
         <div className="space-y-1.5 min-h-[180px]">
-          {plan.custom_fields
-            ?.filter((f) => f.default_value !== null && f.default_value !== "")
-            .map((field) => (
-              <div key={field.id}>{renderFeature(field)}</div>
+          {plan.features_list
+            ?.filter((f) => f.name && f.name.trim() !== "")
+            .map((feature, index) => (
+              <div key={index}>{renderFeature(feature)}</div>
             ))}
 
-          {(!plan.custom_fields ||
-            plan.custom_fields.filter(
-              (f) => f.default_value !== null && f.default_value !== "",
-            ).length === 0) && (
-            <p className="text-sm text-muted-foreground italic py-2">
-              No specific features configured
-            </p>
-          )}
+          {(!plan.features_list ||
+            plan.features_list.filter((f) => f.name && f.name.trim() !== "").length === 0) && (
+              <p className="text-sm text-muted-foreground italic py-2">
+                No specific features configured
+              </p>
+            )}
         </div>
       </CardContent>
 

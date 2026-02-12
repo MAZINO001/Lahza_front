@@ -53,7 +53,7 @@ export function ReceiptTable() {
           onChange={(e) =>
             table.getColumn("invoice_id")?.setFilterValue(e.target.value)
           }
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
       </div>
       <DataTable

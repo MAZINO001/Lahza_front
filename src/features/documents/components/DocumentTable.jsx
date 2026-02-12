@@ -82,7 +82,7 @@ export function DocumentTable({ type }) {
           placeholder={`Search by ID or Status...`}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
-          className="max-w-sm"
+          className="w-full sm:max-w-sm"
         />
 
         {role === "admin" && (

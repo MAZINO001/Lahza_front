@@ -15,12 +15,19 @@ export default function PlansManagement() {
         ? pathSegments[plansManagementIndex + 1]
         : null;
 
+    // Debug logging
+    console.log("PlansManagement - Current path:", location.pathname);
+    console.log("PlansManagement - Pack ID:", packId);
+
     // Check if the path includes plan creation or editing
     if (location.pathname.includes('/plans/new')) {
+        console.log("PlansManagement - Rendering PlanCreate");
         return <PlanCreate />;
     }
 
-    if (location.pathname.includes('/plans/') && location.pathname.includes('/edit')) {
+    // More specific check for edit route - should match /plans/{id}/edit
+    if (location.pathname.match(/\/plans\/\d+\/edit$/)) {
+        console.log("PlansManagement - Rendering PlanEdit");
         return <PlanEdit />;
     }
 

@@ -63,4 +63,19 @@ export const QUERY_KEYS = {
     // Agency
     agency: ['agency'],
     agencyById: (id) => ['agency', id],
+
+    // Subscriptions
+    subscriptions: ['subscriptions'],
+    subscription: (id) => ['subscription', id],
+    subscriptionsByClient: (clientId) => ['subscriptions', 'byClient', clientId],
+    subscriptionsByPack: (packId) => ['subscriptions', 'byPack', packId],
+
+    // Plans
+    plans: ['plans'],
+    plan: (id) => ['plan', id],
+    plansByPack: (packId) => ['plans', 'byPack', packId],
+
+    // Packs
+    packs: ['packs'],
+    pack: (id) => ['pack', id],
 };

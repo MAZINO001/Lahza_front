@@ -2,12 +2,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
 import { toast } from "sonner";
+import { QUERY_KEYS } from "@/lib/queryKeys";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000/api";
 
 export function usePlans(packId) {
+    const queryKey = packId ? QUERY_KEYS.plansByPack(packId) : QUERY_KEYS.plans;
+
     return useQuery({
-        queryKey: ["plans", packId],
+        queryKey,
         queryFn: async () => {
             const params = packId ? { pack_id: packId } : {};
             const res = await api.get(`${API_URL}/plans`, { params });
@@ -21,7 +24,7 @@ export function usePlans(packId) {
 
 export function usePlan(planId) {
     return useQuery({
-        queryKey: ["plan", planId],
+        queryKey: QUERY_KEYS.plan(planId),
         queryFn: async () => {
             if (!planId) return null;
             const res = await api.get(`${API_URL}/plans/${planId}`);
@@ -41,14 +44,26 @@ export function useCreatePlan() {
             const res = await api.post(`${API_URL}/plans`, data);
             return res.data;
         },
+        onMutate: async () => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+        },
         onSuccess: (responseData) => {
             toast.success("Plan created successfully");
-            queryClient.invalidateQueries({ queryKey: ["plans"] });
 
-            // Optional: invalidate plans for this specific pack
+            // Invalidate to get fresh data from server
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+
+            // Also invalidate packs to refresh plan counts
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
+
+            // IMPORTANT: Invalidate plans for this specific pack
             const packId = responseData?.plan?.pack_id;
             if (packId) {
-                queryClient.invalidateQueries({ queryKey: ["plans", packId] });
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(packId) });
             }
         },
         onError: (error) => {
@@ -59,36 +74,38 @@ export function useCreatePlan() {
     });
 }
 
-// ────────────────────────────────────────────────
-// Optional: if you later want separate price / field mutations
-// ────────────────────────────────────────────────
-
-export function useAddPlanPrice() {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async ({ planId, ...priceData }) => {
-            const res = await api.post(`${API_URL}/plans/${planId}/prices`, priceData);
-            return res.data;
-        },
-        onSuccess: (_, { planId }) => {
-            queryClient.invalidateQueries({ queryKey: ["plan", planId] });
-            queryClient.invalidateQueries({ queryKey: ["plans"] });
-        },
-    });
-}
-
 export function useDeletePlan() {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: async (planId) => {
             await api.delete(`${API_URL}/plans/${planId}`);
+            return planId;
         },
-        onSuccess: (_, planId) => {
+        onMutate: async (planId) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+
+            // Get the plan data to find its pack_id
+            const planData = queryClient.getQueryData(QUERY_KEYS.plan(planId));
+            return { planId, packId: planData?.pack_id };
+        },
+        onSuccess: (_, variables) => {
             toast.success("Plan deleted successfully");
-            queryClient.invalidateQueries({ queryKey: ["plans"] });
-            queryClient.removeQueries({ queryKey: ["plan", planId] });
+            // Ensure data is fresh from server
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
+
+            // IMPORTANT: Invalidate plans for the specific pack this plan belonged to
+            if (variables.packId) {
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
+            }
+
+            // Also invalidate subscriptions to get fresh data
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.subscriptions] });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not delete plan";
@@ -118,12 +135,30 @@ export function useUpdatePlan() {
     return useMutation({
         mutationFn: async ({ id, ...data }) => {
             const res = await api.put(`${API_URL}/plans/${id}`, data);
-            return res.data;
+            return { ...res.data, pack_id: data.pack_id };
+        },
+        onMutate: async ({ id, ...data }) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
+            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+
+            return { packId: data.pack_id };
         },
         onSuccess: (_, variables) => {
             toast.success("Plan updated");
-            queryClient.invalidateQueries({ queryKey: ["plans"] });
-            queryClient.invalidateQueries({ queryKey: ["plan", variables.id] });
+            // Invalidate to get fresh data from server
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
+
+            // IMPORTANT: Invalidate plans for the specific pack this plan belongs to
+            if (variables.packId) {
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
+            }
+
+            // Also invalidate subscriptions to get fresh data
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.subscriptions] });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not update plan";

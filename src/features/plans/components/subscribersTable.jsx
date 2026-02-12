@@ -50,7 +50,7 @@ export function SubscribersTable({ packId, onViewChange }) {
   const columns = React.useMemo(
     () =>
       getSubscriptionColumns(role, packId, navigate, handleDeleteSubscription),
-    [role, packId, navigate],
+    [role, packId, navigate, handleDeleteSubscription],
   );
 
   const sortOptions = ["newest", "oldest"];
@@ -63,8 +63,8 @@ export function SubscribersTable({ packId, onViewChange }) {
 
     // Filter by packId - get plans that belong to this pack, then filter subscriptions by those plans
     if (packId && plansData?.data) {
-      const planIdsForPack = plansData.data.map(plan => plan.id);
-      filtered = filtered.filter(sub => planIdsForPack.includes(sub.plan_id));
+      const planIdsForPack = plansData.data.map((plan) => plan.id);
+      filtered = filtered.filter((sub) => planIdsForPack.includes(sub.plan_id));
     }
 
     // Filter by status
@@ -96,7 +96,14 @@ export function SubscribersTable({ packId, onViewChange }) {
     }
 
     return filtered;
-  }, [subscriptions, selectedSort, activeFilter, globalFilter, packId, plansData]);
+  }, [
+    subscriptions,
+    selectedSort,
+    activeFilter,
+    globalFilter,
+    packId,
+    plansData,
+  ]);
 
   const table = useReactTable({
     data: filteredData || [],

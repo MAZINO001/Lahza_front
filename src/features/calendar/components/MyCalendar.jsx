@@ -16,9 +16,11 @@ import {
 } from "@/lib/CalendarData";
 import EventsSummary from "./EventsSummary";
 import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot";
+import { useAuthContext } from "@/hooks/AuthContext";
 
 export default function MyCalendar() {
   const { data: events } = useEvents();
+  const { role } = useAuthContext();
 
   const parseRrule = (rrule) => {
     if (!rrule) return null;
@@ -401,6 +403,10 @@ export default function MyCalendar() {
   };
 
   const handleCellClick = (info) => {
+    if (role === "client") {
+      console.log("Clients cannot create events");
+      return;
+    }
     console.log("info", info);
     const startDate = info.start ? info.start.toDate() : new Date();
     const endDate = info.end
@@ -429,8 +435,6 @@ export default function MyCalendar() {
       endTime: endTimeFormatted,
       allDay: isAllDay,
     };
-
-    console.log("Extracted event data:", eventData);
 
     setSelectedDate(eventData);
     setSelectedEvent(null);
@@ -560,8 +564,12 @@ export default function MyCalendar() {
         <div className="w-[70%]">
           <IlamyCalendar
             stickyViewHeader={false}
-            renderEventForm={(props) => <EventForm {...props} />}
+            // renderEventForm={(props) => <EventForm {...props} />}
+            renderEventForm={(props) =>
+              role === "client" ? null : <EventForm {...props} />
+            }
             viewHeaderClassName="bg-background"
+            disableEventCreation={role === "client"}
             headerClassName="bg-blue-50 bg-background text-blue-900 border-2 border-border p-4 rounded-t-md"
             events={validEvents}
             renderEvent={(event) => renderEvent(event, currentView)}

@@ -1,4 +1,3 @@
-// PlanForm.jsx
 import React, { useEffect } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -60,6 +59,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       is_active: true,
       prices: [{ interval: "monthly", price: "", currency: "USD" }],
       custom_fields: [],
+      features_list: [{ name: "" }],
     },
   });
 
@@ -75,6 +75,10 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
     remove: removeCustom,
   } = useFieldArray({ control, name: "custom_fields" });
 
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "features_list",
+  });
   useEffect(() => {
     if (plan) {
       reset({
@@ -87,12 +91,12 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
             ? plan.prices
             : [{ interval: "monthly", price: "", currency: "USD" }],
         custom_fields: plan.custom_fields || [],
+        features_list: plan.features_list || [],
       });
     }
   }, [plan, reset]);
 
   const onSubmit = (data) => {
-    // Basic client-side checks (since no zod)
     if (!data.pack_id) {
       toast.error("Please select a pack");
       return;
@@ -115,10 +119,10 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       })),
     };
 
+    console.log(data);
     console.log(payload);
 
     if (plan) {
-      // Update existing plan
       updatePlan.mutate(
         { id: plan.id, ...payload },
         {
@@ -132,7 +136,6 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         },
       );
     } else {
-      // Create new plan
       createPlan.mutate(payload, {
         onSuccess: () => {
           toast.success("Plan created");
@@ -191,29 +194,91 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                   )}
                 />
               </div>
+              <div className="w-full">
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    <div className="space-y-2">
+                      <Label>Description (optional)</Label>
+                      <TextareaField
+                        placeholder="What this plan includes..."
+                        className="min-h-[90px]"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </div>
+                  )}
+                />
+              </div>
             </div>
+
             <div className="w-[50%]">
-              <Controller
-                name="description"
-                control={control}
-                render={({ field }) => (
-                  <div className="space-y-2">
-                    <Label>Description (optional)</Label>
-                    <TextareaField
-                      placeholder="What this plan includes..."
-                      className="min-h-[90px]"
-                      {...field}
-                      value={field.value || ""}
-                    />
-                  </div>
-                )}
-              />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">Features</label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => append({ name: "" })}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add
+                  </Button>
+                </div>
+
+                <div className="space-y-2 w-full">
+                  {fields.length === 0 ? (
+                    <div className="flex items-center gap-2 w-full">
+                      <Controller
+                        name={`features_list.0.name`}
+                        control={control}
+                        render={({ field }) => (
+                          <FormField
+                            className={"w-full"}
+                            placeholder="e.g. 10 projects, 100 users"
+                            {...field}
+                          />
+                        )}
+                      />
+                    </div>
+                  ) : (
+                    fields.map((field, index) => (
+                      <div
+                        key={field.id}
+                        className="flex items-center gap-2 w-full"
+                      >
+                        <Controller
+                          name={`features_list.${index}.name`}
+                          control={control}
+                          render={({ field }) => (
+                            <FormField
+                              className={"w-full"}
+                              placeholder="e.g. 10 projects, 100 users"
+                              {...field}
+                            />
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => remove(index)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Pricing Section */}
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
