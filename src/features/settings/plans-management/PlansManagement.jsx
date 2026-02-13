@@ -6,39 +6,31 @@ import PlanEdit from "@/pages/plans/PlanEdit";
 import { useLocation } from "react-router-dom";
 
 export default function PlansManagement() {
-    const location = useLocation();
+  const location = useLocation();
 
-    // Extract the pack ID from the URL path
-    const pathSegments = location.pathname.split("/");
-    const plansManagementIndex = pathSegments.indexOf("plans_management");
-    const packId = plansManagementIndex !== -1 && plansManagementIndex + 1 < pathSegments.length
-        ? pathSegments[plansManagementIndex + 1]
-        : null;
+  const pathSegments = location.pathname.split("/");
+  const plansManagementIndex = pathSegments.indexOf("plans_management");
+  const packId =
+    plansManagementIndex !== -1 &&
+    plansManagementIndex + 1 < pathSegments.length
+      ? pathSegments[plansManagementIndex + 1]
+      : null;
 
-    // Debug logging
-    console.log("PlansManagement - Current path:", location.pathname);
-    console.log("PlansManagement - Pack ID:", packId);
+  if (location.pathname.includes("/plans/new")) {
+    return <PlanCreate />;
+  }
 
-    // Check if the path includes plan creation or editing
-    if (location.pathname.includes('/plans/new')) {
-        console.log("PlansManagement - Rendering PlanCreate");
-        return <PlanCreate />;
-    }
+  if (location.pathname.match(/\/plans\/\d+\/edit$/)) {
+    return <PlanEdit />;
+  }
 
-    // More specific check for edit route - should match /plans/{id}/edit
-    if (location.pathname.match(/\/plans\/\d+\/edit$/)) {
-        console.log("PlansManagement - Rendering PlanEdit");
-        return <PlanEdit />;
-    }
+  if (packId && !isNaN(packId)) {
+    return <PackDetail />;
+  }
 
-    // If packId is a number, show pack details, otherwise show packs list
-    if (packId && !isNaN(packId)) {
-        return <PackDetail />;
-    }
-
-    return (
-        <div>
-            <PacksList />
-        </div>
-    );
+  return (
+    <div>
+      <PacksList />
+    </div>
+  );
 }

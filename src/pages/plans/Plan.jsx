@@ -48,9 +48,7 @@ export default function Plan({ plan, interval = "monthly" }) {
   };
 
   const handleDelete = () => {
-    deletePlan.mutate(plan.id, {
-      onSuccess: () => toast.success("Plan deleted successfully"),
-    });
+    deletePlan.mutate(plan.id);
   };
 
   const formatPrice = (price, currency) => {
@@ -144,10 +142,10 @@ export default function Plan({ plan, interval = "monthly" }) {
             plan?.features.filter(
               (f) => f.feature_name && f.feature_name.trim() !== "",
             ).length === 0) && (
-              <p className="text-sm text-muted-foreground italic py-2">
-                No specific features configured
-              </p>
-            )}
+            <p className="text-sm text-muted-foreground italic py-2">
+              No specific features configured
+            </p>
+          )}
         </div>
       </CardContent>
 

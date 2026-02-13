@@ -205,8 +205,8 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         ?.filter((feature) => feature.name?.trim())
         .map((feature) => feature.name) || [];
 
-    // Prepare payload - only basic plan fields for update
-    const payload = {
+    // Update: only basic plan fields (prices, features, custom_fields have their own CRUD endpoints)
+    const updatePayload = {
       pack_id: Number(data.pack_id),
       name: data.name,
       description: data.description || "",
@@ -214,37 +214,49 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
     };
 
     if (plan) {
-      // Update: single request with all data
       updatePlan.mutate(
-        { id: plan.id, ...payload },
+        { id: plan.id, ...updatePayload },
         {
           onSuccess: () => {
-            toast.success("Plan updated successfully");
             onSuccess?.();
-          },
-          onError: (err) => {
-            toast.error(err?.response?.data?.message || "Something went wrong");
           },
         },
       );
     } else {
-      // Create: single request with all data
-      createPlan.mutate(payload, {
+      // Create: send full payload (prices, features, custom_fields) in one request
+      const createPayload = {
+        ...updatePayload,
+        prices:
+          data.prices
+            ?.filter((p) => p.price != null && Number(p.price) > 0)
+            .map((p) => ({
+              interval: p.interval || "monthly",
+              price: Number(p.price),
+              currency: p.currency || "USD",
+            })) || [],
+        features: validFeatures,
+        custom_fields:
+          data.custom_fields
+            ?.filter((cf) => cf.key?.trim() && cf.label?.trim())
+            .map((cf) => ({
+              key: cf.key,
+              label: cf.label,
+              type: cf.type || "text",
+              default_value: cf.default_value ?? "",
+              required: Boolean(cf.required),
+            })) || [],
+      };
+      createPlan.mutate(createPayload, {
         onSuccess: () => {
-          toast.success("Plan created successfully");
           onSuccess?.();
-        },
-        onError: (err) => {
-          toast.error(err?.response?.data?.message || "Something went wrong");
         },
       });
     }
   };
 
-  const handleSavePrices = () => {
+  const handleSavePrices = async () => {
     const currentPrices = watch("prices");
 
-    // Validate prices
     if (currentPrices.some((p) => !p.price || Number(p.price) <= 0)) {
       toast.error("All prices must be positive numbers");
       return;
@@ -255,53 +267,42 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       return;
     }
 
-    // Process each price
-    currentPrices.forEach((price) => {
+    const promises = currentPrices.map((price) => {
       const priceData = {
         interval: price.interval,
         price: Number(price.price),
         currency: price.currency,
       };
-
       if (price.id) {
-        // Update existing price
-        updatePlanPrice.mutate(
-          { planId: plan.id, priceId: price.id, ...priceData },
-          {
-            onSuccess: () => toast.success("Price updated successfully"),
-            onError: (err) =>
-              toast.error(
-                err?.response?.data?.message || "Failed to update price",
-              ),
-          },
-        );
-      } else {
-        // Add new price
-        addPlanPrice.mutate(
-          { planId: plan.id, ...priceData },
-          {
-            onSuccess: () => {
-              toast.success("Price added successfully");
-              // Invalidate plan query to refresh parent data
-              queryClient.invalidateQueries({ queryKey: ["plans"] });
-              queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
-              // Force refetch of plans by pack
-              queryClient.refetchQueries({ queryKey: ["plans", "pack"] });
-            },
-            onError: (err) =>
-              toast.error(
-                err?.response?.data?.message || "Failed to add price",
-              ),
-          },
-        );
+        return updatePlanPrice.mutateAsync({
+          planId: plan.id,
+          priceId: price.id,
+          ...priceData,
+        });
       }
+      return addPlanPrice.mutateAsync({ planId: plan.id, ...priceData });
     });
+
+    try {
+      const results = await Promise.allSettled(promises);
+      const failed = results.filter((r) => r.status === "rejected");
+      if (failed.length > 0) {
+        toast.error(
+          failed.length === results.length
+            ? "Failed to save prices"
+            : `${failed.length} price(s) failed to save`,
+        );
+        return;
+      }
+      toast.success("Prices saved successfully");
+    } catch {
+      toast.error("Failed to save prices");
+    }
   };
 
-  const handleSaveCustomFields = () => {
+  const handleSaveCustomFields = async () => {
     const currentCustomFields = watch("custom_fields");
 
-    // Validate custom fields
     if (
       currentCustomFields.some((cf) => !cf.key?.trim() || !cf.label?.trim())
     ) {
@@ -314,8 +315,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       return;
     }
 
-    // Process each custom field
-    currentCustomFields.forEach((field) => {
+    const promises = currentCustomFields.map((field) => {
       const fieldData = {
         key: field.key,
         label: field.label,
@@ -323,46 +323,36 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         default_value: field.default_value,
         required: field.required,
       };
-
       if (field.id) {
-        // Update existing field
-        updateCustomField.mutate(
-          { planId: plan.id, fieldId: field.id, ...fieldData },
-          {
-            onSuccess: () => toast.success("Custom field updated successfully"),
-            onError: (err) =>
-              toast.error(
-                err?.response?.data?.message || "Failed to update custom field",
-              ),
-          },
-        );
-      } else {
-        // Add new field
-        addCustomField.mutate(
-          { planId: plan.id, ...fieldData },
-          {
-            onSuccess: () => {
-              toast.success("Custom field added successfully");
-              // Invalidate plan query to refresh parent data
-              queryClient.invalidateQueries({ queryKey: ["plans"] });
-              queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
-              // Force refetch of plans by pack
-              queryClient.refetchQueries({ queryKey: ["plans", "pack"] });
-            },
-            onError: (err) =>
-              toast.error(
-                err?.response?.data?.message || "Failed to add custom field",
-              ),
-          },
-        );
+        return updateCustomField.mutateAsync({
+          planId: plan.id,
+          fieldId: field.id,
+          ...fieldData,
+        });
       }
+      return addCustomField.mutateAsync({ planId: plan.id, ...fieldData });
     });
+
+    try {
+      const results = await Promise.allSettled(promises);
+      const failed = results.filter((r) => r.status === "rejected");
+      if (failed.length > 0) {
+        toast.error(
+          failed.length === results.length
+            ? "Failed to save custom fields"
+            : `${failed.length} field(s) failed to save`,
+        );
+        return;
+      }
+      toast.success("Custom fields saved successfully");
+    } catch {
+      toast.error("Failed to save custom fields");
+    }
   };
 
-  const handleSaveFeatures = () => {
+  const handleSaveFeatures = async () => {
     const currentFeatures = watch("features");
 
-    // Filter out empty features and validate
     const validFeatures =
       currentFeatures?.filter((feature) => feature.name?.trim()) || [];
 
@@ -376,57 +366,61 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       return;
     }
 
-    // Feature IDs that belong to this plan (from initial load). Others are from "Available Features" and must be added, not updated.
     const thisPlanFeatureIds = new Set(
       (plan.features || []).map((f) => f.id).filter(Boolean),
     );
 
-    // Process each feature individually
-    validFeatures.forEach((feature) => {
-      const featureData = {
-        feature_name: feature.name,
-      };
+    const results = await Promise.allSettled(
+      validFeatures.map((feature) => {
+        const featureData = { feature_name: feature.name };
+        const isExistingOnThisPlan =
+          feature.id && thisPlanFeatureIds.has(feature.id);
 
-      const isExistingOnThisPlan = feature.id && thisPlanFeatureIds.has(feature.id);
+        if (isExistingOnThisPlan) {
+          return updatePlanFeature.mutateAsync({
+            planId: plan.id,
+            featureId: feature.id,
+            ...featureData,
+          });
+        }
+        return addPlanFeature.mutateAsync({
+          planId: plan.id,
+          features: [featureData],
+        });
+      }),
+    );
 
-      if (isExistingOnThisPlan) {
-        // Update existing feature that belongs to this plan
-        updatePlanFeature.mutate(
-          { planId: plan.id, featureId: feature.id, ...featureData },
-          {
-            onSuccess: () => toast.success("Feature updated successfully"),
-            onError: (err) =>
-              toast.error(
-                err?.response?.data?.message || "Failed to update feature",
-              ),
-          },
-        );
-      } else {
-        // Add: no id, or id from another plan (selected from Available Features)
-        addPlanFeature.mutate(
-          { planId: plan.id, features: [featureData] },
-          {
-            onSuccess: (response) => {
-              toast.success("Feature added successfully");
-              const currentFeatures = watch("features");
-              const newFeature = response.data?.[0];
-              if (newFeature) {
-                const updatedFeatures = currentFeatures.map((f) =>
-                  f.name === feature.name && !thisPlanFeatureIds.has(f?.id)
-                    ? { id: newFeature.id, name: newFeature.feature_name ?? f.name }
-                    : f,
-                );
-                setValue("features", updatedFeatures);
-              }
-            },
-            onError: (err) =>
-              toast.error(
-                err?.response?.data?.message || "Failed to add feature",
-              ),
-          },
-        );
+    // Update form with new feature IDs for added features
+    const addedIndices = validFeatures
+      .map((f, i) => (!f.id || !thisPlanFeatureIds.has(f.id) ? i : -1))
+      .filter((i) => i >= 0);
+    for (let i = 0; i < results.length; i++) {
+      if (addedIndices.includes(i) && results[i].status === "fulfilled") {
+        const { value } = results[i];
+        const newFeature = value?.data?.[0] ?? value?.[0];
+        if (newFeature) {
+          const feature = validFeatures[i];
+          const current = watch("features");
+          const updated = current.map((f) =>
+            f.name === feature.name && !thisPlanFeatureIds.has(f?.id)
+              ? { id: newFeature.id, name: newFeature.feature_name ?? f.name }
+              : f,
+          );
+          setValue("features", updated);
+        }
       }
-    });
+    }
+
+    const failed = results.filter((r) => r.status === "rejected");
+    if (failed.length > 0) {
+      toast.error(
+        failed.length === results.length
+          ? "Failed to save features"
+          : `${failed.length} feature(s) failed to save`,
+      );
+      return;
+    }
+    toast.success("Features saved successfully");
   };
 
   const handleDeleteFeature = (planId, featureId) => {

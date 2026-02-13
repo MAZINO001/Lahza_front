@@ -365,15 +365,17 @@ export function useCreatePlan() {
             return res.data;
         },
         onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.plans });
         },
         onSuccess: (responseData) => {
             toast.success("Plan created successfully");
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
             const packId = responseData?.plan?.pack_id;
             if (packId) {
                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(packId) });
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.pack(packId) });
             }
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not create plan";
@@ -393,16 +395,19 @@ export function useUpdatePlan() {
             return { ...res.data, pack_id: data.pack_id };
         },
         onMutate: async ({ id, ...data }) => {
-            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.plans });
             return { packId: data.pack_id, planId: id };
         },
         onSuccess: (_, variables) => {
             toast.success("Plan updated successfully");
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(variables.id) });
-            if (variables.packId) {
-                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
+            const packId = variables.pack_id ?? variables.packId;
+            if (packId) {
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(packId) });
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.pack(packId) });
             }
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not update plan";
@@ -421,16 +426,18 @@ export function useDeletePlan() {
             return planId;
         },
         onMutate: async (planId) => {
-            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.plans });
             const planData = queryClient.getQueryData(QUERY_KEYS.plan(planId));
             return { planId, packId: planData?.pack_id };
         },
-        onSuccess: (_, variables) => {
+        onSuccess: (_, planId, context) => {
             toast.success("Plan deleted successfully");
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
-            if (variables.packId) {
-                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            if (context?.packId) {
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(context.packId) });
+                queryClient.invalidateQueries({ queryKey: QUERY_KEYS.pack(context.packId) });
             }
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not delete plan";
@@ -449,9 +456,10 @@ export function useAddPlanPrice() {
             return res.data;
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Price added successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not add price";
@@ -470,9 +478,10 @@ export function useUpdatePlanPrice() {
             return res.data;
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Plan price updated successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not update plan price";
@@ -488,9 +497,10 @@ export function useDeletePlanPrice() {
             await api.delete(`${API_URL}/plans/${planId}/prices/${priceId}`);
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Price deleted successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not delete price";
@@ -509,9 +519,10 @@ export function useAddCustomField() {
             return res.data;
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Custom field added successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not add custom field";
@@ -530,9 +541,10 @@ export function useUpdateCustomField() {
             return res.data;
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Custom field updated successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not update custom field";
@@ -549,9 +561,10 @@ export function useDeleteCustomField() {
             await api.delete(`${API_URL}/plans/${planId}/custom-fields/${fieldId}`);
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Custom field deleted successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not delete custom field";
@@ -569,9 +582,10 @@ export function useAddPlanFeature() {
             return res.data;
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Feature added successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not add feature";
@@ -589,9 +603,10 @@ export function useUpdatePlanFeature() {
             return res.data;
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Feature updated successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not update feature";
@@ -608,9 +623,10 @@ export function useDeletePlanFeature() {
             await api.delete(`${API_URL}/plans/${planId}/features/${featureId}`);
         },
         onSuccess: (_, { planId }) => {
-            toast.success("Feature deleted successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not delete feature";

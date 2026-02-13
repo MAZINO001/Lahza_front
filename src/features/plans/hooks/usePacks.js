@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000/api";
 
 export function usePacks({ activeOnly = false } = {}) {
     return useQuery({
-        queryKey: [QUERY_KEYS.packs, { activeOnly }],
+        queryKey: [...QUERY_KEYS.packs, { activeOnly }],
         queryFn: async () => {
             const endpoint = activeOnly ? "/packs/active" : "/packs";
             const res = await api.get(`${API_URL}${endpoint}`);
@@ -40,15 +40,12 @@ export function useCreatePack() {
             return res.data;
         },
         onMutate: async () => {
-            // Cancel any outgoing refetches
-            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.packs });
         },
         onSuccess: () => {
             toast.success("Pack created successfully");
-            // Invalidate to get fresh data from server
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.packs });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not create pack";
@@ -67,15 +64,13 @@ export function useUpdatePack() {
             return res.data;
         },
         onMutate: async () => {
-            // Cancel any outgoing refetches
-            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.packs });
         },
-        onSuccess: () => {
+        onSuccess: (_, { id }) => {
             toast.success("Pack updated");
-            // Invalidate to get fresh data from server
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
+            if (id) queryClient.invalidateQueries({ queryKey: QUERY_KEYS.pack(id) });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.packs });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not update pack";
@@ -92,15 +87,12 @@ export function useDeletePack() {
             await api.delete(`${API_URL}/packs/${id}`);
         },
         onMutate: async () => {
-            // Cancel any outgoing refetches
-            await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
+            await queryClient.cancelQueries({ queryKey: QUERY_KEYS.packs });
         },
         onSuccess: () => {
             toast.success("Pack deleted");
-            // Ensure data is fresh from server
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
-            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
+            queryClient.refetchQueries({ queryKey: QUERY_KEYS.packs });
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not delete pack";
