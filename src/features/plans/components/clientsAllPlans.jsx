@@ -17,7 +17,10 @@ import {
 } from "lucide-react";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useClientActiveSubscription } from "../hooks/useSubscriptions";
-import { useCancelSubscription, useRenewSubscription } from "../hooks/useSubscriptions";
+import {
+  useCancelSubscription,
+  useRenewSubscription,
+} from "../hooks/useSubscriptions";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { formatId } from "@/lib/utils/formatId";
@@ -27,9 +30,11 @@ import { cn } from "@/lib/utils";
 export default function ClientsAllPlans({ onViewChange }) {
   const { user, role } = useAuthContext();
   const queryClient = useQueryClient();
-  const { data: subscriptionData, isLoading, refetch } = useClientActiveSubscription(
-    user?.id,
-  );
+  const {
+    data: subscriptionData,
+    isLoading,
+    refetch,
+  } = useClientActiveSubscription(user?.id);
 
   console.log(subscriptionData);
 
@@ -48,7 +53,7 @@ export default function ClientsAllPlans({ onViewChange }) {
       // Refetch the subscription data to get updated status
       refetch();
     } catch (error) {
-      console.error('Cancel subscription failed:', error);
+      console.error("Cancel subscription failed:", error);
     }
   };
 
@@ -58,7 +63,7 @@ export default function ClientsAllPlans({ onViewChange }) {
       // Refetch the subscription data to get updated status
       refetch();
     } catch (error) {
-      console.error('Renew subscription failed:', error);
+      console.error("Renew subscription failed:", error);
     }
   };
 
@@ -91,7 +96,7 @@ export default function ClientsAllPlans({ onViewChange }) {
           "flex items-center gap-1 px-3 py-1 text-xs font-medium uppercase tracking-wide",
           status === "active" && "bg-green-50 text-green-800 border-green-200",
           status === "cancelled" &&
-          "bg-destructive/10 text-destructive border-destructive/30",
+            "bg-destructive/10 text-destructive border-destructive/30",
         )}
       >
         {icons[status]}
@@ -225,14 +230,14 @@ export default function ClientsAllPlans({ onViewChange }) {
           </div>
 
           {/* Plan Features */}
-          {subscription?.plan?.features_list &&
-            subscription.plan.features_list.length > 0 && (
+          {subscription?.plan?.features &&
+            subscription.plan.features.length > 0 && (
               <div className="space-y-3 pt-4 border-t">
                 <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
                   Plan Features
                 </h4>
                 <div className="space-y-2">
-                  {subscription.plan.features_list
+                  {subscription.plan.features
                     ?.filter((f) => f.name && f.name.trim() !== "")
                     .map((feature, index) => (
                       <div
@@ -252,7 +257,7 @@ export default function ClientsAllPlans({ onViewChange }) {
             )}
           {/* Action Buttons */}
           <div className="flex gap-2 pt-4 border-t">
-            {subscription?.status === 'active' && (
+            {subscription?.status === "active" && (
               <Button
                 variant="destructive"
                 size="sm"
@@ -262,11 +267,12 @@ export default function ClientsAllPlans({ onViewChange }) {
                 }}
                 disabled={cancelSubscription.isPending}
               >
-                {cancelSubscription.isPending ? 'Cancelling...' : 'Cancel'}
+                {cancelSubscription.isPending ? "Cancelling..." : "Cancel"}
               </Button>
             )}
-            
-            {(subscription?.status === 'cancelled' || subscription?.status === 'expired') && (
+
+            {(subscription?.status === "cancelled" ||
+              subscription?.status === "expired") && (
               <Button
                 variant="default"
                 size="sm"
@@ -276,7 +282,7 @@ export default function ClientsAllPlans({ onViewChange }) {
                 }}
                 disabled={renewSubscription.isPending}
               >
-                {renewSubscription.isPending ? 'Renewing...' : 'Renew'}
+                {renewSubscription.isPending ? "Renewing..." : "Renew"}
               </Button>
             )}
           </div>

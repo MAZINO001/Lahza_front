@@ -361,18 +361,19 @@ export default function Plan({ plan, interval = "monthly" }) {
         <Separator />
 
         <div className="space-y-1.5 min-h-[180px]">
-          {plan.features_list
+          {plan.features
             ?.filter((f) => f.name && f.name.trim() !== "")
             .map((feature, index) => (
               <div key={index}>{renderFeature(feature)}</div>
             ))}
 
-          {(!plan.features_list ||
-            plan.features_list.filter((f) => f.name && f.name.trim() !== "").length === 0) && (
-              <p className="text-sm text-muted-foreground italic py-2">
-                No specific features configured
-              </p>
-            )}
+          {(!plan.features ||
+            plan.features.filter((f) => f.name && f.name.trim() !== "")
+              .length === 0) && (
+            <p className="text-sm text-muted-foreground italic py-2">
+              No specific features configured
+            </p>
+          )}
         </div>
       </CardContent>
 

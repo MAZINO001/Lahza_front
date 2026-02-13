@@ -11,7 +11,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
-import CsvUploadModal from "@/components/common/CsvUploadModal";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { getOfferColumns } from "../columns/offerColumns";
 import { useOffers } from "../hooks/useOffersQuery";
@@ -72,11 +71,6 @@ export function OfferTable() {
         isLoading={isLoading}
         tableType="offers"
         role={role}
-      />
-      <CsvUploadModal
-        open={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadOffers`}
       />
     </div>
   );

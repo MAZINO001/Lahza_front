@@ -203,8 +203,9 @@ export function ClientTable() {
       <CSVUploadModal
         open={showUploadModal}
         onClose={() => setShowUploadModal(false)}
-        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadServices`}
+        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadClients`}
       />
+
     </div>
   );
 }

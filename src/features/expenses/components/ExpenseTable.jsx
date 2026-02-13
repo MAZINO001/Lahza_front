@@ -13,7 +13,6 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { getExpenseColumns } from "../columns/expenseColumns";
 import { DataTable } from "@/components/table/DataTable";
 import { Plus, Upload } from "lucide-react";
-import CsvUploadModal from "@/components/common/CsvUploadModal";
 import { useExpenses } from "../hooks/useExpenses/useExpensesData";
 
 export default function ExpenseTable() {
@@ -77,11 +76,6 @@ export default function ExpenseTable() {
         role={role}
       />
 
-      <CsvUploadModal
-        open={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadExpenses`}
-      />
     </div>
   );
 }

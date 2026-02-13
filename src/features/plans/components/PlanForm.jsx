@@ -19,11 +19,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Save } from "lucide-react";
 import { toast } from "sonner";
 
 import { usePacks } from "../hooks/usePacks";
-import { useCreatePlan, useUpdatePlan } from "../hooks/usePlans";
+import {
+  useCreatePlan,
+  useUpdatePlan,
+  useAddPlanPrice,
+  useUpdatePlanPrice,
+  useAddCustomField,
+  useUpdateCustomField,
+  useDeleteCustomField,
+  useAddPlanFeature,
+  useUpdatePlanFeature,
+  useDeletePlanFeature,
+} from "../hooks/usePlans";
 import SelectField from "@/components/Form/SelectField";
 import FormField from "@/components/Form/FormField";
 import TextareaField from "@/components/Form/TextareaField";
@@ -44,6 +55,14 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
 
   const createPlan = useCreatePlan();
   const updatePlan = useUpdatePlan();
+  const addPlanPrice = useAddPlanPrice();
+  const updatePlanPrice = useUpdatePlanPrice();
+  const addCustomField = useAddCustomField();
+  const updateCustomField = useUpdateCustomField();
+  const deleteCustomField = useDeleteCustomField();
+  const addPlanFeature = useAddPlanFeature();
+  const updatePlanFeature = useUpdatePlanFeature();
+  const deletePlanFeature = useDeletePlanFeature();
 
   const {
     control,
@@ -51,6 +70,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
     formState: { errors, isSubmitting },
     reset,
     watch,
+    setValue,
   } = useForm({
     defaultValues: {
       pack_id: packId || "",
@@ -59,7 +79,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       is_active: true,
       prices: [{ interval: "monthly", price: "", currency: "USD" }],
       custom_fields: [],
-      features_list: [{ name: "" }],
+      features: [],
     },
   });
 
@@ -77,8 +97,9 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "features_list",
+    name: "features",
   });
+
   useEffect(() => {
     if (plan) {
       reset({
@@ -91,12 +112,16 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
             ? plan.prices
             : [{ interval: "monthly", price: "", currency: "USD" }],
         custom_fields: plan.custom_fields || [],
-        features_list: plan.features_list || [],
+        features: plan.features?.map(feature => ({
+          id: feature.id,
+          name: feature.feature_name
+        })) || [],
       });
     }
   }, [plan, reset]);
 
   const onSubmit = (data) => {
+    // Validation
     if (!data.pack_id) {
       toast.error("Please select a pack");
       return;
@@ -110,24 +135,47 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       return;
     }
 
+    // Filter out empty features and map to strings (backend expects array of strings)
+    const validFeatures =
+      data.features
+        ?.filter((feature) => feature.name?.trim())
+        .map((feature) => feature.name) || [];
+
+    // Prepare payload - everything goes in one request
     const payload = {
-      ...data,
       pack_id: Number(data.pack_id),
+      name: data.name,
+      description: data.description || "",
+      is_active: data.is_active,
+      // Convert prices with proper formatting
       prices: data.prices.map((p) => ({
-        ...p,
+        interval: p.interval,
         price: Number(p.price),
+        currency: p.currency,
+        // Include price ID if it exists (for updates)
+        ...(p.id && { id: p.id }),
       })),
+      // Include custom fields
+      custom_fields: data.custom_fields.map((cf) => ({
+        key: cf.key,
+        label: cf.label,
+        type: cf.type,
+        default_value: cf.default_value,
+        required: cf.required,
+        // Include field ID if it exists (for updates)
+        ...(cf.id && { id: cf.id }),
+      })),
+      // Backend expects: features: ["feature 1", "feature 2", ...]
+      features: validFeatures,
     };
 
-    console.log(data);
-    console.log(payload);
-
     if (plan) {
+      // Update: single request with all data
       updatePlan.mutate(
         { id: plan.id, ...payload },
         {
           onSuccess: () => {
-            toast.success("Plan updated");
+            toast.success("Plan updated successfully");
             onSuccess?.();
           },
           onError: (err) => {
@@ -136,9 +184,10 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         },
       );
     } else {
+      // Create: single request with all data
       createPlan.mutate(payload, {
         onSuccess: () => {
-          toast.success("Plan created");
+          toast.success("Plan created successfully");
           onSuccess?.();
         },
         onError: (err) => {
@@ -147,6 +196,162 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       });
     }
   };
+
+  const handleSavePrices = () => {
+    const currentPrices = watch("prices");
+
+    // Validate prices
+    if (currentPrices.some((p) => !p.price || Number(p.price) <= 0)) {
+      toast.error("All prices must be positive numbers");
+      return;
+    }
+
+    if (!plan) {
+      toast.error("Plan must be created first");
+      return;
+    }
+
+    // Process each price
+    currentPrices.forEach((price) => {
+      const priceData = {
+        interval: price.interval,
+        price: Number(price.price),
+        currency: price.currency,
+      };
+
+      if (price.id) {
+        // Update existing price
+        updatePlanPrice.mutate(
+          { planId: plan.id, priceId: price.id, ...priceData },
+          {
+            onSuccess: () => toast.success("Price updated successfully"),
+            onError: (err) =>
+              toast.error(
+                err?.response?.data?.message || "Failed to update price",
+              ),
+          },
+        );
+      } else {
+        // Add new price
+        addPlanPrice.mutate(
+          { planId: plan.id, ...priceData },
+          {
+            onSuccess: () => toast.success("Price added successfully"),
+            onError: (err) =>
+              toast.error(
+                err?.response?.data?.message || "Failed to add price",
+              ),
+          },
+        );
+      }
+    });
+  };
+
+  const handleSaveCustomFields = () => {
+    const currentCustomFields = watch("custom_fields");
+
+    // Validate custom fields
+    if (
+      currentCustomFields.some((cf) => !cf.key?.trim() || !cf.label?.trim())
+    ) {
+      toast.error("All custom fields must have a key and label");
+      return;
+    }
+
+    if (!plan) {
+      toast.error("Plan must be created first");
+      return;
+    }
+
+    // Process each custom field
+    currentCustomFields.forEach((field) => {
+      const fieldData = {
+        key: field.key,
+        label: field.label,
+        type: field.type,
+        default_value: field.default_value,
+        required: field.required,
+      };
+
+      if (field.id) {
+        // Update existing field
+        updateCustomField.mutate(
+          { planId: plan.id, fieldId: field.id, ...fieldData },
+          {
+            onSuccess: () => toast.success("Custom field updated successfully"),
+            onError: (err) =>
+              toast.error(
+                err?.response?.data?.message || "Failed to update custom field",
+              ),
+          },
+        );
+      } else {
+        // Add new field
+        addCustomField.mutate(
+          { planId: plan.id, ...fieldData },
+          {
+            onSuccess: () => toast.success("Custom field added successfully"),
+            onError: (err) =>
+              toast.error(
+                err?.response?.data?.message || "Failed to add custom field",
+              ),
+          },
+        );
+      }
+    });
+  };
+
+  const handleSaveFeatures = () => {
+    const currentFeatures = watch("features");
+
+    // Filter out empty features and validate
+    const validFeatures =
+      currentFeatures?.filter((feature) => feature.name?.trim()) || [];
+
+    if (validFeatures.length === 0) {
+      toast.error("Please add at least one feature with content");
+      return;
+    }
+
+    if (!plan) {
+      toast.error("Plan must be created first");
+      return;
+    }
+
+    // Backend expects array of objects with feature_name field
+    const featuresPayload = validFeatures.map((feature) => ({
+      feature_name: feature.name,
+    }));
+
+    // Send all features in one request
+    addPlanFeature.mutate(
+      { planId: plan.id, features: featuresPayload },
+      {
+        onSuccess: () => toast.success("Features added successfully"),
+        onError: (err) =>
+          toast.error(err?.response?.data?.message || "Failed to add features"),
+      },
+    );
+  };
+
+
+  const handleDeleteFeature = (planId, featureId) => {
+    console.log(planId, featureId);
+    deletePlanFeature.mutate({ planId, featureId }, {
+      onSuccess: () => {
+        // Also update the local form state to remove the deleted feature
+        const currentFeatures = watch("features");
+        const updatedFeatures = currentFeatures.filter(f => f.id !== featureId);
+        setValue("features", updatedFeatures);
+      }
+    });
+  };
+
+  const handleDeleteCustomField = (planId, fieldId) => {
+    console.log(planId, fieldId);
+    deleteCustomField.mutate({ planId, fieldId });
+  };
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 min-h-screen">
@@ -217,22 +422,39 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium">Features</label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => append({ name: "" })}
-                  >
-                    <Plus className="h-4 w-4" />
-                    Add
-                  </Button>
+                  <div className="flex gap-2">
+                    {plan && (
+                      <Button
+                        type="button"
+                        variant="default"
+                        size="sm"
+                        onClick={handleSaveFeatures}
+                        disabled={
+                          addPlanFeature.isPending ||
+                          updatePlanFeature.isPending
+                        }
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Features
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => append({ name: "" })}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2 w-full">
                   {fields.length === 0 ? (
                     <div className="flex items-center gap-2 w-full">
                       <Controller
-                        name={`features_list.0.name`}
+                        name={`features.0.name`}
                         control={control}
                         render={({ field }) => (
                           <FormField
@@ -250,7 +472,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                         className="flex items-center gap-2 w-full"
                       >
                         <Controller
-                          name={`features_list.${index}.name`}
+                          name={`features.${index}.name`}
                           control={control}
                           render={({ field }) => (
                             <FormField
@@ -264,7 +486,16 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          onClick={() => remove(index)}
+                          onClick={() => {
+                            const currentFeatures = watch("features");
+                            const featureToDelete = currentFeatures[index];
+                            if (featureToDelete?.id) {
+                              handleDeleteFeature(plan.id, featureToDelete.id);
+                            } else {
+                              // If no ID, just remove from form
+                              remove(index);
+                            }
+                          }}
                           className="text-red-500 hover:text-red-700"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -285,18 +516,36 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
             <div>
               <CardTitle>Pricing Tiers</CardTitle>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                appendPrice({ interval: "monthly", price: "", currency: "USD" })
-              }
-              disabled={priceFields.length >= 3}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Pricing
-            </Button>
+            <div className="flex gap-2">
+              {plan && (
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  onClick={handleSavePrices}
+                  disabled={addPlanPrice.isPending || updatePlanPrice.isPending}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Prices
+                </Button>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  appendPrice({
+                    interval: "monthly",
+                    price: "",
+                    currency: "USD",
+                  })
+                }
+                disabled={priceFields.length >= 3}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Pricing
+              </Button>
+            </div>
           </div>
         </CardHeader>
 
@@ -394,23 +643,39 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
             <div>
               <CardTitle>Features & Limits</CardTitle>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                appendCustom({
-                  key: "",
-                  label: "",
-                  type: "text",
-                  default_value: "",
-                  required: false,
-                })
-              }
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Field
-            </Button>
+            <div className="flex gap-2">
+              {plan && (
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+                  onClick={handleSaveCustomFields}
+                  disabled={
+                    addCustomField.isPending || updateCustomField.isPending
+                  }
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Fields
+                </Button>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  appendCustom({
+                    key: "",
+                    label: "",
+                    type: "text",
+                    default_value: "",
+                    required: false,
+                  })
+                }
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Field
+              </Button>
+            </div>
           </div>
         </CardHeader>
 
@@ -434,7 +699,16 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                       size="icon"
                       className="text-destructive hover:bg-destructive/10"
                       disabled={customFields.length <= 1}
-                      onClick={() => removeCustom(index)}
+                      onClick={() => {
+                        const currentCustomFields = watch("custom_fields");
+                        const fieldToDelete = currentCustomFields[index];
+                        if (fieldToDelete?.id) {
+                          handleDeleteCustomField(plan.id, fieldToDelete.id);
+                        } else {
+                          // If no ID, just remove from form
+                          removeCustom(index);
+                        }
+                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

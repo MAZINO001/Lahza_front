@@ -139,7 +139,7 @@ export default function AllPlans({ packId, onViewChange }) {
 
     const categories = {};
     plans.forEach((plan) => {
-      plan.features_list?.forEach((feature) => {
+      plan.features?.forEach((feature) => {
         if (feature.name && feature.name.trim()) {
           if (!categories[feature.category]) {
             categories[feature.category] = [];
@@ -339,7 +339,7 @@ export default function AllPlans({ packId, onViewChange }) {
                         {feature.name}
                       </td>
                       {plans.map((plan) => {
-                        const planFeature = plan.features_list?.find(
+                        const planFeature = plan.features?.find(
                           (f) => f.name === feature.name,
                         );
                         const hasFeature = !!planFeature;
