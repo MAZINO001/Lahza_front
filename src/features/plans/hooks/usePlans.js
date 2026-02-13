@@ -1,4 +1,3 @@
-// // src/features/plans/hooks/usePlans.js
 // import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 // import api from "@/lib/utils/axios";
 // import { toast } from "sonner";
@@ -14,13 +13,13 @@
 //         queryFn: async () => {
 //             const params = packId ? { pack_id: packId } : {};
 //             const res = await api.get(`${API_URL}/plans`, { params });
-
 //             return res.data || [];
 //         },
-//         enabled: true, // Always enabled, works with or without packId
+//         enabled: true,
 //         staleTime: 4 * 60 * 1000,
 //     });
 // }
+
 
 // export function usePlan(planId) {
 //     return useQuery({
@@ -36,6 +35,7 @@
 //     });
 // }
 
+
 // export function useCreatePlan() {
 //     const queryClient = useQueryClient();
 
@@ -47,20 +47,14 @@
 //         onMutate: async () => {
 //             // Cancel any outgoing refetches
 //             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
-//             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
 //         },
 //         onSuccess: (responseData) => {
 //             toast.success("Plan created successfully");
 
-//             // Invalidate to get fresh data from server
+//             // Invalidate plans query
 //             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
 
-//             // Also invalidate packs to refresh plan counts
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
-
-//             // IMPORTANT: Invalidate plans for this specific pack
+//             // Invalidate plans for this specific pack if provided
 //             const packId = responseData?.plan?.pack_id;
 //             if (packId) {
 //                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(packId) });
@@ -74,60 +68,6 @@
 //     });
 // }
 
-// export function useDeletePlan() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: async (planId) => {
-//             await api.delete(`${API_URL}/plans/${planId}`);
-//             return planId;
-//         },
-//         onMutate: async (planId) => {
-//             // Cancel any outgoing refetches
-//             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
-//             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
-
-//             // Get the plan data to find its pack_id
-//             const planData = queryClient.getQueryData(QUERY_KEYS.plan(planId));
-//             return { planId, packId: planData?.pack_id };
-//         },
-//         onSuccess: (_, variables) => {
-//             toast.success("Plan deleted successfully");
-//             // Ensure data is fresh from server
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
-
-//             // IMPORTANT: Invalidate plans for the specific pack this plan belonged to
-//             if (variables.packId) {
-//                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
-//             }
-
-//             // Also invalidate subscriptions to get fresh data
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.subscriptions] });
-//         },
-//         onError: (error) => {
-//             const msg = error?.response?.data?.message || "Could not delete plan";
-//             toast.error(msg);
-//         },
-//     });
-// }
-
-// export function useAddCustomField() {
-//     const queryClient = useQueryClient();
-
-//     return useMutation({
-//         mutationFn: async ({ planId, ...fieldData }) => {
-//             const res = await api.post(`${API_URL}/plans/${planId}/custom-fields`, fieldData);
-//             return res.data;
-//         },
-//         onSuccess: (_, { planId }) => {
-//             queryClient.invalidateQueries({ queryKey: ["plan", planId] });
-//             queryClient.invalidateQueries({ queryKey: ["plans"] });
-//         },
-//     });
-// }
 
 // export function useUpdatePlan() {
 //     const queryClient = useQueryClient();
@@ -140,25 +80,21 @@
 //         onMutate: async ({ id, ...data }) => {
 //             // Cancel any outgoing refetches
 //             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
-//             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.packs] });
-
-//             return { packId: data.pack_id };
+//             return { packId: data.pack_id, planId: id };
 //         },
 //         onSuccess: (_, variables) => {
-//             toast.success("Plan updated");
-//             // Invalidate to get fresh data from server
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs] });
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: true }] });
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.packs, { activeOnly: false }] });
+//             toast.success("Plan updated successfully");
 
-//             // IMPORTANT: Invalidate plans for the specific pack this plan belongs to
+//             // Invalidate plans query
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+
+//             // Invalidate specific plan
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(variables.id) });
+
+//             // Invalidate plans for the specific pack if provided
 //             if (variables.packId) {
 //                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
 //             }
-
-//             // Also invalidate subscriptions to get fresh data
-//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.subscriptions] });
 //         },
 //         onError: (error) => {
 //             const msg = error?.response?.data?.message || "Could not update plan";
@@ -166,6 +102,63 @@
 //         },
 //     });
 // }
+
+
+// export function useDeletePlan() {
+//     const queryClient = useQueryClient();
+
+//     return useMutation({
+//         mutationFn: async (planId) => {
+//             await api.delete(`${API_URL}/plans/${planId}`);
+//             return planId;
+//         },
+//         onMutate: async (planId) => {
+//             // Cancel any outgoing refetches
+//             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
+
+//             // Get the plan data to find its pack_id
+//             const planData = queryClient.getQueryData(QUERY_KEYS.plan(planId));
+//             return { planId, packId: planData?.pack_id };
+//         },
+//         onSuccess: (_, variables) => {
+//             toast.success("Plan deleted successfully");
+
+//             // Invalidate plans query
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+
+//             // Invalidate plans for the specific pack if provided
+//             if (variables.packId) {
+//                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
+//             }
+//         },
+//         onError: (error) => {
+//             const msg = error?.response?.data?.message || "Could not delete plan";
+//             toast.error(msg);
+//         },
+//     });
+// }
+
+
+// export function useAddPlanPrice() {
+//     const queryClient = useQueryClient();
+
+//     return useMutation({
+//         mutationFn: async ({ planId, ...priceData }) => {
+//             const res = await api.post(`${API_URL}/plans/${planId}/prices`, priceData);
+//             return res.data;
+//         },
+//         onSuccess: (_, { planId }) => {
+//             toast.success("Price added successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+//         },
+//         onError: (error) => {
+//             const msg = error?.response?.data?.message || "Could not add price";
+//             toast.error(msg);
+//         },
+//     });
+// }
+
 
 // export function useUpdatePlanPrice() {
 //     const queryClient = useQueryClient();
@@ -176,9 +169,9 @@
 //             return res.data;
 //         },
 //         onSuccess: (_, { planId }) => {
-//             toast.success("Plan price updated");
-//             queryClient.invalidateQueries({ queryKey: ["plan", planId] });
-//             queryClient.invalidateQueries({ queryKey: ["plans"] });
+//             toast.success("Plan price updated successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
 //         },
 //         onError: (error) => {
 //             const msg = error?.response?.data?.message || "Could not update plan price";
@@ -186,6 +179,46 @@
 //         },
 //     });
 // }
+
+// export function useDeletePlanPrice() {
+//     const queryClient = useQueryClient();
+//     return useMutation({
+//         mutationFn: async ({ planId, priceId }) => {
+//             await api.delete(`${API_URL}/plans/${planId}/prices/${priceId}`);
+//         },
+//         onSuccess: (_, { planId }) => {
+//             toast.success("Price deleted successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+//         },
+//         onError: (error) => {
+//             const msg = error?.response?.data?.message || "Could not delete price";
+//             toast.error(msg);
+//         },
+//     });
+// }
+
+
+// export function useAddCustomField() {
+//     const queryClient = useQueryClient();
+
+//     return useMutation({
+//         mutationFn: async ({ planId, ...fieldData }) => {
+//             const res = await api.post(`${API_URL}/plans/${planId}/custom-fields`, fieldData);
+//             return res.data;
+//         },
+//         onSuccess: (_, { planId }) => {
+//             toast.success("Custom field added successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+//         },
+//         onError: (error) => {
+//             const msg = error?.response?.data?.message || "Could not add custom field";
+//             toast.error(msg);
+//         },
+//     });
+// }
+
 
 // export function useUpdateCustomField() {
 //     const queryClient = useQueryClient();
@@ -196,9 +229,9 @@
 //             return res.data;
 //         },
 //         onSuccess: (_, { planId }) => {
-//             toast.success("Custom field updated");
-//             queryClient.invalidateQueries({ queryKey: ["plan", planId] });
-//             queryClient.invalidateQueries({ queryKey: ["plans"] });
+//             toast.success("Custom field updated successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
 //         },
 //         onError: (error) => {
 //             const msg = error?.response?.data?.message || "Could not update custom field";
@@ -215,9 +248,9 @@
 //             await api.delete(`${API_URL}/plans/${planId}/custom-fields/${fieldId}`);
 //         },
 //         onSuccess: (_, { planId }) => {
-//             toast.success("Custom field deleted");
-//             queryClient.invalidateQueries({ queryKey: ["plan", planId] });
-//             queryClient.invalidateQueries({ queryKey: ["plans"] });
+//             toast.success("Custom field deleted successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
 //         },
 //         onError: (error) => {
 //             const msg = error?.response?.data?.message || "Could not delete custom field";
@@ -225,6 +258,66 @@
 //         },
 //     });
 // }
+
+// export function useAddPlanFeature() {
+//     const queryClient = useQueryClient();
+
+//     return useMutation({
+//         mutationFn: async ({ planId, ...featureData }) => {
+//             const res = await api.post(`${API_URL}/plans/${planId}/features`, featureData);
+//             return res.data;
+//         },
+//         onSuccess: (_, { planId }) => {
+//             toast.success("Feature added successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+//         },
+//         onError: (error) => {
+//             const msg = error?.response?.data?.message || "Could not add feature";
+//             toast.error(msg);
+//         },
+//     });
+// }
+
+// export function useUpdatePlanFeature() {
+//     const queryClient = useQueryClient();
+
+//     return useMutation({
+//         mutationFn: async ({ planId, featureId, ...featureData }) => {
+//             const res = await api.put(`${API_URL}/plans/${planId}/features/${featureId}`, featureData);
+//             return res.data;
+//         },
+//         onSuccess: (_, { planId }) => {
+//             toast.success("Feature updated successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+//         },
+//         onError: (error) => {
+//             const msg = error?.response?.data?.message || "Could not update feature";
+//             toast.error(msg);
+//         },
+//     });
+// }
+
+// export function useDeletePlanFeature() {
+//     const queryClient = useQueryClient();
+
+//     return useMutation({
+//         mutationFn: async ({ planId, featureId }) => {
+//             await api.delete(`${API_URL}/plans/${planId}/features/${featureId}`);
+//         },
+//         onSuccess: (_, { planId }) => {
+//             toast.success("Feature deleted successfully");
+//             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+//             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+//         },
+//         onError: (error) => {
+//             const msg = error?.response?.data?.message || "Could not delete feature";
+//             toast.error(msg);
+//         },
+//     });
+// }
+
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
@@ -255,11 +348,10 @@ export function usePlan(planId) {
         queryFn: async () => {
             if (!planId) return null;
             const res = await api.get(`${API_URL}/plans/${planId}`);
-            // Handle both single plan response and paginated response
             return res.data?.data || res.data?.plan || res.data || null;
         },
         enabled: !!planId,
-        staleTime: 3 * 60 * 1000,
+        staleTime: 0,
     });
 }
 
@@ -273,16 +365,11 @@ export function useCreatePlan() {
             return res.data;
         },
         onMutate: async () => {
-            // Cancel any outgoing refetches
             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
         },
         onSuccess: (responseData) => {
             toast.success("Plan created successfully");
-
-            // Invalidate plans query
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
-
-            // Invalidate plans for this specific pack if provided
             const packId = responseData?.plan?.pack_id;
             if (packId) {
                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(packId) });
@@ -306,20 +393,13 @@ export function useUpdatePlan() {
             return { ...res.data, pack_id: data.pack_id };
         },
         onMutate: async ({ id, ...data }) => {
-            // Cancel any outgoing refetches
             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
             return { packId: data.pack_id, planId: id };
         },
         onSuccess: (_, variables) => {
             toast.success("Plan updated successfully");
-
-            // Invalidate plans query
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
-
-            // Invalidate specific plan
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(variables.id) });
-
-            // Invalidate plans for the specific pack if provided
             if (variables.packId) {
                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
             }
@@ -341,20 +421,13 @@ export function useDeletePlan() {
             return planId;
         },
         onMutate: async (planId) => {
-            // Cancel any outgoing refetches
             await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.plans] });
-
-            // Get the plan data to find its pack_id
             const planData = queryClient.getQueryData(QUERY_KEYS.plan(planId));
             return { planId, packId: planData?.pack_id };
         },
         onSuccess: (_, variables) => {
             toast.success("Plan deleted successfully");
-
-            // Invalidate plans query
             queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
-
-            // Invalidate plans for the specific pack if provided
             if (variables.packId) {
                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(variables.packId) });
             }
@@ -403,6 +476,24 @@ export function useUpdatePlanPrice() {
         },
         onError: (error) => {
             const msg = error?.response?.data?.message || "Could not update plan price";
+            toast.error(msg);
+        },
+    });
+}
+
+export function useDeletePlanPrice() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ planId, priceId }) => {
+            await api.delete(`${API_URL}/plans/${planId}/prices/${priceId}`);
+        },
+        onSuccess: (_, { planId }) => {
+            toast.success("Price deleted successfully");
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
+            queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.plans] });
+        },
+        onError: (error) => {
+            const msg = error?.response?.data?.message || "Could not delete price";
             toast.error(msg);
         },
     });

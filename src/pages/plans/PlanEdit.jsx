@@ -23,28 +23,22 @@ export default function PlanEdit() {
   const plansIndex = pathSegments.indexOf("plans");
   const editIndex = pathSegments.indexOf("edit");
 
-  const packId = plansManagementIndex !== -1 && plansManagementIndex + 1 < pathSegments.length
-    ? pathSegments[plansManagementIndex + 1]
-    : null;
-
-  const planId = plansIndex !== -1 && plansIndex + 1 < pathSegments.length &&
-    pathSegments[plansIndex + 1] !== "edit"
-    ? pathSegments[plansIndex + 1]
-    : editIndex !== -1 && editIndex - 1 >= 0
-      ? pathSegments[editIndex - 1]
+  const packId =
+    plansManagementIndex !== -1 &&
+    plansManagementIndex + 1 < pathSegments.length
+      ? pathSegments[plansManagementIndex + 1]
       : null;
 
-  // Debug logging
-  console.log("PlanEdit - Current path:", location.pathname);
-  console.log("PlanEdit - Path segments:", pathSegments);
-  console.log("PlanEdit - Pack ID:", packId);
-  console.log("PlanEdit - Plan ID:", planId);
+  const planId =
+    plansIndex !== -1 &&
+    plansIndex + 1 < pathSegments.length &&
+    pathSegments[plansIndex + 1] !== "edit"
+      ? pathSegments[plansIndex + 1]
+      : editIndex !== -1 && editIndex - 1 >= 0
+        ? pathSegments[editIndex - 1]
+        : null;
 
   const { data: plan, isLoading, error } = usePlan(planId);
-
-  // Debug logging
-  console.log("PlanEdit - Raw plan data:", plan);
-  console.log("PlanEdit - Plan data structure:", JSON.stringify(plan, null, 2));
 
   const handleSuccess = () => {
     navigate(`/${role}/settings/plans_management/${packId}`);

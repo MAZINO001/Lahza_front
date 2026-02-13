@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,25 +19,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Trash2, Save } from "lucide-react";
+import { Plus, Trash2, Save, X } from "lucide-react";
 import { toast } from "sonner";
 
-import { usePacks } from "../hooks/usePacks";
+import { usePack, usePacks } from "../hooks/usePacks";
 import {
   useCreatePlan,
   useUpdatePlan,
   useAddPlanPrice,
   useUpdatePlanPrice,
+  useDeletePlanPrice,
   useAddCustomField,
   useUpdateCustomField,
   useDeleteCustomField,
   useAddPlanFeature,
   useUpdatePlanFeature,
   useDeletePlanFeature,
+  usePlans,
 } from "../hooks/usePlans";
+import { useQueryClient } from "@tanstack/react-query";
 import SelectField from "@/components/Form/SelectField";
 import FormField from "@/components/Form/FormField";
 import TextareaField from "@/components/Form/TextareaField";
+import { QUERY_KEYS } from "@/lib/queryKeys";
 
 function FormInput({ label, error, ...props }) {
   return (
@@ -50,20 +54,8 @@ function FormInput({ label, error, ...props }) {
 }
 
 export function PlanForm({ plan, onSuccess, onCancel, packId }) {
-  const { data: packsData } = usePacks();
-  const packs = packsData?.data || [];
-
-  const createPlan = useCreatePlan();
-  const updatePlan = useUpdatePlan();
-  const addPlanPrice = useAddPlanPrice();
-  const updatePlanPrice = useUpdatePlanPrice();
-  const addCustomField = useAddCustomField();
-  const updateCustomField = useUpdateCustomField();
-  const deleteCustomField = useDeleteCustomField();
-  const addPlanFeature = useAddPlanFeature();
-  const updatePlanFeature = useUpdatePlanFeature();
-  const deletePlanFeature = useDeletePlanFeature();
-
+  const { data: packsData } = usePack(packId);
+  const queryClient = useQueryClient();
   const {
     control,
     handleSubmit,
@@ -100,25 +92,97 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
     name: "features",
   });
 
+  const allFeaturesData = React.useMemo(() => {
+    if (!packsData?.plans) return [];
+
+    const seen = new Map(); // key by feature_name to avoid duplicates
+    packsData.plans.forEach((plan) => {
+      plan.features?.forEach((feature) => {
+        if (feature?.feature_name && !seen.has(feature.feature_name)) {
+          seen.set(feature.feature_name, feature);
+        }
+      });
+    });
+
+    return Array.from(seen.values());
+  }, [packsData]);
+
+  // When creating a new plan, pre-fill features with all existing features once
+  const initializedCreateFeaturesRef = useRef(false);
+
+  useEffect(() => {
+    // Only run for create mode (no existing plan)
+    if (plan || initializedCreateFeaturesRef.current) return;
+    if (!allFeaturesData.length) return;
+
+    const currentValues = watch();
+
+    reset({
+      ...currentValues,
+      features: allFeaturesData.map((feature) => ({
+        // We only care about the name when creating; backend will create new IDs
+        name: feature.feature_name,
+      })),
+    });
+
+    initializedCreateFeaturesRef.current = true;
+  }, [plan, allFeaturesData, reset, watch]);
+
+  const [refreshKey, setRefreshKey] = React.useState(0);
+
+  React.useEffect(() => {
+    if (plan) {
+      setRefreshKey((prev) => prev + 1);
+    }
+  }, [plan]);
+
+  React.useEffect(() => {
+    return () => {
+      if (plan) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(plan.id) });
+      }
+    };
+  }, [plan, queryClient]);
+
+  const createPlan = useCreatePlan();
+  const updatePlan = useUpdatePlan();
+  const addPlanPrice = useAddPlanPrice();
+  const updatePlanPrice = useUpdatePlanPrice();
+  const deletePlanPrice = useDeletePlanPrice();
+  const addCustomField = useAddCustomField();
+  const updateCustomField = useUpdateCustomField();
+  const deleteCustomField = useDeleteCustomField();
+  const addPlanFeature = useAddPlanFeature();
+  const updatePlanFeature = useUpdatePlanFeature();
+  const deletePlanFeature = useDeletePlanFeature();
+
   useEffect(() => {
     if (plan) {
-      reset({
-        pack_id: String(plan.pack_id || ""),
-        name: plan.name || "",
-        description: plan.description || "",
-        is_active: plan.is_active !== false,
-        prices:
-          plan.prices?.length > 0
-            ? plan.prices
-            : [{ interval: "monthly", price: "", currency: "USD" }],
-        custom_fields: plan.custom_fields || [],
-        features: plan.features?.map(feature => ({
-          id: feature.id,
-          name: feature.feature_name
-        })) || [],
-      });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(plan.id) });
+      queryClient
+        .refetchQueries({ queryKey: QUERY_KEYS.plan(plan.id) })
+        .then(() => {
+          const freshData = queryClient.getQueryData(QUERY_KEYS.plan(plan.id));
+          reset({
+            pack_id: freshData?.pack_id || plan.pack_id,
+            name: freshData?.name || plan.name || "",
+            description: freshData?.description || plan.description || "",
+            is_active:
+              freshData?.is_active !== false ? true : plan.is_active !== false,
+            prices:
+              freshData?.prices?.length > 0 || plan.prices?.length > 0
+                ? freshData?.prices || plan.prices
+                : [{ interval: "monthly", price: "", currency: "USD" }],
+            custom_fields: freshData?.custom_fields || plan.custom_fields || [],
+            features:
+              (freshData?.features || plan.features)?.map((feature) => ({
+                id: feature.id,
+                name: feature.feature_name,
+              })) || [],
+          });
+        });
     }
-  }, [plan, reset]);
+  }, [plan, reset, queryClient]);
 
   const onSubmit = (data) => {
     // Validation
@@ -141,32 +205,12 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         ?.filter((feature) => feature.name?.trim())
         .map((feature) => feature.name) || [];
 
-    // Prepare payload - everything goes in one request
+    // Prepare payload - only basic plan fields for update
     const payload = {
       pack_id: Number(data.pack_id),
       name: data.name,
       description: data.description || "",
       is_active: data.is_active,
-      // Convert prices with proper formatting
-      prices: data.prices.map((p) => ({
-        interval: p.interval,
-        price: Number(p.price),
-        currency: p.currency,
-        // Include price ID if it exists (for updates)
-        ...(p.id && { id: p.id }),
-      })),
-      // Include custom fields
-      custom_fields: data.custom_fields.map((cf) => ({
-        key: cf.key,
-        label: cf.label,
-        type: cf.type,
-        default_value: cf.default_value,
-        required: cf.required,
-        // Include field ID if it exists (for updates)
-        ...(cf.id && { id: cf.id }),
-      })),
-      // Backend expects: features: ["feature 1", "feature 2", ...]
-      features: validFeatures,
     };
 
     if (plan) {
@@ -236,7 +280,14 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         addPlanPrice.mutate(
           { planId: plan.id, ...priceData },
           {
-            onSuccess: () => toast.success("Price added successfully"),
+            onSuccess: () => {
+              toast.success("Price added successfully");
+              // Invalidate plan query to refresh parent data
+              queryClient.invalidateQueries({ queryKey: ["plans"] });
+              queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
+              // Force refetch of plans by pack
+              queryClient.refetchQueries({ queryKey: ["plans", "pack"] });
+            },
             onError: (err) =>
               toast.error(
                 err?.response?.data?.message || "Failed to add price",
@@ -290,7 +341,14 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         addCustomField.mutate(
           { planId: plan.id, ...fieldData },
           {
-            onSuccess: () => toast.success("Custom field added successfully"),
+            onSuccess: () => {
+              toast.success("Custom field added successfully");
+              // Invalidate plan query to refresh parent data
+              queryClient.invalidateQueries({ queryKey: ["plans"] });
+              queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
+              // Force refetch of plans by pack
+              queryClient.refetchQueries({ queryKey: ["plans", "pack"] });
+            },
             onError: (err) =>
               toast.error(
                 err?.response?.data?.message || "Failed to add custom field",
@@ -318,43 +376,122 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
       return;
     }
 
-    // Backend expects array of objects with feature_name field
-    const featuresPayload = validFeatures.map((feature) => ({
-      feature_name: feature.name,
-    }));
-
-    // Send all features in one request
-    addPlanFeature.mutate(
-      { planId: plan.id, features: featuresPayload },
-      {
-        onSuccess: () => toast.success("Features added successfully"),
-        onError: (err) =>
-          toast.error(err?.response?.data?.message || "Failed to add features"),
-      },
+    // Feature IDs that belong to this plan (from initial load). Others are from "Available Features" and must be added, not updated.
+    const thisPlanFeatureIds = new Set(
+      (plan.features || []).map((f) => f.id).filter(Boolean),
     );
-  };
 
+    // Process each feature individually
+    validFeatures.forEach((feature) => {
+      const featureData = {
+        feature_name: feature.name,
+      };
 
-  const handleDeleteFeature = (planId, featureId) => {
-    console.log(planId, featureId);
-    deletePlanFeature.mutate({ planId, featureId }, {
-      onSuccess: () => {
-        // Also update the local form state to remove the deleted feature
-        const currentFeatures = watch("features");
-        const updatedFeatures = currentFeatures.filter(f => f.id !== featureId);
-        setValue("features", updatedFeatures);
+      const isExistingOnThisPlan = feature.id && thisPlanFeatureIds.has(feature.id);
+
+      if (isExistingOnThisPlan) {
+        // Update existing feature that belongs to this plan
+        updatePlanFeature.mutate(
+          { planId: plan.id, featureId: feature.id, ...featureData },
+          {
+            onSuccess: () => toast.success("Feature updated successfully"),
+            onError: (err) =>
+              toast.error(
+                err?.response?.data?.message || "Failed to update feature",
+              ),
+          },
+        );
+      } else {
+        // Add: no id, or id from another plan (selected from Available Features)
+        addPlanFeature.mutate(
+          { planId: plan.id, features: [featureData] },
+          {
+            onSuccess: (response) => {
+              toast.success("Feature added successfully");
+              const currentFeatures = watch("features");
+              const newFeature = response.data?.[0];
+              if (newFeature) {
+                const updatedFeatures = currentFeatures.map((f) =>
+                  f.name === feature.name && !thisPlanFeatureIds.has(f?.id)
+                    ? { id: newFeature.id, name: newFeature.feature_name ?? f.name }
+                    : f,
+                );
+                setValue("features", updatedFeatures);
+              }
+            },
+            onError: (err) =>
+              toast.error(
+                err?.response?.data?.message || "Failed to add feature",
+              ),
+          },
+        );
       }
     });
   };
 
-  const handleDeleteCustomField = (planId, fieldId) => {
-    console.log(planId, fieldId);
-    deleteCustomField.mutate({ planId, fieldId });
+  const handleDeleteFeature = (planId, featureId) => {
+    console.log(planId, featureId);
+    deletePlanFeature.mutate(
+      { planId, featureId },
+      {
+        onSuccess: () => {
+          // Also update the local form state to remove the deleted feature
+          const currentFeatures = watch("features");
+          const updatedFeatures = currentFeatures.filter(
+            (f) => f.id !== featureId,
+          );
+          setValue("features", updatedFeatures);
+          // Invalidate plan query to refresh parent data
+          queryClient.invalidateQueries({ queryKey: ["plans"] });
+          queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
+        },
+      },
+    );
   };
 
+  const handleDeleteCustomField = (planId, fieldId) => {
+    console.log(planId, fieldId);
+    deleteCustomField.mutate(
+      { planId, fieldId },
+      {
+        onSuccess: () => {
+          toast.success("Custom field deleted successfully");
+          // Also update the local form state to remove the deleted field
+          const currentFields = watch("custom_fields");
+          const updatedFields = currentFields.filter((f) => f.id !== fieldId);
+          setValue("custom_fields", updatedFields);
+          // Invalidate plan query to refresh parent data
+          queryClient.invalidateQueries({ queryKey: ["plans"] });
+          queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
+        },
+      },
+    );
+  };
+
+  const handleDeletePrice = (planId, priceId) => {
+    console.log(planId, priceId);
+    deletePlanPrice.mutate(
+      { planId, priceId },
+      {
+        onSuccess: () => {
+          // Also update the local form state to remove the deleted price
+          const currentPrices = watch("prices");
+          const updatedPrices = currentPrices.filter((p) => p.id !== priceId);
+          setValue("prices", updatedPrices);
+          // Invalidate plan query to refresh parent data
+          queryClient.invalidateQueries({ queryKey: ["plans"] });
+          queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
+        },
+      },
+    );
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 min-h-screen">
+    <form
+      key={refreshKey}
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 min-h-screen"
+    >
       <Card>
         <CardHeader>
           <CardTitle>{plan ? "Edit Plan" : "Create Plan"}</CardTitle>
@@ -450,6 +587,63 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                   </div>
                 </div>
 
+                {/* Available features from all plans */}
+                {plan && (
+                  <div className="bg-background p-4 space-y-2 border rounded-lg">
+                    <p className="text-xs font-semibold text-muted-foreground">
+                      Available Features
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {allFeaturesData
+                        .filter((f) => f.plan_id !== plan.id)
+                        .map((feature) => {
+                          const currentFeatures = watch("features") || [];
+                          const isSelected = currentFeatures.some(
+                            (f) => f.name === feature.feature_name,
+                          );
+
+                          return (
+                            <button
+                              key={feature.id}
+                              type="button"
+                              onClick={() => {
+                                const latestFeatures = watch("features") || [];
+                                if (isSelected) {
+                                  // Remove from current features without using delete button
+                                  const updated = latestFeatures.filter(
+                                    (f) => f.name !== feature.feature_name,
+                                  );
+                                  setValue("features", updated);
+                                } else {
+                                  // Append if not already present
+                                  append({
+                                    id: feature.id,
+                                    name: feature.feature_name,
+                                  });
+                                }
+                              }}
+                              className={`flex items-center gap-1 rounded px-2 py-1 text-xs border ${
+                                isSelected
+                                  ? "bg-primary text-primary-foreground border-primary"
+                                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                              }`}
+                            >
+                              {isSelected ? (
+                                <>
+                                  <span>{feature.feature_name}</span>
+                                  <X className="h-3 w-3" />
+                                </>
+                              ) : (
+                                <>+ {feature.feature_name}</>
+                              )}
+                            </button>
+                          );
+                        })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Current features */}
                 <div className="space-y-2 w-full">
                   {fields.length === 0 ? (
                     <div className="flex items-center gap-2 w-full">
@@ -492,7 +686,6 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                             if (featureToDelete?.id) {
                               handleDeleteFeature(plan.id, featureToDelete.id);
                             } else {
-                              // If no ID, just remove from form
                               remove(index);
                             }
                           }}
@@ -620,7 +813,16 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                   variant="ghost"
                   size="icon"
                   className="text-destructive"
-                  onClick={() => removePrice(index)}
+                  onClick={() => {
+                    const currentPrices = watch("prices");
+                    const priceToDelete = currentPrices[index];
+                    if (priceToDelete?.id) {
+                      handleDeletePrice(plan.id, priceToDelete.id);
+                    } else {
+                      // If no ID, just remove from form
+                      removePrice(index);
+                    }
+                  }}
                   disabled={priceFields.length <= 1}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -641,7 +843,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Features & Limits</CardTitle>
+              <CardTitle>Custom Fields</CardTitle>
             </div>
             <div className="flex gap-2">
               {plan && (

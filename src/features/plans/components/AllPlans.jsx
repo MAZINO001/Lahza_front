@@ -51,8 +51,6 @@ export default function AllPlans({ packId, onViewChange }) {
   };
 
   const handleFormSubmit = async (formData) => {
-    console.log("Form data received:", formData);
-
     if (!selectedPlan || !selectedPrice || !packId) {
       toast.error("Missing required information");
       return;
@@ -65,8 +63,6 @@ export default function AllPlans({ packId, onViewChange }) {
       status: "active",
       custom_field_values: formData.custom_field_values,
     };
-
-    console.log("Sending subscription data:", subscriptionData);
 
     setLoadingPlanId(selectedPlan.id);
 
@@ -140,12 +136,14 @@ export default function AllPlans({ packId, onViewChange }) {
     const categories = {};
     plans.forEach((plan) => {
       plan.features?.forEach((feature) => {
-        if (feature.name && feature.name.trim()) {
+        if (feature.feature_name && feature.feature_name.trim()) {
           if (!categories[feature.category]) {
             categories[feature.category] = [];
           }
           if (
-            !categories[feature.category].find((f) => f.name === feature.name)
+            !categories[feature.category].find(
+              (f) => f.feature_name === feature.feature_name,
+            )
           ) {
             categories[feature.category].push(feature);
           }
@@ -158,7 +156,7 @@ export default function AllPlans({ packId, onViewChange }) {
 
   if (plansLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex min-h-[60vh] items-center justify-center px-4">
         <div className="text-center space-y-3">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
           <p className="text-sm text-muted-foreground">Loading plans...</p>
@@ -169,11 +167,11 @@ export default function AllPlans({ packId, onViewChange }) {
 
   if (plans.length === 0) {
     return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-4 text-center">
-        <div className="rounded-full bg-muted/60 p-6">
+      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-4 sm:px-6 text-center">
+        <div className="rounded-full bg-muted/60 p-6 shrink-0">
           <X className="h-12 w-12 text-muted-foreground" />
         </div>
-        <div className="space-y-3 max-w-md">
+        <div className="space-y-3 max-w-md w-full min-w-0">
           <h2 className="text-2xl font-semibold tracking-tight">
             No plans available
           </h2>
@@ -187,21 +185,26 @@ export default function AllPlans({ packId, onViewChange }) {
   }
 
   return (
-    <div className="space-y-6 p-6 min-h-screen">
+    <div className="space-y-6 p-4 sm:p-6 min-h-screen w-full min-w-0">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight wrap-break-word">
             Choose Your Plan
           </h1>
+          <p className="text-muted-foreground text-sm">
+            Browse our available plans and choose the one that best suits your
+            needs
+          </p>
         </div>
 
         {role === "client" && onViewChange && (
           <Button
             variant="outline"
             onClick={() => onViewChange("clientSubscriptions")}
+            className="w-full sm:w-auto shrink-0"
           >
-            <Users className="mr-2 h-4 w-4" />
+            <Users className="mr-2 h-4 w-4 shrink-0" />
             My Subscriptions
           </Button>
         )}
@@ -209,15 +212,15 @@ export default function AllPlans({ packId, onViewChange }) {
 
       {/* Billing Toggle */}
       {availableIntervals.length > 1 && (
-        <div className="flex justify-center mb-8">
-          <div className="inline-flex rounded-lg border border-border bg-muted/40 p-1 gap-1">
+        <div className="flex justify-center mb-6 sm:mb-8">
+          <div className="inline-flex flex-wrap justify-center rounded-lg border border-border bg-muted/40 p-1 gap-1 max-w-full">
             {availableIntervals.map((int) => (
               <Button
                 key={int}
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "rounded-md px-4 py-2 text-sm font-medium transition-all",
+                  "rounded-md px-3 sm:px-4 py-2 text-sm font-medium transition-all shrink-0",
                   interval === int && "bg-foreground text-background shadow-sm",
                 )}
                 onClick={() => setInterval(int)}
@@ -230,7 +233,7 @@ export default function AllPlans({ packId, onViewChange }) {
       )}
 
       {/* Plans Header Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4 w-full min-w-0">
         {plans.map((plan) => {
           const currentPrice = getPriceForInterval(plan, interval);
           const savings = calculateSavings(plan.prices, interval);
@@ -238,24 +241,28 @@ export default function AllPlans({ packId, onViewChange }) {
           const isLoading = loadingPlanId === plan.id;
 
           return (
-            <div key={plan.id} className="flex flex-col">
-              <div className="bg-card border border-border rounded-lg p-6 pb-32 relative">
+            <div key={plan.id} className="flex flex-col min-w-0">
+              <div className="bg-card border border-border rounded-lg p-4 sm:p-6 pb-28 sm:pb-32 relative min-h-[200px]">
                 {/* Plan Header */}
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    {plan.icon && <span className="text-lg">{plan.icon}</span>}
-                    <h3 className="text-lg font-semibold">{plan.name}</h3>
+                <div className="mb-4 sm:mb-6">
+                  <div className="flex items-center gap-2 mb-3 min-w-0">
+                    {plan.icon && (
+                      <span className="text-lg shrink-0">{plan.icon}</span>
+                    )}
+                    <h3 className="text-base sm:text-lg font-semibold truncate">
+                      {plan.name}
+                    </h3>
                   </div>
                 </div>
 
                 {/* Price */}
                 {hasCurrentInterval ? (
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold">
+                  <div className="mb-4 sm:mb-6 min-w-0">
+                    <div className="flex items-baseline gap-1 flex-wrap">
+                      <span className="text-3xl sm:text-4xl font-bold break-all">
                         {formatPrice(currentPrice.price, currentPrice.currency)}
                       </span>
-                      <span className="text-muted-foreground">
+                      <span className="text-muted-foreground shrink-0">
                         /{interval === "yearly" ? "yr" : "mo"}
                       </span>
                     </div>
@@ -267,19 +274,21 @@ export default function AllPlans({ packId, onViewChange }) {
                     )}
                     {savings > 0 && (
                       <p className="text-sm text-primary font-medium mt-2">
-                        Save {savings}% yearly
+                        {interval === "yearly"
+                          ? `Save ${savings}% yearly`
+                          : `Save ${savings}% vs monthly`}
                       </p>
                     )}
                   </div>
                 ) : (
-                  <div className="mb-6 p-3 bg-muted/50 rounded-md border border-border text-sm text-muted-foreground">
+                  <div className="mb-4 sm:mb-6 p-3 bg-muted/50 rounded-md border border-border text-sm text-muted-foreground">
                     Not available for {interval} billing
                   </div>
                 )}
 
                 {/* CTA Button */}
                 {role === "client" && (
-                  <div className="absolute bottom-0 left-0 right-0 border-t border-border bg-card/95 backdrop-blur-sm p-6 rounded-b-lg">
+                  <div className="absolute bottom-0 left-0 right-0 border-t border-border bg-card/95 backdrop-blur-sm p-4 sm:p-6 rounded-b-lg">
                     <Button
                       size="lg"
                       className="w-full"
@@ -298,65 +307,56 @@ export default function AllPlans({ packId, onViewChange }) {
       </div>
 
       {/* Features Comparison Table */}
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="bg-card border border-border rounded-lg overflow-hidden w-full min-w-0">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[500px] sm:min-w-0">
             <thead>
               <tr className="border-b border-border">
-                <th className="px-6 py-4 text-left text-sm font-semibold text-foreground bg-muted/30 w-1/3">
+                <th className="px-3 py-3 sm:px-6 sm:py-4 text-left text-sm font-semibold text-foreground bg-muted/30 w-1/3 min-w-[120px]">
                   Features
                 </th>
                 {plans.map((plan) => (
                   <th
                     key={plan.id}
-                    className="px-6 py-4 text-center text-sm font-semibold text-foreground bg-muted/30"
+                    className="px-3 py-3 sm:px-6 sm:py-4 text-center text-sm font-semibold text-foreground bg-muted/30 min-w-[100px]"
                   >
-                    {plan.name}
+                    <span className="line-clamp-2">{plan.name}</span>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {Object.entries(groupedFeatures).map(([category, features]) => (
-                <tbody key={category}>
-                  {/* Category Header */}
-                  <tr className="border-b border-border">
-                    <td
-                      colSpan={plans.length + 1}
-                      className="px-6 py-4 bg-muted/20 font-semibold text-sm"
-                    >
-                      {category}
-                    </td>
-                  </tr>
-
-                  {/* Features */}
+                <>
                   {features.map((feature, idx) => (
                     <tr
-                      key={idx}
-                      className="border-b border-border hover:bg-muted/30 transition-colors"
+                      key={`${category}-${idx}`}
+                      className=" border-b border-border  transition-colors"
                     >
-                      <td className="px-6 py-4 text-sm text-muted-foreground">
-                        {feature.name}
+                      <td className="px-3 py-3 sm:px-6 sm:py-4 text-sm text-muted-foreground min-w-[120px]">
+                        <span className="line-clamp-2">
+                          {feature.feature_name}
+                        </span>
                       </td>
                       {plans.map((plan) => {
                         const planFeature = plan.features?.find(
-                          (f) => f.name === feature.name,
+                          (f) => f.feature_name === feature.feature_name,
                         );
                         const hasFeature = !!planFeature;
 
                         return (
                           <td
                             key={plan.id}
-                            className="px-6 py-4 text-center text-sm"
+                            className="px-3 py-3 sm:px-6 sm:py-4 text-center text-sm min-w-20"
                           >
                             {hasFeature ? (
                               <div className="flex items-center justify-center">
                                 {planFeature.value ? (
-                                  <span className="font-medium text-foreground">
+                                  <span className="font-medium text-foreground line-clamp-2">
                                     {planFeature.value}
                                   </span>
                                 ) : (
-                                  <Check className="h-5 w-5 text-primary" />
+                                  <Check className="h-5 w-5 text-primary shrink-0" />
                                 )}
                               </div>
                             ) : (
@@ -367,7 +367,7 @@ export default function AllPlans({ packId, onViewChange }) {
                       })}
                     </tr>
                   ))}
-                </tbody>
+                </>
               ))}
             </tbody>
           </table>
