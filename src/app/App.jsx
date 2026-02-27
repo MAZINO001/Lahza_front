@@ -16,6 +16,7 @@ export default function App() {
   return (
     <div>
       <Toaster position="bottom-right" richColors closeButton />
+          
       <AppRoutes />
     </div>
   );

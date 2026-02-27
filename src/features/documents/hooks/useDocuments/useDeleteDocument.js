@@ -2,11 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiDocuments } from '@/lib/api/documents';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useDeleteDocument(type) {
     const queryClient = useQueryClient();
-
-    // Use type-specific query key to prevent cache contamination
+    const cacheInvalidator = createCacheInvalidator(queryClient);
+    const entityName = type === "invoices" ? "invoices" : "quotes";
     const queryKey = type === "invoices" ? QUERY_KEYS.invoices : QUERY_KEYS.quotes;
 
     return useMutation({
@@ -23,8 +24,9 @@ export function useDeleteDocument(type) {
             return { previousDocuments };
         },
 
-        onSuccess: (_, id) => {
+        onSuccess: async (_, id) => {
             queryClient.removeQueries({ queryKey: QUERY_KEYS.document(id) });
+            await cacheInvalidator.invalidateDependentsOnly(entityName, { parallel: false });
             toast.success("Document deleted");
         },
 

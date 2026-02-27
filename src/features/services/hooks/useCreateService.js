@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiService } from '@/lib/api/services';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useCreateService() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: (data) => apiService.create(data),
@@ -28,12 +30,14 @@ export function useCreateService() {
         },
 
         // Update with server response (replace temp ID with real ID)
-        onSuccess: (response) => {
+        onSuccess: async (response, variables, context) => {
+            const tempId = context?.tempId;
             queryClient.setQueryData(QUERY_KEYS.services, (old) =>
                 old?.map(service =>
-                    service.id.toString().startsWith('temp-') ? response : service
+                    service.id === tempId ? response : service
                 ) || []
             );
+            await cacheInvalidator.invalidateDependentsOnly('services', { parallel: false });
             toast.success("Service created!");
         },
 

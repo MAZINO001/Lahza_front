@@ -32,9 +32,10 @@ export function useCancelPayment() {
             return { previousPayments, previousPayment };
         },
 
-        onSuccess: async (response, id) => {
+        onSuccess: async (response) => {
             toast.success(response.message || "Payment cancelled");
-            await cacheInvalidator.invalidateByEntity('payments', {
+            // Invalidate only dependents; payments list already updated optimistically
+            await cacheInvalidator.invalidateDependentsOnly('payments', {
                 parallel: false
             });
         },

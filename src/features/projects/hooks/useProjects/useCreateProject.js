@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiProjects } from '@/lib/api/projects';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useCreateProject() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: apiProjects.create,
@@ -28,13 +30,13 @@ export function useCreateProject() {
         },
 
         // Update with server response (replace temp ID with real ID)
-        onSuccess: (response, variables, context) => {
+        onSuccess: async (response, variables, context) => {
             queryClient.setQueryData(QUERY_KEYS.projects, (old) =>
                 old?.map(project =>
                     project.id === context?.tempId ? response : project
                 ) || []
             );
-            
+            await cacheInvalidator.invalidateDependentsOnly('projects', { parallel: false });
             toast.success("Project created!");
         },
 

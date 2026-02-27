@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Edit, Trash2 } from "lucide-react";
@@ -57,10 +56,7 @@ export default function PacksList() {
   const [editingPack, setEditingPack] = useState(null);
 
   const handleDelete = (id, name) => {
-    deletePack.mutate(id, {
-      onSuccess: () => toast.success("Pack deleted"),
-      onError: () => toast.error("Could not delete pack"),
-    });
+    deletePack.mutate(id);
   };
 
   const handleEdit = (pack) => {
@@ -69,15 +65,7 @@ export default function PacksList() {
   };
 
   const toggleActive = (id, current) => {
-    updatePack.mutate(
-      { id, is_active: !current },
-      {
-        onSuccess: () => {
-          toast.success(`Pack ${current ? "deactivated" : "activated"}`);
-        },
-        onError: () => toast.error("Failed to update status"),
-      },
-    );
+    updatePack.mutate({ id, is_active: !current });
   };
 
   const createModal = (

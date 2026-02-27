@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiClient } from '@/lib/api/clients';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useDeleteClient() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: (id) => apiClient.delete(id),
@@ -31,8 +33,8 @@ export function useDeleteClient() {
             console.error(error);
         },
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.clients });
+        onSuccess: async () => {
+            await cacheInvalidator.invalidateDependentsOnly('clients', { parallel: false });
             toast.success("Client deleted");
         },
     });

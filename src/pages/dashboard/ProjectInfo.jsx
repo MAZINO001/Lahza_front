@@ -55,7 +55,7 @@ export default function ProjectInfo() {
         <CardContent className="flex flex-col lg:flex-row gap-4">
           <div className="w-full lg:w-2/5 rounded-xl overflow-hidden">
             <img
-              src="https://picsum.photos/500/500"
+              src=""
               alt="Project Preview"
               className="w-full h-60 lg:h-[90%] object-cover rounded-xl"
             />

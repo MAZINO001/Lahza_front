@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiProjects } from '@/lib/api/projects';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useMarkAsComplete() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: (id) => apiProjects.postProjectDone(id),
@@ -30,14 +32,12 @@ export function useMarkAsComplete() {
             return { previousProjects, previousProject };
         },
 
-        onSuccess: (response, id) => {
-            // Invalidate queries to refetch fresh data instead of setting with response
+        onSuccess: async (response, id) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.project(id) });
-            // Also invalidate task queries to refresh Gantt data
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
             queryClient.invalidateQueries({ queryKey: ["tasks", id] });
-
+            await cacheInvalidator.invalidateDependentsOnly('projects', { parallel: false });
             toast.success("Project marked as complete!");
         },
 

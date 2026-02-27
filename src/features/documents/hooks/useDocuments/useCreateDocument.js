@@ -44,8 +44,8 @@ export function useCreateDocument(type) {
                 ) || []
             );
 
-            // Invalidate related caches based on entity type
-            await cacheInvalidator.invalidateByEntity(entityName, {
+            // Invalidate only dependents (invoices, projects, payments, etc.) to avoid refetching the list we just updated
+            await cacheInvalidator.invalidateDependentsOnly(entityName, {
                 parallel: false
             });
 

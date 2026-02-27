@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiPayments } from '@/lib/api/payments';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useDeletePayment() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: (id) => apiPayments.delete(id),
@@ -20,8 +22,9 @@ export function useDeletePayment() {
             return { previousPayments };
         },
 
-        onSuccess: (_, id) => {
+        onSuccess: async (_, id) => {
             queryClient.removeQueries({ queryKey: QUERY_KEYS.payment(id) });
+            await cacheInvalidator.invalidateDependentsOnly('payments', { parallel: false });
             toast.success("Payment deleted");
         },
 
