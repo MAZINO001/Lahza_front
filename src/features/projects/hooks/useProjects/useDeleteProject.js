@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiProjects } from '@/lib/api/projects';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useDeleteProject() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: (id) => apiProjects.delete(id),
@@ -20,8 +22,9 @@ export function useDeleteProject() {
             return { previousProjects };
         },
 
-        onSuccess: (_, id) => {
+        onSuccess: async (_, id) => {
             queryClient.removeQueries({ queryKey: QUERY_KEYS.project(id) });
+            await cacheInvalidator.invalidateDependentsOnly('projects', { parallel: false });
             toast.success("Project deleted");
         },
 

@@ -12,15 +12,19 @@ export function useAppInitialization() {
     const { user, loading: authLoading } = useAuthContext();
 
     const isEnabled = !!user && !authLoading;
-    // Call ALL hooks unconditionally - BEFORE any conditionals
-    const servicesQuery = useServices({ enabled: isEnabled });
-    const clientsQuery = useClients({ enabled: isEnabled });
-    const invoicesQuery = useDocumentsData('invoices', { enabled: isEnabled });
-    const quotesQuery = useDocumentsData('quotes', { enabled: isEnabled });
-    const projectsQuery = useProjects({ enabled: isEnabled });
-    const paymentsQuery = usePayments({ enabled: isEnabled });
-    const offersQuery = useOffers({ enabled: isEnabled });
+
+    // Fetch company info first to reduce initial request burst (1 request, then the rest)
     const companyInfoQuery = useCompanyInfo({ enabled: isEnabled });
+    const phase2Enabled = isEnabled && companyInfoQuery.isFetched;
+
+    // Call ALL hooks unconditionally - BEFORE any conditionals
+    const servicesQuery = useServices({ enabled: phase2Enabled });
+    const clientsQuery = useClients({ enabled: phase2Enabled });
+    const invoicesQuery = useDocumentsData('invoices', { enabled: phase2Enabled });
+    const quotesQuery = useDocumentsData('quotes', { enabled: phase2Enabled });
+    const projectsQuery = useProjects({ enabled: phase2Enabled });
+    const paymentsQuery = usePayments({ enabled: phase2Enabled });
+    const offersQuery = useOffers({ enabled: phase2Enabled });
 
     // NOW you can use conditionals - AFTER all hooks are called
     if (authLoading) {

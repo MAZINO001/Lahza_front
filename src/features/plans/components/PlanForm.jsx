@@ -435,9 +435,9 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
             (f) => f.id !== featureId,
           );
           setValue("features", updatedFeatures);
-          // Invalidate plan query to refresh parent data
-          queryClient.invalidateQueries({ queryKey: ["plans"] });
-          queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(plan.id) });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
         },
       },
     );
@@ -454,9 +454,9 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
           const currentFields = watch("custom_fields");
           const updatedFields = currentFields.filter((f) => f.id !== fieldId);
           setValue("custom_fields", updatedFields);
-          // Invalidate plan query to refresh parent data
-          queryClient.invalidateQueries({ queryKey: ["plans"] });
-          queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(plan.id) });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
         },
       },
     );
@@ -472,9 +472,9 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
           const currentPrices = watch("prices");
           const updatedPrices = currentPrices.filter((p) => p.id !== priceId);
           setValue("prices", updatedPrices);
-          // Invalidate plan query to refresh parent data
-          queryClient.invalidateQueries({ queryKey: ["plans"] });
-          queryClient.invalidateQueries({ queryKey: ["plan", plan.id] });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(plan.id) });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
         },
       },
     );

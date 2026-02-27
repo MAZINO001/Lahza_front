@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiProjects } from '@/lib/api/projects';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useUpdateProject() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: ({ id, data }) => apiProjects.update(id, data),
@@ -29,14 +31,14 @@ export function useUpdateProject() {
             return { previousProjects, previousProject };
         },
 
-        onSuccess: (response, { id }) => {
+        onSuccess: async (response, { id }) => {
             queryClient.setQueryData(QUERY_KEYS.projects, (old) =>
                 old?.map(project =>
                     project.id === id ? response : project
                 ) || []
             );
-
             queryClient.setQueryData(QUERY_KEYS.project(id), response);
+            await cacheInvalidator.invalidateDependentsOnly('projects', { parallel: false });
             toast.success("Project updated!");
         },
 

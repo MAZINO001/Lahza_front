@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiService } from '@/lib/api/services';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useUpdateService() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: ({ id, data }) => apiService.update(id, data),
@@ -29,14 +31,14 @@ export function useUpdateService() {
             return { previousServices, previousService };
         },
 
-        onSuccess: (response, { id }) => {
+        onSuccess: async (response, { id }) => {
             queryClient.setQueryData(QUERY_KEYS.services, (old) =>
                 old?.map(service =>
                     service.id === id ? response : service
                 ) || []
             );
-
             queryClient.setQueryData(QUERY_KEYS.service(id), response);
+            await cacheInvalidator.invalidateDependentsOnly('services', { parallel: false });
             toast.success("Service updated!");
         },
 

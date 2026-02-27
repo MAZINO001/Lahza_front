@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiPayments } from '@/lib/api/payments';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useCreatePayment() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: apiPayments.create,
@@ -28,13 +30,13 @@ export function useCreatePayment() {
         },
 
         // Update with server response (replace temp ID with real ID)
-        onSuccess: (response, variables, context) => {
+        onSuccess: async (response, variables, context) => {
             queryClient.setQueryData(QUERY_KEYS.payments, (old) =>
                 old?.map(payment =>
                     payment.id === context?.tempId ? response : payment
                 ) || []
             );
-            
+            await cacheInvalidator.invalidateDependentsOnly('payments', { parallel: false });
             toast.success("Payment created!");
         },
 

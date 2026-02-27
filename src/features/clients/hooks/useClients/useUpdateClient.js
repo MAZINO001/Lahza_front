@@ -2,9 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiClient } from '@/lib/api/clients';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useUpdateClient() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
+
     return useMutation({
         mutationFn: ({ id, data }) => apiClient.update(id, data),
         onMutate: async ({ id, data }) => {
@@ -27,14 +30,14 @@ export function useUpdateClient() {
             return { previousClients, previousClient };
         },
 
-        onSuccess: (response, { id }) => {
+        onSuccess: async (response, { id }) => {
             queryClient.setQueryData(QUERY_KEYS.clients, (old) =>
                 old?.map(client =>
                     client.id === id ? response : client
                 ) || []
             );
-
             queryClient.setQueryData(QUERY_KEYS.client(id), response);
+            await cacheInvalidator.invalidateDependentsOnly('clients', { parallel: false });
             toast.success("Client updated!");
         },
 

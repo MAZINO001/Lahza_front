@@ -2,10 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiPayments } from '@/lib/api/payments';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useCreateAdditionalPayment() {
     const queryClient = useQueryClient();
-    
+    const cacheInvalidator = createCacheInvalidator(queryClient);
+
     return useMutation({
         mutationFn: apiPayments.additional,
         
@@ -22,13 +24,13 @@ export function useCreateAdditionalPayment() {
             return { previousPayments, tempId };
         },
         
-        onSuccess: (response, variables, context) => {
+        onSuccess: async (response, variables, context) => {
             queryClient.setQueryData(QUERY_KEYS.payments, (old) =>
                 old?.map(payment =>
                     payment.id === context?.tempId ? response : payment
                 ) || []
             );
-            
+            await cacheInvalidator.invalidateDependentsOnly('payments', { parallel: false });
             toast.success("Additional payment created");
         },
         

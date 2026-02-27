@@ -1,11 +1,15 @@
 /**
  * Cache Invalidation Manager
  * Handles cross-entity cache updates and dependencies
- * 
- * When one entity changes, it automatically invalidates related entities
+ *
+ * When one entity changes, it automatically invalidates related entities.
+ * Use invalidateDependentsOnly() after optimistic/setQueryData updates to avoid
+ * redundant refetches of the primary list you already updated.
  */
 
 import { QUERY_KEYS } from '@/lib/queryKeys';
+
+const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV;
 
 export class CacheInvalidationManager {
     constructor(queryClient) {
@@ -69,8 +73,7 @@ export class CacheInvalidationManager {
         const { parallel = true } = options;
 
         const cacheKeysToInvalidate = this.dependencies[primaryEntity] || [QUERY_KEYS[primaryEntity]];
-
-        console.log(`🔄 Invalidating ${primaryEntity}:`, cacheKeysToInvalidate);
+        if (isDev) console.log(`[CacheInvalidation] ${primaryEntity}:`, cacheKeysToInvalidate);
 
         if (parallel) {
             // Invalidate all at once - faster but hammers the API
@@ -102,7 +105,7 @@ export class CacheInvalidationManager {
             keys.forEach(key => allKeysToInvalidate.add(key));
         });
 
-        console.log(`🔄 Invalidating multiple entities:`, entities, Array.from(allKeysToInvalidate));
+        if (isDev) console.log(`[CacheInvalidation] multiple:`, entities, Array.from(allKeysToInvalidate));
 
         if (parallel) {
             await Promise.all(
@@ -122,8 +125,45 @@ export class CacheInvalidationManager {
      * Useful for custom cache keys or specific IDs
      */
     async invalidateByQueryKey(queryKey) {
-        console.log(`🔄 Invalidating query key:`, queryKey);
+        if (isDev) console.log(`[CacheInvalidation] queryKey:`, queryKey);
         await this.queryClient.invalidateQueries({ queryKey });
+    }
+
+    /**
+     * Return only dependent cache keys for an entity (excludes the entity's own list key).
+     * Use when you have already updated the primary list (e.g. via setQueryData) and want
+     * to avoid redundant refetches of that list.
+     */
+    getDependentKeys(primaryEntity) {
+        const primaryKey = QUERY_KEYS[primaryEntity];
+        const allKeys = this.dependencies[primaryEntity] || [];
+        return allKeys.filter(key => key !== primaryKey);
+    }
+
+    /**
+     * Invalidate only dependent caches for an entity, not the entity's own list.
+     * Call this after you have already updated the primary list (optimistic or with server response)
+     * to keep related views in sync without refetching the list you just wrote.
+     * @param {string} primaryEntity - e.g. 'quotes', 'invoices', 'payments'
+     * @param {Object} options - { parallel: boolean }
+     */
+    async invalidateDependentsOnly(primaryEntity, options = {}) {
+        const { parallel = false } = options;
+        const cacheKeysToInvalidate = this.getDependentKeys(primaryEntity);
+        if (cacheKeysToInvalidate.length === 0) return;
+        if (isDev) console.log(`[CacheInvalidation] dependents of ${primaryEntity}:`, cacheKeysToInvalidate);
+
+        if (parallel) {
+            await Promise.all(
+                cacheKeysToInvalidate.map(queryKey =>
+                    this.queryClient.invalidateQueries({ queryKey })
+                )
+            );
+        } else {
+            for (const queryKey of cacheKeysToInvalidate) {
+                await this.queryClient.invalidateQueries({ queryKey });
+            }
+        }
     }
 
     /**
@@ -131,7 +171,7 @@ export class CacheInvalidationManager {
      * Use sparingly - only for major operations
      */
     async invalidateAll() {
-        console.log(`🔄 Invalidating ALL caches`);
+        if (isDev) console.log(`[CacheInvalidation] all`);
         await this.queryClient.invalidateQueries();
     }
 }

@@ -2,9 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiPayments } from '@/lib/api/payments';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useUpdatePaymentDate() {
     const queryClient = useQueryClient();
+    const cacheInvalidator = createCacheInvalidator(queryClient);
 
     return useMutation({
         mutationFn: ({ id, paid_at }) => apiPayments.updatePaymentDate(id, paid_at),
@@ -30,13 +32,11 @@ export function useUpdatePaymentDate() {
             return { previousPayments, previousPayment };
         },
 
-        onSuccess: (response, { id }) => {
-            // Just show the success message from the response
+        onSuccess: async (response, { id }) => {
             toast.success(response.message || "Payment date updated");
-
-            // Invalidate cache to get fresh data
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.payments });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.payment(id) });
+            await cacheInvalidator.invalidateDependentsOnly('payments', { parallel: false });
         },
 
         onError: (error, { id }, context) => {

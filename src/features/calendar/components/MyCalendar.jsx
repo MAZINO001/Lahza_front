@@ -133,12 +133,12 @@ export default function MyCalendar() {
 
       const startDateTime = event.start_date
         ? new Date(
-            startYear,
-            startMonth - 1,
-            startDay,
-            startHour || 9,
-            startMinute || 0,
-          )
+          startYear,
+          startMonth - 1,
+          startDay,
+          startHour || 9,
+          startMinute || 0,
+        )
         : new Date();
 
       const endDateTime = event.end_date
@@ -164,7 +164,7 @@ export default function MyCalendar() {
       };
     }) || [];
 
-  const recurringEvents = holidays.map((event) => {
+  const recurringEvents = holidays.map((event, index) => {
     const [startYear, startMonth, startDay] = event.start_date
       .split("-")
       .map(Number);
@@ -189,9 +189,11 @@ export default function MyCalendar() {
 
     return {
       ...event,
+      id: `holiday_${index}`, // Add unique ID for holiday events
       start: startDateTime,
       end: endDateTime,
       allDay: event.all_day === 1 || event.allDay === true,
+      isReadOnly: true, // Mark as read-only to prevent drag/drop
     };
   });
 
@@ -292,7 +294,7 @@ export default function MyCalendar() {
   /************* END OF ISLAMIC HOLIDAYS *************/
 
   // Get Islamic holidays and transform them
-  const islamicEvents = generateIslamicHolidays().map((event) => {
+  const islamicEvents = generateIslamicHolidays().map((event, index) => {
     const [startYear, startMonth, startDay] = event.start_date
       .split("-")
       .map(Number);
@@ -317,9 +319,11 @@ export default function MyCalendar() {
 
     return {
       ...event,
+      id: `islamic_${index}`, // Add unique ID for Islamic events
       start: startDateTime,
       end: endDateTime,
       allDay: event.all_day === 1 || event.allDay === true,
+      isReadOnly: true, // Mark as read-only to prevent drag/drop
     };
   });
 
@@ -447,10 +451,58 @@ export default function MyCalendar() {
   };
 
   const handleEventUpdate = (updatedEvent) => {
-    updateMutation.mutate({ id: updatedEvent.id, data: updatedEvent });
+    // Prevent updates on read-only events (holidays, Islamic events) or events without proper database IDs
+    if (updatedEvent.isReadOnly || !updatedEvent.id || typeof updatedEvent.id !== 'number') {
+      console.log("Cannot update read-only event or event without valid ID:", updatedEvent.title);
+      return;
+    }
+
+    console.log("Drag and drop update data:", updatedEvent);
+    console.log("Event start:", updatedEvent.start);
+    console.log("Event end:", updatedEvent.end);
+
+    // Convert Date objects back to backend format
+    const formatDateTimeForBackend = (date) => {
+      const d = new Date(date);
+      const dateStr = d.toLocaleDateString("en-CA"); // YYYY-MM-DD format
+      const timeStr = d.toLocaleTimeString("en-CA", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }); // HH:MM format
+      return { date: dateStr, time: timeStr };
+    };
+
+    const startData = formatDateTimeForBackend(updatedEvent.start);
+    const endData = formatDateTimeForBackend(updatedEvent.end);
+
+    // Only send the fields that the backend expects for updates
+    const backendData = {
+      title: updatedEvent.title,
+      start_date: startData.date,
+      start_hour: startData.time,
+      end_date: endData.date,
+      end_hour: endData.time,
+      all_day: updatedEvent.allDay ? 1 : 0,
+    };
+
+    // Only include description if it exists
+    if (updatedEvent.description) {
+      backendData.description = updatedEvent.description;
+    }
+
+    console.log("Cleaned backend data:", backendData);
+
+    updateMutation.mutate({ id: updatedEvent.id, data: backendData });
   };
 
   const handleEventDelete = (deletedEvent) => {
+    // Prevent deletion of read-only events (holidays, Islamic events)
+    if (deletedEvent.isReadOnly) {
+      console.log("Cannot delete read-only event:", deletedEvent.title);
+      return;
+    }
+
     DeleteMutation.mutate(deletedEvent.id);
     setShowEventDetails(false);
   };

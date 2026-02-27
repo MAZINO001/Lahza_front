@@ -193,8 +193,7 @@ export default function AllPlans({ packId, onViewChange }) {
             Choose Your Plan
           </h1>
           <p className="text-muted-foreground text-sm">
-            Browse our available plans and choose the one that best suits your
-            needs
+            Browse our available plans and choose the one that best suits your needs.
           </p>
         </div>
 

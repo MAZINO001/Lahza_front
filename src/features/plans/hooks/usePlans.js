@@ -370,6 +370,7 @@ export function useCreatePlan() {
         onSuccess: (responseData) => {
             toast.success("Plan created successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             const packId = responseData?.plan?.pack_id;
             if (packId) {
                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(packId) });
@@ -401,6 +402,7 @@ export function useUpdatePlan() {
         onSuccess: (_, variables) => {
             toast.success("Plan updated successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(variables.id) });
             const packId = variables.pack_id ?? variables.packId;
             if (packId) {
@@ -433,6 +435,7 @@ export function useDeletePlan() {
         onSuccess: (_, planId, context) => {
             toast.success("Plan deleted successfully");
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             if (context?.packId) {
                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plansByPack(context.packId) });
                 queryClient.invalidateQueries({ queryKey: QUERY_KEYS.pack(context.packId) });
@@ -458,6 +461,7 @@ export function useAddPlanPrice() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
@@ -480,6 +484,7 @@ export function useUpdatePlanPrice() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
@@ -499,6 +504,7 @@ export function useDeletePlanPrice() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
@@ -521,6 +527,7 @@ export function useAddCustomField() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
@@ -543,6 +550,7 @@ export function useUpdateCustomField() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
@@ -563,6 +571,7 @@ export function useDeleteCustomField() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
@@ -584,6 +593,7 @@ export function useAddPlanFeature() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
@@ -605,6 +615,7 @@ export function useUpdatePlanFeature() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },
@@ -625,6 +636,7 @@ export function useDeletePlanFeature() {
         onSuccess: (_, { planId }) => {
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.invalidateQueries({ queryKey: QUERY_KEYS.plans });
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.packs });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plan(planId) });
             queryClient.refetchQueries({ queryKey: QUERY_KEYS.plans });
         },

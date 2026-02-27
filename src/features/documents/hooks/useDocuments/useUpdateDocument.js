@@ -2,11 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { apiDocuments } from '@/lib/api/documents';
 import { QUERY_KEYS } from '@/lib/queryKeys';
+import { createCacheInvalidator } from '@/lib/CacheInvalidationManager';
 
 export function useUpdateDocument(type) {
     const queryClient = useQueryClient();
-
-    // Use type-specific query key to prevent cache contamination
+    const cacheInvalidator = createCacheInvalidator(queryClient);
+    const entityName = type === "invoices" ? "invoices" : "quotes";
     const queryKey = type === "invoices" ? QUERY_KEYS.invoices : QUERY_KEYS.quotes;
 
     return useMutation({
@@ -32,24 +33,18 @@ export function useUpdateDocument(type) {
             return { previousDocuments, previousDocument, optimisticData: { ...data } };
         },
 
-        onSuccess: (response, { id }, context) => {
-            console.log('Update response:', response);
-
-            // The actual document data is in response.data
+        onSuccess: async (response, { id }, context) => {
             const serverData = response.data;
-
-            // Merge server response with optimistic data to preserve fields server doesn't return
             const updatedData = { ...context?.optimisticData, ...serverData };
 
-            // Update the documents list with merged data
             queryClient.setQueryData(queryKey, (old) =>
                 old?.map(doc =>
                     doc.id === id ? updatedData : doc
                 ) || []
             );
-
-            // Update the individual document cache with merged data
             queryClient.setQueryData(QUERY_KEYS.document(id), updatedData);
+
+            await cacheInvalidator.invalidateDependentsOnly(entityName, { parallel: false });
 
             const label = type === "quotes" ? "Quote" : "Invoice";
             toast.success(`${label} updated successfully!`);
