@@ -28,13 +28,16 @@ import TextareaField from "@/components/Form/TextareaField";
 import DateField from "@/components/Form/DateField";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export function DocumentForm({ type, onSuccess }) {
   const navigate = useNavigate();
   const { role } = useAuthContext();
   const { isSubmitting, startSubmit, endSubmit } = useSubmitProtection();
   const { id } = useParams();
-
+  const getCurrentCurrency = useCurrencyStore(
+    (state) => state.getCurrentCurrency,
+  );
   const { state } = useLocation();
   const clientId = state?.clientId;
   const cloneFromId = state?.cloneFromId;
@@ -51,7 +54,6 @@ export function DocumentForm({ type, onSuccess }) {
     documentId,
     documentType,
   );
-  console.log(originalFiles);
 
   const { data: document } = useDocument(documentId, documentType);
   const isInvoice = type === "invoices";
@@ -81,8 +83,6 @@ export function DocumentForm({ type, onSuccess }) {
       customerName: clientId || "",
       ...(isInvoice
         ? {
-            // invoice_date: "",
-            // due_date: "",
             invoice_date: new Date().toISOString().split("T")[0],
             due_date: new Date().toISOString().split("T")[0],
           }
@@ -94,6 +94,7 @@ export function DocumentForm({ type, onSuccess }) {
       payment_percentage: "50",
       payment_status: "pending",
       payment_type: "",
+      currency: "MAD",
       description: "",
       terms,
       old_projects: [],
@@ -212,6 +213,7 @@ export function DocumentForm({ type, onSuccess }) {
           payment_percentage: "50",
           payment_status: "pending",
           payment_type: doc.payment_type || "",
+          currency: doc.currency || "",
           description: doc?.description,
           has_projects: {
             title: projectTitles,
@@ -313,7 +315,9 @@ export function DocumentForm({ type, onSuccess }) {
       const isMoroccan =
         selectedClient?.client?.country?.trim().toLowerCase() === "maroc";
       const defaultPaymentMethod = isMoroccan ? "bank" : "stripe";
+      const defaultCurrency = isMoroccan ? "MAD" : "EUR";
       setValue("payment_type", defaultPaymentMethod);
+      setValue("currency", defaultCurrency);
     }
   }, [selectedClient, setValue]);
 
@@ -1003,7 +1007,9 @@ export function DocumentForm({ type, onSuccess }) {
               </Button>
 
               <div className="flex items-center gap-6 text-sm font-medium">
-                <span className="text-muted-foreground">Total (MAD)</span>
+                <span className="text-muted-foreground">
+                  Total ({getCurrentCurrency().code})
+                </span>
                 <span className="text-lg font-semibold text-foreground">
                   {calculateTotal().toFixed(2)}
                 </span>
@@ -1012,7 +1018,7 @@ export function DocumentForm({ type, onSuccess }) {
           </div>
         </div>
 
-        <div className="flex gap-4 w-full items-start space-between">
+        <div className="flex gap-4 w-full items-center space-between">
           {(type === "invoices" || (type === "quotes" && !isEditMode)) && (
             <div
               className={`flex gap-4 items-end justify-between ${
@@ -1039,13 +1045,38 @@ export function DocumentForm({ type, onSuccess }) {
                   )}
                 />
               </div>
+              {!isInvoice && (
+                <div className="">
+                  <Controller
+                    name="currency"
+                    control={control}
+                    rules={{ required: "Currency is required" }}
+                    render={({ field, fieldState: { error } }) => (
+                      <SelectField
+                        id="currency"
+                        label="Currency"
+                        type="select"
+                        value={field.value || "MAD"}
+                        options={[
+                          { value: "MAD", label: "MAD (د.م.)" },
+                          { value: "USD", label: "USD ($)" },
+                          { value: "EUR", label: "EUR (€)" },
+                        ]}
+                        onChange={(e) => field.onChange(e)}
+                        onBlur={field.onBlur}
+                        error={error?.message}
+                      />
+                    )}
+                  />
+                </div>
+              )}
             </div>
           )}
           {isInvoice && (
             <div className="w-[50%]">
               <div className="flex md:flex-row flex-col gap-4 items-end justify-between rounded-lg">
                 <div className="w-full flex gap-4 items-center justify-between">
-                  <div className="w-[33%]">
+                  <div className="w-[25%]">
                     <Controller
                       name="payment_type"
                       control={control}
@@ -1069,7 +1100,7 @@ export function DocumentForm({ type, onSuccess }) {
                     />
                   </div>
 
-                  <div className="w-[33%]">
+                  <div className="w-[25%]">
                     <Controller
                       name="payment_percentage"
                       control={control}
@@ -1089,7 +1120,7 @@ export function DocumentForm({ type, onSuccess }) {
                       )}
                     />
                   </div>
-                  <div className="w-[33%]">
+                  <div className="w-[25%]">
                     <Controller
                       name="payment_status"
                       control={control}
@@ -1111,12 +1142,35 @@ export function DocumentForm({ type, onSuccess }) {
                       )}
                     />
                   </div>
+
+                  <div className="w-[25%]">
+                    <Controller
+                      name="currency"
+                      control={control}
+                      rules={{ required: "Currency is required" }}
+                      render={({ field, fieldState: { error } }) => (
+                        <SelectField
+                          id="currency"
+                          label="Currency"
+                          type="select"
+                          value={field.value || "MAD"}
+                          options={[
+                            { value: "MAD", label: "MAD (د.م.)" },
+                            { value: "USD", label: "USD ($)" },
+                            { value: "EUR", label: "EUR (€)" },
+                          ]}
+                          onChange={(e) => field.onChange(e)}
+                          onBlur={field.onBlur}
+                          error={error?.message}
+                        />
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           )}
         </div>
-
         <div className="flex md:flex-row flex-col gap-4 items-stretch h-full">
           <div
             className={`${isInvoice ? "w-[50%]" : "w-[40%]"} flex flex-col min-h-0`}

@@ -82,7 +82,9 @@ export default function SelectField({
 }) {
   return (
     // <div className={cn(className)}>
-    <div className={cn("flex items-start justify-between flex-col", className)}>
+    <div
+      className={cn("flex items-start justify-between flex-col ", className)}
+    >
       <Label htmlFor={id} className="text-sm font-medium text-foreground ">
         {label}
       </Label>

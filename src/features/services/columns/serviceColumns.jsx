@@ -14,7 +14,12 @@ import {
 } from "@/components/ui/tooltip";
 import { CategoryBadge } from "@/components/CategoryBadge";
 
-export function getServiceColumns(role, navigate) {
+export function getServiceColumns(
+  role,
+  navigate,
+  formatAmount,
+  selectedCurrency,
+) {
   return [
     {
       accessorKey: "image",
@@ -92,12 +97,12 @@ export function getServiceColumns(role, navigate) {
         </Button>
       ),
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("base_price"));
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "MAD",
-        }).format(amount);
-        return <div className="ml-3 font-medium">{formatted}</div>;
+        const amount = parseFloat(row.getValue("base_price")) || 0;
+        return (
+          <div className="ml-3 font-medium">
+            {formatAmount(amount || 0, "MAD")}
+          </div>
+        );
       },
     },
     {

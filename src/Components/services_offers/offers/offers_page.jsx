@@ -8,13 +8,15 @@ import api from "@/lib/utils/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useOffer } from "@/features/offers/hooks/useOffersQuery";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export default function OfferPage({ currentId }) {
   const { data, isLoading, isError } = useOffer(currentId);
   const { role } = useAuthContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
   console.log(data);
 
   const deleteMutation = useMutation({
@@ -157,10 +159,11 @@ export default function OfferPage({ currentId }) {
                   {data?.discount_type === "percent"
                     ? `${data?.discount_value || 0}%`
                     : data?.discount_value
-                      ? `${Number(data.discount_value).toFixed(2)} MAD`
+                      ? `${formatAmount(data.discount_value || 0, "MAD")}`
                       : "—"}
                 </p>
               </div>
+              {formatAmount(data.totalPaid || 0, "MAD")}
             </div>
           </CardContent>
         </Card>

@@ -50,6 +50,28 @@ export function TablePagination({
     }
   };
 
+  const handlePageSizeChange = (event) => {
+    const newSize = Number(event.target.value);
+
+    if (!table) return;
+
+    if (useExternalPagination) {
+      // For now, only internal table pagination directly controls page size.
+      // External pagination can be wired up later via dedicated props.
+      return;
+    }
+
+    const rowCount = table.getFilteredRowModel().rows.length;
+    const newPageCount = Math.max(1, Math.ceil(rowCount / newSize));
+    const currentIndex = table.getState().pagination.pageIndex;
+
+    if (currentIndex + 1 > newPageCount) {
+      table.setPageIndex(newPageCount - 1);
+    }
+
+    table.setPageSize(newSize);
+  };
+
   return (
     <div className="flex items-start justify-between pt-4">
       <div className="flex-1 text-sm text-muted-foreground">
@@ -61,26 +83,46 @@ export function TablePagination({
         )}
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handlePrevious}
-          disabled={useExternalPagination ? currentPage <= 1 : !table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <span className="text-sm text-muted-foreground">
-          Page {currentPage} of {lastPage}
-        </span>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleNext}
-          disabled={useExternalPagination ? currentPage >= lastPage : !table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+          <select
+            className="h-8 rounded-md border border-input bg-background px-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            value={
+              useExternalPagination
+                ? paginationData?.per_page || paginationData?.page_size || 10
+                : table.getState().pagination.pageSize
+            }
+            onChange={handlePageSizeChange}
+          >
+            {[10, 25, 50].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handlePrevious}
+            disabled={useExternalPagination ? currentPage <= 1 : !table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            Page {currentPage} of {lastPage}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleNext}
+            disabled={useExternalPagination ? currentPage >= lastPage : !table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );

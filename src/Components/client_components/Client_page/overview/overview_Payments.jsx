@@ -3,7 +3,7 @@ import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsDa
 import { useAuthContext } from "@/hooks/AuthContext";
 import { formatId } from "@/lib/utils/formatId";
 import { Link } from "react-router-dom";
-export default function Overview_Payments({ formatCurrency, currentId }) {
+export default function Overview_Payments({ formatAmount, currentId }) {
   const { role } = useAuthContext();
 
   const { data: Payments = [] } = usePayments();
@@ -46,10 +46,10 @@ export default function Overview_Payments({ formatCurrency, currentId }) {
                 </Link>
               </div>
               <div className="text-sm text-foreground text-right font-medium">
-                {formatCurrency(item?.invoice.balance_due)}
+                {formatAmount(item?.invoice.balance_due || 0, "MAD")}
               </div>
               <div className="text-sm text-foreground text-right font-medium">
-                {formatCurrency(item?.invoice.total_amount)}
+                {formatAmount(item?.invoice.total_amount || 0, "MAD")}
               </div>
             </div>
           ))}

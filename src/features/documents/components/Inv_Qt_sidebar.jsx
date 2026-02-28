@@ -16,8 +16,11 @@ import {
 import { useDocuments } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import EmptySearch1 from "@/components/empty-search-1";
 import { cn } from "@/lib/utils";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export default function Inv_Qt_sidebar({ type }) {
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
   const currentSection = type === "invoices" ? "invoice" : "quote";
   const {
     data: documents = [],
@@ -148,10 +151,7 @@ export default function Inv_Qt_sidebar({ type }) {
                     </span>
 
                     <span className="font-semibold whitespace-nowrap">
-                      {new Intl.NumberFormat("fr-MA", {
-                        style: "currency",
-                        currency: "MAD",
-                      }).format(amount)}
+                      {formatAmount(amount || 0, "MAD")}
                     </span>
                   </div>
 

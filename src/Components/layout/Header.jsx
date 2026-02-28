@@ -3,6 +3,8 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import NotificationDropdown from "@/components/popover-standard-12";
 import DropdownMenuProfile from "@/components/dropdown-menu-profile-1";
 import PopUpActions from "@/components/command-dialog-6";
+import LanguageSwitcher from "@/Components/LanguageSwitcher";
+import CurrencyToggle from "@/Components/CurrencyToggle";
 
 export default function Header() {
   return (
@@ -14,6 +16,8 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-4 flex-1 justify-end">
+          <LanguageSwitcher />
+          <CurrencyToggle />
           <PopUpActions />
           <ThemeToggle />
           <NotificationDropdown />

@@ -8,7 +8,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
 import { Button } from "@/components/ui/button";
-export function getOfferColumns(role, navigate) {
+export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) {
   return [
     {
       accessorKey: "title",
@@ -50,9 +50,7 @@ export function getOfferColumns(role, navigate) {
         const type = row.getValue("discount_type");
         return (
           <span className="font-medium">
-            {type === "percent"
-              ? `${value}%`
-              : `MAD ${Number(value).toFixed(2)}`}
+            {type === "percent" ? `${value}%` : formatAmount(Number(value))}
           </span>
         );
       },

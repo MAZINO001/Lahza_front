@@ -1,6 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export default function Overview({ data }) {
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+  const getCurrentCurrency = useCurrencyStore(
+    (state) => state.getCurrentCurrency,
+  );
+
   return (
     <Card className="border-border bg-card shadow-sm">
       <CardHeader className="pb-4">
@@ -54,11 +61,18 @@ export default function Overview({ data }) {
               Base Price
             </p>
             <div className="flex items-baseline gap-1.5">
+              <span className="text-lg font-medium text-muted-foreground">
+                {getCurrentCurrency().symbol}
+              </span>
               <span className="text-3xl font-bold tracking-tight text-primary">
-                {data?.base_price ? Number(data.base_price).toFixed(2) : "0.00"}
+                {data?.base_price
+                  ? Number(
+                      formatAmount(data.base_price).replace(/[^0-9.]/g, ""),
+                    )
+                  : "0.00"}
               </span>
               <span className="text-lg font-medium text-muted-foreground">
-                MAD
+                {getCurrentCurrency().code}
               </span>
             </div>
           </div>

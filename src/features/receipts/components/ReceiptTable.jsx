@@ -13,11 +13,15 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { getReceiptColumns } from "../columns/receiptColumns";
 import { DataTable } from "@/components/table/DataTable";
 import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsData";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export function ReceiptTable() {
   const { data: payments = [], isLoading } = usePayments();
   const { role } = useAuthContext();
   const navigate = useNavigate();
+
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
 
   const paidPayments = React.useMemo(
     () => payments.filter((payment) => payment.status === "paid"),
@@ -28,8 +32,8 @@ export function ReceiptTable() {
   const [columnFilters, setColumnFilters] = useState([]);
 
   const columns = React.useMemo(
-    () => getReceiptColumns(role, navigate),
-    [role, navigate],
+    () => getReceiptColumns(role, navigate, formatAmount, selectedCurrency),
+    [role, navigate, formatAmount, selectedCurrency],
   );
 
   const table = useReactTable({

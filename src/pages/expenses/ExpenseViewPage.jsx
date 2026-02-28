@@ -20,8 +20,11 @@ import {
   Receipt,
   Clock,
 } from "lucide-react";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export default function ExpenseViewPage() {
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
   const { id } = useParams();
   const { data: expense, isLoading } = useExpense(id);
   const navigate = useNavigate();
@@ -57,14 +60,6 @@ export default function ExpenseViewPage() {
       default:
         return "outline";
     }
-  };
-
-  const formatCurrency = (amount, currency = "MAD") => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-      minimumFractionDigits: 2,
-    }).format(amount);
   };
 
   return (
@@ -129,7 +124,11 @@ export default function ExpenseViewPage() {
                   <div>
                     <p className="text-xs text-muted-foreground">Amount</p>
                     <p className="text-lg font-semibold">
-                      {formatCurrency(expense.amount, expense.currency)}
+                      {formatAmount(
+                        expense.amount,
+                        expense.currency || 0,
+                        "MAD",
+                      )}
                     </p>
                   </div>
                 </div>
@@ -226,7 +225,7 @@ export default function ExpenseViewPage() {
                         }
                       >
                         Invoice #{expense.invoice.id} •{" "}
-                        {formatCurrency(expense.invoice.total_amount)}
+                        {formatAmount(expense.invoice.total_amount || 0, "MAD")}
                       </Button>
                     </div>
                   </div>

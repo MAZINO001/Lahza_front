@@ -24,6 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export function ClientTable() {
   const { data: clients, isLoading } = useClients();
@@ -36,10 +37,11 @@ export function ClientTable() {
   const [clientType, setClientType] = useState("all");
   const [location, setLocation] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("Z-A");
-
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
   const columns = React.useMemo(
-    () => getClientColumns(role, navigate),
-    [role, navigate],
+    () => getClientColumns(role, formatAmount),
+    [role, formatAmount],
   );
 
   const clientOrder = ["A-Z", "Z-A"];
@@ -112,7 +114,7 @@ export function ClientTable() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex-1 rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px] bg-background">
+              <button className="flex-1 h-9 rounded-md text-sm flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px] bg-background">
                 Order {selectedStatus}
                 <ChevronDown className="w-4 h-4" />
               </button>
@@ -136,7 +138,7 @@ export function ClientTable() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex rounded-md items-center gap-2 transition capitalize border border-border px-2 py-[4.3px] bg-background">
+              <button className="flex h-9 rounded-md text-sm items-center gap-2 transition capitalize border border-border px-2 py-[4.3px] bg-background">
                 {clientType === "all" ? "All Types" : clientType} •{" "}
                 {location === "all" ? "All Locations" : location}
                 <ChevronDown className="w-4 h-4" />
@@ -205,7 +207,6 @@ export function ClientTable() {
         onClose={() => setShowUploadModal(false)}
         uploadUrl={`${import.meta.env.VITE_BACKEND_URL}/uploadClients`}
       />
-
     </div>
   );
 }

@@ -8,6 +8,7 @@ import { useClientHistory } from "@/features/clients/hooks/useClientsHistory";
 import { useState } from "react";
 import VerifiedCard from "@/components/VerifiedCard";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 export default function Overview({ data, currentId }) {
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
@@ -43,12 +44,8 @@ export default function Overview({ data, currentId }) {
       ? data?.client?.company
       : data?.client.user?.name;
 
-  const formatCurrency = (amount) =>
-    new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-    }).format(amount);
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -104,10 +101,10 @@ export default function Overview({ data, currentId }) {
       </div>
       <div className="space-y-4">
         <Overview_Payments
-          formatCurrency={formatCurrency}
+          formatAmount={formatAmount}
           currentId={currentId}
         />
-        <Overview_chart formatCurrency={formatCurrency} currentId={currentId} />
+        <Overview_chart formatAmount={formatAmount} currentId={currentId} />
         <div className="bg-background max-h-[500px] overflow-y-auto rounded-lg border border-border p-4">
           <TimelineComponent data={history} />
         </div>

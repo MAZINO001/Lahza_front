@@ -1,5 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useState, useEffect } from "react";
+// components/CurrencyToggle.jsx
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,91 +6,65 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  currencies,
-  convertCurrency,
-  formatCurrency,
-} from "@/lib/utils/formatCurrency";
-
-const CurrencyContext = createContext();
-
-export const useCurrency = () => {
-  const context = useContext(CurrencyContext);
-  if (!context) {
-    throw new Error("useCurrency must be used within a CurrencyProvider");
-  }
-  return context;
-};
-
-export const CurrencyProvider = ({ children }) => {
-  const [selectedCurrency, setSelectedCurrency] = useState(() => {
-    return localStorage.getItem("selectedCurrency") || "EUR";
-  });
-
-  useEffect(() => {
-    localStorage.setItem("selectedCurrency", selectedCurrency);
-  }, [selectedCurrency]);
-
-  const convertAmount = (amount, fromCurrency = "EUR") => {
-    return convertCurrency(amount, fromCurrency, selectedCurrency);
-  };
-
-  const formatAmount = (amount, fromCurrency = "EUR") => {
-    const convertedAmount = convertAmount(amount, fromCurrency);
-    return formatCurrency(convertedAmount, selectedCurrency);
-  };
-
-  const value = {
-    selectedCurrency,
-    setSelectedCurrency,
-    convertAmount,
-    formatAmount,
-    currencies,
-  };
-
-  return (
-    <CurrencyContext.Provider value={value}>
-      {children}
-    </CurrencyContext.Provider>
-  );
-};
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { currencies, useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export default function CurrencyToggle() {
-  const { selectedCurrency, setSelectedCurrency, currencies } = useCurrency();
+  const { selectedCurrency, setSelectedCurrency, getCurrentCurrency } =
+    useCurrencyStore();
 
-  const currentCurrency =
-    currencies.find((curr) => curr.code === selectedCurrency) || currencies[0];
-
-  const handleCurrencyChange = (currencyCode) => {
-    setSelectedCurrency(currencyCode);
-  };
+  const current = getCurrentCurrency();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
+        <Button
+          variant="outline"
           size="sm"
-          className="px-2 gap-2 border  border-border rounded-md flex items-center justify-center"
+          className={cn(
+            "h-9 px-2 gap-2 text-sm font-medium",
+            "text-sm font-medium border-border/70 hover:border-border",
+            "focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1",
+          )}
         >
-          <div className="hidden sm:flex gap-4 w-full">
-            <p>{currentCurrency.symbol}</p>
-            <p>{currentCurrency.code}</p>
-          </div>
-        </button>
+          <span className="hidden sm:inline font-mono tracking-wide">
+            {current.symbol}
+          </span>
+          <span className="hidden sm:inline text-muted-foreground">
+            {current.code}
+          </span>
+        </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="max-h-60 overflow-y-auto">
-        {currencies.map((currency) => (
-          <DropdownMenuItem
-            key={currency.code}
-            onClick={() => handleCurrencyChange(currency.code)}
-            className={selectedCurrency === currency.code ? "bg-accent" : ""}
-          >
-            <div className="flex items-center justify-between w-full">
-              <span className="mr-2">{currency.symbol}</span>
-              <span>{currency.name}</span>
-            </div>
-          </DropdownMenuItem>
-        ))}
+
+      <DropdownMenuContent
+        align="end"
+        className="min-w-[220px] p-1 max-h-[min(360px,80vh)] overflow-y-auto"
+      >
+        {currencies.map((currency) => {
+          const isActive = selectedCurrency === currency.code;
+
+          return (
+            <DropdownMenuItem
+              key={currency.code}
+              onClick={() => setSelectedCurrency(currency.code)}
+              className={cn(
+                "cursor-pointer flex items-center gap-2 py-2 px-2 text-sm",
+                "focus:bg-accent focus:text-accent-foreground",
+                isActive && "bg-accent/60 font-medium",
+              )}
+            >
+              <span className="text-base leading-none">{currency.flag}</span>
+              <div className="flex flex-col flex-1 min-w-0">
+                <span className="font-medium">{currency.code}</span>
+                <span className="text-xs text-muted-foreground">
+                  {currency.symbol}
+                </span>
+              </div>
+              {isActive && <Check className="h-4 w-4 text-primary ml-auto" />}
+            </DropdownMenuItem>
+          );
+        })}
       </DropdownMenuContent>
     </DropdownMenu>
   );

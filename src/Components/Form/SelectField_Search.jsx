@@ -417,7 +417,7 @@ export default function SearchableSelectField({
         <PopoverTrigger asChild>
           <div
             className={cn(
-              "min-h-10 w-full px-3 py-2 rounded-md border bg-background",
+              "min-h-9 w-full px-3 py-2 rounded-md border bg-background",
               error ? "border-destructive" : "border-input",
               "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
               "flex flex-wrap gap-1.5 items-center cursor-text transition-colors",

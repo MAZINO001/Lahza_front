@@ -16,6 +16,7 @@ import { getOfferColumns } from "../columns/offerColumns";
 import { useOffers } from "../hooks/useOffersQuery";
 import { DataTable } from "@/components/table/DataTable";
 import { Upload } from "lucide-react";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export function OfferTable() {
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -23,12 +24,15 @@ export function OfferTable() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
 
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
 
   const columns = React.useMemo(
-    () => getOfferColumns(role, navigate),
-    [role, navigate],
+    () => getOfferColumns(role, navigate, formatAmount, selectedCurrency),
+    [role, navigate, formatAmount, selectedCurrency],
   );
 
   const table = useReactTable({

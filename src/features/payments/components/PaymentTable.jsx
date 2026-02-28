@@ -23,6 +23,7 @@ import { usePayments } from "../hooks/usePayments/usePaymentsData";
 import { DataTable } from "@/components/table/DataTable";
 import EditDatePayment from "../components/editDatePayment";
 import { useCompanyInfo } from "@/features/settings/hooks/useSettingsAgencyInfoQuery";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 const PaymentTable = React.memo(function PaymentTable() {
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -38,12 +39,19 @@ const PaymentTable = React.memo(function PaymentTable() {
     setPaidAtOpen(true);
   }, []);
 
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+
   const columns = React.useMemo(
     () =>
-      paymentColumns(role, companyInfo, {
-        onEditPaidAt: handleEditPaidAt,
-      }),
-    [role, handleEditPaidAt, companyInfo],
+      paymentColumns(
+        role,
+        companyInfo,
+        { onEditPaidAt: handleEditPaidAt },
+        formatAmount,
+        selectedCurrency,
+      ),
+    [role, companyInfo, handleEditPaidAt, formatAmount, selectedCurrency],
   );
 
   const table = useReactTable({

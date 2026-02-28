@@ -17,7 +17,7 @@
 // //   CardTitle,
 // // } from "@/components/ui/card";
 // // import { usePayments } from "@/features/payments/@/features/payments/hooks/usePayments/usePaymentsData";
-// // export default function Overview_chart({ formatCurrency }) {
+// // export default function Overview_chart({ formatAmount }) {
 // //   const [selectedPeriod, setSelectedPeriod] = useState("Last 6 Months");
 
 // //   const formatMonth = (dateString) => {
@@ -133,7 +133,7 @@
 // //                         height: `${incomeHeight}%`,
 // //                         minHeight: incomeHeight > 0 ? "4px" : "0",
 // //                       }}
-// //                       title={`Income: ${formatCurrency(data.income)}`}
+// //                       title={`Income: ${formatAmount(data.income)}`}
 // //                     />
 // //                     <div
 // //                       className="w-1/2 bg-orange-500 rounded-t transition-all duration-300 hover:bg-orange-600"
@@ -141,7 +141,7 @@
 // //                         height: `${expenseHeight}%`,
 // //                         minHeight: expenseHeight > 0 ? "4px" : "0",
 // //                       }}
-// //                       title={`Expense: ${formatCurrency(data.expense)}`}
+// //                       title={`Expense: ${formatAmount(data.expense)}`}
 // //                     />
 // //                   </div>
 // //                 </div>
@@ -177,7 +177,7 @@
 // //               Total Income ({selectedPeriod})
 // //             </span>
 // //             <span className="font-semibold text-foreground">
-// //               {formatCurrency(totalIncome)}
+// //               {formatAmount(totalIncome)}
 // //             </span>
 // //           </div>
 // //         </div>
@@ -204,7 +204,7 @@
 // } from "@/components/ui/card";
 // import { usePayments } from "@/features/payments/hooks/usePayments/usePaymentsData";
 
-// export default function Overview_chart({ formatCurrency, currentId }) {
+// export default function Overview_chart({ formatAmount, currentId }) {
 //   const [selectedPeriod, setSelectedPeriod] = useState("Last 6 Months");
 
 //   const formatMonth = (dateString) => {
@@ -360,7 +360,7 @@
 //                         height: `${incomeHeight}%`,
 //                         minHeight: incomeHeight > 0 ? "4px" : "0",
 //                       }}
-//                       title={`Income: ${formatCurrency(data.income)}`}
+//                       title={`Income: ${formatAmount(data.income)}`}
 //                     />
 //                     <div
 //                       className="w-1/2 bg-orange-500 rounded-t transition-all duration-300 hover:bg-orange-600"
@@ -368,7 +368,7 @@
 //                         height: `${expenseHeight}%`,
 //                         minHeight: expenseHeight > 0 ? "4px" : "0",
 //                       }}
-//                       title={`Expense: ${formatCurrency(data.expense)}`}
+//                       title={`Expense: ${formatAmount(data.expense)}`}
 //                     />
 //                   </div>
 //                 </div>
@@ -404,7 +404,7 @@
 //               Total Income ({selectedPeriod})
 //             </span>
 //             <span className="font-semibold text-foreground">
-//               {formatCurrency(totalIncome)}
+//               {formatAmount(totalIncome)}
 //             </span>
 //           </div>
 //           <div className="flex items-center justify-between text-sm">
@@ -412,7 +412,7 @@
 //               Total Expense ({selectedPeriod})
 //             </span>
 //             <span className="font-semibold text-foreground">
-//               {formatCurrency(totalExpense)}
+//               {formatAmount(totalExpense)}
 //             </span>
 //           </div>
 //         </div>
@@ -442,7 +442,7 @@ const PERIODS = [
   "This Year",
 ];
 
-export default function OverviewChart({ formatCurrency, currentId }) {
+export default function OverviewChart({ formatAmount, currentId }) {
   const [selectedPeriod, setSelectedPeriod] = useState("Last 6 Months");
 
   const { data: payments = [] } = usePayments();
@@ -573,13 +573,13 @@ export default function OverviewChart({ formatCurrency, currentId }) {
                     <div
                       className="w-full bg-blue-600/90 transition-all group-hover:bg-blue-600"
                       style={{ height: `${incomePct}%` }}
-                      title={`Income: ${formatCurrency(data.income)}`}
+                      title={`Income: ${formatAmount(data.income || 0, "MAD")}`}
                     />
                     {/* Expense bar */}
                     <div
                       className="w-full bg-amber-600/90 transition-all group-hover:bg-amber-600"
                       style={{ height: `${expensePct}%` }}
-                      title={`Expense: ${formatCurrency(data.expense)}`}
+                      title={`Expense: ${formatAmount(data.expense || 0, "MAD")}`}
                     />
                   </div>
                 </div>
@@ -614,11 +614,15 @@ export default function OverviewChart({ formatCurrency, currentId }) {
         <div className="space-y-2 border-t border-border/60 pt-4 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Total Income</span>
-            <span className="font-medium">{formatCurrency(totalIncome)}</span>
+            <span className="font-medium">
+              {formatAmount(totalIncome || 0, "MAD")}
+            </span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Total Expense</span>
-            <span className="font-medium">{formatCurrency(totalExpense)}</span>
+            <span className="font-medium">
+              {formatAmount(totalExpense || 0, "MAD")}
+            </span>
           </div>
         </div>
       </CardContent>

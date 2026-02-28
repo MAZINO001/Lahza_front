@@ -150,11 +150,13 @@ import { StatusBadge } from "../StatusBadge";
 import { useServices } from "@/features/services/hooks/useServices";
 import { useOffers } from "@/features/offers/hooks/useOffersQuery";
 import EmptySearch1 from "@/components/empty-search-1";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export default function ServicesSidebar({ type, currentId }) {
   const title = type === "service" ? "Services" : "Offers";
   const isService = type === "service";
-
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
   const servicesQuery = useServices();
   const offersQuery = useOffers();
 
@@ -274,7 +276,7 @@ export default function ServicesSidebar({ type, currentId }) {
                           isActive ? "text-primary" : "text-foreground/90",
                         )}
                       >
-                        {Number(item.base_price).toFixed(2)} MAD
+                        {formatAmount(item.base_price || 0, "MAD")}
                       </span>
                     )}
                     <StatusBadge status={item.status} />

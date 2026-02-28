@@ -19,6 +19,7 @@ import { useAuthContext } from "@/hooks/AuthContext";
 import { getServiceColumns } from "../columns/serviceColumns";
 import { DataTable } from "@/components/table/DataTable";
 import { useServices } from "@/features/services/hooks/useServicesData";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export function ServiceTable() {
   const [sorting, setSorting] = useState([]);
@@ -29,9 +30,13 @@ export function ServiceTable() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
   const { data: services, isLoading } = useServices();
+
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+
   const columns = React.useMemo(
-    () => getServiceColumns(role, navigate),
-    [role, navigate],
+    () => getServiceColumns(role, navigate, formatAmount, selectedCurrency),
+    [role, navigate, formatAmount, selectedCurrency],
   );
 
   console.log(services);

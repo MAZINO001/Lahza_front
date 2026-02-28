@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { TooltipButton } from "@/components/common/TooltipButton";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
-export function getClientColumns(role) {
+export function getClientColumns(role, formatAmount) {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copied!`, { duration: 3000 });
@@ -61,7 +60,7 @@ export function getClientColumns(role) {
       accessorFn: (row) => row?.totalPaid,
       cell: ({ getValue }) => (
         <span className="text-muted-foreground">
-          {Number(getValue()).toFixed(2)} MAD
+          {formatAmount(Number(getValue()) || 0, "MAD")}
         </span>
       ),
     },
@@ -71,7 +70,7 @@ export function getClientColumns(role) {
       accessorFn: (row) => row?.balanceDue,
       cell: ({ getValue }) => (
         <span className="text-muted-foreground">
-          {Number(getValue()).toFixed(2)} MAD
+          {formatAmount(Number(getValue()) || 0, "MAD")}
         </span>
       ),
     },

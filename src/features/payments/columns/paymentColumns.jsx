@@ -31,7 +31,13 @@ import {
 } from "../hooks/usePayments/usePaymentsData";
 import { Link } from "react-router-dom";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
-export function paymentColumns(role, companyInfo, { onEditPaidAt }) {
+export function paymentColumns(
+  role,
+  companyInfo,
+  { onEditPaidAt },
+  formatAmount,
+  selectedCurrency,
+) {
   const copyToClipboard = (text, label) => {
     navigator.clipboard.writeText(text);
     toast.success(`${label} copied!`, {
@@ -90,26 +96,16 @@ export function paymentColumns(role, companyInfo, { onEditPaidAt }) {
         </Button>
       ),
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("total"));
-        const formatted = new Intl.NumberFormat("fr-MA", {
-          style: "currency",
-          currency: "MAD",
-        }).format(amount);
-
-        return <div className="ml-3">{formatted}</div>;
+        const amount = parseFloat(row.getValue("total")) || 0;
+        return <div className="ml-3">{formatAmount(amount || 0, "MAD")}</div>;
       },
     },
     {
       accessorKey: "amount",
       header: "Paid Amount",
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("amount"));
-        const formatted = new Intl.NumberFormat("fr-MA", {
-          style: "currency",
-          currency: "MAD",
-        }).format(amount);
-
-        return <div>{formatted}</div>;
+        const amount = parseFloat(row.getValue("amount")) || 0;
+        return <div>{formatAmount(amount || 0, "MAD")}</div>;
       },
     },
     {

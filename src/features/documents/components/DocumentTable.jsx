@@ -22,6 +22,7 @@ import { useDocuments } from "../hooks/useDocuments/useDocumentsQueryData";
 import { DocumentsColumns } from "../columns/documentColumns";
 import { DataTable } from "@/components/table/DataTable";
 import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export function DocumentTable({ type }) {
   const [sorting, setSorting] = useState([]);
@@ -36,10 +37,18 @@ export function DocumentTable({ type }) {
 
   const { data: documents = [], isLoading } = useDocuments(type);
 
-  console.log(documents);
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
 
   const columns = React.useMemo(
-    () => DocumentsColumns(role, navigate, currentSection),
+    () =>
+      DocumentsColumns(
+        role,
+        navigate,
+        currentSection,
+        formatAmount,
+        selectedCurrency,
+      ),
     [role, navigate],
   );
 

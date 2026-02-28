@@ -46,8 +46,11 @@ import {
 import SelectField from "@/components/Form/SelectField";
 import { toast } from "sonner";
 import { formatId } from "@/lib/utils/formatId";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export default function ProjectSettingsPage() {
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("info");
 
@@ -79,15 +82,13 @@ export default function ProjectSettingsPage() {
 
   const { data: teamsResponse } = useTeams();
   const { data: availableInvoices = [], isLoading: availableInvoicesLoading } =
-  useInvoicesWithoutProjects();
+    useInvoicesWithoutProjects();
   const { data: availableServices = [], isLoading: availableServicesLoading } =
-  useServices();
-
+    useServices();
 
   const removeTeamMemberMutation = useRemoveProjectTeamMember();
   const deleteServiceMutation = useDeleteProjectService();
   const deleteInvoiceMutation = useDeleteProjectInvoice();
-  
 
   const addAssignment = useAddProjectAssignment();
   const assignServiceToProject = useAssignServiceToProject();
@@ -525,7 +526,7 @@ export default function ProjectSettingsPage() {
                       </p>
                       <div className="flex items-center gap-3 mt-1">
                         <span className="text-xs text-muted-foreground">
-                          {Number(service.base_price) || "0.00"} MAD
+                          {formatAmount(Number(service.base_price) || 0, "MAD")}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           Qty: {service.pivot?.quantity || 1}

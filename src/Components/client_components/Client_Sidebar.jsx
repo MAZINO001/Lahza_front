@@ -19,10 +19,12 @@ import { Button } from "../ui/button";
 import Checkbox from "../Checkbox";
 import EmptySearch1 from "@/components/empty-search-1";
 import AlertDialogDestructive from "../alert-dialog-destructive-1";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 
 export default function Client_Sidebar({ currentId }) {
   const { role } = useAuthContext();
-
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
   const { data: clients = [], isLoading, isError } = useClients();
   const deleteClientMutation = useDeleteClient();
 
@@ -155,7 +157,7 @@ export default function Client_Sidebar({ currentId }) {
                     </div>
 
                     <div className="text-sm text-muted-foreground mt-2">
-                      {Number(item.totalPaid || 0).toFixed(2)} MAD
+                      {formatAmount(item.totalPaid || 0, "MAD")}
                     </div>
                   </Link>
                 </div>

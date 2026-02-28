@@ -6,9 +6,11 @@ import { toast } from "sonner";
 import { Copy } from "lucide-react";
 import { StatusBadge } from "@/components/StatusBadge";
 import { useCompanyInfo } from "@/features/settings";
+import { useCurrencyStore } from "@/hooks/useCurrencyStore";
 export default function PaymentDetails({ invoiceId }) {
   const { data: companyInfo } = useCompanyInfo();
-
+  const formatAmount = useCurrencyStore((state) => state.formatAmount);
+  const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
   const [error, setError] = useState(null);
   const { data: payments = [], isLoading } = useDocumentPayments(invoiceId);
   const copyToClipboard = (text, label) => {
@@ -83,10 +85,7 @@ export default function PaymentDetails({ invoiceId }) {
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-medium">
-                  {new Intl.NumberFormat("fr-MA", {
-                    style: "currency",
-                    currency: "MAD",
-                  }).format(payment.amount)}
+                  {formatAmount(payment.amount || 0, "MAD")}
                 </p>
 
                 {payment.updated_at && (
