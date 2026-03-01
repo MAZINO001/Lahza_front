@@ -38,5 +38,174 @@
     "euro": "Euro",
     "moroccan_dirham": "Dirham marocain",
     "us_dollar": "Dollar américain"
+  },
+  "offers": {
+    "table": {
+      "filter_placeholder": "Filtrer les offres...",
+      "upload_csv": "Importer un CSV",
+      "add_new_offer": "Ajouter une offre",
+      "columns": {
+        "title": "Titre de l'offre",
+        "type": "Type",
+        "discount": "Réduction",
+        "start_date": "Date de début",
+        "end_date": "Date de fin",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit_offer": "Modifier l'offre",
+        "delete_offer": "Supprimer l'offre",
+        "delete_confirm_title": "Supprimer l'offre",
+        "delete_confirm_description": "Êtes-vous sûr de vouloir supprimer cette offre ? Cette action est irréversible."
+      }
+    },
+    "form": {
+      "loading_offer": "Chargement des données de l'offre...",
+      "loading_services": "Chargement des services...",
+      "title_label": "Titre de l'offre",
+      "title_placeholder": "ex. Promo été 30%",
+      "service_label": "Service",
+      "service_placeholder": "Sélectionnez un service",
+      "service_loading_placeholder": "Chargement des services...",
+      "description_label": "Description",
+      "description_placeholder": "Décrivez cette offre...",
+      "discount_type_label": "Type de réduction",
+      "discount_type_percent": "Pourcentage (%)",
+      "discount_type_fixed": "Montant fixe (MAD)",
+      "discount_value_label": "Valeur de la réduction",
+      "start_date_label": "Date de début",
+      "end_date_label": "Date de fin",
+      "status_label": "Statut",
+      "status_active": "Active",
+      "status_inactive": "Inactive",
+      "placement_label": "Emplacement",
+      "placement": {
+        "header": "En-tête",
+        "calendar": "Calendrier",
+        "projects": "Projets",
+        "invoices": "Factures",
+        "quotes": "Devis"
+      },
+      "cancel_button": "Annuler",
+      "saving": "Enregistrement...",
+      "update_offer": "Mettre à jour l'offre",
+      "create_offer": "Créer l'offre",
+      "validation": {
+        "title_required": "Le titre est requis",
+        "service_required": "Veuillez sélectionner un service",
+        "description_required": "La description est requise",
+        "discount_type_required": "Le type de réduction est requis",
+        "discount_value_required": "La valeur est requise",
+        "discount_value_min": "Ne peut pas être négative",
+        "start_date_required": "La date de début est requise",
+        "end_date_required": "La date de fin est requise"
+      }
+    },
+    "card": {
+      "dismiss_title": "Fermer",
+      "dismiss_aria": "Fermer l'offre : {{title}}",
+      "default_offer_label": "offre"
+    },
+    "page": {
+      "delete_success": "Offre supprimée avec succès",
+      "delete_error": "Échec de la suppression de l'offre",
+      "load_error": "Échec du chargement de l'offre",
+      "untitled": "Offre sans titre",
+      "edit_button": "Modifier",
+      "delete_button": "Supprimer",
+      "close_button": "Fermer",
+      "description_title": "Description",
+      "no_description": "Aucune description fournie.",
+      "start_date": "Date de début",
+      "end_date": "Date de fin",
+      "discount_type": "Type de réduction",
+      "discount_value": "Valeur de la réduction"
+    }
+  },
+  "sidebar": {
+    "services_offers": {
+      "title_services": "Services",
+      "title_offers": "Offres",
+      "filter_all": "Toutes les {{title}}",
+      "filter_active": "{{title}} actives",
+      "filter_inactive": "{{title}} inactives",
+      "new_button": "Nouveau",
+      "loading": "Chargement des {{title}}...",
+      "error": "Échec du chargement des {{title}}. Veuillez réessayer."
+    }
+  },
+  "services": {
+    "table": {
+      "filter_placeholder": "Filtrer par nom...",
+      "upload_csv": "Importer un CSV",
+      "add_new_service": "Ajouter un service",
+      "columns": {
+        "image": "Image du service",
+        "name": "Nom du service",
+        "category": "Catégorie",
+        "description": "Description",
+        "base_price": "Prix de base",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit_service": "Modifier le service",
+        "delete_service": "Supprimer le service"
+      }
+    },
+    "form": {
+      "loading_service": "Chargement du service...",
+      "name_label": "Nom du service",
+      "name_placeholder": "ex. Développement web premium",
+      "description_label": "Description",
+      "description_placeholder": "Décrivez votre service...",
+      "image_label": "Image du service",
+      "base_price_label": "Prix de base (MAD)",
+      "tax_rate_label": "Taux de taxe",
+      "tax_20": "20%",
+      "tax_0": "0% (Sans taxe)",
+      "duration_label": "Durée du service",
+      "duration_placeholder": "ex. 3 (jours)",
+      "category_label": "Catégorie de service",
+      "category_dev": "Développement",
+      "category_branding": "Branding",
+      "category_marketing": "Marketing",
+      "category_management": "Gestion",
+      "status_label": "Statut",
+      "status_active": "Actif",
+      "status_inactive": "Inactif",
+      "cancel_button": "Annuler",
+      "processing": "Traitement...",
+      "update_service": "Mettre à jour le service",
+      "create_service": "Créer le service",
+      "validation": {
+        "name_required": "Le nom est requis",
+        "description_required": "La description est requise",
+        "price_required": "Le prix est requis"
+      }
+    },
+    "page": {
+      "delete_no_id": "ID du service introuvable",
+      "delete_error": "Échec de la suppression du service",
+      "load_error": "Échec du chargement du service",
+      "unnamed": "Service sans nom",
+      "edit_button": "Modifier",
+      "tab_overview": "Aperçu",
+      "tab_transactions": "Transactions",
+      "delete_button": "Supprimer"
+    },
+    "overview": {
+      "title": "Aperçu du service",
+      "preview": "Aperçu",
+      "description_label": "Description",
+      "no_description": "Aucune description fournie.",
+      "base_price": "Prix de base",
+      "tax_rate": "Taux de taxe"
+    },
+    "transactions": {
+      "filter_by": "Filtrer par :",
+      "invoices": "Factures",
+      "quotes": "Devis"
+    }
   }
 }

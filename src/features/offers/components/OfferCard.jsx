@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const OfferCard = ({
   offer,
@@ -22,6 +23,8 @@ const OfferCard = ({
   let paddingClasses = "p-5";
   let titleSize = "text-lg";
   let ctaSize = "text-sm";
+
+  const { t } = useTranslation();
 
   if (placement === "header") {
     shapeClasses = `
@@ -74,8 +77,10 @@ const OfferCard = ({
             transition-colors
             z-10
           `}
-          aria-label={`Dismiss offer: ${offer?.title || "offer"}`}
-          title="Dismiss"
+          aria-label={t("offers.card.dismiss_aria", {
+            title: offer?.title || t("offers.card.default_offer_label"),
+          })}
+          title={t("offers.card.dismiss_title")}
         >
           <X size={placement === "header" ? 16 : 18} />
         </button>

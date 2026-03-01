@@ -19,6 +19,7 @@ export function getServiceColumns(
   navigate,
   formatAmount,
   selectedCurrency,
+  t,
 ) {
   return [
     {
@@ -29,7 +30,8 @@ export function getServiceColumns(
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="hidden sm:flex"
         >
-          Service Image <ArrowUpDown className="ml-1 h-4 w-4" />
+          {t("services.table.columns.image")}
+          <ArrowUpDown className="ml-1 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
@@ -50,7 +52,8 @@ export function getServiceColumns(
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Service Name <ArrowUpDown className="ml-1 h-4 w-4" />
+          {t("services.table.columns.name")}
+          <ArrowUpDown className="ml-1 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
@@ -67,7 +70,7 @@ export function getServiceColumns(
     },
     {
       accessorKey: "category",
-      header: "Category",
+      header: t("services.table.columns.category"),
       cell: ({ row }) => (
         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
           <CategoryBadge category={row.getValue("category")} />
@@ -77,7 +80,7 @@ export function getServiceColumns(
 
     {
       accessorKey: "description",
-      header: "Description",
+      header: t("services.table.columns.description"),
       cell: ({ row }) => (
         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
           <div
@@ -93,7 +96,8 @@ export function getServiceColumns(
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Base Price <ArrowUpDown className="ml-1 h-4 w-4" />
+          {t("services.table.columns.base_price")}
+          <ArrowUpDown className="ml-1 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
@@ -108,7 +112,7 @@ export function getServiceColumns(
     {
       id: "actions",
       enableHiding: false,
-      header: "Actions",
+      header: t("services.table.columns.actions"),
       cell: ({ row }) => {
         const service = row.original;
         const { HandleEditService, handleDeleteService } = globalFnStore();
@@ -124,7 +128,7 @@ export function getServiceColumns(
         return (
           <div className="flex items-center gap-2">
             <TooltipButton
-              tooltip="Edit Service"
+              tooltip={t("services.table.actions.edit_service")}
               size="sm"
               variant="ghost"
               onClick={onEdit}
@@ -137,7 +141,7 @@ export function getServiceColumns(
                 onDelete={() => onDelete()}
                 trigger={
                   <TooltipButton
-                    tooltip="Delete Service"
+                    tooltip={t("services.table.actions.delete_service")}
                     variant="ghost"
                     size="sm"
                     className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"

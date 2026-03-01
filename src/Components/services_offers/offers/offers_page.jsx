@@ -9,6 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useOffer } from "@/features/offers/hooks/useOffersQuery";
 import { useCurrencyStore } from "@/hooks/useCurrencyStore";
+import { useTranslation } from "react-i18next";
 
 export default function OfferPage({ currentId }) {
   const { data, isLoading, isError } = useOffer(currentId);
@@ -17,6 +18,7 @@ export default function OfferPage({ currentId }) {
   const queryClient = useQueryClient();
   const formatAmount = useCurrencyStore((state) => state.formatAmount);
   const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
+  const { t } = useTranslation();
   console.log(data);
 
   const deleteMutation = useMutation({
@@ -24,10 +26,10 @@ export default function OfferPage({ currentId }) {
       api.delete(`${import.meta.env.VITE_BACKEND_URL}/offers/${currentId}`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["offers"] });
-      toast.success("Offer deleted successfully");
+      toast.success(t("offers.page.delete_success"));
       navigate(`/${role}/offers`);
     },
-    onError: () => toast.error("Failed to delete offer"),
+    onError: () => toast.error(t("offers.page.delete_error")),
   });
 
   const formatDate = (date) =>
@@ -50,7 +52,9 @@ export default function OfferPage({ currentId }) {
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-2" />
-          <p className="text-muted-foreground">Failed to load offer</p>
+          <p className="text-muted-foreground">
+            {t("offers.page.load_error")}
+          </p>
         </div>
       </div>
     );
@@ -60,7 +64,7 @@ export default function OfferPage({ currentId }) {
     <div className="flex-1 overflow-y-auto">
       <div className="sticky top-0 z-10 border-b border-t backdrop-blur-sm px-4 py-4 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground truncate max-w-[60%]">
-          {data?.title || "Untitled Offer"}
+          {data?.title || t("offers.page.untitled")}
         </h1>
 
         <div className="flex items-center gap-3 shrink-0">
@@ -70,7 +74,7 @@ export default function OfferPage({ currentId }) {
               state={{ editId: currentId }}
             >
               <Edit2 className="mr-2 h-4 w-4" />
-              Edit
+              {t("offers.page.edit_button")}
             </Link>
           </Button>
 
@@ -84,7 +88,7 @@ export default function OfferPage({ currentId }) {
             disabled={deleteMutation.isPending}
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            Delete
+            {t("offers.page.delete_button")}
           </Button>
 
           <div className="h-5 w-px bg-border mx-1" />
@@ -92,7 +96,7 @@ export default function OfferPage({ currentId }) {
           <Button variant="ghost" size="icon" asChild>
             <Link to={`/${role}/offers`}>
               <X className="h-5 w-5" />
-              <span className="sr-only">Close</span>
+              <span className="sr-only">{t("offers.page.close_button")}</span>
             </Link>
           </Button>
         </div>
@@ -105,7 +109,7 @@ export default function OfferPage({ currentId }) {
             {/* Description */}
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Description
+                {t("offers.page.description_title")}
               </h3>
               {data?.description ? (
                 <div
@@ -114,7 +118,7 @@ export default function OfferPage({ currentId }) {
                 />
               ) : (
                 <p className="text-sm text-muted-foreground italic">
-                  No description provided.
+                  {t("offers.page.no_description")}
                 </p>
               )}
             </div>
@@ -123,7 +127,7 @@ export default function OfferPage({ currentId }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                  Start Date
+                  {t("offers.page.start_date")}
                 </h3>
                 <p className="text-base font-medium">
                   {data?.start_date ? formatDate(data.start_date) : "—"}
@@ -132,7 +136,7 @@ export default function OfferPage({ currentId }) {
 
               <div className="space-y-1">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                  End Date
+                  {t("offers.page.end_date")}
                 </h3>
                 <p className="text-base font-medium">
                   {data?.end_date ? formatDate(data.end_date) : "—"}
@@ -144,7 +148,7 @@ export default function OfferPage({ currentId }) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                  Discount Type
+                  {t("offers.page.discount_type")}
                 </h3>
                 <p className="text-base font-medium capitalize">
                   {data?.discount_type || "—"}
@@ -153,7 +157,7 @@ export default function OfferPage({ currentId }) {
 
               <div className="space-y-1">
                 <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                  Discount Value
+                  {t("offers.page.discount_value")}
                 </h3>
                 <p className="text-base font-medium">
                   {data?.discount_type === "percent"

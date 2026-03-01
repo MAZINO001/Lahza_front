@@ -8,7 +8,8 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/common/ConfirmDialoge";
 import { Button } from "@/components/ui/button";
-export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) {
+
+export function getOfferColumns(role, navigate, formatAmount, selectedCurrency , t) {
   return [
     {
       accessorKey: "title",
@@ -17,7 +18,8 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Offer Title <ArrowUpDown className="ml-2 h-4 w-4" />
+          {t("offers.table.columns.title")}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
@@ -35,7 +37,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
     },
     {
       accessorKey: "discount_type",
-      header: "Type",
+      header: t("offers.table.columns.type"),
       cell: ({ row }) => (
         <span className="capitalize font-medium">
           {row.getValue("discount_type")}
@@ -44,7 +46,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
     },
     {
       accessorKey: "discount_value",
-      header: "Discount",
+      header: t("offers.table.columns.discount"),
       cell: ({ row }) => {
         const value = row.getValue("discount_value");
         const type = row.getValue("discount_type");
@@ -57,7 +59,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
     },
     {
       accessorKey: "start_date",
-      header: "Start Date",
+      header: t("offers.table.columns.start_date"),
       cell: ({ row }) => {
         const date = new Date(row.getValue("start_date"));
         const formatted = date.toLocaleDateString("en-US", {
@@ -70,7 +72,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
     },
     {
       accessorKey: "end_date",
-      header: "End Date",
+      header: t("offers.table.columns.end_date"),
       cell: ({ row }) => {
         const date = new Date(row.getValue("end_date"));
         const formatted = date.toLocaleDateString("en-US", {
@@ -83,7 +85,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("offers.table.columns.status"),
       cell: ({ row }) => {
         const status = row.getValue("status");
         return <StatusBadge status={status} />;
@@ -91,7 +93,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t("offers.table.columns.actions"),
       cell: ({ row }) => {
         const offer = row.original;
         const { HandleEditOffer, handleDeleteOffer } = globalFnStore();
@@ -99,7 +101,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
         return (
           <div className="flex gap-2">
             <TooltipButton
-              tooltip="Edit Offer"
+              tooltip={t("offers.table.actions.edit_offer")}
               onClick={() => HandleEditOffer(offer.id, navigate, role)}
               className="cursor-pointer"
             >
@@ -108,7 +110,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
             {role === "admin" && (
               <>
                 <TooltipButton
-                  tooltip="Delete Offer"
+                  tooltip={t("offers.table.actions.delete_offer")}
                   variant="ghost"
                   size="sm"
                   onClick={() => setOpen(true)}
@@ -124,8 +126,10 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency) 
                     handleDeleteOffer(offer.id);
                     setOpen(false);
                   }}
-                  title="Remove Signature"
-                  description="Are you sure you want to remove this signature? This action cannot be undone."
+                  title={t("offers.table.actions.delete_confirm_title")}
+                  description={t(
+                    "offers.table.actions.delete_confirm_description",
+                  )}
                   action="cancel"
                 />
               </>

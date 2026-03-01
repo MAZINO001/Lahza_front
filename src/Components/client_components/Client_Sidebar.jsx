@@ -71,7 +71,7 @@ export default function Client_Sidebar({ currentId }) {
   }
 
   return (
-    <div className="w-[30%] md:w-[22%] border-t border-r border-border flex flex-col">
+    <div className="w-[30%] md:w-[25%] border-t border-r border-border flex flex-col">
       {/* Header */}
       <div className="border-b p-4 flex items-center justify-between gap-3">
         <DropdownMenu>

@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCurrencyStore } from "@/hooks/useCurrencyStore";
+import { useTranslation } from "react-i18next";
 
 export default function Overview({ data }) {
   const formatAmount = useCurrencyStore((state) => state.formatAmount);
@@ -7,12 +8,13 @@ export default function Overview({ data }) {
   const getCurrentCurrency = useCurrencyStore(
     (state) => state.getCurrentCurrency,
   );
+  const { t } = useTranslation();
 
   return (
     <Card className="border-border bg-card shadow-sm">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg font-semibold">
-          Service Overview
+          {t("services.overview.title")}
         </CardTitle>
       </CardHeader>
 
@@ -22,12 +24,12 @@ export default function Overview({ data }) {
           {data?.image && (
             <div className="space-y-2 order-1 md:order-0">
               <p className="text-sm font-medium text-muted-foreground">
-                Preview
+                {t("services.overview.preview")}
               </p>
               <div className="overflow-hidden rounded-lg border bg-muted/40 aspect-video">
                 <img
                   src={data.image}
-                  alt={data.name || "Service preview"}
+                  alt={data.name || t("services.overview.preview_alt")}
                   className="w-full h-full object-cover"
                   loading="lazy"
                 />
@@ -38,7 +40,7 @@ export default function Overview({ data }) {
           {/* Right: Description (≈50%) */}
           <div className="space-y-2 order-2 md:order-0">
             <p className="text-sm font-medium text-muted-foreground">
-              Description
+              {t("services.overview.description_label")}
             </p>
 
             {data?.description ? (
@@ -48,7 +50,7 @@ export default function Overview({ data }) {
               />
             ) : (
               <p className="text-sm text-muted-foreground italic">
-                No description provided.
+                {t("services.overview.no_description")}
               </p>
             )}
           </div>
@@ -58,7 +60,7 @@ export default function Overview({ data }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">
-              Base Price
+              {t("services.overview.base_price")}
             </p>
             <div className="flex items-baseline gap-1.5">
               <span className="text-lg font-medium text-muted-foreground">
@@ -79,7 +81,7 @@ export default function Overview({ data }) {
 
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">
-              Tax Rate
+              {t("services.overview.tax_rate")}
             </p>
             <p className="text-3xl font-bold tracking-tight">
               {data?.tax_rate ?? 0}%

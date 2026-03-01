@@ -8,18 +8,20 @@ import { useService } from "@/features/services/hooks/useServices";
 import Transactions from "@/components/services_offers/services/service_Transactions";
 import Overview from "@/components/services_offers/services/overview";
 import { useDeleteService } from "@/features/services/hooks/useServicesData";
+import { useTranslation } from "react-i18next";
 
 export default function ServicePage({ currentId }) {
   const { data, isLoading, isError } = useService(currentId);
   const [activeTab, setActiveTab] = useState("overview");
   const { role } = useAuthContext();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const deleteMutation = useDeleteService();
 
   const handleDeleteService = () => {
     if (!currentId) {
-      toast.error("Service ID not found");
+      toast.error(t("services.page.delete_no_id"));
       return;
     }
     deleteMutation.mutate(currentId, {
@@ -28,13 +30,14 @@ export default function ServicePage({ currentId }) {
       },
       onError: () => {
         console.error("Deletion failed");
+        toast.error(t("services.page.delete_error"));
       },
     });
   };
 
   const tabs = [
-    { id: "overview", label: "Overview" },
-    { id: "transactions", label: "Transactions" },
+    { id: "overview", label: t("services.page.tab_overview") },
+    { id: "transactions", label: t("services.page.tab_transactions") },
   ];
   if (isLoading) {
     return (
@@ -49,7 +52,9 @@ export default function ServicePage({ currentId }) {
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-2" />
-          <p className="text-muted-foreground">Failed to load service</p>
+          <p className="text-muted-foreground">
+            {t("services.page.load_error")}
+          </p>
         </div>
       </div>
     );
@@ -59,7 +64,7 @@ export default function ServicePage({ currentId }) {
     <div className="flex-1 overflow-y-auto">
       <div className="border-b border-t px-4 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-          {data?.name || "Unnamed Service"}
+          {data?.name || t("services.page.unnamed")}
         </h1>
 
         <div className="flex items-center gap-2 flex-wrap">
@@ -68,7 +73,8 @@ export default function ServicePage({ currentId }) {
               to={`/${role}/service/${currentId}/edit`}
               state={{ editId: currentId }}
             >
-              <Edit2 className="w-4 h-4 mr-2" /> Edit
+              <Edit2 className="w-4 h-4 mr-2" />
+              {t("services.page.edit_button")}
             </Link>
           </Button>
 
@@ -78,7 +84,8 @@ export default function ServicePage({ currentId }) {
             disabled={deleteMutation.isPending}
             className="flex-1 sm:flex-none"
           >
-            <Trash2 className="w-4 h-4 mr-2" /> Delete
+            <Trash2 className="w-4 h-4 mr-2" />
+            {t("services.page.delete_button")}
           </Button>
 
           <div className="w-px h-6 bg-gray-300 mx-2 hidden sm:block"></div>

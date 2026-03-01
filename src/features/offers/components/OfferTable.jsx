@@ -17,12 +17,14 @@ import { useOffers } from "../hooks/useOffersQuery";
 import { DataTable } from "@/components/table/DataTable";
 import { Upload } from "lucide-react";
 import { useCurrencyStore } from "@/hooks/useCurrencyStore";
+import { useTranslation } from "react-i18next";
 
 export function OfferTable() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const { data: offers = [], isLoading } = useOffers();
   const { role } = useAuthContext();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const formatAmount = useCurrencyStore((state) => state.formatAmount);
   const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
@@ -31,8 +33,8 @@ export function OfferTable() {
   const [columnFilters, setColumnFilters] = useState([]);
 
   const columns = React.useMemo(
-    () => getOfferColumns(role, navigate, formatAmount, selectedCurrency),
-    [role, navigate, formatAmount, selectedCurrency],
+    () => getOfferColumns(role, navigate, formatAmount, selectedCurrency , t),
+    [role, navigate, formatAmount, selectedCurrency ,t],
   );
 
   const table = useReactTable({
@@ -51,7 +53,7 @@ export function OfferTable() {
     <div className="w-full p-4 min-h-screen">
       <div className="flex justify-between mb-4">
         <FormField
-          placeholder="Filter offers..."
+          placeholder={t("offers.table.filter_placeholder")}
           value={table.getColumn("title")?.getFilterValue() ?? ""}
           onChange={(e) =>
             table.getColumn("title")?.setFilterValue(e.target.value)
@@ -60,10 +62,11 @@ export function OfferTable() {
         />
         <div className="flex gap-2">
           <Button onClick={() => setShowUploadModal(true)} variant="outline">
-            <Upload className="mr-2 h-4 w-4" /> Upload CSV
+            <Upload className="mr-2 h-4 w-4" />
+            {t("offers.table.upload_csv")}
           </Button>
           <Link to={`/${role}/offer/new`}>
-            <Button>Add New Offer</Button>
+            <Button>{t("offers.table.add_new_offer")}</Button>
           </Link>
         </div>
       </div>

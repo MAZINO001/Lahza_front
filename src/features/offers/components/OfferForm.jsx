@@ -17,6 +17,7 @@ import { useServices } from "@/features/services/hooks/useServices";
 import DateField from "@/components/Form/DateField";
 import Checkbox from "@/components/Checkbox";
 import { Label } from "@/components/ui/label";
+import { useTranslation } from "react-i18next";
 
 export function OfferForm({ offerId, onSuccess }) {
   const { data: offer, isLoading } = useOffer(offerId);
@@ -29,6 +30,7 @@ export function OfferForm({ offerId, onSuccess }) {
   const updateMutation = useUpdateOffer();
   const mutation = offer?.id ? updateMutation : createMutation;
   const isEditMode = !!offer?.id;
+  const { t } = useTranslation();
 
   const {
     control,
@@ -62,11 +64,11 @@ export function OfferForm({ offerId, onSuccess }) {
   }, [offer, isLoading, reset]);
 
   const PLACEMENT_OPTIONS = [
-    { id: "header", label: "Header" },
-    { id: "calendar", label: "Calendar" },
-    { id: "projects", label: "Projects" },
-    { id: "invoices", label: "Invoices" },
-    { id: "quotes", label: "Quotes" },
+    { id: "header", label: t("offers.form.placement.header") },
+    { id: "calendar", label: t("offers.form.placement.calendar") },
+    { id: "projects", label: t("offers.form.placement.projects") },
+    { id: "invoices", label: t("offers.form.placement.invoices") },
+    { id: "quotes", label: t("offers.form.placement.quotes") },
   ];
 
   const PlacementCheckbox = ({ id, label, checked, onChange }) => (
@@ -113,12 +115,16 @@ export function OfferForm({ offerId, onSuccess }) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 h-screen">
       {isLoading && offerId ? (
         <div className="flex items-center justify-center h-64">
-          <p className="text-sm text-muted-foreground">Loading offer data...</p>
+          <p className="text-sm text-muted-foreground">
+            {t("offers.form.loading_offer")}
+          </p>
         </div>
       ) : (
         <>
           {servicesLoading && (
-            <p className="text-sm text-muted-foreground">Loading services...</p>
+            <p className="text-sm text-muted-foreground">
+              {t("offers.form.loading_services")}
+            </p>
           )}
 
           <div className="flex items-end gap-4">
@@ -126,11 +132,11 @@ export function OfferForm({ offerId, onSuccess }) {
               <Controller
                 name="title"
                 control={control}
-                rules={{ required: "Title is required" }}
+                rules={{ required: t("offers.form.validation.title_required") }}
                 render={({ field }) => (
                   <FormField
-                    label="Offer Title"
-                    placeholder="e.g. Summer Sale 30%"
+                    label={t("offers.form.title_label")}
+                    placeholder={t("offers.form.title_placeholder")}
                     error={errors.title?.message}
                     {...field}
                   />
@@ -141,15 +147,17 @@ export function OfferForm({ offerId, onSuccess }) {
               <Controller
                 name="service_id"
                 control={control}
-                rules={{ required: "Please select a service" }}
+                rules={{
+                  required: t("offers.form.validation.service_required"),
+                }}
                 render={({ field }) => (
                   <SelectField
-                    label="Service"
+                    label={t("offers.form.service_label")}
                     options={serviceOptions}
                     placeholder={
                       servicesLoading
-                        ? "Loading services..."
-                        : "Select a service"
+                        ? t("offers.form.service_loading_placeholder")
+                        : t("offers.form.service_placeholder")
                     }
                     value={String(field.value || "")}
                     onChange={(v) => field.onChange(Number(v))}
@@ -164,11 +172,13 @@ export function OfferForm({ offerId, onSuccess }) {
             <Controller
               name="description"
               control={control}
-              rules={{ required: "Description is required" }}
+              rules={{
+                required: t("offers.form.validation.description_required"),
+              }}
               render={({ field }) => (
                 <RichTextEditor
-                  label="Description"
-                  placeholder="Describe this offer..."
+                  label={t("offers.form.description_label")}
+                  placeholder={t("offers.form.description_placeholder")}
                   error={errors.description?.message}
                   {...field}
                 />
@@ -181,13 +191,21 @@ export function OfferForm({ offerId, onSuccess }) {
               <Controller
                 name="discount_type"
                 control={control}
-                rules={{ required: "Discount type is required" }}
+                rules={{
+                  required: t("offers.form.validation.discount_type_required"),
+                }}
                 render={({ field }) => (
                   <SelectField
-                    label="Discount Type"
+                    label={t("offers.form.discount_type_label")}
                     options={[
-                      { value: "percent", label: "Percentage (%)" },
-                      { value: "fixed", label: "Fixed Amount (MAD)" },
+                      {
+                        value: "percent",
+                        label: t("offers.form.discount_type_percent"),
+                      },
+                      {
+                        value: "fixed",
+                        label: t("offers.form.discount_type_fixed"),
+                      },
                     ]}
                     {...field}
                   />
@@ -200,12 +218,15 @@ export function OfferForm({ offerId, onSuccess }) {
                 name="discount_value"
                 control={control}
                 rules={{
-                  required: "Value is required",
-                  min: { value: 0, message: "Cannot be negative" },
+                  required: t("offers.form.validation.discount_value_required"),
+                  min: {
+                    value: 0,
+                    message: t("offers.form.validation.discount_value_min"),
+                  },
                 }}
                 render={({ field }) => (
                   <FormField
-                    label="Discount Value"
+                    label={t("offers.form.discount_value_label")}
                     type="number"
                     step="0.01"
                     placeholder="0"
@@ -220,12 +241,14 @@ export function OfferForm({ offerId, onSuccess }) {
               <Controller
                 name="start_date"
                 control={control}
-                rules={{ required: "Start date is required" }}
+                rules={{
+                  required: t("offers.form.validation.start_date_required"),
+                }}
                 render={({ field }) => (
                   // <FormField
                   <DateField
                     type="date"
-                    label="Start Date"
+                    label={t("offers.form.start_date_label")}
                     error={errors.start_date?.message}
                     {...field}
                   />
@@ -236,12 +259,14 @@ export function OfferForm({ offerId, onSuccess }) {
               <Controller
                 name="end_date"
                 control={control}
-                rules={{ required: "End date is required" }}
+                rules={{
+                  required: t("offers.form.validation.end_date_required"),
+                }}
                 render={({ field }) => (
                   // <FormField
                   <DateField
                     type="date"
-                    label="End Date"
+                    label={t("offers.form.end_date_label")}
                     error={errors.end_date?.message}
                     {...field}
                   />
@@ -256,10 +281,16 @@ export function OfferForm({ offerId, onSuccess }) {
               control={control}
               render={({ field }) => (
                 <SelectField
-                  label="Status"
+                  label={t("offers.form.status_label")}
                   options={[
-                    { value: "active", label: "Active" },
-                    { value: "inactive", label: "Inactive" },
+                    {
+                      value: "active",
+                      label: t("offers.form.status_active"),
+                    },
+                    {
+                      value: "inactive",
+                      label: t("offers.form.status_inactive"),
+                    },
                   ]}
                   {...field}
                 />
@@ -268,7 +299,9 @@ export function OfferForm({ offerId, onSuccess }) {
           )}
 
           <div className="space-y-3">
-            <label className="text-sm font-medium">Placement</label>
+            <label className="text-sm font-medium">
+              {t("offers.form.placement_label")}
+            </label>
             <div className="space-y-2">
               <Controller
                 name="placement"
@@ -310,14 +343,14 @@ export function OfferForm({ offerId, onSuccess }) {
               variant="outline"
               onClick={() => navigate(`/${role}/offers`)}
             >
-              Cancel
+              {t("offers.form.cancel_button")}
             </Button>
             <Button type="submit" disabled={isSubmitting || mutation.isPending}>
               {mutation.isPending
-                ? "Saving..."
+                ? t("offers.form.saving")
                 : isEditMode
-                  ? "Update Offer"
-                  : "Create Offer"}
+                  ? t("offers.form.update_offer")
+                  : t("offers.form.create_offer")}
             </Button>
           </div>
         </>

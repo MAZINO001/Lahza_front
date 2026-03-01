@@ -13,11 +13,13 @@ import {
 
 import { ChevronDown } from "lucide-react";
 import { useDocsByService } from "@/features/services/hooks/useServicesData";
+import { useTranslation } from "react-i18next";
 
 export default function Transactions({ currentId }) {
   const [selectedStatus, setSelectedStatus] = useState("invoices");
   const { role } = useAuthContext();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const { data: invoices, isLoading: loadingInvoices } = useDocsByService(
     currentId,
@@ -43,13 +45,13 @@ export default function Transactions({ currentId }) {
   const sections = [
     {
       id: "invoices",
-      title: "Invoices",
+      title: t("services.transactions.invoices"),
       data: invoices,
       isLoading: loadingInvoices,
     },
     {
       id: "quotes",
-      title: "Quotes",
+      title: t("services.transactions.quotes"),
       data: quotes,
       isLoading: loadingQuotes,
     },
@@ -71,8 +73,10 @@ export default function Transactions({ currentId }) {
         <div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex-1 rounded-md flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
-                Filter By: {selectedStatus}
+              <button className="h-9 flex-1 rounded-md text-sm flex items-center gap-2 transition capitalize border border-border px-2 py-[4.3px]">
+                {t("services.transactions.filter_by")} {t(
+                  `services.transactions.${selectedStatus}`,
+                )}
                 <ChevronDown className="w-4 h-4" />
               </button>
             </DropdownMenuTrigger>
@@ -85,7 +89,7 @@ export default function Transactions({ currentId }) {
                 {displayType.map((status) => (
                   <DropdownMenuRadioItem key={status} value={status}>
                     <span className="capitalize">
-                      {status.replace("_", " ")}
+                      {t(`services.transactions.${status}`)}
                     </span>
                   </DropdownMenuRadioItem>
                 ))}

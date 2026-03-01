@@ -38,5 +38,174 @@
     "euro": "Euro",
     "moroccan_dirham": "Moroccan Dirham",
     "us_dollar": "US Dollar"
+  },
+  "offers": {
+    "table": {
+      "filter_placeholder": "Filter offers...",
+      "upload_csv": "Upload CSV",
+      "add_new_offer": "Add New Offer",
+      "columns": {
+        "title": "Offer Title",
+        "type": "Type",
+        "discount": "Discount",
+        "start_date": "Start Date",
+        "end_date": "End Date",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit_offer": "Edit Offer",
+        "delete_offer": "Delete Offer",
+        "delete_confirm_title": "Delete offer",
+        "delete_confirm_description": "Are you sure you want to delete this offer? This action cannot be undone."
+      }
+    },
+    "form": {
+      "loading_offer": "Loading offer data...",
+      "loading_services": "Loading services...",
+      "title_label": "Offer Title",
+      "title_placeholder": "e.g. Summer Sale 30%",
+      "service_label": "Service",
+      "service_placeholder": "Select a service",
+      "service_loading_placeholder": "Loading services...",
+      "description_label": "Description",
+      "description_placeholder": "Describe this offer...",
+      "discount_type_label": "Discount Type",
+      "discount_type_percent": "Percentage (%)",
+      "discount_type_fixed": "Fixed Amount (MAD)",
+      "discount_value_label": "Discount Value",
+      "start_date_label": "Start Date",
+      "end_date_label": "End Date",
+      "status_label": "Status",
+      "status_active": "Active",
+      "status_inactive": "Inactive",
+      "placement_label": "Placement",
+      "placement": {
+        "header": "Header",
+        "calendar": "Calendar",
+        "projects": "Projects",
+        "invoices": "Invoices",
+        "quotes": "Quotes"
+      },
+      "cancel_button": "Cancel",
+      "saving": "Saving...",
+      "update_offer": "Update Offer",
+      "create_offer": "Create Offer",
+      "validation": {
+        "title_required": "Title is required",
+        "service_required": "Please select a service",
+        "description_required": "Description is required",
+        "discount_type_required": "Discount type is required",
+        "discount_value_required": "Value is required",
+        "discount_value_min": "Cannot be negative",
+        "start_date_required": "Start date is required",
+        "end_date_required": "End date is required"
+      }
+    },
+    "card": {
+      "dismiss_title": "Dismiss",
+      "dismiss_aria": "Dismiss offer: {{title}}",
+      "default_offer_label": "offer"
+    },
+    "page": {
+      "delete_success": "Offer deleted successfully",
+      "delete_error": "Failed to delete offer",
+      "load_error": "Failed to load offer",
+      "untitled": "Untitled Offer",
+      "edit_button": "Edit",
+      "delete_button": "Delete",
+      "close_button": "Close",
+      "description_title": "Description",
+      "no_description": "No description provided.",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "discount_type": "Discount Type",
+      "discount_value": "Discount Value"
+    }
+  },
+  "sidebar": {
+    "services_offers": {
+      "title_services": "Services",
+      "title_offers": "Offers",
+      "filter_all": "All {{title}}",
+      "filter_active": "Active {{title}}",
+      "filter_inactive": "Inactive {{title}}",
+      "new_button": "New",
+      "loading": "Loading {{title}}...",
+      "error": "Failed to load {{title}}. Please try again."
+    }
+  },
+  "services": {
+    "table": {
+      "filter_placeholder": "Filter by name...",
+      "upload_csv": "Upload CSV",
+      "add_new_service": "Add New Service",
+      "columns": {
+        "image": "Service Image",
+        "name": "Service Name",
+        "category": "Category",
+        "description": "Description",
+        "base_price": "Base Price",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit_service": "Edit Service",
+        "delete_service": "Delete Service"
+      }
+    },
+    "form": {
+      "loading_service": "Loading service...",
+      "name_label": "Service Name",
+      "name_placeholder": "e.g., Premium Web Development",
+      "description_label": "Description",
+      "description_placeholder": "Describe your service...",
+      "image_label": "Service Image",
+      "base_price_label": "Base Price (MAD)",
+      "tax_rate_label": "Tax Rate",
+      "tax_20": "20%",
+      "tax_0": "0% (No Tax)",
+      "duration_label": "Service Duration",
+      "duration_placeholder": "e.g., 3 (days)",
+      "category_label": "Service Category",
+      "category_dev": "Development",
+      "category_branding": "Branding",
+      "category_marketing": "Marketing",
+      "category_management": "Management",
+      "status_label": "Status",
+      "status_active": "Active",
+      "status_inactive": "Inactive",
+      "cancel_button": "Cancel",
+      "processing": "Processing...",
+      "update_service": "Update Service",
+      "create_service": "Create Service",
+      "validation": {
+        "name_required": "Name is required",
+        "description_required": "Description is required",
+        "price_required": "Price is required"
+      }
+    },
+    "page": {
+      "delete_no_id": "Service ID not found",
+      "delete_error": "Failed to delete service",
+      "load_error": "Failed to load service",
+      "unnamed": "Unnamed Service",
+      "edit_button": "Edit",
+      "tab_overview": "Overview",
+      "tab_transactions": "Transactions",
+      "delete_button": "Delete"
+    },
+    "overview": {
+      "title": "Service Overview",
+      "preview": "Preview",
+      "description_label": "Description",
+      "no_description": "No description provided.",
+      "base_price": "Base Price",
+      "tax_rate": "Tax Rate"
+    },
+    "transactions": {
+      "filter_by": "Filter by:",
+      "invoices": "Invoices",
+      "quotes": "Quotes"
+    }
   }
 }

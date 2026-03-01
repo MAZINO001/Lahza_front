@@ -20,6 +20,7 @@ import { getServiceColumns } from "../columns/serviceColumns";
 import { DataTable } from "@/components/table/DataTable";
 import { useServices } from "@/features/services/hooks/useServicesData";
 import { useCurrencyStore } from "@/hooks/useCurrencyStore";
+import { useTranslation } from "react-i18next";
 
 export function ServiceTable() {
   const [sorting, setSorting] = useState([]);
@@ -30,13 +31,14 @@ export function ServiceTable() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
   const { data: services, isLoading } = useServices();
+  const { t } = useTranslation();
 
   const formatAmount = useCurrencyStore((state) => state.formatAmount);
   const selectedCurrency = useCurrencyStore((state) => state.selectedCurrency);
 
   const columns = React.useMemo(
-    () => getServiceColumns(role, navigate, formatAmount, selectedCurrency),
-    [role, navigate, formatAmount, selectedCurrency],
+    () => getServiceColumns(role, navigate, formatAmount, selectedCurrency, t),
+    [role, navigate, formatAmount, selectedCurrency, t],
   );
 
   console.log(services);
@@ -58,7 +60,7 @@ export function ServiceTable() {
     <div className="w-full p-4 min-h-screen">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <FormField
-          placeholder="Filter by name..."
+          placeholder={t("services.table.filter_placeholder")}
           value={table.getColumn("name")?.getFilterValue() ?? ""}
           onChange={(e) =>
             table.getColumn("name")?.setFilterValue(e.target.value)
@@ -71,10 +73,13 @@ export function ServiceTable() {
             variant="outline"
             className="w-full sm:w-auto"
           >
-            <Upload className="mr-2 h-4 w-4" /> Upload CSV
+            <Upload className="mr-2 h-4 w-4" />
+            {t("services.table.upload_csv")}
           </Button>
           <Link to={`/${role}/service/new`}>
-            <Button className="w-full sm:w-auto">Add New Service</Button>
+            <Button className="w-full sm:w-auto">
+              {t("services.table.add_new_service")}
+            </Button>
           </Link>
         </div>
       </div>
