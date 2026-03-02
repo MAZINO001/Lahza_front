@@ -126,10 +126,12 @@ export function DocumentsColumns(
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("total_amount")) || 0;
+        const { currency } = row.original;
         console.log("amount", amount);
+        console.log("currency", currency);
         return (
           <div className="ml-3 font-medium">
-            {formatAmount(amount || 0, "MAD")}
+            {formatAmount(amount, currency)}
           </div>
         );
       },
@@ -154,6 +156,9 @@ export function DocumentsColumns(
               const balanceDue = parseFloat(invoice.balance_due) || 0;
               const totalAmount = parseFloat(invoice.total_amount) || 0;
 
+              const { currency } = row.original;
+              console.log("currency", currency);
+
               const percentage =
                 totalAmount > 0
                   ? ((balanceDue / totalAmount) * 100).toFixed(1)
@@ -162,7 +167,7 @@ export function DocumentsColumns(
               return (
                 <div className="ml-3">
                   <div className="font-medium">
-                    {formatAmount(balanceDue || 0, "MAD")}
+                    {formatAmount(balanceDue, currency)}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {percentage}% remaining

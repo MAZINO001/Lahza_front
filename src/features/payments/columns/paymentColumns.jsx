@@ -97,7 +97,12 @@ export function paymentColumns(
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("total")) || 0;
-        return <div className="ml-3">{formatAmount(amount || 0, "MAD")}</div>;
+        const { currency } = row.original;
+        return (
+          <div className="ml-3">
+            {formatAmount(amount, currency.toUpperCase())}
+          </div>
+        );
       },
     },
     {
@@ -105,7 +110,9 @@ export function paymentColumns(
       header: "Paid Amount",
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("amount")) || 0;
-        return <div>{formatAmount(amount || 0, "MAD")}</div>;
+        const { currency } = row.original;
+        console.log(currency.toUpperCase());
+        return <div>{formatAmount(amount, currency.toUpperCase())}</div>;
       },
     },
     {

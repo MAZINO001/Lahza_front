@@ -2,7 +2,7 @@
 import React from "react";
 
 const LahzaLoader = () => {
-  return <div className="flex justify-center my-4 w-full">leading ...</div>;
+  return <div className="flex justify-center my-4 w-full">loading ...</div>;
 };
 
 export default LahzaLoader;

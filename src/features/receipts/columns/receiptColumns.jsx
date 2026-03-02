@@ -73,9 +73,11 @@ export function getReceiptColumns(
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("amount")) || 0;
+        const { currency } = row.original;
+        console.log(currency.toUpperCase());
         return (
           <div className="font-medium ml-3">
-            {formatAmount(amount || 0, "MAD")}
+            {formatAmount(amount, currency.toUpperCase())}
           </div>
         );
       },

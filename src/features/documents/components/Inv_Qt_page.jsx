@@ -20,7 +20,11 @@ import PdfPreview from "./PdfPreview";
 import { formatId } from "@/lib/utils/formatId";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 export default function Inv_Qt_page({ type, currentId }) {
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language;
+  console.log(currentLang);
   const isInvoice = type === "invoices";
   const currentSection = type === "invoices" ? "invoice" : "quote";
   const { role, user } = useAuthContext();
@@ -205,7 +209,7 @@ export default function Inv_Qt_page({ type, currentId }) {
 
         <div className="flex-1 min-h-0 w-full">
           <PdfPreview
-            src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}?lang=${currentLang}`}
             className="w-full h-full"
           />
         </div>

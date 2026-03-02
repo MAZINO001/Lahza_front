@@ -213,7 +213,7 @@ export function DocumentForm({ type, onSuccess }) {
           payment_percentage: "50",
           payment_status: "pending",
           payment_type: doc.payment_type || "",
-          currency: doc.currency || "",
+          currency: doc.currency || "MAD",
           description: doc?.description,
           has_projects: {
             title: projectTitles,
@@ -224,7 +224,6 @@ export function DocumentForm({ type, onSuccess }) {
               const serviceDetails = services.find(
                 (srv) => Number(srv.id) === Number(s.service_id),
               );
-              console.log(s);
               return {
                 serviceId: Number(s.service_id),
                 description: serviceDetails?.description || "",
@@ -254,6 +253,7 @@ export function DocumentForm({ type, onSuccess }) {
           payment_percentage: "50",
           payment_status: "pending",
           payment_type: doc.payment_type,
+          currency: doc.currency,
           description: doc?.description,
           has_projects: {
             title: projectTitles,
@@ -368,8 +368,17 @@ export function DocumentForm({ type, onSuccess }) {
     setValue(`items.${index}.amount`, Number(finalAmount.toFixed(2)));
   };
 
-  const calculateTotal = () =>
-    items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+  // const calculateTotal = () =>
+  //   items.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
+
+  const calculateTotal = () => {
+    const total = items.reduce(
+      (sum, item) => sum + (Number(item.amount) || 0),
+      0,
+    );
+    const currency = watch("currency");
+    return currency && currency !== "MAD" ? total / 10 : total;
+  };
 
   const onSubmit = async (data, status) => {
     if (isSubmitting || !startSubmit()) return;
@@ -412,15 +421,19 @@ export function DocumentForm({ type, onSuccess }) {
       payment_percentage: Number(data.payment_percentage),
       payment_status: data.payment_status,
       payment_type: data.payment_type,
+      currency: data.currency,
       attachment_file_ids: attachmentFileIds,
       services: data.items.map((item) => ({
         service_id: Number(item.serviceId),
         quantity: Number(item.quantity),
-        rate: Number(item.rate),
-        // tax: item.tax_rate != null ? Number(item.tax_rate) : 0,
+        rate:
+          data.currency !== "MAD" ? Number(item.rate) / 10 : Number(item.rate),
         tax: Number(item.tax_rate) || 0,
         discount: Number(item.discount || 0),
-        individual_total: Number(item.amount),
+        individual_total:
+          data.currency !== "MAD"
+            ? Number(item.amount) / 10
+            : Number(item.amount),
       })),
     };
 
