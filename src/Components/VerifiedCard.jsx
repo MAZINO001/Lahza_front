@@ -52,6 +52,8 @@ const VerifyCard = () => {
     statusConfig[user.status] || statusConfig.awaiting_confirmation;
   const IconComponent = config.icon;
 
+console.log(user);
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild>

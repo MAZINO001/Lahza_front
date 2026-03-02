@@ -11,7 +11,7 @@ export const apiProjects = {
     
     update: (id, data) => api.put(`/project/${id}`, data).then((res) => res.data),
     
-    delete: (id) => api.delete(`/projects/${id}`).then((res) => res.data),
+    delete: (id) => api.delete(`/project/${id}`).then((res) => res.data),
     
     getProgress: (id) => api.get(`/getProgress/${id}`).then((res) => res.data),
     

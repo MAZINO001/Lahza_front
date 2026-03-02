@@ -108,7 +108,7 @@ export default function Login({ status, canResetPassword }) {
                       Password
                     </label>
                     <Link
-                      to="/forgot-password"
+                      to="/auth/forgot-password"
                       className="text-sm text-primary hover:underline"
                     >
                       Forgot your password?

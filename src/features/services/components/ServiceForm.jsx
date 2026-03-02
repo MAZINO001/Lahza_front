@@ -307,8 +307,10 @@ export function ServiceForm({ serviceId, onSuccess }) {
     watch,
   } = useForm({
     defaultValues: service || {
-      name: "",
-      description: "",
+      name_en: "",
+      name_fr: "",
+      description_en: "",
+      description_fr: "",
       base_price: "",
       tax_rate: "0",
       time: "1",
@@ -322,8 +324,10 @@ export function ServiceForm({ serviceId, onSuccess }) {
   useEffect(() => {
     if (service?.id) {
       reset({
-        name: service.name || "",
-        description: service.description || "",
+        name_en: service.name_en || service.name || "",
+        name_fr: service.name_fr || "",
+        description_en: service.description_en || service.description || "",
+        description_fr: service.description_fr || "",
         base_price: service.base_price || "",
         tax_rate: String(service.tax_rate) || "0",
         time: String(service.time) || "1",
@@ -341,8 +345,10 @@ export function ServiceForm({ serviceId, onSuccess }) {
       if (isEditMode) {
         // UPDATE: Send as JSON or FormData with image
         const updateData = {
-          name: data.name,
-          description: data.description,
+          name_en: data.name_en,
+          name_fr: data.name_fr,
+          description_en: data.description_en,
+          description_fr: data.description_fr,
           base_price: Number(data.base_price).toFixed(2),
           tax_rate: Number(data.tax_rate),
           time: data.time,
@@ -444,37 +450,79 @@ export function ServiceForm({ serviceId, onSuccess }) {
         </div>
       ) : (
         <>
-          <Controller
-            name="name"
-            control={control}
-            rules={{ required: t("services.form.validation.name_required") }}
-            render={({ field }) => (
-              <FormField
-                label={t("services.form.name_label")}
-                placeholder={t("services.form.name_placeholder")}
-                error={errors.name?.message}
-                {...field}
-              />
-            )}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Controller
+              name="name_en"
+              control={control}
+              rules={{
+                required: t("services.form.validation.name_required"),
+              }}
+              render={({ field }) => (
+                <FormField
+                  label={`${t("services.form.name_label")} (EN)`}
+                  placeholder={`${t("services.form.name_placeholder")} (EN)`}
+                  error={errors.name_en?.message}
+                  {...field}
+                />
+              )}
+            />
+
+            <Controller
+              name="name_fr"
+              control={control}
+              render={({ field }) => (
+                <FormField
+                  label={`${t("services.form.name_label")} (FR)`}
+                  placeholder={`${t("services.form.name_placeholder")} (FR)`}
+                  error={errors.name_fr?.message}
+                  {...field}
+                />
+              )}
+            />
+          </div>
 
           <div className="w-full flex gap-4">
-            <div className="w-[75%]">
-              <Controller
-                name="description"
-                control={control}
-                rules={{
-                  required: t("services.form.validation.description_required"),
-                }}
-                render={({ field }) => (
-                  <RichTextEditor
-                    label={t("services.form.description_label")}
-                    placeholder={t("services.form.description_placeholder")}
-                    error={errors.description?.message}
-                    {...field}
-                  />
-                )}
-              />
+            <div className="w-[75%]  ">
+              <div className="space-y-4 w-full flex gap-4">
+                <div className="w-[50%]">
+
+                <Controller
+                  name="description_en"
+                  control={control}
+                  rules={{
+                    required: t(
+                      "services.form.validation.description_required",
+                    ),
+                  }}
+                  render={({ field }) => (
+                    <RichTextEditor
+                      label={`${t("services.form.description_label")} (EN)`}
+                      placeholder={`${t(
+                        "services.form.description_placeholder",
+                      )} (EN)`}
+                      error={errors.description_en?.message}
+                      {...field}
+                    />
+                  )}
+                />
+</div>
+<div className="w-[50%]">
+                <Controller
+                  name="description_fr"
+                  control={control}
+                  render={({ field }) => (
+                    <RichTextEditor
+                      label={`${t("services.form.description_label")} (FR)`}
+                      placeholder={`${t(
+                        "services.form.description_placeholder",
+                      )} (FR)`}
+                      error={errors.description_fr?.message}
+                      {...field}
+                    />
+                  )}
+                />
+                </div>
+              </div>
             </div>
             <div className="w-[25%]">
               <Controller

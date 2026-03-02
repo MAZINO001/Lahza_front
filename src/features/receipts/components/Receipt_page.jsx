@@ -96,11 +96,16 @@ import { usePayment } from "@/features/payments/hooks/usePayments/usePaymentsDat
 import { formatId } from "@/lib/utils/formatId";
 import PdfPreview from "@/features/documents/components/PdfPreview";
 import { toast } from "sonner";
-
+import { useTranslation } from "react-i18next";
 export default function ReceiptPage({ currentId }) {
   const currentSection = "receipt";
   const { role } = useAuthContext();
   const { data: payment } = usePayment(currentId);
+
+
+  const { i18n } = useTranslation();
+  const currentLang = i18n.language;
+  console.log(currentLang);
 
   const { handleDownloadInvoice_Quotes } = globalFnStore();
 
@@ -184,7 +189,7 @@ export default function ReceiptPage({ currentId }) {
       <div className="flex-1 overflow-auto p-4">
         <div className="h-full w-full">
           <PdfPreview
-            src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}`}
+            src={`${import.meta.env.VITE_BACKEND_URL}/pdf/${currentSection}/${currentId}?lang=${currentLang}`}
             className="w-full h-full"
           />
         </div>

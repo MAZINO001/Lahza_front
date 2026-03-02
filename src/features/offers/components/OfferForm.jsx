@@ -41,8 +41,10 @@ export function OfferForm({ offerId, onSuccess }) {
     setValue,
   } = useForm({
     defaultValues: {
-      title: "",
-      description: "",
+      title_en: "",
+      title_fr: "",
+      description_en: "",
+      description_fr: "",
       service_id: "",
       discount_type: "percent",
       discount_value: 0,
@@ -58,6 +60,10 @@ export function OfferForm({ offerId, onSuccess }) {
     if (offer && !isLoading) {
       reset({
         ...offer,
+        title_en: offer.title_en || offer.title || "",
+        title_fr: offer.title_fr || "",
+        description_en: offer.description_en || offer.description || "",
+        description_fr: offer.description_fr || "",
         placement: offer.placement || [], // Handle existing placement data from backend
       });
     }
@@ -91,6 +97,10 @@ export function OfferForm({ offerId, onSuccess }) {
 
     const payload = {
       ...data,
+      title_en: data.title_en,
+      title_fr: data.title_fr,
+      description_en: data.description_en,
+      description_fr: data.description_fr,
       discount_value: Number(data.discount_value),
       service_id: Number(data.service_id),
       placement: data.placement || [], // Ensure placement is always an array for JSON field
@@ -128,16 +138,31 @@ export function OfferForm({ offerId, onSuccess }) {
           )}
 
           <div className="flex items-end gap-4">
-            <div className="w-full">
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
               <Controller
-                name="title"
+                name="title_en"
                 control={control}
-                rules={{ required: t("offers.form.validation.title_required") }}
+                rules={{
+                  required: t("offers.form.validation.title_required"),
+                }}
                 render={({ field }) => (
                   <FormField
-                    label={t("offers.form.title_label")}
-                    placeholder={t("offers.form.title_placeholder")}
-                    error={errors.title?.message}
+                    label={`${t("offers.form.title_label")} (EN)`}
+                    placeholder={`${t("offers.form.title_placeholder")} (EN)`}
+                    error={errors.title_en?.message}
+                    {...field}
+                  />
+                )}
+              />
+
+              <Controller
+                name="title_fr"
+                control={control}
+                render={({ field }) => (
+                  <FormField
+                    label={`${t("offers.form.title_label")} (FR)`}
+                    placeholder={`${t("offers.form.title_placeholder")} (FR)`}
+                    error={errors.title_fr?.message}
                     {...field}
                   />
                 )}
@@ -168,18 +193,35 @@ export function OfferForm({ offerId, onSuccess }) {
               />
             </div>
           </div>
-          <div className="w-full">
+          <div className="w-full space-y-4">
             <Controller
-              name="description"
+              name="description_en"
               control={control}
               rules={{
                 required: t("offers.form.validation.description_required"),
               }}
               render={({ field }) => (
                 <RichTextEditor
-                  label={t("offers.form.description_label")}
-                  placeholder={t("offers.form.description_placeholder")}
-                  error={errors.description?.message}
+                  label={`${t("offers.form.description_label")} (EN)`}
+                  placeholder={`${t(
+                    "offers.form.description_placeholder",
+                  )} (EN)`}
+                  error={errors.description_en?.message}
+                  {...field}
+                />
+              )}
+            />
+
+            <Controller
+              name="description_fr"
+              control={control}
+              render={({ field }) => (
+                <RichTextEditor
+                  label={`${t("offers.form.description_label")} (FR)`}
+                  placeholder={`${t(
+                    "offers.form.description_placeholder",
+                  )} (FR)`}
+                  error={errors.description_fr?.message}
                   {...field}
                 />
               )}

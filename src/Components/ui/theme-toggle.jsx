@@ -32,19 +32,51 @@
 //   );
 // }
 
+import { useEffect } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import {
+  usePreferences,
+  useUpdatePreferences,
+} from "@/features/settings/hooks/usePreferencesQuery";
 
 export function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
+  const { data: preferences } = usePreferences();
+  const updatePreferences = useUpdatePreferences();
 
-  const toggleTheme = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  useEffect(() => {
+    const darkMode = preferences?.ui?.dark_mode;
+    if (typeof darkMode !== "boolean") return;
+
+    const desiredTheme = darkMode ? "dark" : "light";
+    if (resolvedTheme !== desiredTheme) {
+      setTheme(desiredTheme);
+    }
+  }, [preferences?.ui?.dark_mode, resolvedTheme, setTheme]);
+
+  const handleToggleTheme = () => {
+    const nextTheme = resolvedTheme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+
+    const currentUi =
+      preferences?.ui ?? {
+        language: "en",
+        dark_mode: false,
+        currency: "eur",
+      };
+
+    updatePreferences.mutate({
+      ui: {
+        ...currentUi,
+        dark_mode: nextTheme === "dark",
+      },
+    });
   };
 
   return (
     <button
-      onClick={toggleTheme}
+      onClick={handleToggleTheme}
       className="relative inline-flex items-center justify-center h-10 w-10 rounded-md border border-input hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
       aria-label="Toggle theme"
     >

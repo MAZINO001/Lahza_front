@@ -22,9 +22,9 @@ import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 export default function Inv_Qt_page({ type, currentId }) {
-  const { i18n } = useTranslation();
-  const currentLang = i18n.language;
-  console.log(currentLang);
+    const { i18n } = useTranslation();
+    const currentLang = i18n.language;
+    console.log(currentLang);
   const isInvoice = type === "invoices";
   const currentSection = type === "invoices" ? "invoice" : "quote";
   const { role, user } = useAuthContext();

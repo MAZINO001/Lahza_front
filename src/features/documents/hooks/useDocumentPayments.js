@@ -2,6 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/utils/axios";
 import { toast } from "sonner";
+import { QUERY_KEYS } from "@/lib/queryKeys";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -47,10 +48,15 @@ export function useAddAdditionalPayment() {
             apiDocumentPayments.addAdditionalPayment(invoiceId, percentage),
         onSuccess: (_, { invoiceId }) => {
             toast.success("Additional payment added!");
+            // Refresh payments for this invoice detail view
             queryClient.invalidateQueries({ queryKey: ["document-payments", invoiceId] });
-            queryClient.invalidateQueries({ queryKey: ["payments"] });
+            // Refresh global payments-related views (e.g. receipts, payments table)
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.payments });
+            // Refresh invoices list and any invoice-dependent views (e.g. balance_due, status)
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.invoices });
+            // Refresh this specific invoice document if it is cached
+            queryClient.invalidateQueries({ queryKey: QUERY_KEYS.document(invoiceId) });
         },
-        refetchOnWindowFocus: true,
         onError: () => toast.error("Failed to add additional payment"),
     });
 }

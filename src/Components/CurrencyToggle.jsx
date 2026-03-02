@@ -9,10 +9,45 @@ import {
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { currencies, useCurrencyStore } from "@/hooks/useCurrencyStore";
+import { useEffect } from "react";
+import {
+  usePreferences,
+  useUpdatePreferences,
+} from "@/features/settings/hooks/usePreferencesQuery";
 
 export default function CurrencyToggle() {
   const { selectedCurrency, setSelectedCurrency, getCurrentCurrency } =
     useCurrencyStore();
+  const { data: preferences } = usePreferences();
+  const updatePreferences = useUpdatePreferences();
+
+  useEffect(() => {
+    const prefCurrency = preferences?.ui?.currency;
+    if (!prefCurrency) return;
+
+    const prefCode = prefCurrency.toUpperCase();
+    if (prefCode !== selectedCurrency) {
+      setSelectedCurrency(prefCode);
+    }
+  }, [preferences?.ui?.currency, selectedCurrency, setSelectedCurrency]);
+
+  const handleSelectCurrency = (code) => {
+    setSelectedCurrency(code);
+
+    const currentUi =
+      preferences?.ui ?? {
+        language: "en",
+        dark_mode: false,
+        currency: "eur",
+      };
+
+    updatePreferences.mutate({
+      ui: {
+        ...currentUi,
+        currency: code.toLowerCase(),
+      },
+    });
+  };
 
   const current = getCurrentCurrency();
 
@@ -47,7 +82,7 @@ export default function CurrencyToggle() {
           return (
             <DropdownMenuItem
               key={currency.code}
-              onClick={() => setSelectedCurrency(currency.code)}
+                  onClick={() => handleSelectCurrency(currency.code)}
               className={cn(
                 "cursor-pointer flex items-center gap-2 py-2 px-2 text-sm",
                 "focus:bg-accent focus:text-accent-foreground",

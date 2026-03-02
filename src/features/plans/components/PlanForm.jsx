@@ -916,7 +916,7 @@ export function PlanForm({ plan, onSuccess, onCancel, packId }) {
                       control={control}
                       render={({ field }) => (
                         <FormInput
-                          label="Key (used in code)"
+                          label="Key"
                           placeholder="max_projects"
                           {...field}
                         />

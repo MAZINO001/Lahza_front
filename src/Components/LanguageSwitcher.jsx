@@ -44,6 +44,7 @@
 //   );
 // }
 
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   DropdownMenu,
@@ -54,6 +55,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  usePreferences,
+  useUpdatePreferences,
+} from "@/features/settings/hooks/usePreferencesQuery";
 
 const languages = [
   { code: "en", label: "English", short: "EN", flag: "🇬🇧" },
@@ -62,6 +67,33 @@ const languages = [
 
 export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
+   const { data: preferences } = usePreferences();
+   const updatePreferences = useUpdatePreferences();
+
+   useEffect(() => {
+     const prefLang = preferences?.ui?.language;
+     if (prefLang && prefLang !== i18n.language) {
+       i18n.changeLanguage(prefLang);
+     }
+   }, [preferences?.ui?.language, i18n]);
+
+   const handleChangeLanguage = (code) => {
+     i18n.changeLanguage(code);
+
+     const currentUi =
+       preferences?.ui ?? {
+         language: "en",
+         dark_mode: false,
+         currency: "eur",
+       };
+
+     updatePreferences.mutate({
+       ui: {
+         ...currentUi,
+         language: code,
+       },
+     });
+   };
 
   const currentLang =
     languages.find((l) => l.code === i18n.language) ?? languages[0];
@@ -93,7 +125,7 @@ export default function LanguageSwitcher() {
           return (
             <DropdownMenuItem
               key={lang.code}
-              onClick={() => i18n.changeLanguage(lang.code)}
+              onClick={() => handleChangeLanguage(lang.code)}
               className={cn(
                 "cursor-pointer flex items-center gap-2.5 py-2.5 px-3 text-sm",
                 "focus:bg-accent focus:text-accent-foreground",

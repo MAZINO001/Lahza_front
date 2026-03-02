@@ -57,11 +57,11 @@ const sidebarItems = [
         value: "notifications",
         icon: <Bell className="w-4 h-4" />,
       },
-      {
-        name: "General",
-        value: "preferences",
-        icon: <Palette className="w-4 h-4" />,
-      },
+      // {
+      //   name: "General",
+      //   value: "preferences",
+      //   icon: <Palette className="w-4 h-4" />,
+      // },
       {
         name: "Security",
         value: "security",

@@ -1,10 +1,13 @@
-import { ArrowUpDown, CopyPlus, Pencil, Settings } from "lucide-react";
+/* eslint-disable react-hooks/rules-of-hooks */
+import { ArrowUpDown, CopyPlus, Trash2, Pencil, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import { TooltipButton } from "@/components/common/TooltipButton";
 import { Button } from "@/components/ui/button";
 import { formatId } from "@/lib/utils/formatId";
 import { StatusBadge } from "@/components/StatusBadge";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
+import AlertDialogDestructive from "@/components/alert-dialog-destructive-1";
+import { useDeleteProject } from "../hooks/useProjects/useProjectsData";
 
 export function ProjectColumns(role, navigate) {
   return [
@@ -132,21 +135,47 @@ export function ProjectColumns(role, navigate) {
       header: "Actions",
       cell: ({ row }) => {
         const { HandleCloneProject } = globalFnStore();
+        const deleteMutation = useDeleteProject();
+
         if (role === "client") {
           return <div className="text-muted-foreground">—</div>;
         }
+
+        const projectId = row.getValue("id");
+
+        const handleClone = () => {
+          HandleCloneProject(projectId, navigate, role);
+        };
+
+        const handleDelete = () => {
+          if (!projectId || deleteMutation.isPending) return;
+          deleteMutation.mutate(projectId);
+        };
 
         return (
           <div className="flex gap-2">
             <TooltipButton
               tooltip="Clone Project"
-              onClick={() =>
-                HandleCloneProject(row.getValue("id"), navigate, role)
-              }
+              onClick={handleClone}
               className="cursor-pointer"
             >
               <CopyPlus className="h-4 w-4" />
             </TooltipButton>
+
+            <AlertDialogDestructive
+              onDelete={handleDelete}
+              trigger={
+                <TooltipButton
+                  tooltip="Delete Project"
+                  variant="ghost"
+                  size="sm"
+                  disabled={deleteMutation.isPending}
+                  className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </TooltipButton>
+              }
+            />
           </div>
         );
       },
