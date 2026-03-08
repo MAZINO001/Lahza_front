@@ -41,5 +41,6 @@ export const formatCurrency = (amount, currency = 'EUR') => {
     // Format with 2 decimal places for all currencies
     const formattedAmount = amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    return `${symbol}${formattedAmount}`;
+    // Put symbol on the right with a space (e.g. "5,600.00 MAD") for readability
+    return `${formattedAmount} ${symbol}`;
 };

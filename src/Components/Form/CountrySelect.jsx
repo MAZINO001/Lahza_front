@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -9,8 +9,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 export default function CountrySelect({ value, onChange, error }) {
+  const { t } = useTranslation();
   const [countries, setCountries] = useState([]);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -49,9 +51,9 @@ export default function CountrySelect({ value, onChange, error }) {
   );
 
   return (
-    <div>
+    <div className={cn("flex items-start justify-between flex-col ")}>
       <Label htmlFor="country" className="text-sm font-medium">
-        Country
+        {t("client_form.country")}
       </Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger
@@ -61,14 +63,14 @@ export default function CountrySelect({ value, onChange, error }) {
               : "focus:ring-primary"
           }`}
         >
-          <SelectValue placeholder="Select a country" />
+          <SelectValue placeholder={t("client_form.country_placeholder")} />
         </SelectTrigger>
 
         <SelectContent className="max-hp-40">
           {/* Search Input */}
           <div className="sticky top-0 p-2 z-50 border-b bg-background">
             <Input
-              placeholder="Search countries..."
+              placeholder={t("client_form.country_search_placeholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.stopPropagation()}
@@ -80,7 +82,7 @@ export default function CountrySelect({ value, onChange, error }) {
           {/* Loading State */}
           {isLoading ? (
             <div className="px-3 pyp-4 text-center text-sm text-muted-foreground">
-              Loading countries...
+              {t("client_form.country_loading")}
             </div>
           ) : filtered.length > 0 ? (
             filtered.map((country) => (
@@ -94,13 +96,13 @@ export default function CountrySelect({ value, onChange, error }) {
             ))
           ) : (
             <div className="px-3 pyp-4 text-center text-sm text-muted-foreground">
-              No countries found
+              {t("client_form.country_no_results")}
             </div>
           )}
         </SelectContent>
       </Select>
 
-      {error && <p className="text-xs font-medium text-destructive">{error}</p>}
+      {error && <p className="text-sm font-medium text-destructive">{error}</p>}
     </div>
   );
 }

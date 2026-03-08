@@ -21,7 +21,7 @@ const Example = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="relative h-10 w-10 rounded-full" variant="ghost">
+        <Button className="relative h-10 w-10 rounded-full" variant="ghost">
           <Avatar>
             <AvatarImage
               src="https://github.com/haydenbleasel.png"
@@ -30,7 +30,7 @@ const Example = () => {
             />
             <AvatarFallback>HB</AvatarFallback>
           </Avatar>
-        </button>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="font-normal">
@@ -67,14 +67,14 @@ const Example = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem className="p-0 h-10">
           <Button
             variant="ghost"
             onClick={() => logout()}
-            className="cursor-pointer w-full h-full"
+            className="cursor-pointer h-10 w-full"
             size={state === "collapsed" ? "icon" : undefined}
           >
-            <LogOut />
+            <LogOut className="mr-2 h-4 w-4"/>
             {state !== "collapsed" && <span className="ml-2">LogOut</span>}
           </Button>
         </DropdownMenuItem>

@@ -83,7 +83,7 @@ export default function FormField({
 
   return (
     <div className={cn("", className)}>
-      <div className="flex flex-col gap-0.5">
+      <div className={`${hint || id === "portfolio" ? "flex gap-2" : "flex flex-col gap-0.5"}`}>
         <Label
           htmlFor={id}
           className="mb-0.5 text-sm font-medium text-foreground"
@@ -93,7 +93,7 @@ export default function FormField({
 
         {/* Optional hint / subtext under label */}
         {(hint || id === "portfolio") && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-muted-foreground ">
             {hint || "(Instagram, Behance, Portfolio…)"}
           </p>
         )}

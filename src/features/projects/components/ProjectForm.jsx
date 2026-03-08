@@ -21,6 +21,7 @@ import AddClientModel from "@/components/common/AddClientModel";
 import DateField from "@/components/Form/DateField";
 import { cn } from "@/lib/utils";
 import { useInvoicesWithoutProjects } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
+import { Input } from "@/Components/ui/input";
 
 export function ProjectForm({ onSuccess }) {
   const [directProject, setDirectProject] = useState(false);
@@ -380,9 +381,10 @@ export function ProjectForm({ onSuccess }) {
               role="button"
               tabIndex={0}
             >
-              <Checkbox
+              <Input
+                type="checkbox"
                 checked={directProject}
-                onCheckedChange={setDirectProject}
+                onChange={() => setDirectProject((prev) => !prev)}
                 onClick={(e) => e.stopPropagation()}
                 className="h-5 w-5 rounded"
               />

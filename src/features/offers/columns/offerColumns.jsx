@@ -28,7 +28,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency ,
         return (
           <Link
             to={`/${role}/offer/${offer.id}`}
-            className="font-medium hover:underline ml-3"
+            className=" hover:underline ml-3"
           >
             {offer.title}
           </Link>
@@ -39,7 +39,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency ,
       accessorKey: "discount_type",
       header: t("offers.table.columns.type"),
       cell: ({ row }) => (
-        <span className="capitalize font-medium">
+        <span className="capitalize ">
           {row.getValue("discount_type")}
         </span>
       ),
@@ -51,7 +51,7 @@ export function getOfferColumns(role, navigate, formatAmount, selectedCurrency ,
         const value = row.getValue("discount_value");
         const type = row.getValue("discount_type");
         return (
-          <span className="font-medium">
+          <span className="">
             {type === "percent" ? `${value}%` : formatAmount(Number(value))}
           </span>
         );

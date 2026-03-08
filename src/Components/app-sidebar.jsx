@@ -117,12 +117,12 @@ export function AppSidebar(props) {
               url: `/${role}/projects`,
               icon: BriefcaseIcon,
             },
+            { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
             {
               title: "Invoices",
               url: `/${role}/invoices`,
               icon: IconFileInvoice,
             },
-            { title: "Quotes", url: `/${role}/quotes`, icon: FileText },
             {
               title: "Payments",
               url: `/${role}/payments`,

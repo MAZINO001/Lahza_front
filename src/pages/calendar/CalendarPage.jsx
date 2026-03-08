@@ -11,8 +11,8 @@ import {
 import { ChevronDown } from "lucide-react";
 import MyCalendar from "@/features/calendar/components/MyCalendar";
 export default function CalendarPage() {
-  const [selectedView, setSelectedView] = useState("calendar");
-  const AllViews = ["calendar", "table"];
+  const [selectedView, setSelectedView] = useState("Calendar");
+  const AllViews = ["Calendar", "Table"];
   return (
     <div className="text-foreground w-full p-4">
       <div className="flex items-center justify-between mb-2">
@@ -38,8 +38,8 @@ export default function CalendarPage() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      {selectedView === "calendar" && <MyCalendar />}
-      {selectedView === "table" && <CalendarTable />}
+      {selectedView === "Calendar" && <MyCalendar />}
+      {selectedView === "Table" && <CalendarTable />}
     </div>
   );
 }

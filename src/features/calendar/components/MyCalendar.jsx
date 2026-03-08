@@ -507,17 +507,6 @@ export default function MyCalendar() {
     setShowEventDetails(false);
   };
 
-  // const handleEventComplete = (updatedEvent) => {
-  //   const data = {
-  //     title: updatedEvent.title,
-  //     start_date: updatedEvent.start_date,
-  //     end_date: updatedEvent.end_date,
-  //     status: "completed",
-  //   };
-
-  //   updateMutation.mutate({ id: updatedEvent.id, data });
-  //   setShowEventDetails(false); // Close the dialog after updating
-  // };
 
   const handleEventComplete = (updatedEvent) => {
     const newStatus =
@@ -611,38 +600,39 @@ export default function MyCalendar() {
   };
 
   return (
-    <div className="w-full h-screen flex flex-col">
-      <div className="flex-1 flex gap-4 w-full overflow-auto">
-        <div className="w-[70%]">
-          <IlamyCalendar
-            stickyViewHeader={false}
-            // renderEventForm={(props) => <EventForm {...props} />}
-            renderEventForm={(props) =>
-              role === "client" ? null : <EventForm {...props} />
-            }
-            viewHeaderClassName="bg-background"
-            disableEventCreation={role === "client"}
-            headerClassName="bg-blue-50 bg-background text-blue-900 border-2 border-border p-4 rounded-t-md"
-            events={validEvents}
-            renderEvent={(event) => renderEvent(event, currentView)}
-            locale="fr"
-            timezone="Europe/Paris"
-            firstDayOfWeek="monday"
-            initialView="month"
-            translator={translator}
-            timeFormat="24-hour"
-            onEventClick={handleEventClick}
-            onCellClick={handleCellClick}
-            onViewChange={handleViewChange}
-            onEventUpdate={handleEventUpdate}
-            onEventDelete={handleEventDelete}
-            onDateChange={handleDateChange}
-            dayMaxEvents={8}
-            eventSpacing={2}
-          />
+    <div className="w-full min-h-screen h-screen flex flex-col">
+      <div className="flex-1 flex flex-col md:flex-row gap-3 md:gap-4 w-full overflow-auto min-h-0">
+        <div className="w-full md:w-[70%] min-w-0 flex-shrink-0 md:flex-shrink flex flex-col min-h-[400px] md:min-h-0">
+          <div className="w-full min-w-0 overflow-x-auto rounded-md border border-border">
+            <IlamyCalendar
+              stickyViewHeader={false}
+              renderEventForm={(props) =>
+                role === "client" ? null : <EventForm {...props} />
+              }
+              viewHeaderClassName="bg-background"
+              disableEventCreation={role === "client"}
+              headerClassName="bg-blue-50 bg-background text-blue-900 border-2 border-border p-2 sm:p-4 rounded-t-md"
+              events={validEvents}
+              renderEvent={(event) => renderEvent(event, currentView)}
+              locale="fr"
+              timezone="Europe/Paris"
+              firstDayOfWeek="monday"
+              initialView="month"
+              translator={translator}
+              timeFormat="24-hour"
+              onEventClick={handleEventClick}
+              onCellClick={handleCellClick}
+              onViewChange={handleViewChange}
+              onEventUpdate={handleEventUpdate}
+              onEventDelete={handleEventDelete}
+              onDateChange={handleDateChange}
+              dayMaxEvents={8}
+              eventSpacing={2}
+            />
+          </div>
         </div>
-        <div className="flex flex-col w-[30%]">
-          <div>
+        <div className="flex flex-col w-full md:w-[30%] min-w-0 flex-shrink-0 gap-3 md:gap-0">
+          <div className="min-w-0">
             <EventsSummary />
           </div>
           <OfferPlacementSlot

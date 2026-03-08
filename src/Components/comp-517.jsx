@@ -19,7 +19,7 @@ export default function Component({
   isLoading,
 }) {
   return (
-    <div className="mx-auto max-w-xl space-y-8 text-center">
+    <div className="w-full space-y-4 text-center">
       <Stepper value={currentStep} onValueChange={setCurrentStep}>
         {steps.map((step) => (
           <StepperItem

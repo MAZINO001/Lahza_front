@@ -460,14 +460,14 @@ function EventForm({
         if (!isOpen) onClose();
       }}
     >
-      <DialogContent className="bg-background text-foreground max-h-[90vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle>
+      <DialogContent className="bg-background text-foreground max-h-[90vh] max-w-[95vw] sm:max-w-lg flex flex-col p-3 sm:p-6">
+        <DialogHeader className="px-0 sm:px-0">
+          <DialogTitle className="text-base sm:text-lg truncate pr-8">
             {editMode ? "Edit Event" : "New Event"}
-            {selectedDate?.startDate}
+            {selectedDate?.startDate ? ` — ${selectedDate.startDate}` : ""}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4 py-4 bg-background text-foreground overflow-y-auto flex-1 p-4">
+        <div className="space-y-4 py-2 sm:py-4 bg-background text-foreground overflow-y-auto flex-1 min-h-0 px-0 sm:px-0">
           <div className="space-y-2">
             <Controller
               name="title"
@@ -476,7 +476,7 @@ function EventForm({
               render={({ field }) => (
                 <FormField
                   id="title"
-                  label="title"
+                  label="Title"
                   type="text"
                   value={field.value}
                   onChange={(e) => {
@@ -488,7 +488,7 @@ function EventForm({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div className="space-y-2">
               <Controller
                 name="startDate"
@@ -496,7 +496,7 @@ function EventForm({
                 render={({ field }) => (
                   <DateField
                     id="startDate"
-                    label="startDate"
+                    label="Start date"
                     type="date"
                     value={field.value}
                     onChange={(e) => {
@@ -515,7 +515,7 @@ function EventForm({
                 render={({ field }) => (
                   <DateField
                     id="endDate"
-                    label="endDate"
+                    label="End date"
                     type="date"
                     value={field.value}
                     onChange={(e) => {
@@ -530,7 +530,7 @@ function EventForm({
           </div>
 
           {!formAllDay && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
                 <Controller
                   name="startTime"
@@ -538,7 +538,7 @@ function EventForm({
                   render={({ field }) => (
                     <TimeField
                       id="startTime"
-                      label="startTime"
+                      label="Start time"
                       value={field.value ?? ""}
                       onChange={(newTimeString) => {
                         field.onChange(newTimeString);
@@ -555,7 +555,7 @@ function EventForm({
                   render={({ field }) => (
                     <TimeField
                       id="endTime"
-                      label="endTime"
+                      label="End time"
                       value={field.value ?? ""}
                       onChange={(newTimeString) => {
                         field.onChange(newTimeString);
@@ -575,7 +575,7 @@ function EventForm({
               <div className="flex items-center space-x-2">
                 <Checkbox
                   {...field}
-                  label="All Day Event"
+                  label="All day event"
                   id="allDay"
                   type="checkbox"
                   checked={field.value}
@@ -585,7 +585,7 @@ function EventForm({
                   htmlFor="allDay"
                   className="text-sm font-medium text-foreground"
                 >
-                  All Day Event
+                  All day event
                 </Label>
               </div>
             )}
@@ -593,7 +593,7 @@ function EventForm({
 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-foreground">
-              Event Color
+              Event color
             </Label>
             <div className="space-y-3">
               <div className="w-full">
@@ -601,7 +601,7 @@ function EventForm({
                   name="color"
                   control={control}
                   render={({ field }) => (
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
                       {predefinedColors.map((colorOption, index) => (
                         <button
                           key={index}
@@ -610,21 +610,21 @@ function EventForm({
                             field.onChange(colorOption.color);
                             setSelectedColor(colorOption.color);
                           }}
-                          className={`flex items-center gap-2 border p-1 rounded-md transition-all ${
+                          className={`flex items-center gap-2 border p-1.5 sm:p-1 rounded-md transition-all min-w-0 ${
                             selectedColor === colorOption.color
                               ? "border-black bg-gray-100"
                               : "border-border hover:border-gray-400"
                           }`}
                         >
                           <span
-                            className={`w-8 h-8 rounded border-2 transition-all ${
+                            className={`w-6 h-6 sm:w-8 sm:h-8 rounded border-2 shrink-0 transition-all ${
                               selectedColor === colorOption.color
                                 ? "border-black"
                                 : "border-border"
                             }`}
                             style={{ backgroundColor: colorOption.color }}
                           />
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-muted-foreground truncate">
                             {colorOption.name}
                           </span>
                         </button>
@@ -636,7 +636,7 @@ function EventForm({
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 max-w-full">
             <Controller
               name="guests"
               control={control}
@@ -662,7 +662,7 @@ function EventForm({
                         return (
                           <div
                             key={guestId}
-                            className="flex items-center border border-border space-x-1 bg-background px-2 py-1 rounded text-sm"
+                            className="flex items-center border border-border space-x-1 bg-background px-2 py-1 rounded text-sm max-w-full"
                           >
                             <span>{user ? user.name : `ID: ${guestId}`}</span>
                             <button
@@ -721,15 +721,15 @@ function EventForm({
           </div>
 
           <div className="flex flex-col w-full gap-4">
-            <div className="flex gap-4">
-              <div className="space-y-2 w-full">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <div className="space-y-2 w-full min-w-0">
                 <Controller
                   name="category"
                   control={control}
                   render={({ field }) => (
                     <SelectField
                       id="category"
-                      label="category"
+                      label="Category"
                       value={field.value || "agency"}
                       onChange={(val) => {
                         field.onChange(val);
@@ -747,7 +747,7 @@ function EventForm({
                 />
               </div>
 
-              <div className="space-y-2 w-full">
+              <div className="space-y-2 w-full min-w-0">
                 <Controller
                   name="priority"
                   control={control}
@@ -835,11 +835,12 @@ function EventForm({
             </div>
           )}
 
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleCancel}>
+          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 pt-4">
+            <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
               Cancel
             </Button>
             <Button
+              className="w-full sm:w-auto"
               onClick={handleSubmit(onSubmit)}
               disabled={
                 isLoading ||

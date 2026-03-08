@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import {
   Select,
   SelectContent,
@@ -6,7 +7,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-
+import { cn } from "@/lib/utils";
 const CURRENCIES = [
   { code: "USD", name: "US Dollar", symbol: "$" },
   { code: "EUR", name: "Euro", symbol: "€" },
@@ -19,12 +20,13 @@ export default function CurrencySelect({
   disabled = false,
   error,
 }) {
+  const { t } = useTranslation();
   const selectedCurrency = CURRENCIES.find((c) => c.code === value);
 
   return (
-    <div>
-      <Label htmlFor="currency" className="text-sm font-medium pt-2">
-        Currency
+    <div className={cn("flex items-start justify-between flex-col ")}>
+      <Label htmlFor="currency" className="text-sm font-medium">
+        {t("client_form.currency")}
       </Label>
 
       <Select value={value} onValueChange={onChange} disabled={disabled}>
@@ -43,7 +45,7 @@ export default function CurrencySelect({
               </span>
             </div>
           ) : (
-            <SelectValue placeholder="Select a currency" />
+            <SelectValue placeholder={t("client_form.currency_placeholder")} />
           )}
         </SelectTrigger>
 
@@ -66,7 +68,7 @@ export default function CurrencySelect({
         </SelectContent>
       </Select>
 
-      {error && <p className="text-xs font-medium text-destructive">{error}</p>}
+      {error && <p className="text-sm font-medium text-destructive">{error}</p>}
     </div>
   );
 }

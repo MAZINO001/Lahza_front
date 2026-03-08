@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useProject } from "@/features/projects/hooks/useProjects/useProjectsData";
 
 function BreadcrumbsWrapper() {
   const location = useLocation();
@@ -20,6 +21,14 @@ function BreadcrumbsWrapper() {
   }
 
   const pathSegments = location.pathname.split("/").filter(Boolean);
+  const projectIdFromPath = (() => {
+    const idx = pathSegments.indexOf("project");
+    if (idx === -1 || idx + 1 >= pathSegments.length) return undefined;
+    const next = pathSegments[idx + 1];
+    return /^\d+$/.test(next) ? next : undefined;
+  })();
+  const { data: project } = useProject(projectIdFromPath);
+
   const crumbs = [];
 
   let currentPath = "";
@@ -216,7 +225,7 @@ function BreadcrumbsWrapper() {
       const nextSegment = pathSegments[index + 1];
 
       if (prevSegment === "project") {
-        name = `Project ${segment}`;
+        name = project?.name || `Project ${segment}`;
       } else if (prevSegment === "ticket") {
         name = `TKT ${segment}`;
       } else if (prevSegment === "plans_management") {

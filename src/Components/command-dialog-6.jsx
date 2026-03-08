@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckSquare, FileText, FolderPlus, UserPlus } from "lucide-react";
+import { CheckSquare, FileText, FolderPlus, UserPlus, LayoutGrid } from "lucide-react";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -72,7 +72,9 @@ const Example = () => {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>Quick Actions</Button>
+      <Button onClick={() => setOpen(true)} size="icon" className="shrink-0 md:size-auto md:px-4 md:py-2 w-[120px]">
+        <span className="text-sm">Quick Actions</span>
+      </Button>
       <CommandDialog onOpenChange={setOpen} open={open}>
         <CommandInput placeholder="Search actions..." />
         <CommandList>

@@ -112,14 +112,14 @@ export function paymentColumns(
         const amount = parseFloat(row.getValue("amount")) || 0;
         const { currency } = row.original;
         console.log(currency.toUpperCase());
-        return <div>{formatAmount(amount, currency.toUpperCase())}</div>;
+        return <div>{formatAmount(amount, currency?.toUpperCase() ?? "MAD")}</div>;
       },
     },
     {
       accessorKey: "currency",
       header: "Currency",
       cell: ({ row }) => (
-        <Badge variant="secondary" className="font-mono">
+        <Badge variant="secondary">
           {row.getValue("currency")?.toUpperCase()}
         </Badge>
       ),

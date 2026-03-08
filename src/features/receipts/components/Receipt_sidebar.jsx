@@ -172,7 +172,7 @@ export default function Receipt_sidebar() {
                     </span>
 
                     <span className="font-semibold text-foreground whitespace-nowrap">
-                      {formatAmount(item.amount || 0, "MAD")}
+                      {formatAmount(item.amount || 0, item.currency.toUpperCase())}
                     </span>
                   </div>
 

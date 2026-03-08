@@ -146,20 +146,6 @@ export default function WhatsNextBanner({
                 )}
                 {action}
               </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="p-2 border border-border rounded-md">
-                    <MoreVertical className="h-4 w-4" />
-                  </button>
-                </DropdownMenuTrigger>
-
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={() => setIsVisible(false)}>
-                    Don't show again
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
 

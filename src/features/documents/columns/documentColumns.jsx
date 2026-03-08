@@ -67,7 +67,7 @@ export function DocumentsColumns(
         if (!id) {
           console.error("No ID found for row:", row.original);
           return (
-            <span className="font-medium text-muted-foreground ml-3">
+            <span className=" text-muted-foreground ml-3">
               No ID
             </span>
           );
@@ -76,7 +76,7 @@ export function DocumentsColumns(
         return (
           <Link
             to={`/${role}/${isInvoice ? "invoice" : "quote"}/${id}`}
-            className="font-medium text-foreground hover:underline ml-3"
+            className=" text-foreground hover:underline ml-3"
           >
             {formatId(id, prefix)}
           </Link>
@@ -107,7 +107,7 @@ export function DocumentsColumns(
         return (
           <Link
             to={`/${role}/client/${client.id}`}
-            className="ml-3 font-medium text-foreground hover:underline"
+            className="ml-3  text-foreground hover:underline"
           >
             {clientName}
           </Link>
@@ -130,8 +130,8 @@ export function DocumentsColumns(
         console.log("amount", amount);
         console.log("currency", currency);
         return (
-          <div className="ml-3 font-medium">
-            {formatAmount(amount, currency)}
+          <div className="ml-3 ">
+            {typeof formatAmount === 'function' ? formatAmount(amount, currency) : `${amount} ${currency}`}
           </div>
         );
       },
@@ -166,10 +166,10 @@ export function DocumentsColumns(
 
               return (
                 <div className="ml-3">
-                  <div className="font-medium">
-                    {formatAmount(balanceDue, currency)}
+                  <div className="">
+                    {typeof formatAmount === 'function' ? formatAmount(balanceDue, currency) : `${balanceDue} ${currency}`}
                   </div>
-                  <div className="text-xs text-muted-foreground">
+                  <div className="test-sm text-muted-foreground">
                     {percentage}% remaining
                   </div>
                 </div>
@@ -246,7 +246,7 @@ export function DocumentsColumns(
           return (
             <div className="flex items-center gap-2">
               <StatusBadge status={status} />
-              <span className="text-xs font-medium text-red-600">
+              <span className="test-sm  text-red-600">
                 {daysOverdue} {daysOverdue === 1 ? "day" : "days"} overdue
               </span>
             </div>

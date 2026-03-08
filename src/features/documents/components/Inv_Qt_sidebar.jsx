@@ -77,6 +77,10 @@ export default function Inv_Qt_sidebar({ type }) {
       staleTime: 0,
     });
   };
+
+
+  console.log("the documents:", documents);
+  
   return (
     <div className="w-[25%] md:w-[20%] border-t border-r border-border flex flex-col">
       <div className="border-b px-4 py-4 flex items-center justify-between gap-3">
@@ -151,7 +155,7 @@ export default function Inv_Qt_sidebar({ type }) {
                     </span>
 
                     <span className="font-semibold whitespace-nowrap">
-                      {formatAmount(amount || 0, "MAD")}
+                      {formatAmount(amount || 0, item.currency)}
                     </span>
                   </div>
 

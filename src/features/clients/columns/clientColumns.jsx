@@ -20,7 +20,7 @@ export function getClientColumns(role, formatAmount) {
         return (
           <Link
             to={`/${role}/client/${clientId}`}
-            className="font-medium text-foreground hover:underline ml-3"
+            className=" text-foreground hover:underline ml-3"
           >
             {getValue()}
           </Link>
@@ -31,7 +31,7 @@ export function getClientColumns(role, formatAmount) {
     {
       header: "Company",
       accessorFn: (row) => row.client?.company ?? "-",
-      cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
+      cell: ({ getValue }) => <span className="">{getValue()}</span>,
     },
 
     {
@@ -58,21 +58,27 @@ export function getClientColumns(role, formatAmount) {
     {
       header: "Total Paid",
       accessorFn: (row) => row?.totalPaid,
-      cell: ({ getValue }) => (
-        <span className="text-muted-foreground">
-          {formatAmount(Number(getValue()) || 0, "MAD")}
-        </span>
-      ),
+      cell: ({ getValue, row }) => {
+        const currency = row.original?.currency ?? "MAD";
+        return (
+          <span className="text-muted-foreground">
+            {formatAmount(Number(getValue()) || 0, currency.toUpperCase())}
+          </span>
+        );
+      },
     },
-
+    
     {
       header: "Balance Due",
       accessorFn: (row) => row?.balanceDue,
-      cell: ({ getValue }) => (
-        <span className="text-muted-foreground">
-          {formatAmount(Number(getValue()) || 0, "MAD")}
-        </span>
-      ),
+      cell: ({ getValue, row }) => {
+        const currency = row.original?.currency ?? "MAD";
+        return (
+          <span className="text-muted-foreground">
+            {formatAmount(Number(getValue()) || 0, currency.toUpperCase())}
+          </span>
+        );
+      },
     },
   ];
 }

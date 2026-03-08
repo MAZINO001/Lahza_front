@@ -30,7 +30,7 @@ export function getReceiptColumns(
         return (
           <Link
             to={`/${role}/receipt/${id}`}
-            className="font-medium text-foreground hover:underline ml-3"
+            className=" text-foreground hover:underline ml-3"
           >
             {formatId(id, "RECEIPT")}
           </Link>
@@ -52,7 +52,7 @@ export function getReceiptColumns(
         const payment = row.original;
         const invoiceId = payment.invoice_id;
         return invoiceId ? (
-          <div className="font-medium ml-3">
+          <div className=" ml-3">
             {formatId(invoiceId, "INVOICE")}
           </div>
         ) : (
@@ -76,7 +76,7 @@ export function getReceiptColumns(
         const { currency } = row.original;
         console.log(currency.toUpperCase());
         return (
-          <div className="font-medium ml-3">
+          <div className=" ml-3">
             {formatAmount(amount, currency.toUpperCase())}
           </div>
         );

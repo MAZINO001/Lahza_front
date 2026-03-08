@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import InputError from "@/components/InputError";
 
@@ -25,7 +26,7 @@ export default function ServiceSelect({
   );
 
   return (
-    <div>
+    <div className={cn("flex items-start justify-between flex-col ")}>
       {/* <Label htmlFor="service" className="text-foreground">
         Service
       </Label> */}

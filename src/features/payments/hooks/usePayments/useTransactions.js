@@ -8,9 +8,8 @@ export function useTransActions(id) {
         queryKey: ['transactions', id],
         queryFn: () => apiPayments.getTransactionByProject(id),
         enabled: !!id,
-        staleTime: Infinity,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
+        staleTime: 0,
+        refetchOnMount: true,
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Failed to fetch transactions");
             console.error(error);

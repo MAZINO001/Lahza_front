@@ -26,7 +26,7 @@ export function ProjectColumns(role, navigate) {
         return (
           <Link
             to={`/${role}/project/${id}`}
-            className="font-medium text-foreground hover:underline ml-3"
+            className=" text-foreground hover:underline ml-3"
           >
             {formatId(id, "PROJECT")}
           </Link>
@@ -38,7 +38,7 @@ export function ProjectColumns(role, navigate) {
       accessorKey: "name",
       header: "Project Name",
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("name")}</div>
+        <div className="">{row.getValue("name")}</div>
       ),
     },
 
@@ -53,7 +53,7 @@ export function ProjectColumns(role, navigate) {
               return (
                 <Link
                   to={`/${role}/client/${id}`}
-                  className="font-medium text-foreground hover:underline"
+                  className=" text-foreground hover:underline"
                 >
                   {formatId(id, "CLIENT")}
                 </Link>
@@ -81,7 +81,7 @@ export function ProjectColumns(role, navigate) {
                 <Link
                   key={invoice.id}
                   to={`/${role}/invoice/${invoice.id}`}
-                  className="font-medium text-foreground hover:underline ml-3"
+                  className=" text-foreground hover:underline ml-3"
                 >
                   {formatId(invoice.id, "INVOICE")}
                 </Link>

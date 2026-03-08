@@ -111,8 +111,8 @@ export default function EditPayment({ payment, onClose }) {
         </div>
       </div>
       <div className="text-sm text-muted-foreground">
-        <strong>Total Amount:</strong> {totalAmount} DH <br />
-        <strong>Balance Due:</strong> {balanceDue} DH <br />
+        <strong>Total Amount:</strong> {totalAmount} {invoice?.currency} <br />
+        <strong>Balance Due:</strong> {balanceDue} {invoice?.currency} <br />
         <strong>Max Payable (%):</strong> {totalPercentageAmount.toFixed(2)}%
       </div>
 

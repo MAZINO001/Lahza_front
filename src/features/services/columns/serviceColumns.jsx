@@ -61,7 +61,7 @@ export function getServiceColumns(
         return (
           <Link
             to={`/${role}/service/${service.id}`}
-            className="ml-3 font-medium hover:underline"
+            className="ml-3  hover:underline"
           >
             {service.name}
           </Link>
@@ -103,7 +103,7 @@ export function getServiceColumns(
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("base_price")) || 0;
         return (
-          <div className="ml-3 font-medium">
+          <div className="ml-3 ">
             {formatAmount(amount || 0, "MAD")}
           </div>
         );

@@ -15,8 +15,10 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useRegister } from "@/features/auth/hooks/useRegister";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,10 +40,11 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
   const typeClientValue = watch("client_type");
   const paysValue = watch("country");
 
+
   const handleChange = (field, value) => setValue(field, value);
 
   useEffect(() => {
-    if (paysValue === "Maroc") {
+    if (paysValue === "Maroc" || paysValue === "Morocco") {
       registerStore.setField("currency", "MAD");
       registerStore.setField("vat", "20%");
       registerStore.setField("ice", "");
@@ -128,12 +131,12 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
         handleClientCreatedByAdmin?.(response?.client_id);
         registerStore.reset();
       } else {
-        toast.info("Check your email for verification link");
+        toast.info(t("client_form.check_email_toast"));
         navigate("/auth/login");
       }
     } catch (error) {
       console.error("Registration failed:", error.response?.data);
-      toast.error(error.response?.data?.message || "Registration failed");
+      toast.error(error.response?.data?.message || t("client_form.registration_failed"));
     }
   };
 
@@ -177,10 +180,10 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-6 max-w-3xl mx-auto p-4 text-foreground"
+      className="space-y-3 sm:space-y-4 w-full min-w-0 p-2 sm:p-4 text-foreground"
     >
       {/* Stepper Header */}
-      <div className="mx-auto max-w-xl space-y-8 text-center">
+      <div className="w-full min-w-0 space-y-3 sm:space-y-4 text-center">
         <TheStepper
           currentStep={currentStep}
           setCurrentStep={setCurrentStep}
@@ -191,12 +194,12 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
       {/* STEP 1 */}
       {currentStep === 1 && (
         <>
-          <FormSection title="Client Information">
+          <FormSection title={t("client_form.section_client_info")}>
             <Controller
               name="client_type"
               control={control}
               rules={{
-                required: "Client type is required",
+                required: t("validation.client_type_required"),
               }}
               render={({ field }) => (
                 <ClientTypeRadio
@@ -210,15 +213,15 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <Controller
                 name="name"
                 control={control}
-                rules={{ required: "Name is required" }}
+                rules={{ required: t("validation.name_required") }}
                 render={({ field }) => (
                   <FormField
                     id="name"
-                    label="Full Name"
+                    label={t("client_form.full_name")}
                     value={field.value}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -232,11 +235,11 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               <Controller
                 name="company"
                 control={control}
-                rules={{ required: "Company name is required" }}
+                rules={{ required: t("validation.company_required") }}
                 render={({ field }) => (
                   <FormField
                     id="company"
-                    label="Company Name"
+                    label={t("client_form.business_name")}
                     value={field.value}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -249,22 +252,22 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
             </div>
 
             {/* Email + Téléphone */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <Controller
                 name="email"
                 control={control}
                 rules={{
-                  required: "Email is required",
+                  required: t("validation.email_required"),
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Invalid email address",
+                    message: t("validation.email_invalid"),
                   },
                 }}
                 render={({ field }) => (
                   <FormField
                     id="email"
                     type="email"
-                    label="Email Address"
+                    label={t("client_form.email_address")}
                     value={field.value}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -278,11 +281,11 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               <Controller
                 name="phone"
                 control={control}
-                rules={{ required: "Phone is required" }}
+                rules={{ required: t("validation.phone_required") }}
                 render={({ field }) => (
                   <FormField
                     id="phone"
-                    label="Phone"
+                    label={t("client_form.phone")}
                     value={field.value}
                     onChange={(e) => {
                       field.onChange(e.target.value);
@@ -296,19 +299,19 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
 
             {/* Password fields - only show for normal client signup */}
             {!handleClientCreatedByAdmin && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <Controller
                   name="password"
                   control={control}
                   rules={{
-                    required: "Password is required",
-                    minLength: { value: 6, message: "Minimum 6 characters" },
+                    required: t("validation.password_required"),
+                    minLength: { value: 6, message: t("validation.password_min_length") },
                   }}
                   render={({ field }) => (
                     <FormField
                       id="password"
                       type="password"
-                      label="Password"
+                      label={t("client_form.password")}
                       value={field.value}
                       onChange={(e) => {
                         field.onChange(e.target.value);
@@ -323,15 +326,15 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                   name="password_confirmation"
                   control={control}
                   rules={{
-                    required: "Password confirmation is required",
+                    required: t("validation.password_confirmation_required"),
                     validate: (val) =>
-                      val === watch("password") || "Passwords do not match",
+                      val === watch("password") || t("validation.passwords_no_match"),
                   }}
                   render={({ field }) => (
                     <FormField
                       id="password_confirmation"
                       type="password"
-                      label="Confirm Password"
+                      label={t("client_form.confirm_password")}
                       value={field.value}
                       onChange={(e) => {
                         field.onChange(e.target.value);
@@ -348,13 +351,13 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
             )}
           </FormSection>
 
-          <div className="flex justify-end">
+          <div className="flex justify-end mt-3 sm:mt-4">
             <Button
               type="button"
               onClick={handleNextStep}
-              className="w-full md:w-auto bg-primary hover:bg-[color-mix(in oklch,var(--primary)80%,black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors mt-8"
+              className="w-full sm:w-auto min-w-[120px] bg-primary hover:bg-[color-mix(in oklch,var(--primary)80%,black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors"
             >
-              Next
+              {t("client_form.next")}
             </Button>
           </div>
         </>
@@ -363,19 +366,19 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
       {/* STEP 2 */}
       {currentStep === 2 && (
         <>
-          <FormSection title="Address and Information">
+          <FormSection title={t("client_form.section_address")}>
             {/* Adresse + Zip */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <Controller
                 name="address"
                 control={control}
                 rules={{
-                  required: "Address is required",
+                  required: t("validation.address_required"),
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <FormField
                     id="address"
-                    label="Address"
+                    label={t("client_form.address")}
                     {...field}
                     onChange={(e) => {
                       field.onChange(e);
@@ -390,12 +393,12 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                 name="zip"
                 control={control}
                 rules={{
-                  required: "Postal code is required",
+                  required: t("validation.postal_code_required"),
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <FormField
                     id="zip"
-                    label="Postal Code"
+                    label={t("client_form.postal_code")}
                     {...field}
                     onChange={(e) => {
                       field.onChange(e);
@@ -408,17 +411,17 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
             </div>
 
             {/* Ville + Pays */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <Controller
                 name="city"
                 control={control}
                 rules={{
-                  required: "City is required",
+                  required: t("validation.city_required"),
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <FormField
                     id="city"
-                    label="City"
+                    label={t("client_form.city")}
                     {...field}
                     onChange={(e) => {
                       field.onChange(e);
@@ -433,7 +436,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                 name="country"
                 control={control}
                 rules={{
-                  required: "Country is required",
+                  required: t("validation.country_required"),
                 }}
                 render={({ field, fieldState: { error } }) => (
                   <CountrySelect
@@ -451,19 +454,19 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
 
             {/* Conditional fields for company */}
             {typeClientValue === "company" && (
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {paysValue === "Maroc" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                {paysValue === "Maroc" || paysValue === "Morocco" ? (
                   <>
                     <Controller
                       name="ice"
                       control={control}
                       rules={{
-                        required: "ICE is required",
+                        required: t("validation.ice_required"),
                       }}
                       render={({ field, fieldState: { error } }) => (
                         <FormField
                           id="ice"
-                          label="ICE"
+                          label={t("client_form.ice")}
                           {...field}
                           onChange={(e) => {
                             field.onChange(e);
@@ -477,7 +480,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                     {/* VAT - read only */}
                     <FormField
                       id="vat"
-                      label="VAT"
+                      label={t("client_form.vat")}
                       value={registerStore.vat}
                       disabled
                       readOnly
@@ -492,12 +495,12 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                       name="siren"
                       control={control}
                       rules={{
-                        required: "SIREN is required",
+                        required: t("validation.siren_required"),
                       }}
                       render={({ field, fieldState: { error } }) => (
                         <FormField
                           id="siren"
-                          label="SIREN"
+                          label={t("client_form.siren")}
                           {...field}
                           onChange={(e) => {
                             field.onChange(e);
@@ -512,7 +515,7 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
                       name="currency"
                       control={control}
                       rules={{
-                        required: "Currency is required",
+                        required: t("validation.currency_required"),
                       }}
                       render={({ field }) => (
                         <CurrencySelect
@@ -528,21 +531,21 @@ export function ClientForm({ onClientCreated, handleClientCreatedByAdmin }) {
               </div>
             )}
           </FormSection>
-          <div className="flex justify-between mt-8">
+          <div className="flex flex-col-reverse sm:flex-row justify-between gap-3 mt-3 sm:mt-4">
             <Button
               type="button"
               onClick={handlePrevStep}
               variant="outline"
-              className="w-full md:w-auto"
+              className="w-full sm:w-auto min-w-[120px]"
             >
-              Previous
+              {t("client_form.previous")}
             </Button>
             <Button
               type="submit"
               disabled={registerMutation.isPending}
-              className="w-full md:w-auto bg-primary hover:bg-[color-mix(in oklch,var(--primary)80%,black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors"
+              className="w-full sm:w-auto min-w-[120px] bg-primary hover:bg-[color-mix(in oklch,var(--primary)80%,black)] text-primary-foreground font-semibold py-2 px-4 rounded-lg transition-colors"
             >
-              {registerMutation.isPending ? "Registering..." : "Register"}
+              {registerMutation.isPending ? t("client_form.registering") : t("client_form.register_btn")}
             </Button>
           </div>
         </>

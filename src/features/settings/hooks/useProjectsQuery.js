@@ -109,9 +109,11 @@ export function useAddProjectAssignment() {
         mutationFn: projectsApi.addAssignment,
         onSuccess: (_, { project_id }) => {
             toast.success("Project assigned successfully!");
+            const pid = project_id != null ? String(project_id) : null;
             queryClient.invalidateQueries({ queryKey: ["projects"] });
-            queryClient.invalidateQueries({ queryKey: ["projectTeamMembers", project_id] });
-            queryClient.refetchQueries({ queryKey: ["projectTeamMembers", project_id] });
+            queryClient.invalidateQueries({ queryKey: ["projectTeamMembers", pid] });
+            if (pid) queryClient.invalidateQueries({ queryKey: ["projectTeam", pid] });
+            queryClient.refetchQueries({ queryKey: ["projectTeamMembers", pid] });
         },
         onError: (error) => handleApiError(error, "Failed to assign project"),
     });
@@ -124,8 +126,10 @@ export function useDeleteProjectAssignment() {
         mutationFn: projectsApi.deleteAssignment,
         onSuccess: (_, { project_id }) => {
             toast.success("Project assignment removed successfully!");
+            const pid = project_id != null ? String(project_id) : null;
             queryClient.invalidateQueries({ queryKey: ["projects"] });
-            queryClient.invalidateQueries({ queryKey: ["projectTeamMembers", project_id] });
+            queryClient.invalidateQueries({ queryKey: ["projectTeamMembers", pid] });
+            if (pid) queryClient.invalidateQueries({ queryKey: ["projectTeam", pid] });
         },
         onError: (error) => handleApiError(error, "Failed to remove project assignment"),
     });

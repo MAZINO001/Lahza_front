@@ -72,7 +72,8 @@ export default function PaymentDetails({ invoiceId }) {
       </div>
     );
   }
-
+console.log("the payments:", payments);
+console.log("invoiceId:", invoiceId);
   return (
     <div>
       <h5 className="font-medium mb-2 text-sm">Payment History</h5>
@@ -85,7 +86,7 @@ export default function PaymentDetails({ invoiceId }) {
             <div className="flex justify-between items-center">
               <div>
                 <p className="font-medium">
-                  {formatAmount(payment.amount || 0, "MAD")}
+                  {formatAmount(payment.amount || 0, payment.currency.toUpperCase())}
                 </p>
 
                 {payment.updated_at && (

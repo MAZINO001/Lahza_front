@@ -74,7 +74,7 @@ export default function CurrencyToggle() {
 
       <DropdownMenuContent
         align="end"
-        className="min-w-[220px] p-1 max-h-[min(360px,80vh)] overflow-y-auto"
+        className="min-w-[140px] p-1"
       >
         {currencies.map((currency) => {
           const isActive = selectedCurrency === currency.code;
@@ -89,13 +89,7 @@ export default function CurrencyToggle() {
                 isActive && "bg-accent/60 font-medium",
               )}
             >
-              <span className="text-base leading-none">{currency.flag}</span>
-              <div className="flex flex-col flex-1 min-w-0">
-                <span className="font-medium">{currency.code}</span>
-                <span className="text-xs text-muted-foreground">
-                  {currency.symbol}
-                </span>
-              </div>
+              <span className="font-medium">{currency.code}  ({currency.symbol})</span>
               {isActive && <Check className="h-4 w-4 text-primary ml-auto" />}
             </DropdownMenuItem>
           );
