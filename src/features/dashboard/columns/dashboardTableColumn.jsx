@@ -113,7 +113,7 @@ export const dashBoardTableColumns = (role) => {
       header: "Status",
       cell: ({ row }) => {
         const status = row.getValue("status");
-        const due_date = row.original.due_date;
+        const { due_date } = row.original;
 
         if (status === "overdue") {
           const daysOverdue = Math.max(

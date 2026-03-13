@@ -8,11 +8,6 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { useAllTasks } from "@/features/tasks/hooks/useTasksQuery";
 import { useDocuments } from "@/features/documents/hooks/useDocuments/useDocuments";
 
-const mockUser = {
-  id: "client-001-uuid-here",
-  email: "demo@example.com",
-  name: "Demo User",
-};
 
 const services = ["Hosting", "Logo Design", "Web App Creation"];
 
