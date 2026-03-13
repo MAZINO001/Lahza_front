@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { DataTable } from "../table/DataTable";
-import { dashBoardTableColumns } from "@/features/dashboard/dashboardTableColumn";
+import { dashBoardTableColumns } from "@/features/dashboard/columns/dashboardTableColumn";
 import { useDocuments } from "@/features/documents/hooks/useDocuments/useDocumentsQueryData";
 import { useState } from "react"
 export default function Invoices() {

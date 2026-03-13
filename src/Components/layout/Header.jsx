@@ -28,7 +28,6 @@
 //   );
 // }
 
-
 import { useState, useRef, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -95,15 +94,14 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-      <div className="container flex items-center justify-between h-16 px-4 lg:px-6 gap-4 ">
-        <div className="flex-shrink-0">
-        </div>
+    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border">
+      <div className="flex items-center justify-between h-16 px-4 lg:px-6 gap-4 ">
+        <div className="shrink-0"></div>
 
         <div className="hidden md:flex flex-1 max-w-md ">
           <form onSubmit={handleSearch} className="relative w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-            
+
             <Input
               ref={desktopSearchRef}
               type="search"
@@ -126,7 +124,7 @@ export default function Header() {
                   <X className="h-3.5 w-3.5" />
                 </Button>
               )}
-              
+
               <kbd className="inline-flex h-6 items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
                 <span className="text-xs">⌘</span>K
               </kbd>
@@ -134,7 +132,10 @@ export default function Header() {
           </form>
         </div>
 
-        <nav className="flex items-center justify-between flex-1 md:flex-initial gap-2 sm:gap-2 min-w-0 " aria-label="Header navigation">
+        <nav
+          className="flex items-center justify-between flex-1 md:flex-initial gap-2 sm:gap-2 min-w-0 "
+          aria-label="Header navigation"
+        >
           <Button
             variant="outline"
             size="icon"
@@ -160,15 +161,13 @@ export default function Header() {
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="sm:max-w-2xl p-0 gap-0">
           <DialogHeader className="px-6 pt-6 pb-4">
-            <DialogTitle className="text-lg font-semibold">
-              Search
-            </DialogTitle>
+            <DialogTitle className="text-lg font-semibold">Search</DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSearch} className="px-6 pb-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-              
+
               <Input
                 ref={searchInputRef}
                 type="search"
@@ -196,7 +195,7 @@ export default function Header() {
                     <X className="h-3.5 w-3.5" />
                   </Button>
                 )}
-                
+
                 <kbd className="hidden sm:inline-flex h-6 items-center gap-0.5 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
                   <span className="text-xs">⌘</span>K
                 </kbd>
@@ -205,7 +204,11 @@ export default function Header() {
 
             {searchQuery && (
               <div className="mt-4 text-sm text-muted-foreground">
-                Press <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-[10px]">Enter</kbd> to search
+                Press{" "}
+                <kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-[10px]">
+                  Enter
+                </kbd>{" "}
+                to search
               </div>
             )}
           </form>
