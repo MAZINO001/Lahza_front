@@ -193,10 +193,8 @@ export default function NotificationPreferences() {
   return (
     <div className="w-full">
       <div className="space-y-0.5 mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Notifications
-        </h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-xl font-bold tracking-tight">Notifications</h1>
+        <p className="text-muted-foreground text-xs">
           Manage your email and in-app notification preferences
         </p>
       </div>

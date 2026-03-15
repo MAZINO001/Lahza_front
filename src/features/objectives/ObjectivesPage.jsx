@@ -7,7 +7,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import ObjectivesForm from "./components/ObjectivesForm";
@@ -71,7 +77,7 @@ export default function ObjectivesPage() {
   }
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="p-4 min-h-screen ">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div></div>
@@ -84,7 +90,7 @@ export default function ObjectivesPage() {
 
       {/* Objectives List */}
       {objectives.length === 0 ? (
-        <div className="text-center py-4 border border-dashed rounded-lg">
+        <div className="text-center py-4 border border-dashed rounded-lg bg-background">
           <p className="text-muted-foreground mb-4">No objectives yet</p>
           <Button variant="outline" onClick={() => handleOpenDialog()}>
             Create your first objective
@@ -97,15 +103,13 @@ export default function ObjectivesPage() {
               key={obj.id}
               className="overflow-hidden border shadow-sm hover:shadow-md transition-shadow"
             >
-              <CardHeader className="pb-4">
+              <CardHeader>
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-1 flex-1">
-                    <CardTitle className="text-lg leading-tight line-clamp-2">
-                      {obj.title}
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground line-clamp-2">
+                    <CardTitle>{obj.title}</CardTitle>
+                    <CardDescription className="text-sm text-muted-foreground line-clamp-2">
                       {obj.description || "No description provided"}
-                    </p>
+                    </CardDescription>
                   </div>
 
                   <div className="flex items-center gap-1 shrink-0">
@@ -129,9 +133,8 @@ export default function ObjectivesPage() {
                 </div>
               </CardHeader>
 
-              <CardContent className="pt-4 space-y-4">
-                {/* Status & Progress */}
-                <div className="flex flex-wrap items-center gap-3">
+              <CardContent>
+                <div className="flex flex-wrap items-center gap-4 mb-4">
                   <Badge
                     variant={
                       obj.status === "completed"
@@ -159,7 +162,7 @@ export default function ObjectivesPage() {
                 </div>
 
                 {/* Dates & Owner */}
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 gap-4 text-sm mb-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <Calendar className="h-3.5 w-3.5" />
@@ -178,7 +181,7 @@ export default function ObjectivesPage() {
                 </div>
 
                 {obj.owner && (
-                  <div className="flex items-center gap-2 text-sm pt-2 border-t">
+                  <div className="flex items-center gap-2 text-sm pt-4 border-t">
                     <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-medium">
                       {getInitials(obj.owner.name)}
                     </div>

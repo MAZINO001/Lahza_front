@@ -10,7 +10,7 @@
 //   return (
 //     <div className="flex flex-col items-center justify-center space-y-4">
 //       <Loader2 className={`animate-spin text-blue-600 ${sizeClasses[size]}`} />
-//       {text && <p className="text-muted-foreground text-sm">{text}</p>}
+//       {text && <p className="text-muted-foreground text-xs">{text}</p>}
 //     </div>
 //   );
 // }

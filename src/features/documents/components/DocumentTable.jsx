@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // /* eslint-disable react-hooks/exhaustive-deps */
 // // src/features/invoices/components/InvoiceTable.jsx
 // import * as React from "react";
@@ -131,7 +132,6 @@
 //   );
 // }
 
-
 import * as React from "react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -155,7 +155,7 @@ import { DocumentsColumns } from "../columns/documentColumns";
 import { DataTable } from "@/components/table/DataTable";
 import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot";
 import { useCurrencyStore } from "@/hooks/useCurrencyStore";
-import  DocumentFilters  from "./DocumentFilters";
+import DocumentFilters from "./DocumentFilters";
 
 export function DocumentTable({ type }) {
   const [sorting, setSorting] = useState([]);
@@ -244,7 +244,16 @@ export function DocumentTable({ type }) {
 
       return true;
     },
-    [globalFilter, statusFilter, dateFrom, dateTo, amountMin, amountMax, balanceMin, balanceMax]
+    [
+      globalFilter,
+      statusFilter,
+      dateFrom,
+      dateTo,
+      amountMin,
+      amountMax,
+      balanceMin,
+      balanceMax,
+    ],
   );
 
   const filteredDocuments = React.useMemo(() => {
@@ -270,13 +279,21 @@ export function DocumentTable({ type }) {
   };
 
   const hasActiveFilters =
-    globalFilter || statusFilter !== "all" || dateFrom || dateTo || 
-    amountMin || amountMax || balanceMin || balanceMax;
+    globalFilter ||
+    statusFilter !== "all" ||
+    dateFrom ||
+    dateTo ||
+    amountMin ||
+    amountMax ||
+    balanceMin ||
+    balanceMax;
   const hasEmptySpace = documents?.length < 6;
 
   return (
-    <div className="w-full p-4 h-screen">
-      <div className="flex items-center justify-between mb-4 gap-3">
+    <div className="w-full p-4 min-h-screen">
+      {/* ── Toolbar ───────────────────────────────────────────────────────────── */}
+      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Left: search + filter toggle */}
         <div className="flex items-center gap-2 flex-1">
           <FormField
             placeholder="Search by Client Name or ID..."
@@ -288,19 +305,28 @@ export function DocumentTable({ type }) {
             variant="outline"
             size="icon"
             onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? "bg-muted" : ""}
+            className={showFilters ? "bg-muted shrink-0" : "shrink-0"}
           >
             <Filter className="h-4 w-4" />
           </Button>
         </div>
 
+        {/* Right: admin actions */}
         {role === "admin" && (
-          <div className="flex gap-3">
-            <Button onClick={() => setShowUploadModal(true)} variant="outline">
-              <Upload className="mr-2 h-4 w-4" /> Upload CSV
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Button
+              onClick={() => setShowUploadModal(true)}
+              variant="outline"
+              className="flex-1 sm:flex-none"
+            >
+              <Upload className="mr-2 h-4 w-4" />
+              Upload CSV
             </Button>
-            <Link to={`/${role}/${currentSection}/new`}>
-              <Button>Add {currentSection}</Button>
+            <Link
+              to={`/${role}/${currentSection}/new`}
+              className="flex-1 sm:flex-none"
+            >
+              <Button className="w-full">Add {currentSection}</Button>
             </Link>
           </div>
         )}
@@ -336,7 +362,11 @@ export function DocumentTable({ type }) {
         onSuccess={() => window.location.reload()}
       />
       {hasEmptySpace && (
-        <OfferPlacementSlot placement={type} maxOffers={1} showAnimated={true} />
+        <OfferPlacementSlot
+          placement={type}
+          maxOffers={1}
+          showAnimated={true}
+        />
       )}
     </div>
   );

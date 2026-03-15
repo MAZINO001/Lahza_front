@@ -7,10 +7,8 @@ export function CompanyBasicsSection({ control, errors }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="space-y-0.5 mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Company Basics
-        </h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-xl font-bold tracking-tight">Company Basics</h1>
+        <p className="text-muted-foreground text-xs">
           Manage your basic company information and details
         </p>
       </div>

@@ -160,10 +160,8 @@ export default function ClientsAllPlans({ onViewChange }) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">
-            My Subscriptions
-          </h1>
-          <p className="text-muted-foreground text-sm">
+          <h1 className="text-xl font-bold tracking-tight">My Subscriptions</h1>
+          <p className="text-muted-foreground text-xs">
             Manage your active plans and billing details
           </p>
         </div>

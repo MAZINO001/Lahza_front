@@ -7,10 +7,8 @@ export default function TeamManagement() {
   return (
     <div>
       <div className="space-y-0.5 mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Team Management
-        </h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-xl font-bold tracking-tight">Team Management</h1>
+        <p className="text-muted-foreground text-xs">
           Manage your teams and team members
         </p>
       </div>

@@ -44,6 +44,7 @@ import DropdownMenuProfile from "@/components/dropdown-menu-profile-1";
 import PopUpActions from "@/components/command-dialog-6";
 import LanguageSwitcher from "@/Components/LanguageSwitcher";
 import CurrencyToggle from "@/Components/CurrencyToggle";
+import { SidebarTrigger } from "../ui/sidebar";
 
 export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -94,13 +95,16 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border">
-      <div className="flex items-center justify-between h-16 px-4 lg:px-6 gap-4 ">
+    <header className="sticky top-2 z-499 w-full bg-background backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-border">
+      <div className="flex items-center justify-between h-16 px-4 lg:px-6 gap-10">
+        <div className="absolute left-2">
+          <SidebarTrigger />
+        </div>
         <div className="shrink-0"></div>
 
         <div className="hidden md:flex flex-1 max-w-md ">
           <form onSubmit={handleSearch} className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
 
             <Input
               ref={desktopSearchRef}

@@ -122,7 +122,10 @@ export function OfferForm({ offerId, onSuccess }) {
   }));
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4 h-screen">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 p-4 min-h-screen "
+    >
       {isLoading && offerId ? (
         <div className="flex items-center justify-center h-64">
           <p className="text-sm text-muted-foreground">

@@ -170,6 +170,7 @@ function Sidebar({
           className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
           style={{
             "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+            backgroundColor: "hsl(var(--sidebar))", // 👈 force background
           }}
           side={side}
         >
@@ -177,7 +178,9 @@ function Sidebar({
             <SheetTitle>Sidebar</SheetTitle>
             <SheetDescription>Displays the mobile sidebar.</SheetDescription>
           </SheetHeader>
-          <div className="flex h-full w-full flex-col">{children}</div>
+          <div className="flex h-full w-full flex-col bg-sidebar">
+            {children}
+          </div>
         </SheetContent>
       </Sheet>
     );
@@ -238,9 +241,9 @@ function SidebarTrigger({ className, onClick, ...props }) {
     <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
-      variant="ghost"
+      variant="outline"
       size="icon"
-      className={cn("size-10", className)}
+      className={cn("size-9 cursor-pointer", className)}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
@@ -252,6 +255,32 @@ function SidebarTrigger({ className, onClick, ...props }) {
     </Button>
   );
 }
+
+// function SidebarRail({ className, ...props }) {
+//   const { toggleSidebar } = useSidebar();
+
+//   return (
+//     <button
+//       data-sidebar="rail"
+//       data-slot="sidebar-rail"
+//       aria-label="Toggle Sidebar"
+//       tabIndex={-1}
+//       onClick={toggleSidebar}
+//       title="Toggle Sidebar"
+//       className={cn(
+//         "absolute z-300 hidden transition-all ease-linear sm:flex",
+//         "group-data-[side=left]:-right-10 group-data-[side=left]:bottom-4",
+//         "group-data-[side=right]:-left-10 group-data-[side=right]:bottom-4",
+//         "w-8 h-8 rounded-md flex items-center justify-center shadow-sm",
+//         "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar",
+//         className,
+//       )}
+//       {...props}
+//     >
+//       <Eye className="w-5 h-5 " />
+//     </button>
+//   );
+// }
 
 function SidebarRail({ className, ...props }) {
   const { toggleSidebar } = useSidebar();
@@ -265,16 +294,16 @@ function SidebarRail({ className, ...props }) {
       onClick={toggleSidebar}
       title="Toggle Sidebar"
       className={cn(
-        "absolute z-30 hidden transition-all ease-linear sm:flex",
-        "group-data-[side=left]:-right-10 group-data-[side=left]:bottom-4",
-        "group-data-[side=right]:-left-10 group-data-[side=right]:bottom-4",
-        "w-8 h-8 rounded-md flex items-center justify-center shadow-sm",
-        "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar",
+        "absolute z-50 flex transition-all ease-linear", // removed 'hidden sm:flex'
+        "group-data-[side=left]:-right-4 group-data-[side=left]:top-4",
+        "group-data-[side=right]:-left-4 group-data-[side=right]:top-4",
+        "w-8 h-8 rounded-full items-center justify-center shadow-md border",
+        "bg-sidebar text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
         className,
       )}
       {...props}
     >
-      <Eye className="w-5 h-5 " />
+      <Eye className="w-4 h-4" />
     </button>
   );
 }

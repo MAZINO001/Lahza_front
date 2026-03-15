@@ -177,19 +177,12 @@ export default function ProjectViewPage() {
     ? Math.round((doneTasks / tasks?.length) * 100)
     : 0;
 
-  console.log("logoFiles", logoFiles);
-  console.log("mediaFiles", mediaFiles);
-  console.log("otherFiles", otherFiles);
-  console.log("specificFiles", specificFiles);
-  console.log("backendOrigin", backendOrigin);
-  console.log("filesLoading", filesLoading);
-
   return (
     <div className="p-4">
       <div className="mb-4 rounded-xl text-foreground flex w-full items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold mb-1">Project Preview</h1>
-          <p className="text-md opacity-90">
+          <h1 className="text-xl font-semibold mb-1">Project Preview</h1>
+          <p className="text-xs opacity-90">
             A quick overview of the project, its goal, and what it delivers.
           </p>
         </div>

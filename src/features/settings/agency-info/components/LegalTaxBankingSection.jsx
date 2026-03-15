@@ -7,10 +7,10 @@ export function LegalTaxBankingSection({ control, errors }) {
   return (
     <form className="flex flex-col gap-4">
       <div className="space-y-0.5 mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">
+        <h1 className="text-xl font-bold tracking-tight">
           Legal, Tax & Banking
         </h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-xs">
           Manage your legal, tax identification and banking information
         </p>
       </div>

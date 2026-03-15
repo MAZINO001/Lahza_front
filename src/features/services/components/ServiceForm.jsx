@@ -268,7 +268,6 @@
 //   );
 // }
 
-
 import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -444,9 +443,7 @@ export function ServiceForm({ serviceId, onSuccess }) {
     >
       {serviceLoading && serviceId ? (
         <div className="flex items-center justify-center h-full">
-          <p className="text-gray-500">
-            {t("services.form.loading_service")}
-          </p>
+          <p className="text-gray-500">{t("services.form.loading_service")}</p>
         </div>
       ) : (
         <>
@@ -485,42 +482,41 @@ export function ServiceForm({ serviceId, onSuccess }) {
             <div className="w-[75%]  ">
               <div className="space-y-4 w-full flex gap-4">
                 <div className="w-[50%]">
-
-                <Controller
-                  name="description_en"
-                  control={control}
-                  rules={{
-                    required: t(
-                      "services.form.validation.description_required",
-                    ),
-                  }}
-                  render={({ field }) => (
-                    <RichTextEditor
-                      label={`${t("services.form.description_label")} (EN)`}
-                      placeholder={`${t(
-                        "services.form.description_placeholder",
-                      )} (EN)`}
-                      error={errors.description_en?.message}
-                      {...field}
-                    />
-                  )}
-                />
-</div>
-<div className="w-[50%]">
-                <Controller
-                  name="description_fr"
-                  control={control}
-                  render={({ field }) => (
-                    <RichTextEditor
-                      label={`${t("services.form.description_label")} (FR)`}
-                      placeholder={`${t(
-                        "services.form.description_placeholder",
-                      )} (FR)`}
-                      error={errors.description_fr?.message}
-                      {...field}
-                    />
-                  )}
-                />
+                  <Controller
+                    name="description_en"
+                    control={control}
+                    rules={{
+                      required: t(
+                        "services.form.validation.description_required",
+                      ),
+                    }}
+                    render={({ field }) => (
+                      <RichTextEditor
+                        label={`${t("services.form.description_label")} (EN)`}
+                        placeholder={`${t(
+                          "services.form.description_placeholder",
+                        )} (EN)`}
+                        error={errors.description_en?.message}
+                        {...field}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="w-[50%]">
+                  <Controller
+                    name="description_fr"
+                    control={control}
+                    render={({ field }) => (
+                      <RichTextEditor
+                        label={`${t("services.form.description_label")} (FR)`}
+                        placeholder={`${t(
+                          "services.form.description_placeholder",
+                        )} (FR)`}
+                        error={errors.description_fr?.message}
+                        {...field}
+                      />
+                    )}
+                  />
                 </div>
               </div>
             </div>

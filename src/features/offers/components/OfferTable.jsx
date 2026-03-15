@@ -33,8 +33,8 @@ export function OfferTable() {
   const [columnFilters, setColumnFilters] = useState([]);
 
   const columns = React.useMemo(
-    () => getOfferColumns(role, navigate, formatAmount, selectedCurrency , t),
-    [role, navigate, formatAmount, selectedCurrency ,t],
+    () => getOfferColumns(role, navigate, formatAmount, selectedCurrency, t),
+    [role, navigate, formatAmount, selectedCurrency, t],
   );
 
   const table = useReactTable({
@@ -51,7 +51,8 @@ export function OfferTable() {
 
   return (
     <div className="w-full p-4 min-h-screen">
-      <div className="flex justify-between mb-4">
+      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Left: search */}
         <FormField
           placeholder={t("offers.table.filter_placeholder")}
           value={table.getColumn("title")?.getFilterValue() ?? ""}
@@ -60,13 +61,21 @@ export function OfferTable() {
           }
           className="w-full sm:max-w-sm"
         />
-        <div className="flex gap-2">
-          <Button onClick={() => setShowUploadModal(true)} variant="outline">
+
+        {/* Right: action buttons */}
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:w-auto">
+          <Button
+            onClick={() => setShowUploadModal(true)}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
             <Upload className="mr-2 h-4 w-4" />
             {t("offers.table.upload_csv")}
           </Button>
-          <Link to={`/${role}/offer/new`}>
-            <Button>{t("offers.table.add_new_offer")}</Button>
+          <Link to={`/${role}/offer/new`} className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto">
+              {t("offers.table.add_new_offer")}
+            </Button>
           </Link>
         </div>
       </div>

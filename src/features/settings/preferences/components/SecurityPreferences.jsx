@@ -69,10 +69,8 @@ export default function SecurityPreferences() {
   return (
     <div className="w-full">
       <div className="space-y-0.5 mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Security
-        </h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-xl font-bold tracking-tight">Security</h1>
+        <p className="text-muted-foreground text-xs">
           Manage your password and email security settings
         </p>
       </div>

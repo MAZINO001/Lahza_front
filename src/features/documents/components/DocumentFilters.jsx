@@ -7,14 +7,14 @@ import FormField from "@/Components/Form/FormField";
 import SelectField from "@/Components/Form/SelectField";
 import DateField from "@/Components/Form/DateField";
 
-export default function DocumentFilters({ 
-  control, 
-  hasActiveFilters, 
+export default function DocumentFilters({
+  control,
+  hasActiveFilters,
   onClearFilters,
   showCount = false,
   filteredCount = 0,
   totalCount = 0,
-  type = "invoices"
+  type = "invoices",
 }) {
   const isInvoice = type === "invoices";
 
@@ -52,6 +52,7 @@ export default function DocumentFilters({
                 { value: "partially paid", label: "Partially Paid" },
                 { value: "pending", label: "Pending" },
                 { value: "overdue", label: "Overdue" },
+                { value: "sent", label: "Sent" },
               ]}
             />
           )}

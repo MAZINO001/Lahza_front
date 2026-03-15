@@ -1,17 +1,171 @@
+// /* eslint-disable react-hooks/rules-of-hooks */
+// import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
+// import { Link } from "react-router-dom";
+// import { Button } from "@/components/ui/button";
+// import { TooltipButton } from "@/components/common/TooltipButton";
+// import { globalFnStore } from "@/hooks/GlobalFnStore";
+// import { Badge } from "@/components/ui/badge";
+// import AlertDialogDestructive from "@/components/alert-dialog-destructive-1";
+// import { useDeleteService } from "@/features/services/hooks/useServicesData";
+// import {
+//   Tooltip,
+//   TooltipContent,
+//   TooltipTrigger,
+// } from "@/components/ui/tooltip";
+// import { CategoryBadge } from "@/components/CategoryBadge";
+
+// export function getServiceColumns(
+//   role,
+//   navigate,
+//   formatAmount,
+//   selectedCurrency,
+//   t,
+// ) {
+//   return [
+//     {
+//       accessorKey: "image",
+//       header: ({ column }) => (
+//         <Button
+//           variant="ghost"
+//           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+//           className="hidden sm:flex"
+//         >
+//           {t("services.table.columns.image")}
+//           <ArrowUpDown className="ml-1 h-4 w-4" />
+//         </Button>
+//       ),
+//       cell: ({ row }) => {
+//         const service = row.original;
+//         return (
+//           <img
+//             src={service.image}
+//             alt={service.name}
+//             className="h-12 w-20 object-cover rounded-md hidden sm:block"
+//           />
+//         );
+//       },
+//     },
+//     {
+//       accessorKey: "name",
+//       header: ({ column }) => (
+//         <Button
+//           variant="ghost"
+//           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+//         >
+//           {t("services.table.columns.name")}
+//           <ArrowUpDown className="ml-1 h-4 w-4" />
+//         </Button>
+//       ),
+//       cell: ({ row }) => {
+//         const service = row.original;
+//         return (
+//           <Link
+//             to={`/${role}/service/${service.id}`}
+//             className="ml-3  hover:underline"
+//           >
+//             {service.name}
+//           </Link>
+//         );
+//       },
+//     },
+//     {
+//       accessorKey: "category",
+//       header: t("services.table.columns.category"),
+//       cell: ({ row }) => (
+//         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
+//           <CategoryBadge category={row.getValue("category")} />
+//         </div>
+//       ),
+//     },
+
+//     {
+//       accessorKey: "description",
+//       header: t("services.table.columns.description"),
+//       cell: ({ row }) => (
+//         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
+//           <div
+//             dangerouslySetInnerHTML={{ __html: row.getValue("description") }}
+//           />
+//         </div>
+//       ),
+//     },
+//     {
+//       accessorKey: "base_price",
+//       header: ({ column }) => (
+//         <Button
+//           variant="ghost"
+//           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+//         >
+//           {t("services.table.columns.base_price")}
+//           <ArrowUpDown className="ml-1 h-4 w-4" />
+//         </Button>
+//       ),
+//       cell: ({ row }) => {
+//         const amount = parseFloat(row.getValue("base_price")) || 0;
+//         return (
+//           <div className="ml-3 ">
+//             {formatAmount(amount || 0, "MAD")}
+//           </div>
+//         );
+//       },
+//     },
+//     {
+//       id: "actions",
+//       enableHiding: false,
+//       header: t("services.table.columns.actions"),
+//       cell: ({ row }) => {
+//         const service = row.original;
+//         const { HandleEditService, handleDeleteService } = globalFnStore();
+//         const onEdit = () => {
+//           HandleEditService(service.id, navigate, role);
+//         };
+
+//         const deleteMutation = useDeleteService();
+//         const onDelete = async () => {
+//           await handleDeleteService(service.id, deleteMutation);
+//         };
+
+//         return (
+//           <div className="flex items-center gap-2">
+//             <TooltipButton
+//               tooltip={t("services.table.actions.edit_service")}
+//               size="sm"
+//               variant="ghost"
+//               onClick={onEdit}
+//               className="cursor-pointer"
+//             >
+//               <Pencil className="h-4 w-4" />
+//             </TooltipButton>
+//             {role === "admin" && (
+//               <AlertDialogDestructive
+//                 onDelete={() => onDelete()}
+//                 trigger={
+//                   <TooltipButton
+//                     tooltip={t("services.table.actions.delete_service")}
+//                     variant="ghost"
+//                     size="sm"
+//                     className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50 cursor-pointer"
+//                   >
+//                     <Trash2 className="h-4 w-4" />
+//                   </TooltipButton>
+//                 }
+//               />
+//             )}
+//           </div>
+//         );
+//       },
+//     },
+//   ];
+// }
+
 /* eslint-disable react-hooks/rules-of-hooks */
 import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { TooltipButton } from "@/components/common/TooltipButton";
 import { globalFnStore } from "@/hooks/GlobalFnStore";
-import { Badge } from "@/components/ui/badge";
 import AlertDialogDestructive from "@/components/alert-dialog-destructive-1";
 import { useDeleteService } from "@/features/services/hooks/useServicesData";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { CategoryBadge } from "@/components/CategoryBadge";
 
 export function getServiceColumns(
@@ -24,6 +178,7 @@ export function getServiceColumns(
   return [
     {
       accessorKey: "image",
+      hideOnMobile: true, // ← skip in mobile card
       header: ({ column }) => (
         <Button
           variant="ghost"
@@ -61,7 +216,7 @@ export function getServiceColumns(
         return (
           <Link
             to={`/${role}/service/${service.id}`}
-            className="ml-3  hover:underline"
+            className="ml-3 hover:underline"
           >
             {service.name}
           </Link>
@@ -70,6 +225,7 @@ export function getServiceColumns(
     },
     {
       accessorKey: "category",
+      hideOnMobile: true, // ← skip in mobile card
       header: t("services.table.columns.category"),
       cell: ({ row }) => (
         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
@@ -77,9 +233,9 @@ export function getServiceColumns(
         </div>
       ),
     },
-
     {
       accessorKey: "description",
+      hideOnMobile: true, // ← skip in mobile card
       header: t("services.table.columns.description"),
       cell: ({ row }) => (
         <div className="text-sm text-muted-foreground truncate max-w-40 hidden sm:block">
@@ -102,11 +258,7 @@ export function getServiceColumns(
       ),
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("base_price")) || 0;
-        return (
-          <div className="ml-3 ">
-            {formatAmount(amount || 0, "MAD")}
-          </div>
-        );
+        return <div className="ml-3">{formatAmount(amount, "MAD")}</div>;
       },
     },
     {
@@ -116,14 +268,7 @@ export function getServiceColumns(
       cell: ({ row }) => {
         const service = row.original;
         const { HandleEditService, handleDeleteService } = globalFnStore();
-        const onEdit = () => {
-          HandleEditService(service.id, navigate, role);
-        };
-
         const deleteMutation = useDeleteService();
-        const onDelete = async () => {
-          await handleDeleteService(service.id, deleteMutation);
-        };
 
         return (
           <div className="flex items-center gap-2">
@@ -131,14 +276,14 @@ export function getServiceColumns(
               tooltip={t("services.table.actions.edit_service")}
               size="sm"
               variant="ghost"
-              onClick={onEdit}
+              onClick={() => HandleEditService(service.id, navigate, role)}
               className="cursor-pointer"
             >
               <Pencil className="h-4 w-4" />
             </TooltipButton>
             {role === "admin" && (
               <AlertDialogDestructive
-                onDelete={() => onDelete()}
+                onDelete={() => handleDeleteService(service.id, deleteMutation)}
                 trigger={
                   <TooltipButton
                     tooltip={t("services.table.actions.delete_service")}

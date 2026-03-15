@@ -8,10 +8,8 @@ export function ContactAddressSection({ control, errors }) {
   return (
     <form className="flex flex-col gap-4">
       <div className="space-y-0.5 mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Contact & Address
-        </h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-xl font-bold tracking-tight">Contact & Address</h1>
+        <p className="text-muted-foreground text-xs">
           Manage your contact information and office address
         </p>
       </div>

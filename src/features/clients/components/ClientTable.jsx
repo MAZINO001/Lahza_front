@@ -211,7 +211,6 @@
 //   );
 // }
 
-
 // Updated ClientTable.jsx
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -225,7 +224,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import FormField from "@/Components/Form/FormField";
-import  ClientFilters  from "./ClientFilters";
+import ClientFilters from "./ClientFilters";
 import { useAuthContext } from "@/hooks/AuthContext";
 import { useClients } from "../hooks/useClients/useClients";
 import { getClientColumns } from "../columns/clientColumns";
@@ -240,8 +239,7 @@ export function ClientTable() {
   const { role } = useAuthContext();
   const navigate = useNavigate();
 
-console.log("the clients:", clients);
-
+  console.log("the clients:", clients);
 
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
@@ -274,6 +272,8 @@ console.log("the clients:", clients);
   const balanceDueMin = watch("balanceDueMin");
   const balanceDueMax = watch("balanceDueMax");
 
+  console.log("location", location);
+
   const columns = React.useMemo(
     () => getClientColumns(role, formatAmount),
     [role, formatAmount],
@@ -297,7 +297,8 @@ console.log("the clients:", clients);
         const emailMatch = email.includes(searchTerm);
         const phoneMatch = phone.includes(searchTerm);
 
-        if (!nameMatch && !companyMatch && !emailMatch && !phoneMatch) return false;
+        if (!nameMatch && !companyMatch && !emailMatch && !phoneMatch)
+          return false;
       }
 
       // Client Type filter
@@ -308,7 +309,8 @@ console.log("the clients:", clients);
 
       // Location filter
       if (location !== "all") {
-        const isMorocco = client?.client?.country === "Maroc";
+        const country = client?.client?.country?.toLowerCase();
+        const isMorocco = country === "maroc" || country === "morocco";
         if (location === "national" && !isMorocco) return false;
         if (location === "foreign" && isMorocco) return false;
       }
@@ -323,20 +325,32 @@ console.log("the clients:", clients);
       // Balance Due range filter
       if (balanceDueMin || balanceDueMax) {
         const balanceDue = parseFloat(client?.balanceDue || 0);
-        if (balanceDueMin && balanceDue < parseFloat(balanceDueMin)) return false;
-        if (balanceDueMax && balanceDue > parseFloat(balanceDueMax)) return false;
+        if (balanceDueMin && balanceDue < parseFloat(balanceDueMin))
+          return false;
+        if (balanceDueMax && balanceDue > parseFloat(balanceDueMax))
+          return false;
       }
 
       return true;
     },
-    [globalFilter, clientType, location, totalPaidMin, totalPaidMax, balanceDueMin, balanceDueMax]
+    [
+      globalFilter,
+      clientType,
+      location,
+      totalPaidMin,
+      totalPaidMax,
+      balanceDueMin,
+      balanceDueMax,
+    ],
   );
 
   // Filter and sort clients
   const filteredData = useMemo(() => {
     if (!clients) return [];
 
-    let filtered = clients.filter((client) => customFilterFn({ original: client }));
+    let filtered = clients.filter((client) =>
+      customFilterFn({ original: client }),
+    );
 
     // Apply sorting
     if (order === "A-Z") {
@@ -382,7 +396,8 @@ console.log("the clients:", clients);
 
   return (
     <div className="w-full p-4 min-h-screen">
-      <div className="flex justify-between mb-4 gap-3">
+      <div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Left: search + filter toggle */}
         <div className="flex items-center gap-2 flex-1">
           <FormField
             placeholder="Search by Name, Company, Email, or Phone..."
@@ -394,17 +409,26 @@ console.log("the clients:", clients);
             variant="outline"
             size="icon"
             onClick={() => setShowFilters(!showFilters)}
-            className={showFilters ? "bg-muted" : ""}
+            className={`shrink-0 ${showFilters ? "bg-muted" : ""}`}
           >
             <Filter className="h-4 w-4" />
           </Button>
         </div>
 
-        <div className="flex gap-2">
-          <Button onClick={() => setShowUploadModal(true)} variant="outline">
+        {/* Right: 2-column grid on mobile → flex row on desktop */}
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:w-auto">
+          <Button
+            onClick={() => setShowUploadModal(true)}
+            variant="outline"
+            className="w-full sm:w-auto"
+          >
             <Upload className="mr-2 h-4 w-4" /> Upload CSV
           </Button>
-          <AddClientModel />
+
+          {/* [&>*]:w-full forces AddClientModel's internal button to fill the cell */}
+          <div className="*:w-full [&>button]:w-full">
+            <AddClientModel />
+          </div>
         </div>
       </div>
 

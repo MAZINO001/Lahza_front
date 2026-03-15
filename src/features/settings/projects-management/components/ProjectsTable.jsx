@@ -206,7 +206,6 @@ export default function ProjectsTable() {
         open={isModalOpen}
         onOpenChange={setIsModalOpen}
         onSuccess={() => {
-          // Optionally refresh the projects table or show success message
           console.log("Project added successfully");
         }}
       />

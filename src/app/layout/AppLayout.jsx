@@ -2,9 +2,12 @@ import { Outlet } from "react-router-dom";
 import Header from "@/Components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { AppSidebar } from "../../Components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "../../Components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "../../Components/ui/sidebar";
 import { LoadingProvider } from "@/hooks/LoadingContext";
-import ContactWidget from "../ContactWidget";
 import BreadcrumbsWrapper from "@/components/common/Breadcrumbs";
 import OfferPlacementSlot from "@/features/offers/components/OfferPlacementSlot";
 

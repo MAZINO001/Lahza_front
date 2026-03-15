@@ -28,9 +28,7 @@ export function CertificationsView() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">
-            Certifications
-          </CardTitle>
+          <CardTitle>Certifications</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500">No certifications available</p>

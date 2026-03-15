@@ -162,7 +162,7 @@ export default function PackDetail() {
           <h2 className="text-xl font-semibold tracking-tight">
             Pack not found
           </h2>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             The requested subscription pack could not be found.
           </p>
         </div>
@@ -175,10 +175,10 @@ export default function PackDetail() {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-xl font-bold tracking-tight">
             Plans in {pack?.name}
           </h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             Manage subscription plans for this pack
           </p>
         </div>

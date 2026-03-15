@@ -12,10 +12,8 @@ export function BrandingAssetsSection({ control }) {
   return (
     <div className="flex flex-col">
       <div className="space-y-0.5 mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">
-          Branding & Assets
-        </h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-xl font-bold tracking-tight">Branding & Assets</h1>
+        <p className="text-muted-foreground text-xs">
           Manage your company logos, signatures and branding assets
         </p>
       </div>
